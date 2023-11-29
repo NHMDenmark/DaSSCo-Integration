@@ -1,0 +1,13 @@
+{
+  "ucloud": {
+    "export_directory_path": "/home/ldam/export",
+    "host": "hpc-type3.sdu.dk",
+    "is_slurm": "true",
+    "new_import_directory_path": "",
+    "password": "_pwd",
+    "port": "22",
+    "status": "open",
+    "updated_import_directory_path": "",
+    "username": "_user"
+  }
+}

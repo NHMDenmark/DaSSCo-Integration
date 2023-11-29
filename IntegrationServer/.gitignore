@@ -1,0 +1,12 @@
+__pycache__
+.DS_Store
+*.log
+*.json
+*.tif
+*.jpg
+.idea/
+!ConfigFiles/**/*.json
+Files/Error/**
+Files/NewFiles/**
+Files/InProcess/**
+Files/UpdatedFiles/**

@@ -1,0 +1,18 @@
+{
+  "label":{
+  "time_est": 5,
+  "script": "path/to/script/or/key/to/script?"
+  },
+  "ocr":{
+  "time_est": 1,
+  "script": "path/to/script"
+  },
+  "test":{
+  "time_est": 2,
+  "script": "path/to/script"
+  },
+  "spoof":{
+  "time_est": 10,
+  "script": "path/to/script"
+  }
+}
