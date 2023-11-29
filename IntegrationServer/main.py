@@ -164,6 +164,7 @@ def test():
     api.api_get_asset()
 
 if __name__ == '__main__':
+    # git rm -r --cached .idea/
     # i = IntegrationServer()
     # i.octopus()
     test()
