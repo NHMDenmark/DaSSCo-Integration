@@ -1,0 +1,5 @@
+{
+  "max_queued_jobs": 20,
+  "parallel_jobs": 3,
+  "total_expected_time": 2000
+}

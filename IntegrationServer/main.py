@@ -130,8 +130,8 @@ def test():
     cons = connections.Connections()
     api = rest_api.APIUsage()
 
+    cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
-    cons.create_ssh_connections("./ssh_connections_config.json")
     time.sleep(1)
 
     jobby.process_new_directories()
@@ -154,14 +154,18 @@ def test():
     """
     # con = ssh.SSHConnection("connection1", "localhost", 22, os.getenv("CONNECTION1_USER"), os.getenv("CONNECTION1_PWD"))
     # time.sleep(1)
-
-    # con.ssh_command("ls")
     """
 
-    api.get_bearer_token()
+    write_output_path = "C:/Users/lars_/PycharmProjects/NHMD-IntegrationServer/IntegrationServer/job_list.txt"
+
+    for con in cons.get_connections():
+        con.ssh_command("bash /work/dassco_23_request/lars/job_list.sh", write_output_path)
+        con.close()
+    # api.get_bearer_token()
     # api.create_asset()
-    api.update_asset()
-    api.api_get_asset()
+    # api.update_asset()
+    # api.api_get_asset()
+
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/

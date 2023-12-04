@@ -30,7 +30,7 @@ class SSHConnection:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
 
-            self.util.update_layered_json("./ssh_connections_config.json", [self.name, "status"], "open")
+            self.util.update_layered_json("./ConfigFiles/ssh_connections_config.json", [self.name, "status"], "open")
             self.sftp = self.get_sftp()
 
         except Exception as e:
@@ -40,7 +40,7 @@ class SSHConnection:
         try:
             self.sftp.close()
             self.ssh_client.close()
-            self.util.update_layered_json("./ssh_connections_config.json", [self.name, "status"], "closed")
+            self.util.update_layered_json("./ConfigFiles/ssh_connections_config.json", [self.name, "status"], "closed")
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")
@@ -161,14 +161,18 @@ class SSHConnection:
     def get_sftp(self):
         return self.ssh_client.open_sftp()
 
-    def ssh_command(self, command):
+    def ssh_command(self, command, write_to_path=None):
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
 
             # Print the output
             print("Command Output:")
-            print(stdout.read().decode('utf-8'))
+            output = stdout.read().decode('utf-8')
+            print(output)
 
+            if write_to_path is not None:
+                with open(write_to_path, 'w', encoding='utf-8') as f:
+                    f.write(output)
             # Print any errors
             print("Command Errors:")
             print(stderr.read().decode('utf-8'))

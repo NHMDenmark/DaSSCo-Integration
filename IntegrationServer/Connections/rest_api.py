@@ -11,7 +11,7 @@ class APIUsage:
     def __init__(self):
         self.api_url = 'https://storage.test.dassco.dk/api'
         self.token_endpoint = "https://idp.test.dassco.dk/realms/dassco/protocol/openid-connect/token"
-        self.bearer_path = "./bearer.json"
+        # self.bearer_path = "./bearer.json"
         self.client_id = os.getenv("CLIENT_ID")
         self.client_secret = os.getenv("CLIENT_SECRET")
         self.util = Utility()
@@ -26,22 +26,23 @@ class APIUsage:
 
         full_api = self.api_url + api_url_second
 
-        bearer_token = self.util.get_value(self.bearer_path, "token")
+        bearer_token = self.get_bearer_token()
 
-        header = {
-            'Authorization': f"Bearer {bearer_token}",
-            'Content-Type': 'application/json',
-        }
-        body = self.util.read_json(meta_data_path)
+        if bearer_token is not None:
+            header = {
+                'Authorization': f"Bearer {bearer_token}",
+                'Content-Type': 'application/json',
+            }
+            body = self.util.read_json(meta_data_path)
 
-        # Make the API call
-        res = requests.post(full_api, headers=header, json=body)
+            # Make the API call
+            res = requests.post(full_api, headers=header, json=body)
 
-        if res.status_code == 200:
-            response_data = res.json()
-            self.util.write_full_json(f"./Files/InProcess/{pipeline}/{pid}/{pid}_created.json", response_data)
-        else:
-            print(f"creating through api went wrong: {res.status_code}")
+            if res.status_code == 200:
+                response_data = res.json()
+                self.util.write_full_json(f"./Files/InProcess/{pipeline}/{pid}/{pid}_created.json", response_data)
+            else:
+                print(f"creating through api went wrong: {res.status_code}")
 
     def update_asset(self, data_path):
 
@@ -53,21 +54,22 @@ class APIUsage:
 
         full_api = self.api_url + api_url_second
 
-        bearer_token = self.util.get_value(self.bearer_path, "token")
+        bearer_token = self.get_bearer_token()
 
-        header = {
-            'Authorization': f"Bearer {bearer_token}",
-            'Content-Type': 'application/json',
-        }
-        body = self.util.read_json(meta_data_path)
+        if bearer_token is not None:
+            header = {
+                'Authorization': f"Bearer {bearer_token}",
+                'Content-Type': 'application/json',
+            }
+            body = self.util.read_json(meta_data_path)
 
-        # Make the API call
-        res = requests.put(full_api, headers=header, json=body)
+            # Make the API call
+            res = requests.put(full_api, headers=header, json=body)
 
-        print(res.status_code)
+            print(res.status_code)
 
-        if res.status_code == 200:
-            response_data = res.json()
+            if res.status_code == 200:
+                response_data = res.json()
 
     def api_get_asset(self):
 
@@ -75,26 +77,27 @@ class APIUsage:
         api_url_second = "/v1/assetmetadata/222222222"
         full_api = self.api_url + api_url_second
 
-        bearer_token = self.util.get_value(self.bearer_path, "token")
+        bearer_token = self.get_bearer_token()
 
-        # Set up the headers with the Bearer token
-        header = {
-            'Authorization': f"Bearer {bearer_token}",
-            'Content-Type': 'application/json',
-        }
+        if bearer_token is not None:
+            # Set up the headers with the Bearer token
+            header = {
+                'Authorization': f"Bearer {bearer_token}",
+                'Content-Type': 'application/json',
+            }
 
-        # Make the API call
-        res = requests.get(full_api, headers=header)
+            # Make the API call
+            res = requests.get(full_api, headers=header)
 
-        print(res.status_code)
-        # Check the response status
-        if res.status_code == 200:
-            data = res.json()  # Use .json() to parse JSON response
-            self.util.write_full_json("./asset.json", data)
-        else:
-            # Handle the error
-            print(f"API call failed with status code {res.status_code}")
-            print(res.text)
+            print(res.status_code)
+            # Check the response status
+            if res.status_code == 200:
+                data = res.json()  # Use .json() to parse JSON response
+                self.util.write_full_json("./asset.json", data)
+            else:
+                # Handle the error
+                print(f"API call failed with status code {res.status_code}")
+                print(res.text)
 
     def get_bearer_token(self):
 
@@ -114,8 +117,8 @@ class APIUsage:
             print("api bearer token success")
             token_data = res.json()
             access_token = token_data.get('access_token')
-            self.util.update_json(self.bearer_path, "token", access_token)
-
+            # self.util.update_json(self.bearer_path, "token", access_token)
+            return access_token
         else:
             print(f"Token request failed with status code {res.status_code}")
             print(res.text)

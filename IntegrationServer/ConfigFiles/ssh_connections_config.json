@@ -1,6 +1,6 @@
 {
   "ucloud": {
-    "export_directory_path": "/home/ldam/export",
+    "export_directory_path": "/work/dassco_23_request/lars",
     "host": "hpc-type3.sdu.dk",
     "is_slurm": "true",
     "new_import_directory_path": "",
