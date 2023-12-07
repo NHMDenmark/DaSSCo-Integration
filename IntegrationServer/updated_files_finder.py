@@ -7,13 +7,13 @@ class UpdatedFilesFinder:
     def __init__(self):
 
         self.updated_files_path = "./Files/UpdatedFiles/"
-        self.ssh_config_path = "ConfigFiles/ssh_connections_config.json"
+        self.ssh_config_path = "ConfigFiles/ucloud_connection_config.json"
         self.run = True
         self.count = 0
 
         self.cons = connections.Connections()
 
-        self.cons.create_ssh_connections(self.ssh_config_path)
+        self.con = self.cons.create_ssh_connection(self.ssh_config_path)
 
         self.loop()
 
@@ -21,8 +21,7 @@ class UpdatedFilesFinder:
 
         while self.run:
 
-            for con in self.cons.get_connections():
-                con.sftp_import_directory_from_server(con.updated_import_directory_path, self.updated_files_path)
+            self.con.sftp_import_directory_from_server(self.con.updated_import_directory_path, self.updated_files_path)
 
             time.sleep(3)
 

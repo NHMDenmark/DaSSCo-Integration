@@ -15,5 +15,9 @@ Sets the maximum total expected amount of time in hours we want to have queued u
 ```bash
     "total_expected_time": 30
 ```
+Path to the job list script that gets data for jobs being processed. 
+```bash
+    "job_list_script_path": "/work/dassco_23_request/lars/job_list.sh"
+```
 
 ## ssh_connections_config.json

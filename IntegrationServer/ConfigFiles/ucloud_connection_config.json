@@ -1,13 +1,13 @@
 {
   "ucloud": {
-    "export_directory_path": "/work/dassco_23_request/lars",
+    "export_directory_path": "/home/ldam/from_integration",
     "host": "hpc-type3.sdu.dk",
     "is_slurm": "true",
     "new_import_directory_path": "",
     "password": "_pwd",
     "port": "22",
-    "status": "open",
-    "updated_import_directory_path": "",
+    "status": "closed",
+    "updated_import_directory_path": "/home/ldam/export",
     "username": "_user"
   }
 }

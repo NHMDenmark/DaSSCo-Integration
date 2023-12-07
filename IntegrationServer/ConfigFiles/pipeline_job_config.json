@@ -1,8 +1,8 @@
 {
    "EXAMPLE": {
-   "job_1": "label",
+   "job_1": "test",
    "job_2": "ocr",
-   "job_3": "test",
+   "job_3": "label",
    "job_4": "spoof"
  },
  "PIPEHERB0001": {

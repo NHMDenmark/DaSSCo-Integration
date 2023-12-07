@@ -30,7 +30,7 @@ class SSHConnection:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
 
-            self.util.update_layered_json("./ConfigFiles/ssh_connections_config.json", [self.name, "status"], "open")
+            self.util.update_layered_json("./ConfigFiles/ucloud_connection_config.json", [self.name, "status"], "open")
             self.sftp = self.get_sftp()
 
         except Exception as e:
@@ -40,7 +40,7 @@ class SSHConnection:
         try:
             self.sftp.close()
             self.ssh_client.close()
-            self.util.update_layered_json("./ConfigFiles/ssh_connections_config.json", [self.name, "status"], "closed")
+            self.util.update_layered_json("./ConfigFiles/ucloud_connection_config.json", [self.name, "status"], "closed")
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")
@@ -145,6 +145,24 @@ class SSHConnection:
                 print(f"Copy successful: {path_to_copy_from_server} to {local_destination_directory}")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    def sftp_check_files_are_transferred(self, local_path, remote_path):
+        try:
+            remote_files = self.sftp.listdir(remote_path)
+            local_files = os.listdir(local_path)
+        except Exception as e:
+            print(f"Error: {e}")
+            return
+
+        remote_file_names = [os.path.basename(file) for file in remote_files]
+        local_file_names = [os.path.basename(local_file) for local_file in local_files]
+
+        # Check if local files exist on the remote server
+        for local_name in local_file_names:
+            if local_name not in remote_file_names:
+                print(f"File {local_name} was not successfully transferred.")
+                self.ssh_command(f"rm -r {remote_path}")
+                # TODO send local_path to error folder
 
     def sftp_move(self, path_to_move_from, path_to_move_to):
         try:

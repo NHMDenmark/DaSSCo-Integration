@@ -1,5 +1,10 @@
 {
-  "max_queued_jobs": 20,
+  "max_queued_jobs": 1,
   "parallel_jobs": 3,
-  "total_expected_time": 2000
+  "max_expected_time": 2000,
+  "job_list_script_path": "/work/dassco_23_request/lars/job_list.sh",
+  "import_updates_from_path": "/home/ldam/updated_data",
+  "export_to_path": "/home/ldam/from_integration",
+  "import_new_derivatives_path": "/home/ldam/new_created_data",
+  "temporary_persist_path": "/home/ldam/waiting"
 }

@@ -14,6 +14,15 @@ class Utility:
         with open(file_path, 'r', encoding="utf-8") as file:
             data = json.load(file)
             return data.get(key)
+    def get_nested_value(self, file_path, key, nested_key):
+        with open(file_path, 'r', encoding="utf-8") as file:
+            data = json.load(file)
+
+            # Use get method to access the nested keys
+            if key in data and nested_key in data[key]:
+                return data[key][nested_key]
+            else:
+                return None
 
     def write_full_json(self, file_path, data):
         with open(file_path, 'w', encoding="utf-8") as file:
@@ -49,8 +58,5 @@ class Utility:
         for key, value in dictionary.items():
             if value == target_value:
                 result_keys.append(key)
-
-        if len(result_keys) == 1:
-            return result_keys[0]
 
         return result_keys
