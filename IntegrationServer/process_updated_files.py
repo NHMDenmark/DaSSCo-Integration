@@ -29,4 +29,4 @@ class ProcessUpdatedFiles:
 
 
 if __name__ == '__main__':
-    n = ProcessUpdatedFiles()
+    ProcessUpdatedFiles()

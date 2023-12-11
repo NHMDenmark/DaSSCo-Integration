@@ -4,7 +4,12 @@ import stat
 import time
 from IntegrationServer.utility import Utility
 
-
+"""
+Class that creates a ssh connection. Includes function to make use of the connection. 
+Transfers files to and from the integration server through sftp. 
+Sends commands directly through ssh connection.
+Needs ssh keys to avoid password prompts. 
+"""
 class SSHConnection:
     def __init__(self, name, host, port, username, password):
         self.util = Utility()
@@ -12,6 +17,7 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
+        self.config_path = f"./ConfigFiles/{self.name}_connection_config.json"
         self.status = ""
         self.is_slurm = ""
         self.new_import_directory_path = ""
@@ -30,7 +36,7 @@ class SSHConnection:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
 
-            self.util.update_layered_json("./ConfigFiles/ucloud_connection_config.json", [self.name, "status"], "open")
+            self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
             self.sftp = self.get_sftp()
 
         except Exception as e:
@@ -40,7 +46,7 @@ class SSHConnection:
         try:
             self.sftp.close()
             self.ssh_client.close()
-            self.util.update_layered_json("./ConfigFiles/ucloud_connection_config.json", [self.name, "status"], "closed")
+            self.util.update_layered_json(self.config_path, [self.name, "status"], "closed")
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")
@@ -51,7 +57,15 @@ class SSHConnection:
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    """
+    Function for importing and sorting files into correct new/pipeline/batch/guid/* folders from ndrive.
+    """
     def import_and_sort_files(self, remote_folder, local_destination):
+
+        # TODO create batch folder based on the date of asset_taken, this should be done on Ndrive.
+        # TODO check through pipeline folders for bacth folders without prefix = imported_
+        # TODO Need way here to iterate through and choose only one of the batch folders.
+        # TODO Create pipeline/batch folder and add to local_destination
 
         try:
             # List files in the remote folder
@@ -179,6 +193,9 @@ class SSHConnection:
     def get_sftp(self):
         return self.ssh_client.open_sftp()
 
+    """
+    Function that allows remote commands to be used through connection. Gives option of writing output somewhere if needed. 
+    """
     def ssh_command(self, command, write_to_path=None):
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)

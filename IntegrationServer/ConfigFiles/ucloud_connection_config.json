@@ -7,7 +7,7 @@
     "password": "_pwd",
     "port": "22",
     "status": "closed",
-    "updated_import_directory_path": "/home/ldam/export",
+    "updated_import_directory_path": "/home/ldam/updated_data",
     "username": "_user"
   }
 }

@@ -20,4 +20,19 @@ Path to the job list script that gets data for jobs being processed.
     "job_list_script_path": "/work/dassco_23_request/lars/job_list.sh"
 ```
 
-## ssh_connections_config.json
+## {name}_connection_config.json
+
+First key is the name of the connection. A connection file must start with the name of the connection.
+```bash
+    "ucloud": {
+      "export_directory_path": "/home/ldam/from_integration",
+      "host": "hpc-type3.sdu.dk",
+      "is_slurm": "true",
+      "new_import_directory_path": "",
+      "password": "_pwd",
+      "port": "22",
+      "status": "closed",
+      "updated_import_directory_path": "/home/ldam/updated_data",
+      "username": "_user"
+      }
+```

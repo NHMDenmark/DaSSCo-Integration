@@ -1,6 +1,10 @@
 import json
+import os
 
-
+"""
+Class with helper methods that are used throughout the different processes.
+Mostly contains functions that has to do with reading/updating .json files. 
+"""
 class Utility:
     def __init__(self):
         pass
@@ -60,3 +64,10 @@ class Utility:
                 result_keys.append(key)
 
         return result_keys
+
+    def error_occurred(self, asset_path):
+        pass  # TODO
+        """ 
+        look for READY or INPIPELINE in _jobs change to ERROR
+        Create folder structure /FilesError/"pipeline_name"/ move guid folder here
+        """

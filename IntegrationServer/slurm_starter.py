@@ -42,8 +42,6 @@ class SlurmStarter:
 
     def loop(self):
 
-        # self.con.ssh_command(f"cd {self.work_server_directory_path}")
-
         while self.run:
 
             max_jobs = self.util.get_value(self.slurm_config_path, "max_queued_jobs")
@@ -105,10 +103,6 @@ class SlurmStarter:
      the pipeline name and the specific job name."""
 
     def create_transfer_filelist(self, max_jobs_number):
-
-        # ready_list = look_through_files in pipeline and_find_READY_jobs()
-        # final_list = loop through ready_list add job time until max_hours / number_of_jobs
-        # return final_list
 
         directory_path = "./Files/InProcess"
 
