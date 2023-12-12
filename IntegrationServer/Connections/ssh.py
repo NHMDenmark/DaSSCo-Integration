@@ -57,15 +57,16 @@ class SSHConnection:
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def choose_batch_diretory(self):
+        pass
+
     """
     Function for importing and sorting files into correct new/pipeline/batch/guid/* folders from ndrive.
     """
     def import_and_sort_files(self, remote_folder, local_destination):
 
-        # TODO create batch folder based on the date of asset_taken, this should be done on Ndrive.
         # TODO check through pipeline folders for bacth folders without prefix = imported_
         # TODO Need way here to iterate through and choose only one of the batch folders.
-        # TODO Create pipeline/batch folder and add to local_destination
 
         try:
             # List files in the remote folder

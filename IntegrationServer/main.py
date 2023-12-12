@@ -65,7 +65,8 @@ def test():
     # api.update_asset()
     # api.api_get_asset()
 
-    smb.test_run()
+    #  smb.test_run()
+    jobby.process_new_directories()
 
 
 if __name__ == '__main__':

@@ -11,6 +11,11 @@ class JobDriver:
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
 
+    """
+    Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
+    Creates the batch folder and moves the assets into it based on the date the asset was taken.
+    If something goes wrong moves the asset to the error folder. 
+    """
     def process_new_directories(self):
 
         input_dir = "./Files/NewFiles"
@@ -49,8 +54,16 @@ class JobDriver:
                         json_file_name = json_files[0]
                         json_file_path = os.path.join(subdirectory_path, json_file_name)
 
-                        # Read the JSON file to get the 'pipeline_name' value
+                        # Read the JSON file to get the 'pipeline_name' and batch name based on date values
                         pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
+                        date_value = self.util.get_value(json_file_path, "asset_taken_date")
+                        batch_name = ""
+
+                        if date_value is not None:
+                            batch_name = date_value[:10]
+                        else:
+                            shutil.move(subdirectory_path, error_dir)
+                            continue
 
                         # Create jobs dictionary
                         jobs_json = self.jobby.create_jobs(pipeline_name)
@@ -67,7 +80,7 @@ class JobDriver:
                             json.dump(jobs_json, jobs_file, indent=2)
 
                         # Move the directory to the 'InProcess' directory or error if it already exists
-                        new_directory_path = os.path.join(in_process_dir, f"{pipeline_name}/{subdirectory}")
+                        new_directory_path = os.path.join(in_process_dir, f"{pipeline_name}/{batch_name}/{subdirectory}")
 
                         if os.path.exists(new_directory_path):
                             shutil.move(subdirectory_path, error_dir)

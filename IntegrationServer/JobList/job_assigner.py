@@ -3,11 +3,12 @@ from IntegrationServer.utility import Utility
 
 class JobAssigner:
     def __init__(self):
-        self.util = Utility
+        self.util = Utility()
+        self.pipeline_job_config_path = "../IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
     def create_jobs(self, pipeline_name):
         try:
-            config = self.util.get_value(self.util, "../IntegrationServer/pipeline_job_config.json", pipeline_name)
+            config = self.util.get_value(self.pipeline_job_config_path, pipeline_name)
 
             jobs_dict = {}
 
@@ -22,4 +23,3 @@ class JobAssigner:
 
         except Exception as e:
             print(f"Pipeline name does not match job in config file: {e}")
-
