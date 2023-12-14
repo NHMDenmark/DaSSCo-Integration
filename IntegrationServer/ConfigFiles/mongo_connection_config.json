@@ -1,0 +1,9 @@
+{
+  "test": {
+    "host": "localhost",
+    "port": 27017,
+    "data_base": "FirstTest",
+    "collection_name": "CollectionTestName"
+  }
+
+}

@@ -36,3 +36,14 @@ First key is the name of the connection. A connection file must start with the n
       "username": "_user"
       }
 ```
+
+## mongo_connection_config.json
+Overall connection structure for a mongodb instance.
+```bash
+    "{name}": {
+    "host": "{hostname}",
+    "port": 27017,
+    "data_base": "FirstTest",
+    "collection": "CollectionTestName"
+  }
+```

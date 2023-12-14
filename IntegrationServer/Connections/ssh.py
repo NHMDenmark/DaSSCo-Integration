@@ -57,16 +57,38 @@ class SSHConnection:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def choose_batch_diretory(self):
-        pass
+    """
+    Iterates through each directory matching with a pipeline name found in the config files.
+    Then looks for one without the imported_ prefix and returns directory as a path.
+    """
+    def get_batch_directory_path(self, remote_folder):
+        # Read pipeline configuration data from JSON file
+        pipeline_job_config_data = self.util.read_json("./ConfigFiles/pipeline_job_config.json")
+
+        # Get a list of keys from the pipeline configuration data
+        pipeline_list = list(pipeline_job_config_data.keys())
+
+        # Iterate over directories in remote_folder
+        for directory in self.sftp.listdir(remote_folder):
+            # Check if the directory has the same name as one of the keys in pipeline_list
+            if directory in pipeline_list:
+                # Further check for subdirectories
+                subdirectories = self.sftp.listdir(f"{remote_folder}/{directory}")
+
+                # Check for subdirectories that do not start with "imported_"
+                for subdirectory in subdirectories:
+                    if not subdirectory.startswith("imported_"):
+                        return f"{remote_folder}/{directory}/{subdirectory}"
+        # If no matching directory is found
+        return None
 
     """
-    Function for importing and sorting files into correct new/pipeline/batch/guid/* folders from ndrive.
+    Function for importing a directory and sorting files into correct new/{guid}/* folders from ndrive.
     """
     def import_and_sort_files(self, remote_folder, local_destination):
 
-        # TODO check through pipeline folders for bacth folders without prefix = imported_
-        # TODO Need way here to iterate through and choose only one of the batch folders.
+        # Finds an unimported batch directory
+        remote_folder = self.get_batch_directory_path(remote_folder)
 
         try:
             # List files in the remote folder
@@ -102,8 +124,40 @@ class SSHConnection:
 
             print(f"Copy successful from {remote_folder} to {local_destination}.")
 
+            self.rename_batch_directory_after_import(remote_folder)
+
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    """
+    Renames the batch directory on the server the import was done from. Adds the prefix imported_ to the directory.
+    """
+    def rename_batch_directory_after_import(self, remote_path):
+
+        batch_name = os.path.basename(remote_path)
+
+        # Define the new path
+        new_path = os.path.join(os.path.dirname(remote_path), f"imported_{batch_name}")
+
+        # Create the new directory
+        self.sftp.mkdir(new_path)
+
+        # Move contents from the old directory to the new one
+        for item in self.sftp.listdir(remote_path):
+            old_item_path = os.path.join(remote_path, item)
+            new_item_path = os.path.join(new_path, item)
+            self.sftp.rename(old_item_path, new_item_path)
+
+            # Check if everything has been copied successfully
+        old_contents = set(self.sftp.listdir(remote_path))
+        new_contents = set(self.sftp.listdir(new_path))
+
+        if old_contents == new_contents:
+            # If contents are the same, remove the old directory
+            self.sftp.rmdir(remote_path)
+        else:
+            # TODO Handle the case where not everything was copied successfully
+            print("Error: Not all contents were successfully copied.")
 
     def sftp_export_directory_to_server(self, path_to_copy_from, path_to_copy_to):
 

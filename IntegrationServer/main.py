@@ -4,6 +4,7 @@ from IntegrationServer import utility
 from IntegrationServer.JobList import job_driver
 from IntegrationServer.FileStatus import status
 from IntegrationServer.Connections import rest_api
+from IntegrationServer.MongoDB import mongo_connection
 
 
 class IntegrationServer(object):
@@ -27,6 +28,8 @@ def test():
     cons = connections.Connections()
     api = rest_api.APIUsage()
     smb = smb_connecter.SmbConnecter()
+    mongo = mongo_connection.MongoConnection("test")
+
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
@@ -66,7 +69,10 @@ def test():
     # api.api_get_asset()
 
     #  smb.test_run()
-    jobby.process_new_directories()
+    # jobby.process_new_directories()
+
+    mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "jingle")
+    print(mongo.get_entry("institution", "NHMD"))
 
 
 if __name__ == '__main__':
