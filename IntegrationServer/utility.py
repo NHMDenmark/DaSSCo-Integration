@@ -29,6 +29,8 @@ class Utility:
                 return None
 
     def write_full_json(self, file_path, data):
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
         with open(file_path, 'w', encoding="utf-8") as file:
             json.dump(data, file, indent=2, sort_keys=True)
 

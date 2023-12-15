@@ -4,6 +4,11 @@
     "port": 27017,
     "data_base": "FirstTest",
     "collection_name": "CollectionTestName"
+  },
+  "production": {
+    "host": "my_ip",
+    "port": 27017,
+    "data_base": "something",
+    "collection_name": "something_else"
   }
-
 }
