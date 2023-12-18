@@ -7,6 +7,8 @@ and corresponding image files TIF, RAW, JPEG etc are send there.
 """
 
 
+# TODO this has not been tested at all due to issues with using KUs cisco vpn.
+
 class SmbConnecter():
 
     def __init__(self):

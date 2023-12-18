@@ -4,6 +4,10 @@ from IntegrationServer import utility
 from IntegrationServer.JobList import job_assigner
 import json
 
+"""
+Responsible for the internal processing and updating of _jobs.json files. 
+"""
+
 
 class JobDriver:
 
@@ -16,6 +20,7 @@ class JobDriver:
     Creates the batch folder and moves the assets into it based on the date the asset was taken.
     If something goes wrong moves the asset to the error folder. 
     """
+
     def process_new_directories(self):
 
         input_dir = "./Files/NewFiles"
@@ -80,12 +85,18 @@ class JobDriver:
                             json.dump(jobs_json, jobs_file, indent=2)
 
                         # Move the directory to the 'InProcess' directory or error if it already exists
-                        new_directory_path = os.path.join(in_process_dir, f"{pipeline_name}/{batch_name}/{subdirectory}")
+                        new_directory_path = os.path.join(in_process_dir,
+                                                          f"{pipeline_name}/{batch_name}/{subdirectory}")
 
                         if os.path.exists(new_directory_path):
                             shutil.move(subdirectory_path, error_dir)
                         else:
                             shutil.move(subdirectory_path, new_directory_path)
+
+    """
+    Takes processed metadata files from slurm and updates job status for those files. 
+    Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
+    """
 
     def process_updated_directories(self):
 
@@ -100,7 +111,7 @@ class JobDriver:
             # Check if a directory with the same name exists in the error path
             error_directory_path = os.path.join(error_path, subdirectory)
             if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
-            # TODO handle files if in error folder
+                # TODO handle files if in error folder
                 print(f"Directory {error_directory_path} already exists in the error path.")
                 continue
 
@@ -108,7 +119,7 @@ class JobDriver:
             metadata_json = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}.json"]
 
             if len(jobs_json) != 1 and len(metadata_json) != 1:
-                #TODO move to error folder
+                # TODO move to error folder
                 continue
 
             metadata_path = os.path.join(subdirectory_path, metadata_json[0])

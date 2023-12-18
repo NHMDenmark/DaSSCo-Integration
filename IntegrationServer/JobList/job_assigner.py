@@ -1,5 +1,9 @@
 from IntegrationServer.utility import Utility
 
+""" 
+Creates a _jobs.json file and assigns jobs based on pipeline for new files. 
+"""
+
 
 class JobAssigner:
     def __init__(self):

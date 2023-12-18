@@ -10,6 +10,8 @@ Transfers files to and from the integration server through sftp.
 Sends commands directly through ssh connection.
 Needs ssh keys to avoid password prompts. 
 """
+
+
 class SSHConnection:
     def __init__(self, name, host, port, username, password):
         self.util = Utility()
@@ -28,7 +30,10 @@ class SSHConnection:
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.connect()
-
+    """
+    Creates the ssh connection based on host, port username and password. Sets up sftp. 
+    Updates the status of the connection config file. 
+    """
     def connect(self):
         # need if statement, checking status for open already -  get specific value from json
 
@@ -42,6 +47,10 @@ class SSHConnection:
         except Exception as e:
             print(f"Connection failed: {e}")
 
+    """
+    Closes a ssh connection. 
+    """
+
     def close(self):
         try:
             self.sftp.close()
@@ -50,6 +59,10 @@ class SSHConnection:
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")
+
+    """
+    Copies a file using sftp.
+    """
 
     def sftp_copy_file(self, path_to_copy_from, path_to_copy_to):
         try:
@@ -61,6 +74,7 @@ class SSHConnection:
     Iterates through each directory matching with a pipeline name found in the config files.
     Then looks for one without the imported_ prefix and returns directory as a path.
     """
+
     def get_batch_directory_path(self, remote_folder):
         # Read pipeline configuration data from JSON file
         pipeline_job_config_data = self.util.read_json("./ConfigFiles/pipeline_job_config.json")
@@ -85,6 +99,7 @@ class SSHConnection:
     """
     Function for importing a directory and sorting files into correct new/{guid}/* folders from ndrive.
     """
+
     def import_and_sort_files(self, remote_folder, local_destination):
 
         # Finds an unimported batch directory
@@ -132,6 +147,7 @@ class SSHConnection:
     """
     Renames the batch directory on the server the import was done from. Adds the prefix imported_ to the directory.
     """
+
     def rename_batch_directory_after_import(self, remote_path):
 
         batch_name = os.path.basename(remote_path)
@@ -159,6 +175,11 @@ class SSHConnection:
             # TODO Handle the case where not everything was copied successfully
             print("Error: Not all contents were successfully copied.")
 
+    """
+    Copies files from the integration server onto another server through ssh/sftp. Usually this would be used for
+    sending files to the slurm server. 
+    """
+
     def sftp_export_directory_to_server(self, path_to_copy_from, path_to_copy_to):
 
         try:
@@ -184,6 +205,10 @@ class SSHConnection:
 
         except Exception as e:
             print(f"An error occurred exporting dir to server: {e}")
+
+    """
+    Copies files from a remote server onto integration server. Main use is getting new files from Ndrive currently.     
+    """
 
     def sftp_import_directory_from_server(self, path_to_copy_from_server, path_to_copy_to_local):
 
@@ -214,6 +239,10 @@ class SSHConnection:
                 print(f"Copy successful: {path_to_copy_from_server} to {local_destination_directory}")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    """
+    Checks that transferred files matches files from where they came from. 
+    """
 
     def sftp_check_files_are_transferred(self, local_path, remote_path):
         try:
@@ -251,6 +280,7 @@ class SSHConnection:
     """
     Function that allows remote commands to be used through connection. Gives option of writing output somewhere if needed. 
     """
+
     def ssh_command(self, command, write_to_path=None):
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
