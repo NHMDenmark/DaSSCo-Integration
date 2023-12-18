@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
 
+"""
+Model class for the metadata file as it is when its received from the digitisation process. 
+"""
+
 
 class MetadataAsset(BaseModel):
     audited: Optional[str]

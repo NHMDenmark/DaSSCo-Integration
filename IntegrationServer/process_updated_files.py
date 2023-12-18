@@ -1,6 +1,13 @@
 from IntegrationServer.JobList import job_driver
 import time
 
+"""
+Class responsible for initiating the processing of updated files received. Calls the JobDriver class for actual
+processing. 
+"""
+
+# TODO needs to decide if a timer or trigger system is needed here.
+
 
 class ProcessUpdatedFiles:
 

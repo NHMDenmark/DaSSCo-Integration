@@ -5,6 +5,11 @@ from typing import Any, Optional, List
 import json
 import os
 
+"""
+Rest api setup for receiving data from the slurm. 
+"""
+# TODO Separate this into its own repository. Too difficult to test with without having packaged everything else due to dependencies.
+# Needs acces to the models.py and utility.py files. Currently they are just both copied into this file.
 app = FastAPI()
 
 
@@ -66,12 +71,6 @@ class MetadataAsset(BaseModel):
     media_guid: Optional[str]
 
 
-class DateTimeEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if isinstance(o, datetime):
-            return o.isoformat()
-        return super().default(o)
-
 """
 Class with helper methods that are used throughout the different processes.
 Mostly contains functions that has to do with reading/updating .json files. 
@@ -106,7 +105,7 @@ class Utility:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         with open(file_path, 'w', encoding="utf-8") as file:
-            json.dump(data, file, indent=2, sort_keys=True, cls=DateTimeEncoder)
+            json.dump(data, file, indent=2, sort_keys=True)
 
     def update_json(self, file_path, key, value):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -167,3 +166,8 @@ async def receive_check(check: Check):
 async def receive_metadata(metadata: MetadataAsset):
     metadata_json = metadata.__dict__
     util.write_full_json(f"../Files/UpdatedFiles/{metadata.asset_guid}.json", metadata_json)
+
+
+@app.post("/api/v1/jobs")
+async def receive_jobs(check: Check):
+    pass  # TODO make job model, decide on status list, connect with mongo db.

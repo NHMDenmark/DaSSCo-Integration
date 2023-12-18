@@ -4,7 +4,14 @@ from IntegrationServer.Connections import connections
 from IntegrationServer import utility
 import time
 
+"""
+Class responsible for looking through a specified folder on the slurm cluster,
+ and importing metadata files that have had updates.
+"""
 
+
+# TODO decide if this is the way we want to receive updated data from slurm.
+# TODO If so decide on a kind of schedule for how often we should check for new data there.
 class SlurmReceiver:
 
     def __init__(self):
@@ -23,6 +30,10 @@ class SlurmReceiver:
         self.con = self.cons.get_connection()
         self.loop()
 
+        """
+        Main loop for starting and controlling the flow receiving data back from slurm. Looks through a "pickup" folder
+        on slurm and copies everything there into the updated files path. 
+        """
     def loop(self):
 
         while self.run:
@@ -41,7 +52,7 @@ class SlurmReceiver:
                     remote_pipeline_paths.append(remote_pipeline_path)
 
                 for pipeline_path in remote_pipeline_paths:
-                    # List directories in the pipeline path this is giving me the error
+                    # List directories in the pipeline path
                     remote_guid_name_dirs = self.con.sftp.listdir(pipeline_path)
 
                     remote_guid_name_paths = []
@@ -60,12 +71,12 @@ class SlurmReceiver:
             except Exception as e:
                 print(f"Error: {e}")
 
-            # check no errors occurred in pipelines -> handle errors
+            # TODO check no errors occurred in pipelines -> handle errors
 
-            # import? updated data files and/or update local files -> move local to updated files
-            # update job status
+            # TODO import? updated data files and/or update local files -> move local to updated files
+            # TODO update job status
 
-            # check for more pipeline jobs -> if none delete files in slurm dir/ if more move files and set flag
+            # TODO check for more pipeline jobs -> if none delete files in slurm dir/ if more move files and set flag
 
             time.sleep(1)
 

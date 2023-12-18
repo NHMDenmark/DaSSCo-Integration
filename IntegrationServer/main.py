@@ -6,6 +6,10 @@ from IntegrationServer.FileStatus import status
 from IntegrationServer.Connections import rest_api
 from IntegrationServer.MongoDB import mongo_connection
 
+""""
+Test area for the different processes. May contain deprecated information.
+"""
+
 
 class IntegrationServer(object):
     def __init__(self):
@@ -71,7 +75,7 @@ def test():
     #  smb.test_run()
     # jobby.process_new_directories()
 
-    mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "jingle")
+    mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "shingle")
     print(mongo.get_entry("institution", "NHMD"))
 
 

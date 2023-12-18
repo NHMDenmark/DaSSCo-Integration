@@ -2,6 +2,13 @@ from pymongo import MongoClient
 from IntegrationServer.utility import Utility
 from bson import ObjectId
 
+"""
+Class for connecting to and interacting with a MongoDB. Should have full CRUD available. 
+"""
+
+
+# TODO ensure full crud functionalities have been done.
+# TODO integrate with old system for keeping track of jobs through _jobs.json
 
 class MongoConnection:
 

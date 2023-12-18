@@ -1,6 +1,11 @@
 from IntegrationServer.Connections import connections
 import time
 
+"""
+Class responsible for initiating the process of importing new files. 
+Runs a loop that checks the Ndrive for previously not imported files.
+"""
+
 
 class NewFilesFinder:
 
@@ -8,7 +13,7 @@ class NewFilesFinder:
 
         self.new_files_path = "./Files/NewFiles/"
         # TODO change to actual connection_config file or make it non static, for multiple import places to run at same time maybe
-        self.ssh_config_path = "ConfigFiles/ssh_connections_config.json"
+        self.ssh_config_path = "ConfigFiles/ssh_connections_config.json"  # Deprecated config.json needs one that reflects reality
         self.run = True
         self.count = 0
 

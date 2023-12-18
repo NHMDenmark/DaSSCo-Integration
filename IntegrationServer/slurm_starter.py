@@ -5,8 +5,10 @@ from IntegrationServer.Connections import connections
 from IntegrationServer import utility
 import time
 
-"""Slurm server job api. Connects through ssh to the slurm server. Runs an infinite loop that goes through pipeline 
-directories and checks for jobs that are ready to be processed through slurm."""
+"""
+Slurm server job api. Connects through ssh to the slurm server. Runs an infinite loop that goes through pipeline 
+directories and checks for jobs that are ready to be processed through slurm.
+"""
 
 
 class SlurmStarter:
@@ -34,11 +36,12 @@ class SlurmStarter:
 
         self.loop()
 
-    """Main loop for starting and controlling the flow of slurm jobs. Makes use of batch scripts within the slurm server,
-     through a ssh connection to check status of and start new jobs. 
-     Configurable settings for amount of jobs through slurm_config.json. This need to be setup correctly with the sbatch
-     scripts on the slurm server though. 
-     """
+    """
+    Main loop for starting and controlling the flow of slurm jobs. Makes use of batch scripts within the slurm server,
+    through a ssh connection to check status of and start new jobs. 
+    Configurable settings for amount of jobs through slurm_config.json. This need to be setup correctly with the sbatch
+    scripts on the slurm server though. 
+    """
 
     def loop(self):
 
@@ -99,8 +102,10 @@ class SlurmStarter:
                 self.run = False
                 self.cons.close_connection()
 
-    """Return a list of directories that can be transferred to the slurm server,
-     the pipeline name and the specific job name."""
+    """
+    Return a list of directories that can be transferred to the slurm server,
+    the pipeline name and the specific job name.
+    """
 
     def create_transfer_filelist(self, max_jobs_number):
 
@@ -121,10 +126,12 @@ class SlurmStarter:
 
                 return ready_job_paths, job, job_name
 
-    """Returns a list of paths containing ready jobs from a specific pipeline of a specific type. Returns the specific job name. 
-     Updates the status of the job to INPIPELINE from READY.
-     Example could be HERBARIUMPIPELINE with jobs being LABEL. If there are more than one set of READY jobs,
-      within a pipeline directory a second run through that pipeline directory will be made later."""
+    """
+    Returns a list of paths containing ready jobs from a specific pipeline of a specific type. Returns the specific job name. 
+    Updates the status of the job to INPIPELINE from READY.
+    Example could be HERBARIUMPIPELINE with jobs being LABEL. If there are more than one set of READY jobs,
+    within a pipeline directory a second run through that pipeline directory will be made later.
+    """
 
     def get_ready_job(self, path_list, max_jobs_number):
         file_pattern = '_jobs.json'
@@ -168,7 +175,9 @@ class SlurmStarter:
 
         return transfer_list, specific_job_name
 
-    """Helper method returning all paths within a directory"""
+    """
+    Helper method returning all paths within a directory.
+    """
 
     def get_paths_in_directory(self, dir_path):
 
