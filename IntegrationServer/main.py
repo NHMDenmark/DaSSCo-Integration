@@ -5,6 +5,7 @@ from IntegrationServer.JobList import job_driver
 from IntegrationServer.Connections import northtech_rest_api
 from IntegrationServer.MongoDB import mongo_connection
 from IntegrationServer import ndrive_new_files
+from IntegrationServer import process_new_files
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -31,7 +32,8 @@ def test():
     api = northtech_rest_api.APIUsage()
     smb = smb_connecter.SmbConnecter()
     mongo = mongo_connection.MongoConnection("test")
-    # ndrive = ndrive_new_files.NdriveNewFilesFinder()
+    ndrive = ndrive_new_files.NdriveNewFilesFinder()
+    new_files = process_new_files.ProcessNewFiles()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
@@ -74,8 +76,9 @@ def test():
     # jobby.process_new_directories()
 
     # mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "shingle")
-    mongo.create_entry("exa", "EXAMPLE")
-    print(mongo.get_entry("_id", "exa"))
+    # mongo.create_entry("exa", "EXAMPLE")
+    print(mongo.get_entry("_id", "mexa"))
+    mongo.delete_entry("mexa")
 
 
 if __name__ == '__main__':

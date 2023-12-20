@@ -2,6 +2,7 @@ import os
 import shutil
 from IntegrationServer import utility
 from IntegrationServer.JobList import job_assigner
+from IntegrationServer.MongoDB import mongo_connection
 import json
 
 """
@@ -14,11 +15,12 @@ class JobDriver:
     def __init__(self):
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
-
+        self.mongo = mongo_connection.MongoConnection("test")  # TODO change to get db name from config files
     """
     Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
     Creates the batch folder and moves the assets into it based on the date the asset was taken.
-    If something goes wrong moves the asset to the error folder. 
+    If something goes wrong moves the asset to the error folder.
+    Creates a new entry in the mongodb for the asset. 
     """
 
     def process_new_directories(self):
@@ -72,6 +74,9 @@ class JobDriver:
 
                         # Create jobs dictionary
                         jobs_json = self.jobby.create_jobs(pipeline_name)
+
+                        # Add new asset entry to mongoDB
+                        self.mongo.create_entry(subdirectory, pipeline_name)
 
                         if jobs_json is None:
                             shutil.move(subdirectory_path, error_dir)

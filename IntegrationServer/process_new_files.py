@@ -39,4 +39,4 @@ class ProcessNewFiles:
 
 
 if __name__ == '__main__':
-    n = ProcessNewFiles()
+    ProcessNewFiles()
