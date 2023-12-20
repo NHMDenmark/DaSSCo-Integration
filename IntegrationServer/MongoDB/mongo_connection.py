@@ -3,11 +3,14 @@ from IntegrationServer.utility import Utility
 from bson import ObjectId
 
 """
-Class for connecting to and interacting with a MongoDB. Should have full CRUD available. 
+Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
+We use this to keep track of jobs and their status for each asset. 
+Should have full CRUD available. 
 """
 
 
-# TODO ensure full crud functionalities have been done.
+# TODO decide on structure for how we store job data.
+# TODO ensure full crud functionalities have been added.
 # TODO integrate with old system for keeping track of jobs through _jobs.json
 
 class MongoConnection:
@@ -18,8 +21,6 @@ class MongoConnection:
         self.mongo_config_path = "./ConfigFiles/mongo_connection_config.json"
 
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
-
-        print(self.config_values)
 
         self.host = self.config_values.get("host")
         self.port = self.config_values.get("port")
