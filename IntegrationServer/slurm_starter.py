@@ -40,7 +40,7 @@ class SlurmStarter:
     Main loop for starting and controlling the flow of slurm jobs. Makes use of batch scripts within the slurm server,
     through a ssh connection to check status of and start new jobs. 
     Configurable settings for amount of jobs through slurm_config.json. This need to be setup correctly with the sbatch
-    scripts on the slurm server though. 
+    scripts on the slurm server. 
     """
 
     def loop(self):

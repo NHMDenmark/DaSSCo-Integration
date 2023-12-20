@@ -100,3 +100,8 @@ Overall connection structure for a mongodb instance. Port can be changed also bu
     "collection_name": "something_else"
   }
 ```
+## ndrive_path_config.json
+Path to the folder on the ndrive where we keep the pipeline folders.
+```bash
+  "ndrive_path": "N:/something/that/leads/to/the/path/with/the/pipelines"
+```

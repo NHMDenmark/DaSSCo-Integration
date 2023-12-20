@@ -15,7 +15,6 @@ class IntegrationServer(object):
     def __init__(self):
         self.util = utility.Utility()
         self.jobby = job_driver.JobDriver()
-        self.stat = status.TotalStatus()
         self.cons = connections.Connections()
 
         self.new_files_path = "./Files/NewFiles/"
@@ -32,7 +31,7 @@ def test():
     api = northtech_rest_api.APIUsage()
     smb = smb_connecter.SmbConnecter()
     mongo = mongo_connection.MongoConnection("test")
-    ndrive = ndrive_new_files.NdriveNewFilesFinder()
+    # ndrive = ndrive_new_files.NdriveNewFilesFinder()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
@@ -75,7 +74,8 @@ def test():
     # jobby.process_new_directories()
 
     # mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "shingle")
-    # print(mongo.get_entry("institution", "NHMD"))
+    mongo.create_entry("exa", "EXAMPLE")
+    print(mongo.get_entry("_id", "exa"))
 
 
 if __name__ == '__main__':
