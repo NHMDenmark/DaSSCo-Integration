@@ -4,6 +4,7 @@ import stat
 import time
 from IntegrationServer.utility import Utility
 
+
 """
 Class that creates a ssh connection. Includes function to make use of the connection. 
 Transfers files to and from the integration server through sftp. 
@@ -246,21 +247,39 @@ class SSHConnection:
 
     def sftp_check_files_are_transferred(self, local_path, remote_path):
         try:
+            # List files in the remote directory
             remote_files = self.sftp.listdir(remote_path)
+
+            # List files in the local directory
             local_files = os.listdir(local_path)
+
+            # Iterate over local files and check if they exist remotely and have the same checksum
+            for local_file in local_files:
+                local_file_path = os.path.join(local_path, local_file)
+
+                # Check if the file exists remotely
+                if local_file not in remote_files:
+                    print(f"Error: {local_file} not found in remote directory.")
+                    continue
+
+                # Calculate checksum for the local file
+                local_checksum = self.util.calculate_sha256_checksum(local_file_path)
+
+                # Calculate checksum for the remote file
+                remote_file_path = os.path.join(remote_path, local_file)
+                remote_checksum = self.util.calculate_sha256_checksum(remote_file_path)
+
+                # Compare checksums
+                if local_checksum != remote_checksum:
+                    print(f"Error: Checksums do not match for {local_file}.")
+                    self.ssh_command(f"rm -r {remote_path}")
+                    # TODO send local_path to error folder
+                else:
+                    print("good job")
         except Exception as e:
             print(f"Error: {e}")
-            return
-
-        remote_file_names = [os.path.basename(file) for file in remote_files]
-        local_file_names = [os.path.basename(local_file) for local_file in local_files]
-
-        # Check if local files exist on the remote server
-        for local_name in local_file_names:
-            if local_name not in remote_file_names:
-                print(f"File {local_name} was not successfully transferred.")
-                self.ssh_command(f"rm -r {remote_path}")
-                # TODO send local_path to error folder
+            self.ssh_command(f"rm -r {remote_path}")
+            # TODO send local_path to error folder
 
     def sftp_move(self, path_to_move_from, path_to_move_to):
         try:

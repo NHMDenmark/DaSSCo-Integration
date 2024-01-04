@@ -3,6 +3,7 @@ from datetime import datetime
 from pymongo import MongoClient
 from IntegrationServer.utility import Utility
 from bson import ObjectId
+from IntegrationServer.MongoDB import job_model
 
 """
 Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
@@ -11,7 +12,6 @@ Should have full CRUD available.
 """
 
 
-# TODO decide on structure for how we store job data.
 # TODO ensure full crud functionalities have been added.
 # TODO integrate with old system for keeping track of jobs through _jobs.json
 
@@ -21,7 +21,6 @@ class MongoConnection:
         self.util = Utility()
         self.name = name
         self.mongo_config_path = "./ConfigFiles/mongo_connection_config.json"
-        self.pipeline_job_config_path = "./ConfigFiles/pipeline_job_config.json"
 
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
@@ -46,28 +45,12 @@ class MongoConnection:
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         """
-        job_mapping = self.util.get_value(self.pipeline_job_config_path, pipeline)
+        model = job_model.JobModel(guid, pipeline)
+        entry_data = model.get_entry_data()
 
-        # Convert job_mapping to a list of dictionaries with additional fields
-        job_list = []
-        for job, label in job_mapping.items():
-            job_entry = {
-                "name": label,
-                "status": "WAITING",  # Set default status
-                "priority": (len(job_list)+1),  # Set priority
-                "timestamp": str(datetime.utcnow()),  # Default timestamp
-                "slurm_job_id": -1,  # Default job ID
-            }
-            job_list.append(job_entry)
-
-        entry_data = {
-            "_id": guid,
-            "pipeline": pipeline,
-            "job_list": job_list
-        }
-
-        # Insert the new document into the collection
-        self.collection.insert_one(entry_data)
+        if self.get_entry("_id", guid) is None:
+            # Insert the new document into the collection
+            self.collection.insert_one(entry_data)
 
     def update_entry(self, guid, key, value):
         """
@@ -77,8 +60,8 @@ class MongoConnection:
             :param key: The key (field) to be updated.
             :param value: The new value for the specified key.
         """
-        # TODO change away from ObjectId once switched to guid being actual id_
-        query = {"_id": ObjectId(guid)}
+
+        query = {"_id": guid}
         update_data = {"$set": {key: value}}
 
         self.collection.update_one(query, update_data)

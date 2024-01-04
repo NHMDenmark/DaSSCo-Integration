@@ -32,8 +32,8 @@ def test():
     api = northtech_rest_api.APIUsage()
     smb = smb_connecter.SmbConnecter()
     mongo = mongo_connection.MongoConnection("test")
-    ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    new_files = process_new_files.ProcessNewFiles()
+    # ndrive = ndrive_new_files.NdriveNewFilesFinder()
+    # new_files = process_new_files.ProcessNewFiles()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
@@ -77,8 +77,9 @@ def test():
 
     # mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "shingle")
     # mongo.create_entry("exa", "EXAMPLE")
-    print(mongo.get_entry("_id", "mexa"))
-    mongo.delete_entry("mexa")
+    # print(mongo.get_entry("_id", "exa"))
+    # mongo.delete_entry("exa")
+
 
 
 if __name__ == '__main__':

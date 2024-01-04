@@ -15,7 +15,12 @@ class JobDriver:
     def __init__(self):
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
-        self.mongo = mongo_connection.MongoConnection("test")  # TODO change to get db name from config files
+
+        self.mongo_config_path = "./ConfigFiles/mongo_connection_config.json"
+        self.mongo_config_data = self.util.read_json(self.mongo_config_path)
+        self.database_name = next(iter(self.mongo_config_data.keys()))
+        self.mongo = mongo_connection.MongoConnection(self.database_name)
+
     """
     Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
     Creates the batch folder and moves the assets into it based on the date the asset was taken.

@@ -1,9 +1,11 @@
 import json
 import os
+import hashlib
 
 """
 Class with helper methods that are used throughout the different processes.
-Mostly contains functions that has to do with reading/updating .json files. 
+Mostly contains functions that has to do with reading/updating .json files.
+Calculates checksums using sha256 hash. 
 """
 class Utility:
     def __init__(self):
@@ -91,3 +93,11 @@ class Utility:
         look for READY or INPIPELINE in _jobs change to ERROR
         Create folder structure /FilesError/"pipeline_name"/ move guid folder here
         """
+
+    def calculate_sha256_checksum(self, file_path):
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as file:
+            # Read and update hash string value in blocks of 4K
+            for byte_block in iter(lambda: file.read(4096), b""):
+                sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()

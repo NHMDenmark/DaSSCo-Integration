@@ -92,12 +92,6 @@ Overall connection structure for a mongodb instance. Port can be changed also bu
     "port": 27017,
     "data_base": "FirstTest",
     "collection": "CollectionTestName"
-  },
-  "production": {
-    "host": "my_ip/or/localhost/fex",
-    "port": 27017,
-    "data_base": "something",
-    "collection_name": "something_else"
   }
 ```
 ## ndrive_path_config.json
