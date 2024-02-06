@@ -4,10 +4,10 @@ __pycache__
 *.json
 *.tif
 *.jpg
-.idea/
+/.idea/
 !ConfigFiles/**/*.json
 Files/Error/**
 Files/NewFiles/**
 Files/InProcess/**
 Files/UpdatedFiles/**
-integration/
+/integration/
