@@ -1,9 +1,10 @@
 from datetime import datetime
 
 from pymongo import MongoClient
-from IntegrationServer.utility import Utility
 from bson import ObjectId
-from IntegrationServer.MongoDB import job_model
+from utility import Utility
+
+from MongoDB import job_model
 
 """
 Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
@@ -20,7 +21,7 @@ class MongoConnection:
     def __init__(self, name):
         self.util = Utility()
         self.name = name
-        self.mongo_config_path = "./ConfigFiles/mongo_connection_config.json"
+        self.mongo_config_path = "IntegrationServer\ConfigFiles\mongo_connection_config.json"
 
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
@@ -57,7 +58,7 @@ class MongoConnection:
             Update an existing entry in the MongoDB collection.
 
             :param guid: The unique identifier of the entry.
-            :param key: The key (field) to be updated.
+            :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
         """
 

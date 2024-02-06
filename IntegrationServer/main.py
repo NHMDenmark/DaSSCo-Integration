@@ -1,11 +1,11 @@
-from IntegrationServer.Connections import smb_connecter
-from IntegrationServer.Connections import connections
-from IntegrationServer import utility
-from IntegrationServer.JobList import job_driver
-from IntegrationServer.Connections import northtech_rest_api
-from IntegrationServer.MongoDB import mongo_connection
-from IntegrationServer import ndrive_new_files
-from IntegrationServer import process_new_files
+# from IntegrationServer.Connections import smb_connecter
+# from IntegrationServer.Connections import connections
+import utility
+# from IntegrationServer.JobList import job_driver
+# from IntegrationServer.Connections import northtech_rest_api
+from MongoDB import mongo_connection
+# from IntegrationServer import ndrive_new_files
+# from IntegrationServer import process_new_files
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -15,8 +15,8 @@ Test area for the different processes. May contain deprecated information.
 class IntegrationServer(object):
     def __init__(self):
         self.util = utility.Utility()
-        self.jobby = job_driver.JobDriver()
-        self.cons = connections.Connections()
+        # self.jobby = job_driver.JobDriver()
+        # self.cons = connections.Connections()
 
         self.new_files_path = "./Files/NewFiles/"
         self.updated_files_path = "./Files/UpdatedFiles/"
@@ -27,10 +27,10 @@ class IntegrationServer(object):
 
 def test():
     util = utility.Utility()
-    jobby = job_driver.JobDriver()
-    cons = connections.Connections()
-    api = northtech_rest_api.APIUsage()
-    smb = smb_connecter.SmbConnecter()
+    # jobby = job_driver.JobDriver()
+    # cons = connections.Connections()
+    # api = northtech_rest_api.APIUsage()
+    # smb = smb_connecter.SmbConnecter()
     mongo = mongo_connection.MongoConnection("test")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_new_files.ProcessNewFiles()
@@ -75,7 +75,7 @@ def test():
     #  smb.test_run()
     # jobby.process_new_directories()
 
-    # mongo.update_entry("65786da6cc9fccb118e6a2e1", "funding", "shingle")
+    mongo.update_entry("exa", "funding", "shingle")
     # mongo.create_entry("exa", "EXAMPLE")
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")

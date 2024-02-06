@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from IntegrationServer import utility
+import utility
 
 
 class JobModel:
@@ -10,7 +10,7 @@ class JobModel:
 
         self._id = guid
         self.pipeline = pipeline
-        self.pipeline_job_config_path = "./ConfigFiles/pipeline_job_config.json"
+        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
         self.job_list = self.create_joblist()
 
     def create_joblist(self):
