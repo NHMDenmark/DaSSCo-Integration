@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 from utility import Utility
 
-from MongoDB import job_model
+from MongoDB import entry_model
 
 """
 Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
@@ -39,19 +39,30 @@ class MongoConnection:
         # Access a specific collection within the database (create it if it doesn't exist)
         self.collection = self.mdb[self.collection_name]
 
-    def create_entry(self, guid, pipeline):
+    def create_track_entry(self, guid, pipeline):
         """
         Create a new entry in the MongoDB collection.
 
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         """
-        model = job_model.JobModel(guid, pipeline)
+        model = entry_model.EntryModel(guid, pipeline)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
             self.collection.insert_one(entry_data)
+    
+    def create_metadata_entry(self, json_path, guid):
+        """
+        Create a new metadata entry in the MongoDB collection.
+        :param json_path: The path to the metadata file.
+        :param guid: The unique identifier of the entry.
+        """        
+        data = self.util.read_json(json_path)        
+
+        self.collection.insert_one({"_id": guid, **data})
+
 
     def update_entry(self, guid, key, value):
         """

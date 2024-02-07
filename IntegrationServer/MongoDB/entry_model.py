@@ -3,7 +3,7 @@ from datetime import datetime
 import utility
 
 
-class JobModel:
+class EntryModel:
 
     def __init__(self, guid, pipeline):
         self.util = utility.Utility()

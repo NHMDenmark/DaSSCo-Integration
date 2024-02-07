@@ -32,6 +32,7 @@ def test():
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
     mongo = mongo_connection.MongoConnection("test")
+    meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_new_files.ProcessNewFiles()
 
@@ -75,11 +76,13 @@ def test():
     #  smb.test_run()
     # jobby.process_new_directories()
 
-    mongo.update_entry("exa", "funding", "shingle")
-    # mongo.create_entry("exa", "EXAMPLE")
+    # mongo.update_entry("exa", "funding", "bringle")
+    # mongo.create_track_entry("exa", "EXAMPLE")
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")
 
+    # meta_mongo.create_metadata_entry("IntegrationServer/Files/NewFiles/metadata.json", "ast123")
+    print(meta_mongo.get_entry("_id", "ast123"))
 
 
 if __name__ == '__main__':
