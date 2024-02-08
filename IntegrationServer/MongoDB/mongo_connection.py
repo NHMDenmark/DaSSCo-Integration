@@ -21,7 +21,7 @@ class MongoConnection:
     def __init__(self, name):
         self.util = Utility()
         self.name = name
-        self.mongo_config_path = "IntegrationServer\ConfigFiles\mongo_connection_config.json"
+        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
 
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
