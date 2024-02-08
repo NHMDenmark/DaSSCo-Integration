@@ -8,5 +8,8 @@
  "PIPEHERB0001": {
    "job_1": "label",
    "job_2": "ocr"
+ },
+ "WORKHERB0001": {
+  "job_1": "label"
  }
 }

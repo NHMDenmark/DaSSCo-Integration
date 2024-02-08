@@ -4,8 +4,8 @@ import utility
 # from IntegrationServer.JobList import job_driver
 # from IntegrationServer.Connections import northtech_rest_api
 from MongoDB import mongo_connection
-# from IntegrationServer import ndrive_new_files
-# from IntegrationServer import process_new_files
+import ndrive_new_files
+import process_files_from_ndrive
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -18,9 +18,9 @@ class IntegrationServer(object):
         # self.jobby = job_driver.JobDriver()
         # self.cons = connections.Connections()
 
-        self.new_files_path = "./Files/NewFiles/"
-        self.updated_files_path = "./Files/UpdatedFiles/"
-        self.ssh_config_path = "ConfigFiles/ssh_connections_config.json"
+        self.new_files_path = "IntegrationServer/Files/NewFiles/"
+        self.updated_files_path = "IntegrationServer/Files/UpdatedFiles/"
+        self.ssh_config_path = "IntegrationServer/ConfigFiles/ssh_connections_config.json"
 
         self.cons.create_ssh_connections(self.ssh_config_path)
 
@@ -31,10 +31,10 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    mongo = mongo_connection.MongoConnection("test")
-    meta_mongo = mongo_connection.MongoConnection("metadata")
+    # mongo = mongo_connection.MongoConnection("test")
+    # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    # new_files = process_new_files.ProcessNewFiles()
+    # new_files = process_files_from_ndrive.ProcessNewFiles()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     """
@@ -81,9 +81,11 @@ def test():
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")
 
-    # meta_mongo.create_metadata_entry("IntegrationServer/Files/NewFiles/metadata.json", "ast123")
-    print(meta_mongo.get_entry("_id", "ast123"))
+    # relPath = "IntegrationServer/Files/NewFiles/7e8-1-08-08-2c-12-0-000-00-000-0be5f3-00000.json"
+    # meta_mongo.create_metadata_entry(relPath, util.get_value(relPath, "asset_guid"))
+    # print(meta_mongo.get_entry("_id", util.get_value(relPath, "asset_guid")))
 
+    # print(util.calculate_sha256_checksum("IntegrationServer/Files/InProcess/PIPEHERB0001/2024-01-08/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000.tif"))
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/

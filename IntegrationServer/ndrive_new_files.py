@@ -1,7 +1,7 @@
 import os
 import shutil
 import time
-from IntegrationServer import utility
+import utility
 
 """
 Class responsible for initiating the process of importing new files from the ndrive. 
@@ -15,9 +15,9 @@ class NdriveNewFilesFinder:
 
         self.util = utility.Utility()
 
-        self.new_files_path = "./Files/NewFiles/"
-        self.ndrive_import_path = self.util.get_value("./ConfigFiles/ndrive_path_config.json", "ndrive_path")
-        self.ndrive_import_path = "N:/dassco"  # TODO remove this. Its a test from a local machine
+        self.new_files_path = "IntegrationServer/Files/NewFiles"
+        self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
+        # self.ndrive_import_path = "n:/SCI-SNM-DigitalCollections/DaSSCo\MASTER_IMAGE_STORE/Main_image_store/test_environment"  # TODO remove this. Its a test from a local machine
         self.run = True
         self.count = 0
 
@@ -33,7 +33,8 @@ class NdriveNewFilesFinder:
 
             self.count += 1
 
-            if self.count > 3:
+            if self.count > 2:
+                # print("done", self.ndrive_import_path)
                 self.run = False
 
     def copy_from_ndrive_and_update_ndrive_dirs(self, ndrive_path, local_destination):
@@ -59,7 +60,7 @@ class NdriveNewFilesFinder:
                 for base_name, file_list in file_groups.items():
 
                     # Check if a directory with the same base_name already exists in the Error directory
-                    error_directory_path = os.path.join("./Files/Error", base_name)
+                    error_directory_path = os.path.join("IntegrationServer/Files/Error", base_name)
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
                         print(f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
                     else:
@@ -117,7 +118,7 @@ class NdriveNewFilesFinder:
 
     def get_batch_directory_path(self, remote_folder):
         # Read pipeline configuration data from JSON file
-        pipeline_job_config_data = self.util.read_json("./ConfigFiles/pipeline_job_config.json")
+        pipeline_job_config_data = self.util.read_json("IntegrationServer/ConfigFiles/pipeline_job_config.json")
 
         # Get a list of keys from the pipeline configuration data
         pipeline_list = list(pipeline_job_config_data.keys())

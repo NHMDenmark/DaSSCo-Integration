@@ -5,7 +5,7 @@ import time
 Class responsible for initiating the process of importing new files. 
 Runs a loop that checks a remote location for previously not imported files.
 """
-
+# class is likely obsolete given the development in how we want to move files around. 
 
 class NewFilesFinder:
 

@@ -1,8 +1,8 @@
 import os
 import shutil
-from IntegrationServer import utility
-from IntegrationServer.JobList import job_assigner
-from IntegrationServer.MongoDB import mongo_connection
+import utility
+from JobList import job_assigner
+from MongoDB import mongo_connection
 import json
 
 """
@@ -16,10 +16,11 @@ class JobDriver:
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
 
-        self.mongo_config_path = "./ConfigFiles/mongo_connection_config.json"
-        self.mongo_config_data = self.util.read_json(self.mongo_config_path)
-        self.database_name = next(iter(self.mongo_config_data.keys()))
-        self.mongo = mongo_connection.MongoConnection(self.database_name)
+        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
+        # self.database_name = next(iter(self.mongo_config_data.keys()))
+        self.mongo_track = mongo_connection.MongoConnection("track")
+        self.mongo_metadata = mongo_connection.MongoConnection("metadata")
 
     """
     Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
@@ -28,11 +29,11 @@ class JobDriver:
     Creates a new entry in the mongodb for the asset. 
     """
 
-    def process_new_directories(self):
+    def process_new_directories_from_ndrive(self):
 
-        input_dir = "./Files/NewFiles"
-        in_process_dir = "./Files/InProcess"
-        error_path = "./Files/Error"
+        input_dir = "IntegrationServer/Files/NewFiles"
+        in_process_dir = "IntegrationServer/Files/InProcess"
+        error_path = "IntegrationServer/Files/Error"
 
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):
@@ -57,18 +58,21 @@ class JobDriver:
                     json_files = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}.json"]
                     error_dir = os.path.join(error_path, subdirectory)
 
-                    # if no json files are present move files to error dir
-                    if len(json_files) == 0:
+                    # if no json files are present or more than 1 file is, move files to error dir
+                    if len(json_files) == 0 or len(json_files) > 1:
                         shutil.move(subdirectory_path, error_dir)
+                        print("No json or too many jsons")
                         continue
 
                     if json_files:
                         json_file_name = json_files[0]
                         json_file_path = os.path.join(subdirectory_path, json_file_name)
 
-                        # Read the JSON file to get the 'pipeline_name' and batch name based on date values
+                        # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
                         pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
-                        date_value = self.util.get_value(json_file_path, "asset_taken_date")
+                        guid = self.util.get_value(json_file_path, "asset_guid")
+                        image_extension = "." + self.util.get_value(json_file_path, "file_format")
+                        date_value = self.util.get_value(json_file_path, "date_asset_taken")
                         batch_name = ""
 
                         if date_value is not None:
@@ -80,8 +84,17 @@ class JobDriver:
                         # Create jobs dictionary
                         jobs_json = self.jobby.create_jobs(pipeline_name)
 
-                        # Add new asset entry to mongoDB
-                        self.mongo.create_entry(subdirectory, pipeline_name)
+                        # Add new track entry to mongoDB
+                        self.mongo_track.create_track_entry(subdirectory, pipeline_name)
+
+                        # Add image file checksum to track entry
+                        img_file_name = json_file_name.replace('.json', image_extension)
+                        img_file_path = os.path.join(subdirectory_path, img_file_name)
+                        check_sum = self.util.calculate_sha256_checksum(img_file_path)
+                        self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
+
+                        # Add new metadata entry to mongoDB
+                        self.mongo_metadata.create_metadata_entry(json_file_path, guid)
 
                         if jobs_json is None:
                             shutil.move(subdirectory_path, error_dir)

@@ -1,4 +1,4 @@
-from IntegrationServer.utility import Utility
+from utility import Utility
 
 """ 
 Creates a _jobs.json file and assigns jobs based on pipeline for new files. 
@@ -8,7 +8,7 @@ Creates a _jobs.json file and assigns jobs based on pipeline for new files.
 class JobAssigner:
     def __init__(self):
         self.util = Utility()
-        self.pipeline_job_config_path = "../IntegrationServer/ConfigFiles/pipeline_job_config.json"
+        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
     def create_jobs(self, pipeline_name):
         try:

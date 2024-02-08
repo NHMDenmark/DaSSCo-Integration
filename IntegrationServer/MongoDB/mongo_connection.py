@@ -41,7 +41,7 @@ class MongoConnection:
 
     def create_track_entry(self, guid, pipeline):
         """
-        Create a new entry in the MongoDB collection.
+        Create a new track entry in the MongoDB collection.
 
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
@@ -61,7 +61,9 @@ class MongoConnection:
         """        
         data = self.util.read_json(json_path)        
 
-        self.collection.insert_one({"_id": guid, **data})
+        if self.get_entry("_id", guid) is None:
+
+            self.collection.insert_one({"_id": guid, **data})
 
 
     def update_entry(self, guid, key, value):
