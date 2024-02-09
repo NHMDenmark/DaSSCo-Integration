@@ -1,6 +1,7 @@
 import sys
 import os
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import shutil
@@ -124,7 +125,7 @@ class JobDriver:
     Takes processed metadata files from slurm and updates job status for those files. 
     Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
     """
-
+    
     def process_updated_directories(self):
 
         input_dir = "./Files/UpdatedFiles"

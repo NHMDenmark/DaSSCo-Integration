@@ -1,4 +1,10 @@
-from utility import Utility
+import sys
+import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
+import utility
 
 """ 
 Creates a _jobs.json file and assigns jobs based on pipeline for new files. 
@@ -7,7 +13,7 @@ Creates a _jobs.json file and assigns jobs based on pipeline for new files.
 
 class JobAssigner:
     def __init__(self):
-        self.util = Utility()
+        self.util = utility.Utility()
         self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
     def create_jobs(self, pipeline_name):
