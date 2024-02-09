@@ -48,7 +48,7 @@ def test():
 
     # mongo.update_entry("exa", "funding", "bringle")
     # mongo.create_track_entry("exa", "EXAMPLE")
-    mongo.update_track_job_status("7e8-1-08-08-29-07-0-000-00-000-03158e-00000", "label", "DONE")
+    mongo.update_track_job_status("7e8-1-08-08-29-07-0-000-00-000-03158e-00000", "label", "FULLPATH")
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")
 

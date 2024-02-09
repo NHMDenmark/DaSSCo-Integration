@@ -28,7 +28,7 @@ class SlurmService():
 
     def update_mongo_track(self, guid, job, status):
         
-        self.mongo_track.update_entry(guid, job, status)
+        self.mongo_track.update_track_job_status(guid, job, status)
 
     def update_jobs_json(self, guid, job, status):
         pass

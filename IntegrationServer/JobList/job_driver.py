@@ -8,6 +8,7 @@ import shutil
 import utility
 from JobList import job_assigner
 from MongoDB import mongo_connection
+from Enums import status_enum
 import json
 
 """
@@ -20,6 +21,7 @@ class JobDriver:
     def __init__(self):
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
+        self.status = status_enum.StatusEnum
 
         self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
@@ -125,7 +127,7 @@ class JobDriver:
     Takes processed metadata files from slurm and updates job status for those files. 
     Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
     """
-    
+
     def process_updated_directories(self):
 
         input_dir = "./Files/UpdatedFiles"
@@ -164,11 +166,11 @@ class JobDriver:
             process_jobs = self.util.read_json(process_jobs_path)
             updated_jobs = self.util.read_json(jobs_path)
 
-            job_key_to_update = self.util.find_keys_with_value(process_jobs, "INPIPELINE")
-            updated_job_keys = self.util.find_keys_with_value(updated_jobs, "INPIPELINE")
+            job_key_to_update = self.util.find_keys_with_value(process_jobs, self.status.INPIPELINE)
+            updated_job_keys = self.util.find_keys_with_value(updated_jobs, self.status.INPIPELINE)
 
             if job_key_to_update == updated_job_keys:
-                self.util.update_json(process_jobs_path, updated_job_keys, "DONE")
+                self.util.update_json(process_jobs_path, updated_job_keys, self.status.DONE)
             else:
                 # TODO move to error folder
                 continue

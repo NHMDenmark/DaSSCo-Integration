@@ -1,5 +1,10 @@
-import json
+import sys
 import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
+import json
 import hashlib
 
 """

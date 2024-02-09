@@ -1,8 +1,14 @@
+import sys
+import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
 from datetime import datetime
 
 from pymongo import MongoClient
 from bson import ObjectId
-from utility import Utility
+import utility
 
 from MongoDB import entry_model
 
@@ -19,9 +25,11 @@ Should have full CRUD available.
 class MongoConnection:
 
     def __init__(self, name):
-        self.util = Utility()
+        self.util = utility.Utility()
         self.name = name
-        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        # self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        # Needs to use absolute path here for api to work
+        self.mongo_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
 
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 

@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import utility
+from Enums import status_enum
 
 """ 
 Creates a _jobs.json file and assigns jobs based on pipeline for new files. 
@@ -14,6 +15,7 @@ Creates a _jobs.json file and assigns jobs based on pipeline for new files.
 class JobAssigner:
     def __init__(self):
         self.util = utility.Utility()
+        self.status = status_enum.StatusEnum
         self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
     def create_jobs(self, pipeline_name):
@@ -24,7 +26,7 @@ class JobAssigner:
 
             for key in config:
                 job_name = config.get(key)
-                jobs_dict[job_name] = "WAITING"
+                jobs_dict[job_name] = self.status.WAITING
 
                 order = key[4:]
                 jobs_dict[order] = job_name

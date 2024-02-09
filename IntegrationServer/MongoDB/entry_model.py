@@ -1,12 +1,13 @@
 from datetime import datetime
 
 import utility
-
+from Enums import status_enum
 
 class EntryModel:
 
     def __init__(self, guid, pipeline):
         self.util = utility.Utility()
+        self.status = status_enum.StatusEnum
 
         self._id = guid
         self.pipeline = pipeline
@@ -21,7 +22,7 @@ class EntryModel:
         for job, label in job_mapping.items():
             job_entry = {
                 "name": label,
-                "status": "WAITING",  # Set default status
+                "status": self.status.WAITING,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
                 "timestamp": str(datetime.utcnow()),  # Default timestamp
                 "slurm_job_id": -1,  # Default job ID
