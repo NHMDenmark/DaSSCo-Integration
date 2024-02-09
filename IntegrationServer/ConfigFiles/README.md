@@ -12,7 +12,7 @@ Jobs are then added in the order we want them done to each pipeline in the pipel
   "time_est": "01:00:00",
   "script": "path/to/script"
   },
-  "test": {
+  "test":{
   "time_est": "00:00:05",
   "script": "/work/dassco_23_request/lars/test_job.sh"
   },
@@ -27,13 +27,13 @@ List of pipeline names with their associated jobs in order. Each job should be f
 The idea is to setup a list of processes(jobs) that fits everything that comes out of a specific digitisation pipeline.
 ```bash
 {
-   "EXAMPLE": {
+   "EXAMPLE":{
    "job_1": "test",
    "job_2": "ocr",
    "job_3": "label",
    "job_4": "spoof"
  },
- "PIPEHERB0001": {
+ "PIPEHERB0001":{
    "job_1": "label",
    "job_2": "ocr"
  }

@@ -79,6 +79,16 @@ class MongoConnection:
         update_data = {"$set": {key: value}}
 
         self.collection.update_one(query, update_data)
+    
+    def update_track_job_status(self, guid, job, status):
+        """
+            Update an existing track_entry with a new status for a job in the MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param job: The job name to be updated.
+            :param status: The new status for the specified job.
+        """
+        self.collection.update_one({"_id": guid, "job_list.name": job}, {"$set": {"job_list.$.status": status}})
 
     def get_entry(self, key, value):
         """
