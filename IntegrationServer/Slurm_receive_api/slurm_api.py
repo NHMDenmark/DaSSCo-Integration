@@ -12,6 +12,7 @@ import json
 import utility
 from metadata_model import MetadataAsset
 from Slurm_receive_api import slurm_service
+from Slurm_receive_api import update_model
 
 """
 Rest api setup for receiving data from the slurm. 
@@ -21,6 +22,7 @@ app = FastAPI()
 util = utility.Utility()
 service = slurm_service.SlurmService()
 metadata_model = MetadataAsset
+update_model = update_model.UpdateAssetModel
 
 @app.get("/")
 def index():
@@ -44,8 +46,8 @@ async def receive_metadata(metadata: metadata_model):
     util.write_full_json(f"IntegrationServer/Files/NewFiles/Derivatives/{metadata.asset_guid}.json", metadata_json)
 
 @app.post("/api/v1/update_asset")
-async def update_asset(guid: str, job: str, status: str, data: Dict):
-    service.update_from_slurm(guid, job, status, data)
+async def update_asset(update_data: update_model):
+    service.update_from_slurm(update_data)
 
 
 @app.post("/api/v1/jobs")

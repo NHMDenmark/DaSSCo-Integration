@@ -110,6 +110,22 @@ class MongoConnection:
         entry = self.collection.find_one(query)
         return entry
 
+    def get_value_for_key(self, id_value, key):
+        """
+            Retrieve a single value from the MongoDB collection based on an _id and a key.
+
+            :param id_value: The _id value.
+            :param key: The key for which to retrieve the value.
+            :return: The value corresponding to the specified key.
+            """
+        query = {"_id": id_value}
+        entry = self.collection.find_one(query)
+
+        if entry and key in entry:
+            return entry[key]
+        else:
+            return None
+
     def delete_entry(self, guid):
         """
                 Delete an entry from the MongoDB collection based on its unique identifier.
