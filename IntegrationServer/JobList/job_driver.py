@@ -28,10 +28,11 @@ class JobDriver:
         # self.database_name = next(iter(self.mongo_config_data.keys()))
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
+        self.mongo_batchlist = mongo_connection.MongoConnection("batch")
 
     """
     Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
-    Creates the batch folder and moves the assets into it based on the date the asset was taken.
+    Creates the pipeline folder and moves the assets into it based on the date the asset was taken.
     If something goes wrong moves the asset to the error folder.
     Creates a new entry in the mongodb for the asset. 
     """
@@ -100,6 +101,14 @@ class JobDriver:
                         check_sum = self.util.calculate_sha256_checksum(img_file_path)
                         self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
 
+                        # Add batchlist name to the track entry
+                        workstation_name = self.util.get_value(json_file_path, "workstation_name")
+                        batchlist_name = workstation_name + "_" + batch_name
+                        self.mongo_track.update_entry(guid, "batch_list_name", batchlist_name)
+
+                        # Add asset to batch list in mongodb
+                        self.mongo_batchlist.add_entry_to_batch_list(guid, batchlist_name)
+
                         # Add new metadata entry to mongoDB
                         self.mongo_metadata.create_metadata_entry(json_file_path, guid)
 
@@ -166,11 +175,11 @@ class JobDriver:
             process_jobs = self.util.read_json(process_jobs_path)
             updated_jobs = self.util.read_json(jobs_path)
 
-            job_key_to_update = self.util.find_keys_with_value(process_jobs, self.status.INPIPELINE)
-            updated_job_keys = self.util.find_keys_with_value(updated_jobs, self.status.INPIPELINE)
+            job_key_to_update = self.util.find_keys_with_value(process_jobs, self.status.INPIPELINE.value)
+            updated_job_keys = self.util.find_keys_with_value(updated_jobs, self.status.INPIPELINE.value)
 
             if job_key_to_update == updated_job_keys:
-                self.util.update_json(process_jobs_path, updated_job_keys, self.status.DONE)
+                self.util.update_json(process_jobs_path, updated_job_keys, self.status.DONE.value)
             else:
                 # TODO move to error folder
                 continue

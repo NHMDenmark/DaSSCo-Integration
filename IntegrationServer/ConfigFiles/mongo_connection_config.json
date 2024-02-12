@@ -1,10 +1,4 @@
 {
-  "test": {
-    "host": "localhost",
-    "port": 27017,
-    "data_base": "FirstTest",
-    "collection_name": "CollectionTestName"
-  },
   "metadata": {
     "host": "localhost",
     "port": 27017,
@@ -16,5 +10,11 @@
     "port": 27017,
     "data_base": "FirstTest",
     "collection_name": "track"
+  },
+  "batch": {
+    "host": "localhost",
+    "port": 27017,
+    "data_base": "FirstTest",
+    "collection_name": "batch_list"
   }
 }

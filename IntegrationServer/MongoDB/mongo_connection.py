@@ -134,3 +134,13 @@ class MongoConnection:
                 """
         query = {"_id": guid}
         self.collection.delete_one(query)
+    
+    def add_entry_to_batch_list(self, guid, batch_list_name):
+        entry = self.get_entry("_id", batch_list_name)
+
+        if entry is None:
+            # If the batch list doesn't exist, create a new entry with a list containing the guid
+            self.collection.insert_one({"_id": batch_list_name, "guids": [guid]})
+        else:
+            # If the batch list already exists, append the guid to the existing list
+            self.collection.update_one({"_id": batch_list_name}, {"$push": {"guids": guid}})

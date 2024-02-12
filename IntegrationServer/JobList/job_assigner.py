@@ -26,7 +26,7 @@ class JobAssigner:
 
             for key in config:
                 job_name = config.get(key)
-                jobs_dict[job_name] = self.status.WAITING
+                jobs_dict[job_name] = self.status.WAITING.value
 
                 order = key[4:]
                 jobs_dict[order] = job_name

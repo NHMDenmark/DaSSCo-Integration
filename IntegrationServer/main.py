@@ -31,10 +31,10 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    mongo = mongo_connection.MongoConnection("track")
+    # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    # new_files = process_files_from_ndrive.ProcessNewFiles()
+    new_files = process_files_from_ndrive.ProcessNewFiles()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
@@ -48,7 +48,7 @@ def test():
 
     # mongo.update_entry("exa", "funding", "bringle")
     # mongo.create_track_entry("exa", "EXAMPLE")
-    mongo.update_track_job_status("7e8-1-08-08-29-07-0-000-00-000-03158e-00000", "label", "FULLPATH")
+    # mongo.update_track_job_status("7e8-1-08-08-29-07-0-000-00-000-03158e-00000", "label", "FULLPATH")
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")
 
