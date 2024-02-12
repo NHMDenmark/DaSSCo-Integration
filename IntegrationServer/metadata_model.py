@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional, List
 
 """
 Model class for the metadata file as it is when its received from the digitisation process. 
 """
+# TODO replaced datetime with str due to the way our jsons currently look. Have to decide if we will use None instead of "" when we dont have a timestamp yet.
 class MetadataAsset(BaseModel):
     asset_created_by: Optional[str]
     asset_deleted_by: Optional[str]
@@ -12,21 +13,21 @@ class MetadataAsset(BaseModel):
     asset_locked: Optional[bool]
     asset_pid: Optional[str]
     asset_subject: Optional[str]
-    date_asset_taken: Optional[datetime]
+    date_asset_taken: Optional[str]
     asset_updated_by: Optional[str]
     metadata_uploaded_by: Optional[str]
-    date_metadata_uploaded: Optional[datetime]
-    date_asset_finalised: Optional[datetime]
+    date_metadata_uploaded: Optional[str] 
+    date_asset_finalised: Optional[str]
     audited: Optional[bool]
     audited_by: Optional[str]
-    audited_date: Optional[datetime]
+    audited_date: Optional[str]
     barcode: Optional[str]
     collection: Optional[str]
-    date_asset_created: Optional[datetime]
-    date_asset_deleted: Optional[datetime]
-    date_asset_updated: Optional[List[datetime]]
-    date_metadata_created: Optional[datetime]
-    date_metadata_updated: Optional[List[datetime]]
+    date_asset_created: Optional[str]
+    date_asset_deleted: Optional[str]
+    date_asset_updated: Optional[List[str]]
+    date_metadata_created: Optional[str]
+    date_metadata_updated: Optional[List[str]]
     digitiser: Optional[str]
     external_publisher: Optional[List[str]]
     file_format: Optional[str]
@@ -39,7 +40,7 @@ class MetadataAsset(BaseModel):
     payload_type: Optional[List[str]]
     pipeline_name: Optional[str]
     preparation_type: Optional[str]
-    pushed_to_specify_date: Optional[datetime]
+    pushed_to_specify_date: Optional[str]
     restricted_access: Optional[bool]
     specimen_pid: Optional[str]
     status: Optional[str]

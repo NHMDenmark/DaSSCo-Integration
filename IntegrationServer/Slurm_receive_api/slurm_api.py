@@ -28,28 +28,13 @@ update_model = update_model.UpdateAssetModel
 def index():
     return "keep out"
 
-"""
-class Check(BaseModel):
-    id: str
-    text: str
-    optio: Optional[str]
-
-@app.post("/api/v1/check")
-async def receive_check(check: Check):
-    check_json = check.__dict__
-    util.write_full_json(f"../Files/UpdatedFiles/{check.id}.json", check_json)
-"""
-
 @app.post("/api/v1/metadata_asset")
 async def receive_metadata(metadata: metadata_model):
-    metadata_json = metadata.__dict__
-    util.write_full_json(f"IntegrationServer/Files/NewFiles/Derivatives/{metadata.asset_guid}.json", metadata_json)
+    service.persist_new_metadata(metadata)
 
+# TODO send success message back to slurm?
 @app.post("/api/v1/update_asset")
 async def update_asset(update_data: update_model):
     service.update_from_slurm(update_data)
 
 
-@app.post("/api/v1/jobs")
-async def receive_jobs(check: None):
-    pass  # TODO make job model, decide on status list, connect with mongo db.

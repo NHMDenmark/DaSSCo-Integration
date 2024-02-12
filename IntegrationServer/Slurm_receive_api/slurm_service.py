@@ -16,7 +16,12 @@ class SlurmService():
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
 
+    def persist_new_metadata(self, new_metadata):
+        metadata_json = new_metadata.__dict__
+        self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
+
     # calls other functions to update specific files and mongoDB
+    # TODO send success message back to slurm?
     def update_from_slurm(self, update_data):
         # Extract data from the input
         guid = update_data.guid
