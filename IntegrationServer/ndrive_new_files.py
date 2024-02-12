@@ -17,7 +17,7 @@ class NdriveNewFilesFinder:
 
         self.new_files_path = "IntegrationServer/Files/NewFiles"
         self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
-        # self.ndrive_import_path = "n:/SCI-SNM-DigitalCollections/DaSSCo\MASTER_IMAGE_STORE/Main_image_store/test_environment"  # TODO remove this. Its a test from a local machine
+        
         self.run = True
         self.count = 0
 

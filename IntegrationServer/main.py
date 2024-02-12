@@ -1,11 +1,13 @@
 # from IntegrationServer.Connections import smb_connecter
 # from IntegrationServer.Connections import connections
+import os
 import utility
 # from IntegrationServer.JobList import job_driver
 # from IntegrationServer.Connections import northtech_rest_api
 from MongoDB import mongo_connection
 import ndrive_new_files
 import process_files_from_ndrive
+
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -34,7 +36,7 @@ def test():
     # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    new_files = process_files_from_ndrive.ProcessNewFiles()
+    # new_files = process_files_from_ndrive.ProcessNewFiles()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
@@ -63,4 +65,6 @@ def test():
 if __name__ == '__main__':
     # git rm -r --cached .idea/
     # i = IntegrationServer()
+    a = os.environ.get("TESTY")
+    print(a)
     test()

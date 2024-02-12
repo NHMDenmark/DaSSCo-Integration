@@ -1,0 +1,10 @@
+import os
+from dasscostorageclient import DaSSCoStorageClient
+
+class Storage_client():
+     def __init__(self):
+          
+          client_id = "a"
+          client_secret = "b"
+
+          self.client = DaSSCoStorageClient(client_id, client_secret)
