@@ -16,7 +16,7 @@ class MetadataAsset(BaseModel):
     date_asset_taken: Optional[str]
     asset_updated_by: Optional[str]
     metadata_uploaded_by: Optional[str]
-    date_metadata_uploaded: Optional[str] 
+    date_metadata_uploaded: Optional[str]
     date_asset_finalised: Optional[str]
     audited: Optional[bool]
     audited_by: Optional[str]

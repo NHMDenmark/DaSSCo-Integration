@@ -8,11 +8,10 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Any, Optional, List, Dict
-import json
 import utility
 from metadata_model import MetadataAsset
-from Slurm_receive_api import slurm_service
-from Slurm_receive_api import update_model
+from SlurmApi import slurm_service
+from SlurmApi.update_model import UpdateAssetModel
 
 """
 Rest api setup for receiving data from the slurm. 
@@ -22,7 +21,7 @@ app = FastAPI()
 util = utility.Utility()
 service = slurm_service.SlurmService()
 metadata_model = MetadataAsset
-update_model = update_model.UpdateAssetModel
+update_model = UpdateAssetModel
 
 @app.get("/")
 def index():
