@@ -71,14 +71,11 @@ is_slurm refers to whether the connection connects to the slurm cluster that run
 Directory paths defines where files end up or are coming from. 
 ```bash
     "ucloud": {
-      "export_directory_path": "/home/ldam/from_integration",
       "host": "hpc-type3.sdu.dk",
       "is_slurm": "true",
-      "new_import_directory_path": "",
       "password": "put/in/environment/variable",
       "port": "22",
       "status": "closed",
-      "updated_import_directory_path": "/home/ldam/updated_data",
       "username": "put/in/environment/variable"
       }
 ```
