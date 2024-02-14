@@ -1,8 +1,12 @@
-import paramiko
+import sys
 import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
+import paramiko
 import stat
-import time
-from IntegrationServer.utility import Utility
+from utility import Utility
 
 
 """
@@ -20,7 +24,7 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
-        self.config_path = f"./ConfigFiles/{self.name}_connection_config.json"
+        self.config_path = f"IntegrationServer/ConfigFiles/{self.name}_connection_config.json"
         self.status = ""
         self.is_slurm = ""
         self.new_import_directory_path = ""
@@ -66,10 +70,18 @@ class SSHConnection:
     """
 
     def sftp_copy_file(self, path_to_copy_from, path_to_copy_to):
+
+        try:
+            dir_path = os.path.dirname(path_to_copy_to)
+            self.sftp.mkdir(dir_path)
+        except Exception as e:
+            print(e)
         try:
             self.sftp.put(path_to_copy_from, path_to_copy_to)
+            return True
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(path_to_copy_from, path_to_copy_to)
+            return e
 
     """
     Iterates through each directory matching with a pipeline name found in the config files.

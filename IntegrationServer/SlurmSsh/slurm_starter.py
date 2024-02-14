@@ -1,8 +1,11 @@
-import glob
+import sys
 import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
 
-from IntegrationServer.Connections import connections
-from IntegrationServer import utility
+from Connections import connections
+import utility
 import time
 
 """
@@ -15,16 +18,16 @@ class SlurmStarter:
 
     def __init__(self):
 
-        self.ssh_config_path = "ConfigFiles/ucloud_connection_config.json"
-        self.slurm_config_path = "ConfigFiles/slurm_config.json"
-        self.job_details_config_path = "ConfigFiles/job_detail_config.json"
-        self.pipeline_job_path = "ConfigFiles/pipeline_job_config.json"
-        self.work_server_directory_path = "/work/dassco_23_request/lars"
+        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
+        self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.job_details_config_path = "IntegrationServer/ConfigFiles/job_detail_config.json"
+        self.pipeline_job_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
+        self.work_server_directory_path = "/work/dassco_23_request/ldam"
         self.job_list_path = "job_list.txt"
         self.run = True
         self.count = 0
 
-        self.test_job_script = "/work/dassco_23_request/lars/test_job.sh"
+        self.test_job_script = "/work/dassco_23_request/ldam/test_job.sh"
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -61,7 +64,7 @@ class SlurmStarter:
                 current_jobs = running_jobs + pending_jobs
 
             current_jobs = int(current_jobs)
-
+            """
             if max_jobs > current_jobs:
 
                 number_of_jobs_to_add = max_jobs - current_jobs
@@ -93,8 +96,8 @@ class SlurmStarter:
                     self.con.ssh_command(command)
                 else:
                     print("No jobs to be done")
-
-            time.sleep(4)
+            """
+            time.sleep(2)
 
             self.count += 1
 
@@ -109,7 +112,7 @@ class SlurmStarter:
 
     def create_transfer_filelist(self, max_jobs_number):
 
-        directory_path = "./Files/InProcess"
+        directory_path = "IntegrationServer/Files/InProcess"
 
         data = self.util.read_json(self.pipeline_job_path)
 

@@ -9,10 +9,12 @@ class EntryModel:
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
+        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
+
         self._id = guid
         self.pipeline = pipeline
-        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
         self.job_list = self.create_joblist()
+        self.is_on_slurm = False
 
     def create_joblist(self):
         job_mapping = self.util.get_value(self.pipeline_job_config_path, self.pipeline)
@@ -35,6 +37,7 @@ class EntryModel:
         entry_data = {
             "_id": self._id,
             "pipeline": self.pipeline,
-            "job_list": self.job_list
+            "job_list": self.job_list,
+            "is_on_slurm": self.is_on_slurm
         }
         return entry_data

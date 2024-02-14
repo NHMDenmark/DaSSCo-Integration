@@ -107,7 +107,7 @@ class JobDriver:
                         self.mongo_track.update_entry(guid, "batch_list_name", batchlist_name)
 
                         # Add asset to batch list in mongodb
-                        self.mongo_batchlist.add_entry_to_batch_list(guid, batchlist_name)
+                        self.mongo_batchlist.add_entry_to_list(guid, batchlist_name)
 
                         # Add new metadata entry to mongoDB
                         self.mongo_metadata.create_metadata_entry(json_file_path, guid)

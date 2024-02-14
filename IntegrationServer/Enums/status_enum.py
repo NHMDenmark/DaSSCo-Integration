@@ -3,5 +3,6 @@ from enum import Enum
 class StatusEnum(Enum):
     DONE = "DONE"
     WAITING = "WAITING"
-    INPIPELINE = "INPIPELINE"
+    RUNNING = "RUNNING"
+    STARTING = "STARTING"
     ERROR = "ERROR"

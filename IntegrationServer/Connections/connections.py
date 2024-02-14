@@ -1,7 +1,11 @@
+import sys
 import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
 
-from IntegrationServer.Connections.ssh import SSHConnection
-from IntegrationServer.utility import Utility
+from Connections.ssh import SSHConnection
+from utility import Utility
 
 """
 Creates ssh connections from a _connection_config.json file.
@@ -30,6 +34,9 @@ class Connections:
 
             username = os.getenv(con_user)
             password = os.getenv(con_pwd)
+
+            if username == None:
+                username = os.environ.get(con_user)
 
             connection = SSHConnection(
                 connection_name,
