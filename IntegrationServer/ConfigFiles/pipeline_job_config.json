@@ -10,6 +10,7 @@
    "job_2": "ocr"
  },
  "WORKHERB0001": {
-  "job_1": "label"
+  "job_1": "test",
+  "job_2": "label"
  }
 }

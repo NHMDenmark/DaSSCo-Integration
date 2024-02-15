@@ -24,7 +24,7 @@ class EntryModel:
         for job, label in job_mapping.items():
             job_entry = {
                 "name": label,
-                "status": self.status.WAITING,  # Set default status
+                "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
                 "timestamp": str(datetime.utcnow()),  # Default timestamp
                 "slurm_job_id": -1,  # Default job ID

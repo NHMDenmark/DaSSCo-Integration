@@ -50,7 +50,7 @@ class JobDriver:
             # Check if a directory with the same name exists in the error path
             error_directory_path = os.path.join(error_path, subdirectory)
             if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
-                print(f"Directory {error_directory_path} already exists in the error path. Skipping processing.")
+                print(f"Directory {error_directory_path} already exists in the error path.")
                 continue
 
             # Check if it's a directory
@@ -69,7 +69,7 @@ class JobDriver:
                     # if no json files are present or more than 1 file is, move files to error dir
                     if len(json_files) == 0 or len(json_files) > 1:
                         shutil.move(subdirectory_path, error_dir)
-                        print("No json or too many jsons")
+                        print(f"No json or too many jsons in: {subdirectory}")
                         continue
 
                     if json_files:

@@ -14,5 +14,13 @@
   "spoof":{
   "time_est": "01:00:00",
   "script": "path/to/script"
+  },
+  "label":{
+  "time_est": "01:00:00",
+  "script": "path/to/script"
+  },
+  "ocr":{
+  "time_est": "01:00:00",
+  "script": "path/to/script"
   }
 }

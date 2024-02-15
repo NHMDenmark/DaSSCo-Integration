@@ -1,4 +1,9 @@
+import sys
 import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
 import shutil
 import time
 import utility
@@ -16,6 +21,7 @@ class NdriveNewFilesFinder:
         self.util = utility.Utility()
 
         self.new_files_path = "IntegrationServer/Files/NewFiles"
+        self.workstations_config_path = "IntegrationServer/ConfigFiles/workstations_config.json"
         self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         
         self.run = True
@@ -113,20 +119,20 @@ class NdriveNewFilesFinder:
             for file in new_contents:
                 print(file)
             # TODO Handle the case where not everything was moved successfully
-            print("Error: Not all contents were successfully moved.")
+            print(f"Error: Not all contents in {local_path} were successfully moved.")
 
 
     def get_batch_directory_path(self, remote_folder):
-        # Read pipeline configuration data from JSON file
-        pipeline_job_config_data = self.util.read_json("IntegrationServer/ConfigFiles/pipeline_job_config.json")
+        # Read workstation configuration data from JSON file
+        workstations_config_data = self.util.read_json(self.workstations_config_path)
 
-        # Get a list of keys from the pipeline configuration data
-        pipeline_list = list(pipeline_job_config_data.keys())
+        # Get a list of keys from the workstation configuration data
+        workstation_list = list(workstations_config_data.keys())
 
         # Iterate over directories in remote_folder
         for directory in os.listdir(remote_folder):
-            # Check if the directory has the same name as one of the keys in pipeline_list
-            if directory in pipeline_list:
+            # Check if the directory has the same name as one of the keys in workstation_list
+            if directory in workstation_list:
                 # Further check for subdirectories
                 subdirectories = os.listdir(f"{remote_folder}/{directory}")
 

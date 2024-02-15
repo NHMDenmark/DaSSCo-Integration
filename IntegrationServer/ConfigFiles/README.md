@@ -1,3 +1,13 @@
+## workstations_config.json
+List of workstations names.
+```bash
+{
+    "WORKHERB0001": "",
+    "WORKHERB0002": "",
+    "WORKHERB0003": "",
+    "WORKPIOF0001": ""
+}
+```
 ## job_detail_config.json
 Jobs here can consist of multiple processes. Each job has to have the total time it takes estimated since that
 matters for the slurm queueing system. Each job needs its own sbatch script setup on the slurm server.

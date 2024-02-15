@@ -77,18 +77,24 @@ class SSHConnection:
             return e
         
     """
-    Creates a directory in another directory using sftp. Returns True if created and False if failed to create.
+    Creates a directory in another directory using sftp. Returns True if created or if directory already exists and False if failed to create.
     """
     def sftp_create_directory(self, directory_path, new_directory ):
         try:
             
             self.sftp.chdir(directory_path)
             
-            # Create the directory using SFTP   
-            self.sftp.mkdir(new_directory)
+            try:
+                self.sftp.chdir(f"{directory_path}/{new_directory}")
+                self.sftp.chdir(None)
+                return True
+            
+            except:
+                # Create the directory using SFTP   
+                self.sftp.mkdir(new_directory)
 
-            self.sftp.chdir(None)
-            return True
+                self.sftp.chdir(None)
+                return True
 
         except Exception as e:
             print(f"failed to create directories: {e}")
