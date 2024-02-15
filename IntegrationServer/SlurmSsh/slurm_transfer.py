@@ -21,7 +21,7 @@ class SlurmTransfer:
         self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.run = True
-        self.count = 2 
+        self.count = 8
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -62,7 +62,7 @@ class SlurmTransfer:
 
     def look_for_asset_not_on_slurm(self):
         
-        asset = self.mongo_track.get_entry("is_on_slurm", False)
+        asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_slurm": False}, {"is_in_ars": True}])
         guid = ""
         asset_path = ""
 

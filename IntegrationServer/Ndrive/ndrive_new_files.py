@@ -25,7 +25,7 @@ class NdriveNewFilesFinder:
         self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         
         self.run = True
-        self.count = 0
+        self.count = 3
 
         self.loop()
 
@@ -35,12 +35,11 @@ class NdriveNewFilesFinder:
 
             self.copy_from_ndrive_and_update_ndrive_dirs(self.ndrive_import_path, self.new_files_path)
 
-            time.sleep(3)
+            time.sleep(2)
 
-            self.count += 1
+            self.count -= 1
 
-            if self.count > 2:
-                # print("done", self.ndrive_import_path)
+            if self.count == 0:
                 self.run = False
 
     def copy_from_ndrive_and_update_ndrive_dirs(self, ndrive_path, local_destination):

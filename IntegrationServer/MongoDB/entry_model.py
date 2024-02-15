@@ -15,6 +15,7 @@ class EntryModel:
         self.pipeline = pipeline
         self.job_list = self.create_joblist()
         self.is_on_slurm = False
+        self.is_in_ars = True # TODO change to false when ars actually is implemented. Should be updated by the Api storage after asset has image uploaded.
 
     def create_joblist(self):
         job_mapping = self.util.get_value(self.pipeline_job_config_path, self.pipeline)
@@ -38,6 +39,7 @@ class EntryModel:
             "_id": self._id,
             "pipeline": self.pipeline,
             "job_list": self.job_list,
-            "is_on_slurm": self.is_on_slurm
+            "is_on_slurm": self.is_on_slurm,
+            "is_in_ars": self.is_in_ars
         }
         return entry_data

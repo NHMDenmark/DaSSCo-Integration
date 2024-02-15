@@ -109,6 +109,17 @@ class MongoConnection:
         query = {key: value}
         entry = self.collection.find_one(query)
         return entry
+    
+    def get_entry_from_multiple_key_pairs(self, key_value_pairs):
+        """
+            Retrieve an entry from the MongoDB collection based on multiple key-value pairs.
+
+            :param key_value_pairs: List of dictionaries representing key-value pairs.
+            :return: The first entry matching the specified pair. Returns None if nothing matches.
+            """
+        query = {"$and": key_value_pairs}
+        entry = self.collection.find_one(query)
+        return entry
 
     def get_value_for_key(self, id_value, key):
         """

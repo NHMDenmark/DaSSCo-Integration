@@ -25,7 +25,7 @@ class ProcessNewFiles:
         self.updated_files_path = "IntegrationServer/Files/UpdatedFiles"
         
         self.run = True
-        self.count = 0
+        self.count = 3
 
         self.loop()
 
@@ -35,11 +35,11 @@ class ProcessNewFiles:
 
             self.jobby.process_new_directories_from_ndrive()
 
-            time.sleep(3)
+            time.sleep(2)
 
-            self.count += 1
+            self.count -= 1
 
-            if self.count > 3:
+            if self.count == 0:
                 self.run = False
 
 
