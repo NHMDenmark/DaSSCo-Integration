@@ -104,7 +104,7 @@ class MongoConnection:
 
                 :param key: Key. Could be _id
                 :param value: Value. Could be our "guid"
-                :return: The first entry matching the specified pair.
+                :return: The first entry matching the specified pair. Returns None if nothing matches.
                 """
         query = {key: value}
         entry = self.collection.find_one(query)

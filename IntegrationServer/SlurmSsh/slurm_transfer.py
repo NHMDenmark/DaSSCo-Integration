@@ -21,7 +21,7 @@ class SlurmTransfer:
         self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.run = True
-        self.count = 0
+        self.count = 2 
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -42,7 +42,8 @@ class SlurmTransfer:
             guid, asset_path, discovered = self.look_for_asset_not_on_slurm()
 
             transfered = False
-            transfered = self.transfer_asset_to_slurm(guid, asset_path)
+            if discovered:
+                transfered = self.transfer_asset_to_slurm(guid, asset_path)
 
             if transfered:
                 self.update_mongo(guid)
@@ -53,13 +54,12 @@ class SlurmTransfer:
                 time.sleep(2)           
 
 
-            self.count += 1
+            self.count -= 1
 
-            if self.count > 1:
+            if self.count == 0:
                 self.run = False
                 self.cons.close_connection()
 
-    # TODO if statements, asset None noget i den stil.
     def look_for_asset_not_on_slurm(self):
         
         asset = self.mongo_track.get_entry("is_on_slurm", False)
@@ -72,14 +72,13 @@ class SlurmTransfer:
             if asset["batch_list_name"] is not None:
                 batch_date = asset["batch_list_name"][-10:]
 
-                asset_path = f"C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/Files/InProcess/{asset["pipeline"]}/{batch_date}/{guid}/{guid}.json"    
+                asset_path = f"{project_root}/Files/InProcess/{asset["pipeline"]}/{batch_date}/{guid}/{guid}.json"    
 
             if asset["batch_list_name"] is None:
+                asset_path = f"{project_root}/Files/InProcess/{asset["pipeline"]}/{guid}/{guid}.json"
 
-                asset_path = f"C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/Files/InProcess/{asset["pipeline"]}/{guid}/{guid}.json"
             try:
                 self.util.read_json(asset_path)
-
                 return guid, asset_path, True
 
             except Exception as e:
@@ -91,7 +90,16 @@ class SlurmTransfer:
         
         batch_id = self.mongo_track.get_value_for_key(guid, "batch_list_name")
         
-        exp_path = f"{self.export_path}/{batch_id}/{guid}/{guid}.json"
+        exp_path = f"{self.export_path}/derivatives/{guid}/{guid}.json"
+        
+        if batch_id is None:
+            self.con.sftp_create_directory(f"{self.export_path}/derivatives", guid)
+        
+        if batch_id is not None:
+            exp_path = f"{self.export_path}/{batch_id}/{guid}/{guid}.json"
+            exists = self.con.sftp_create_directory(self.export_path, batch_id)
+            if exists:
+                self.con.sftp_create_directory(f"{self.export_path}/{batch_id}", guid)
 
         value = self.con.sftp_copy_file(asset_path, exp_path)
 
@@ -101,7 +109,6 @@ class SlurmTransfer:
             print(f"Transfer error for {guid}: {value}")
             return False
         
-
 
     def update_mongo(self, guid):
         self.mongo_slurm.add_entry_to_list(guid, "is_on_slurm")

@@ -68,21 +68,32 @@ class SSHConnection:
     """
     Copies a file using sftp.
     """
-
     def sftp_copy_file(self, path_to_copy_from, path_to_copy_to):
-
-        try:
-            dir_path = os.path.dirname(path_to_copy_to)
-            self.sftp.mkdir(dir_path)
-        except Exception as e:
-            print(e)
         try:
             self.sftp.put(path_to_copy_from, path_to_copy_to)
             return True
         except Exception as e:
             print(path_to_copy_from, path_to_copy_to)
             return e
+        
+    """
+    Creates a directory in another directory using sftp. Returns True if created and False if failed to create.
+    """
+    def sftp_create_directory(self, directory_path, new_directory ):
+        try:
+            
+            self.sftp.chdir(directory_path)
+            
+            # Create the directory using SFTP   
+            self.sftp.mkdir(new_directory)
 
+            self.sftp.chdir(None)
+            return True
+
+        except Exception as e:
+            print(f"failed to create directories: {e}")
+            return False
+    
     """
     Iterates through each directory matching with a pipeline name found in the config files.
     Then looks for one without the imported_ prefix and returns directory as a path.
