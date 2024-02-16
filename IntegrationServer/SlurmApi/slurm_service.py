@@ -81,3 +81,14 @@ class SlurmService():
         # Update metadata JSON file with key-value pairs from the dictionary
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
+
+    def job_queued(self, queue_data):
+
+        guid = queue_data.guid
+        job_id = queue_data.job_id
+        job_name = queue_data.job_name
+        job_start_time = queue_data.timestamp
+
+        self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
+        self.mongo_track.update_track_job_new(guid, job_name, "slurm_job_id", job_id)
+        self.mongo_track.update_track_job_new(guid, job_name, "job_start_time", job_start_time)

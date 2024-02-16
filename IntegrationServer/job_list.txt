@@ -1,4 +1,0 @@
-0
-0
-Total jobs running and pending: 109
-Jobs running by user ldam: 0 and jobs pending: 0

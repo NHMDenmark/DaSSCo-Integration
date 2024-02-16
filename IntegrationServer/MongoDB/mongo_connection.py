@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pymongo import MongoClient
 from bson import ObjectId
@@ -27,10 +27,11 @@ class MongoConnection:
     def __init__(self, name):
         self.util = utility.Utility()
         self.name = name
-        # self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
-        # Needs to use absolute path here for api to work
-        self.mongo_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
 
+        # Needs to use absolute path here for api to work
+        self.slurm_config_path = "C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\ConfigFiles\slurm_config.json"
+
+        self.mongo_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
         self.host = self.config_values.get("host")
@@ -46,6 +47,8 @@ class MongoConnection:
 
         # Access a specific collection within the database (create it if it doesn't exist)
         self.collection = self.mdb[self.collection_name]
+
+        
 
     def create_track_entry(self, guid, pipeline):
         """
@@ -97,6 +100,22 @@ class MongoConnection:
             :param status: The new status for the specified job.
         """
         self.collection.update_one({"_id": guid, "job_list.name": job}, {"$set": {"job_list.$.status": status}})
+    
+    def update_track_job_new(self, guid, job, key, value):
+        """
+            Update an existing track_entry with a new entry for a job in the MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param job: The job name to be updated.
+            :param key: The key (field) to be updated or created.
+            :param value: The new value for the specified key.
+        """
+
+        query = {"_id": guid, "job_list.name": job}
+        job_entry = f"job_list.$.{key}"
+        update_data = {"$set": {job_entry: value}}
+
+        self.collection.update_one(query, update_data)
 
     def get_entry(self, key, value):
         """
@@ -155,3 +174,14 @@ class MongoConnection:
         else:
             # If the list already exists, append the guid to the existing list
             self.collection.update_one({"_id": list_name}, {"$push": {"guids": guid}})
+    
+    # TODO 
+    def find_running_jobs_older_than(self):
+
+        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
+
+        time_ago = datetime.utcnow() - timedelta(hours=max_time)
+
+        query = {"job_start_time": {"$lt": time_ago}}
+
+        result = self.collection.find(query)

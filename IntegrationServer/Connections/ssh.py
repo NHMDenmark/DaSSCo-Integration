@@ -326,7 +326,7 @@ class SSHConnection:
         return self.ssh_client.open_sftp()
 
     """
-    Function that allows remote commands to be used through connection. Gives option of writing output somewhere if needed. 
+    Function that allows remote commands to be used through connection. Gives option of writing output somewhere if needed. Returns output. 
     """
 
     def ssh_command(self, command, write_to_path=None):
@@ -334,16 +334,16 @@ class SSHConnection:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
 
             # Print the output
-            print("Command Output:")
+            # print("Command Output:")
             output = stdout.read().decode('utf-8')
-            print(output)
+            # print(output)
 
             if write_to_path is not None:
                 with open(write_to_path, 'w', encoding='utf-8') as f:
                     f.write(output)
             # Print any errors
-            print("Command Errors:")
-            print(stderr.read().decode('utf-8'))
-
+            # print("Command Errors:")
+            # print(stderr.read().decode('utf-8'))
+            return output
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while executing ssh command: {command} : {e}")
