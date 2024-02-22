@@ -1,6 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
+from Enums import asset_status_nt
 
 class Tag(BaseModel):
     key: str
@@ -17,7 +18,7 @@ class ApiMetadataModel(BaseModel):
     asset_pid: str
     asset_guid: str
     parent_guid: Optional[str] = None
-    status: str # not optional must come from an enum list
+    status: str = asset_status_nt.AssetStatusNT.WORKING_COPY.value # not optional must come from an enum list
     multi_specimen: bool
     specimens: List[Specimen] = []
     funding: str

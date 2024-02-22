@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 from MongoDB import mongo_connection
 from ApiStorage import api_metadata_model
+from Enums import restricted_access_nt
 
 
 # untested
@@ -56,6 +57,9 @@ class StorageService():
 
             api_metadata.specimens.append(self.specimen)
         
+        if api_metadata.restricted_access is []:
+            api_metadata.restricted_access.append(restricted_access_nt.RestrictedAccessNT.USER.value)
+
         return api_metadata
 
     def get_metadata_json_format(self, guid):
