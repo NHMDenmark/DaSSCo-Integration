@@ -98,7 +98,7 @@ class JobDriver:
                         # Add image file checksum to track entry
                         img_file_name = json_file_name.replace('.json', image_extension)
                         img_file_path = os.path.join(subdirectory_path, img_file_name)
-                        check_sum = self.util.calculate_sha256_checksum(img_file_path)
+                        check_sum = self.util.calculate_crc_checksum(img_file_path)
                         self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
 
                         # Add batchlist name to the track entry

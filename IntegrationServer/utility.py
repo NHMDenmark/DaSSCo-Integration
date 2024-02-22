@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import json
 import hashlib
-
+import binascii
 """
 Class with helper methods that are used throughout the different processes.
 Mostly contains functions that has to do with reading/updating .json files.
@@ -106,3 +106,13 @@ class Utility:
             for byte_block in iter(lambda: file.read(4096), b""):
                 sha256_hash.update(byte_block)
         return sha256_hash.hexdigest()
+    
+    def calculate_crc_checksum(self, file_path):
+        crc_value = 0
+        buffer_size = 8192  # You can adjust this based on your needs
+
+        with open(file_path, 'rb') as file:
+            while chunk := file.read(buffer_size):
+                crc_value = binascii.crc32(chunk, crc_value) & 0xFFFFFFFF
+
+        return crc_value
