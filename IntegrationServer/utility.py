@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+import math
 import json
 import hashlib
 import binascii
@@ -116,3 +117,8 @@ class Utility:
                 crc_value = binascii.crc32(chunk, crc_value) & 0xFFFFFFFF
 
         return crc_value
+    
+    def calculate_file_size_round_to_next_mb(self, file_path):
+        size_in_bytes = os.path.getsize(file_path)
+        size_in_mb = math.ceil(size_in_bytes / (1024 * 1024))
+        return size_in_mb

@@ -70,7 +70,8 @@ def test():
         util.write_full_json(relPath, entry)
     """
     crc = util.calculate_crc_checksum("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
-    print(crc)
+    mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
+    print(crc, mb)
     
 if __name__ == '__main__':
     # git rm -r --cached .idea/
