@@ -41,3 +41,4 @@ async def update_asset(update_data: update_model):
 @app.post("/api/v1/queue_job")
 async def queue_job(queue_data: queue_model):
     service.job_queued(queue_data)
+     

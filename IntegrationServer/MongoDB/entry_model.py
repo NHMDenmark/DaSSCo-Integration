@@ -27,7 +27,7 @@ class EntryModel:
                 "name": label,
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
-                "timestamp": str(datetime.utcnow()),  # Default timestamp
+                "timestamp": datetime(datetime.utcnow()),  # Default timestamp
                 "slurm_job_id": -1,  # Default job ID
             }
             job_list.append(job_entry)

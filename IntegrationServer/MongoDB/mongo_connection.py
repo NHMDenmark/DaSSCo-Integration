@@ -29,7 +29,7 @@ class MongoConnection:
         self.name = name
 
         # Needs to use absolute path here for api to work
-        self.slurm_config_path = "C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\ConfigFiles\slurm_config.json"
+        self.slurm_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.mongo_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
@@ -147,7 +147,7 @@ class MongoConnection:
             :param id_value: The _id value.
             :param key: The key for which to retrieve the value.
             :return: The value corresponding to the specified key.
-            """
+        """    
         query = {"_id": id_value}
         entry = self.collection.find_one(query)
 
@@ -155,6 +155,7 @@ class MongoConnection:
             return entry[key]
         else:
             return None
+    
 
     def delete_entry(self, guid):
         """
@@ -175,13 +176,13 @@ class MongoConnection:
             # If the list already exists, append the guid to the existing list
             self.collection.update_one({"_id": list_name}, {"$push": {"guids": guid}})
     
-    # TODO 
+     
     def find_running_jobs_older_than(self):
 
         max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
-
+        
         time_ago = datetime.utcnow() - timedelta(hours=max_time)
 
-        query = {"job_start_time": {"$lt": time_ago}}
-
-        result = self.collection.find(query)
+        result = self.collection.find({"job_list.job_start_time": {"$lt": time_ago}})
+        
+        return result

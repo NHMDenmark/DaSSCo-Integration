@@ -34,11 +34,11 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    # mongo = mongo_connection.MongoConnection("track")
+    mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
-    ars = storage_client.StorageClient()
+    # ars = storage_client.StorageClient()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
@@ -56,14 +56,17 @@ def test():
     # print(mongo.get_entry("_id", "exa"))
     # mongo.delete_entry("exa")
 
-    # relPath = "IntegrationServer/Files/NewFiles/7e8-1-08-08-2c-12-0-000-00-000-0be5f3-00000.json"
+    relPath = "IntegrationServer/Files/NewFiles/test.json"
     # meta_mongo.create_metadata_entry(relPath, util.get_value(relPath, "asset_guid"))
     # print(meta_mongo.get_entry("_id", util.get_value(relPath, "asset_guid")))
     
     # print(util.calculate_sha256_checksum("IntegrationServer/Files/InProcess/PIPEHERB0001/2024-01-08/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000.tif"))
     
     # print(util.calculate_sha256_checksum("Tests/checksum.txt"))
-    ars.test()
+    # ars.test()
+    x = mongo.find_running_jobs_older_than()
+    for entry in x:
+        util.write_full_json(relPath, entry)
                                          
 if __name__ == '__main__':
     # git rm -r --cached .idea/
