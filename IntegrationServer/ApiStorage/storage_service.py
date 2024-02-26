@@ -8,6 +8,7 @@ import utility
 from MongoDB import mongo_connection
 from ApiStorage import api_metadata_model
 from Enums import restricted_access_nt
+from Enums import asset_status_nt
 
 
 # untested
@@ -48,7 +49,7 @@ class StorageService():
         api_metadata.collection = entry["collection"]
         barcode = entry["barcode"]
 
-        if barcode is not "":
+        if barcode != "":
             specimen.barcode = barcode
             specimen.collection = api_metadata.collection
             specimen.institution = api_metadata.institution
@@ -59,6 +60,9 @@ class StorageService():
         
         if api_metadata.restricted_access is []:
             api_metadata.restricted_access.append(restricted_access_nt.RestrictedAccessNT.USER.value)
+
+        if api_metadata.status == "":
+            api_metadata.status = asset_status_nt.AssetStatusNT.WORKING_COPY.value
 
         return api_metadata
 

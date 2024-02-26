@@ -37,7 +37,7 @@ def test():
     mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    # new_files = process_files_from_ndrive.ProcessNewFiles()
+    new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
 
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
@@ -68,12 +68,14 @@ def test():
     x = mongo.find_running_jobs_older_than()
     for entry in x:
         util.write_full_json(relPath, entry)
-    """
+    
     crc = util.calculate_crc_checksum("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
     mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
     print(crc, mb)
-    
+    """
+
 if __name__ == '__main__':
     # git rm -r --cached .idea/
     # i = IntegrationServer()
     test()
+    

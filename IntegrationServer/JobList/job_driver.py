@@ -79,7 +79,10 @@ class JobDriver:
                         # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
                         pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                         guid = self.util.get_value(json_file_path, "asset_guid")
-                        image_extension = "." + self.util.get_value(json_file_path, "file_format")
+                        image_extension = []
+                        for format in self.util.get_value(json_file_path, "file_format"):
+                            format = "." + format
+                            image_extension.append(format)
                         date_value = self.util.get_value(json_file_path, "date_asset_taken")
                         batch_name = ""
 
@@ -92,14 +95,19 @@ class JobDriver:
                         # Create jobs dictionary
                         jobs_json = self.jobby.create_jobs(pipeline_name)
 
+                        if jobs_json is None:
+                            shutil.move(subdirectory_path, error_dir)
+                            continue
+
                         # Add new track entry to mongoDB
                         self.mongo_track.create_track_entry(subdirectory, pipeline_name)
 
-                        # Add image file checksum to track entry
-                        img_file_name = json_file_name.replace('.json', image_extension)
-                        img_file_path = os.path.join(subdirectory_path, img_file_name)
-                        check_sum = self.util.calculate_crc_checksum(img_file_path)
-                        self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
+                        # Add image file checksums(s) to track entry
+                        for extension in image_extension:                            
+                            img_file_name = json_file_name.replace('.json', extension)
+                            img_file_path = os.path.join(subdirectory_path, img_file_name)
+                            check_sum = self.util.calculate_crc_checksum(img_file_path)
+                            self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
 
                         # Add batchlist name to the track entry
                         workstation_name = self.util.get_value(json_file_path, "workstation_name")
@@ -111,10 +119,6 @@ class JobDriver:
 
                         # Add new metadata entry to mongoDB
                         self.mongo_metadata.create_metadata_entry(json_file_path, guid)
-
-                        if jobs_json is None:
-                            shutil.move(subdirectory_path, error_dir)
-                            continue
 
                         # Create a new JSON file with '_jobs' suffix
                         jobs_file_name = json_file_name.replace('.json', '_jobs.json')
@@ -135,8 +139,9 @@ class JobDriver:
     """
     Takes processed metadata files from slurm and updates job status for those files. 
     Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
-    """
 
+    """
+    # Deprecated- was used back when we moved files through ssh to and from slurm. 
     def process_updated_directories(self):
 
         input_dir = "./Files/UpdatedFiles"
