@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import utility
 from MongoDB import mongo_connection
-from ApiStorage import api_metadata_model
+from StorageApi import api_metadata_model
 from Enums import restricted_access_nt
 from Enums import asset_status_nt
 

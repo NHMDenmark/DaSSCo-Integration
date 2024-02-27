@@ -92,3 +92,18 @@ class SlurmService():
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
         self.mongo_track.update_track_job_new(guid, job_name, "slurm_job_id", job_id)
         self.mongo_track.update_track_job_new(guid, job_name, "job_start_time", job_start_time)
+
+    def get_httplink(self, asset_guid):
+        
+        httplink = self.mongo_track.get_value_for_key(asset_guid, "image_httplink")        
+        
+        return httplink
+    
+    def get_metadata_asset(self, asset_guid):
+
+        metadata = self.mongo_metadata.get_entry("_id", asset_guid)
+
+        return metadata
+
+    def asset_ready(self, asset_guid):
+        self.mongo_track.update_entry(asset_guid, "HPC_ready", True)
