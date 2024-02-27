@@ -13,7 +13,7 @@ import time
 Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
 """
 
-class SlurmAvailability:
+class HPCAvailability:
 
     def __init__(self):
 
@@ -60,4 +60,4 @@ class SlurmAvailability:
 
 
 if __name__ == '__main__':
-    SlurmAvailability()
+    HPCAvailability()

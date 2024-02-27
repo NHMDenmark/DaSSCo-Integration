@@ -12,7 +12,7 @@ import time
 """
 Responsible for transfering metadata files to slurm and updating mongodb when that has happened. 
 """
-
+# DEPRECATED we are not transfering any files to slurm via ssh.
 class SlurmTransfer:
 
     def __init__(self):

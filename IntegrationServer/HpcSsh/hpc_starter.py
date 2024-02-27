@@ -9,12 +9,13 @@ import utility
 import time
 
 """
-Slurm server job api. Connects through ssh to the slurm server. Runs an infinite loop that goes through pipeline 
-directories and checks for jobs that are ready to be processed through slurm.
+Looks for assets that have been persisted with ARS and have not yet been created on the HPC cluster.
+ 
+Connects through ssh to the hpc server and calls a script with guid, ARS link, batch id as parameters.
 """
+# TODO Check that HPC is available. Get some status from mongo db. Other service responsible for updating that. 
 
-
-class SlurmStarter:
+class HPCStarter:
 
     def __init__(self):
 
