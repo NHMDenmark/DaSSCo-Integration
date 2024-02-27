@@ -7,8 +7,8 @@ import utility
 from MongoDB import mongo_connection
 import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
-from ApiStorage import storage_client
-
+from StorageApi import storage_client
+from HpcSsh import hpc_job_caller
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -37,9 +37,9 @@ def test():
     mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    new_files = process_files_from_ndrive.ProcessNewFiles()
+    # new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
-
+    hpc_job_caller = hpc_job_caller.HPCJobCaller()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
     # api.get_bearer_token()

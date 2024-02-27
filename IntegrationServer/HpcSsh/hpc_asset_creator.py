@@ -15,7 +15,7 @@ Connects through ssh to the hpc server and calls a script with guid, ARS link, b
 """
 # TODO Check that HPC is available. Get some status from mongo db. Other service responsible for updating that. 
 
-class HPCStarter:
+class HPCAssetCreator:
 
     def __init__(self):
 
@@ -193,4 +193,4 @@ class HPCStarter:
 
 
 if __name__ == '__main__':
-    SlurmStarter()
+    HPCAssetCreator()
