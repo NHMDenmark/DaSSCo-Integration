@@ -39,7 +39,7 @@ def test():
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
-    hpc_job_caller = hpc_job_caller.HPCJobCaller()
+    job_caller = hpc_job_caller.HPCJobCaller()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
     # api.get_bearer_token()

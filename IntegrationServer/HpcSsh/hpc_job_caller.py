@@ -24,12 +24,12 @@ class HPCJobCaller:
         self.run = True
         self.count = 2
 
-        self.cons = connections.Connections()
+        #self.cons = connections.Connections()
         self.util = utility.Utility()
         self.mongo_track = mongo_connection.MongoConnection("track")
 
-        self.cons.create_ssh_connection(self.ssh_config_path)
-        self.con = self.cons.get_connection()
+        #self.cons.create_ssh_connection(self.ssh_config_path)
+        #self.con = self.cons.get_connection()
 
         self.loop()
     
@@ -38,39 +38,42 @@ class HPCJobCaller:
         while self.run:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs({"is_on_hpc": True, "jobs_status": status_enum.StatusEnum.WAITING.value})
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": True, "jobs_status": status_enum.StatusEnum.WAITING.value}])
             
             if asset is None:
-                time.sleep(3)
-                continue
+                print("No asset found")
+                time.sleep(1)        
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
-
+                print(f"Asset found: {guid}")
                 for job in jobs:
                     
                     name = job["name"]
 
-                    script_path = self.util.get_value(self.job_detail_path, name)
+                    job_details = self.util.get_value(self.job_detail_path, name)
+                    script_path = job_details["script"]
 
                     self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.STARTING.value)
-                    self.mongo_track.update_entry(guid, "job_status", status_enum.StatusEnum.STARTING.value)
+                    self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
+                    print(script_path, name)
                     #self.con.ssh_command(f"bash {script_path} {guid}")
 
-            time.sleep(3)
+            time.sleep(1)
 
             self.count -= 1
 
             if self.count == 0:
                 self.run = False
-                self.cons.close_connection()
+                print("done")
+                #self.cons.close_connection()
 
 
     def get_guid_and_jobs(self, asset):
 
         jobs = []    
 
-        guid = asset["asset_guid"]
+        guid = asset["_id"]
 
         all_jobs = asset["job_list"]
         waiting_jobs = []
