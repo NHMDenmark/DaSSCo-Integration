@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
+from Enums import validate_enum
 
 class SlurmService():
 
@@ -106,4 +107,4 @@ class SlurmService():
         return metadata
 
     def asset_ready(self, asset_guid):
-        self.mongo_track.update_entry(asset_guid, "HPC_ready", True)
+        self.mongo_track.update_entry(asset_guid, "is_on_hpc", validate_enum.ValidateEnum.YES.value)
