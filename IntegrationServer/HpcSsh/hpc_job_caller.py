@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from Connections import connections
 from MongoDB import mongo_connection
-from Enums import status_enum
+from Enums import status_enum, validate_enum
 import utility
 import time
 
@@ -38,7 +38,7 @@ class HPCJobCaller:
         while self.run:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": True, "jobs_status": status_enum.StatusEnum.WAITING.value}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": validate_enum.ValidateEnum.YES.value, "jobs_status": status_enum.StatusEnum.WAITING.value}])
             
             if asset is None:
                 print("No asset found")
@@ -58,8 +58,7 @@ class HPCJobCaller:
 
                     print(script_path, name)
                     #self.con.ssh_command(f"bash {script_path} {guid}")
-
-            time.sleep(1)
+                    time.sleep(1)
 
             self.count -= 1
 

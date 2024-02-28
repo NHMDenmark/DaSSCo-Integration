@@ -22,10 +22,10 @@ class HPCAssetCreator:
     def __init__(self):
 
         self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.hpc_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.run = True
-        self.count = 0
+        self.count = 2
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -49,13 +49,20 @@ class HPCAssetCreator:
                 print("No asset found")
                 time.sleep(1)        
             else: 
-                pass
+                guid = asset["_id"]
+                batch_id = asset["batch_list_name"]                
+                link = asset["ars_file_link"]
+                script_path = self.hpc_config_path["initiate_script"]
 
-            time.sleep(2)
+                self.mongo_track.update_entry(guid, "is_on_hpc", validate_enum.ValidateEnum.AWAIT.value)
 
-            self.count += 1
+                self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
 
-            if self.count > 1:
+                time.sleep(1)
+
+            self.count -= 1
+
+            if self.count == 0:
                 self.run = False
                 self.cons.close_connection()
 

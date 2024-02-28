@@ -47,6 +47,26 @@ class HPCAvailability:
 
             self.con.ssh_command(f"bash {self.job_list_script}", self.job_list_path)
 
+            """
+            max_jobs = self.util.get_value(self.slurm_config_path, "max_queued_jobs")
+
+            self.con.ssh_command(f"bash {self.job_list_script}", self.job_list_path)
+
+            with open(self.job_list_path, 'r') as file:
+                running_jobs = file.readline().strip()
+                pending_jobs = file.readline().strip()
+
+                running_jobs = int(running_jobs)
+                pending_jobs = int(pending_jobs)
+
+                current_jobs = running_jobs + pending_jobs
+
+            current_jobs = int(current_jobs)
+            
+                # TODO Need template for sbatch script that can figure out where files are or which job needs to be done.
+                command = f"sbatch {job_script_path} {number_of_jobs} {parallel_jobs}"
+            """
+
             time.sleep(3)
 
             if has_no_availability:

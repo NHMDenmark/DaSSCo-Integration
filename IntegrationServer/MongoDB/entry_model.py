@@ -14,7 +14,7 @@ class EntryModel:
         self._id = guid
         self.pipeline = pipeline
         self.job_list = self.create_joblist()
-        self.is_on_slurm = False
+        self.is_on_hpc = False
         self.is_in_ars = True # TODO change to false when ars actually is implemented. Should be updated by the Api storage after asset has image uploaded.
 
     def create_joblist(self):
@@ -28,7 +28,7 @@ class EntryModel:
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
                 "timestamp": datetime.utcnow(),  # Default timestamp
-                "slurm_job_id": -1,  # Default job ID
+                "hpc_job_id": -1,  # Default job ID
             }
             job_list.append(job_entry)
 
@@ -39,7 +39,7 @@ class EntryModel:
             "_id": self._id,
             "pipeline": self.pipeline,
             "job_list": self.job_list,
-            "is_on_slurm": self.is_on_slurm,
+            "is_on_hpc": self.is_on_hpc,
             "is_in_ars": self.is_in_ars
         }
         return entry_data
