@@ -24,12 +24,12 @@ class HPCJobCaller:
         self.run = True
         self.count = 2
 
-        #self.cons = connections.Connections()
+        self.cons = connections.Connections()
         self.util = utility.Utility()
         self.mongo_track = mongo_connection.MongoConnection("track")
 
-        #self.cons.create_ssh_connection(self.ssh_config_path)
-        #self.con = self.cons.get_connection()
+        self.cons.create_ssh_connection(self.ssh_config_path)
+        self.con = self.cons.get_connection()
 
         self.loop()
     
@@ -57,15 +57,14 @@ class HPCJobCaller:
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                     print(script_path, name)
-                    #self.con.ssh_command(f"bash {script_path} {guid}")
+                    self.con.ssh_command(f"bash {script_path} {guid}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
                     time.sleep(1)
 
             self.count -= 1
 
             if self.count == 0:
                 self.run = False
-                print("done")
-                #self.cons.close_connection()
+                self.cons.close_connection()
 
 
     def get_guid_and_jobs(self, asset):

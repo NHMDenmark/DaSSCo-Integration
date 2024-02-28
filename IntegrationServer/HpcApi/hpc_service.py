@@ -20,10 +20,8 @@ class SlurmService():
     def persist_new_metadata(self, new_metadata):
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
-
-    # calls other functions to update specific files and mongoDB
-    # TODO send success message back to slurm?
-    def update_from_slurm(self, update_data):
+    
+    def update_from_hpc(self, update_data):
         # Extract data from the input
         guid = update_data.guid
         job = update_data.job
@@ -50,6 +48,39 @@ class SlurmService():
     def update_mongo_track(self, guid, job, status):
         # Update MongoDB track with job status
         self.mongo_track.update_track_job_status(guid, job, status)
+
+        entry = self.mongo_track.get_entry("_id", guid)
+
+        current_jobs_status = entry["jobs_status"] # the overall jobs_status not each individual job
+
+        if current_jobs_status == StatusEnum.ERROR.value:
+            # TODO handle error
+            return
+
+        jobs = entry["job_list"]
+
+        all_done = all(job["status"] == StatusEnum.DONE.value for job in jobs)
+        any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
+        any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
+        any_error = any(job["status"] == StatusEnum.ERROR.value for job in jobs)
+        any_waiting = any(job["status"] == StatusEnum.WAITING.value for job in jobs)
+        
+        if any_error:
+            # TODO handle error
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.ERROR.value)
+            return
+        
+        if all_done:
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.DONE.value)
+            return
+        
+        if any_running or any_starting:
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RUNNING.value)
+            return
+
+        if any_waiting:
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.WAITING.value)
+            return
 
     def update_jobs_json(self, guid, job, status):
         # Extract pipeline name and batch date from MongoDB metadata
@@ -91,12 +122,12 @@ class SlurmService():
         job_start_time = queue_data.timestamp
 
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
-        self.mongo_track.update_track_job_new(guid, job_name, "slurm_job_id", job_id)
+        self.mongo_track.update_track_job_new(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_new(guid, job_name, "job_start_time", job_start_time)
 
     def get_httplink(self, asset_guid):
         
-        httplink = self.mongo_track.get_value_for_key(asset_guid, "image_httplink")        
+        httplink = self.mongo_track.get_value_for_key(asset_guid, "ars_file_link")        
         
         return httplink
     
