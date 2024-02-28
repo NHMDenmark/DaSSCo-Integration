@@ -8,7 +8,7 @@ from MongoDB import mongo_connection
 import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
-from HpcSsh import hpc_job_caller
+from HpcSsh import hpc_job_caller, hpc_asset_creator
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -34,12 +34,13 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    mongo = mongo_connection.MongoConnection("track")
+    # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
-    job_caller = hpc_job_caller.HPCJobCaller()
+    # job_caller = hpc_job_caller.HPCJobCaller()
+    hpc_creator = hpc_asset_creator.HPCAssetCreator()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
     # api.get_bearer_token()

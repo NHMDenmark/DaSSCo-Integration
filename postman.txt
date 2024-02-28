@@ -1,1 +1,3 @@
-yo what up
+GUID: 7e6-8-02-0d-1b-15-0-000-00-000-053ea4-00000
+Batch ID: ti-ws-01_2022-08-02
+Link: https://storage.test.dassco.dk/file_proxy/api/assetfiles/test-institution/test-collection/asset_24/

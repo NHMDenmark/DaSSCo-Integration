@@ -6,6 +6,6 @@
   "job_list_script_path": "/work/dassco_23_request/ldam/job_list.sh",
   "export_to_path": "/work/dassco_23_request/ldam/received",
   "temporary_persist_path": "/work/dassco_23_request/ldam/waiting",
-  "initiate_script": "path/to/script",
+  "initiate_script": "/work/dassco_23_request/ldam/test_init.sh",
   "clean_up_script": "path/to/script"
 }

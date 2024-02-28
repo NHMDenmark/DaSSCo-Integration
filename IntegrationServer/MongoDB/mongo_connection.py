@@ -47,7 +47,7 @@ class MongoConnection:
 
         # Access a specific collection within the database (create it if it doesn't exist)
         self.collection = self.mdb[self.collection_name]
-
+        print(f"connected to: {self.name}")
         
 
     def create_track_entry(self, guid, pipeline):

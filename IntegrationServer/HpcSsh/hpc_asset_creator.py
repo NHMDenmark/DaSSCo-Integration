@@ -52,12 +52,12 @@ class HPCAssetCreator:
                 guid = asset["_id"]
                 batch_id = asset["batch_list_name"]                
                 link = asset["ars_file_link"]
-                script_path = self.hpc_config_path["initiate_script"]
+                script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
 
                 self.mongo_track.update_entry(guid, "is_on_hpc", validate_enum.ValidateEnum.AWAIT.value)
 
-                self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
-
+                self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
+                
                 time.sleep(1)
 
             self.count -= 1
