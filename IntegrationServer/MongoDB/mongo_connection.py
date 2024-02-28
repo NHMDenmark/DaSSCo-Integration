@@ -101,7 +101,7 @@ class MongoConnection:
         """
         self.collection.update_one({"_id": guid, "job_list.name": job}, {"$set": {"job_list.$.status": status}})
     
-    def update_track_job_new(self, guid, job, key, value):
+    def update_track_job_list(self, guid, job, key, value):
         """
             Update an existing track_entry with a new entry for a job in the MongoDB collection.
 

@@ -122,8 +122,8 @@ class SlurmService():
         job_start_time = queue_data.timestamp
 
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
-        self.mongo_track.update_track_job_new(guid, job_name, "hpc_job_id", job_id)
-        self.mongo_track.update_track_job_new(guid, job_name, "job_start_time", job_start_time)
+        self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
+        self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
     def get_httplink(self, asset_guid):
         

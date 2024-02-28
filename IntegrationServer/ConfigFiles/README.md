@@ -1,5 +1,5 @@
 ## workstations_config.json
-List of workstations names.
+List of workstations names. Used for recognising which folders on the ndrive to look for assets. 
 ```bash
 {
     "WORKHERB0001": "",
@@ -9,9 +9,8 @@ List of workstations names.
 }
 ```
 ## job_detail_config.json
-Jobs here can consist of multiple processes. Each job has to have the total time it takes estimated since that
-matters for the slurm queueing system. Each job needs its own sbatch script setup on the slurm server.
-Jobs are then added in the order we want them done to each pipeline in the pipeline_job_config.json file.
+Job names followed by a time estimate of running them on HPC cluster and the path to the script that needs to be called to run the job on the HPC cluster.
+
 ```bash
 {
   "create_asset":{
@@ -51,24 +50,26 @@ The idea is to setup a list of processes(jobs) that fits everything that comes o
 ```
 ## slurm_config.json
 max_queued_jobs : Sets the maximum amount of jobs we want to have queued up at the same time.
-parallel_jobs : Sets the maximum number of jobs the slurm server will process at the same time.
+parallel_jobs : Sets the maximum number of jobs we want running at the same time.
 max_expected_time : Sets the maximum total expected amount of time in hours we want to have queued up at the same time.
+max_expected_time_in_queue : Sets the timer(hours) for how long we will wait before checking on a job that has been queued but not returned with a DONE status. 
 job_list_script_path : Path to the job list script that gets data for jobs being processed.
-import_updates_from_path : Path to get updated data files from once pipeline has finished.
-export_to_path : Path where assets are delivered to on the slurm server.
-import_new_derivatives_path : Path where new assets that are derivatives should be put. 
+export_to_path : Path where assets are delivered.
 temporary_persist_path : Path where we put assets that have finished parts of their pipeline but still needs further
-processing. 
+processing.
+initiate_script : Path to the script that will be called when a new asset is ready to start being processed by the HPC.
+clean_up_script : Path to the clean up script for when all jobs are DONE for an asset. Should delete files pertaining to the asset on the HPC. 
 ```bash
-    {
-  "max_queued_jobs": 1,
+{
+  "max_queued_jobs": 6,
   "parallel_jobs": 3,
   "max_expected_time": 2000,
-  "job_list_script_path": "/work/dassco_23_request/lars/job_list.sh",
-  "import_updates_from_path": "/home/ldam/updated_data",
-  "export_to_path": "/home/ldam/from_integration",
-  "import_new_derivatives_path": "/home/ldam/new_created_data",
-  "temporary_persist_path": "/home/ldam/waiting"
+  "max_expected_time_in_queue": 1,
+  "job_list_script_path": "/work/dassco_23_request/ldam/job_list.sh",
+  "export_to_path": "/work/dassco_23_request/ldam/received",
+  "temporary_persist_path": "/work/dassco_23_request/ldam/waiting",
+  "initiate_script": "/work/dassco_23_request/ldam/test_init.sh",
+  "clean_up_script": "path/to/script"
 }
 ```
 
@@ -102,7 +103,7 @@ Overall connection structure for a mongodb instance. Port can be changed also bu
   }
 ```
 ## ndrive_path_config.json
-Path to the folder on the ndrive where we keep the pipeline folders.
+Path to the folder on the ndrive where we keep the workstation name folders.
 ```bash
-  "ndrive_path": "N:/something/that/leads/to/the/path/with/the/pipelines"
+  "ndrive_path": "N:/something/that/leads/to/the/path/with/the/workstation/names"
 ```

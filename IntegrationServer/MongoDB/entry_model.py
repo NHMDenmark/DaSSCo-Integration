@@ -12,6 +12,7 @@ class EntryModel:
         self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
         self._id = guid
+        self.created_time = datetime.utcnow()
         self.pipeline = pipeline
         self.job_list = self.create_joblist()
         self.is_on_hpc = validate_enum.ValidateEnum.NO.value
@@ -31,7 +32,7 @@ class EntryModel:
                 "name": label,
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
-                "timestamp": datetime.utcnow(),  # Default timestamp
+                "job_start_time": None,  # Default timestamp
                 "hpc_job_id": -9,  # Default job ID
             }
             job_list.append(job_entry)
@@ -41,6 +42,7 @@ class EntryModel:
     def get_entry_data(self):
         entry_data = {
             "_id": self._id,
+            "created_timestamp": self.created_time,
             "pipeline": self.pipeline,
             "job_list": self.job_list,
             "is_on_hpc": self.is_on_hpc,
