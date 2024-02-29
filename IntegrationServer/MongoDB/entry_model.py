@@ -33,12 +33,13 @@ class EntryModel:
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
                 "job_start_time": None,  # Default timestamp
-                "hpc_job_id": -9,  # Default job ID
+                "hpc_job_id": -9,  # Default job ID, changed to -9 from -1 due to agreement with HPC scripts to use -1 as error when queueing
             }
             job_list.append(job_entry)
 
         return job_list
 
+    # Used when creating a new entry
     def get_entry_data(self):
         entry_data = {
             "_id": self._id,
