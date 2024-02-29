@@ -12,7 +12,7 @@ from Enums import status_enum
 import json
 
 """
-Responsible for the internal processing and updating of _jobs.json files. 
+Responsible for the internal processing of assets. 
 """
 
 
@@ -79,6 +79,7 @@ class JobDriver:
                         # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
                         pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                         guid = self.util.get_value(json_file_path, "asset_guid")
+                        parent = self.util.get_value(json_file_path, "parent_guid")
                         image_extension = []
                         for format in self.util.get_value(json_file_path, "file_format"):
                             format = "." + format
@@ -116,6 +117,10 @@ class JobDriver:
 
                         # Add asset to batch list in mongodb
                         self.mongo_batchlist.add_entry_to_list(guid, batchlist_name)
+
+                        # Need to change from "" to null if there is no parent guid for NT api
+                        if parent == "":
+                            self.util.update_json(json_file_path, "parent_guid", None)
 
                         # Add new metadata entry to mongoDB
                         self.mongo_metadata.create_metadata_entry(json_file_path, guid)
