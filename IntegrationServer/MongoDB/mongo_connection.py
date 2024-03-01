@@ -76,6 +76,13 @@ class MongoConnection:
 
             self.collection.insert_one({"_id": guid, **data})
 
+    def create_metadata_entry_from_api(self, guid, data):
+
+        if self.get_entry("_id", guid) is None:
+
+            self.collection.insert_one({"_id": guid, **data})
+        else:
+            return False
 
     def update_entry(self, guid, key, value):
         """
@@ -131,7 +138,7 @@ class MongoConnection:
     
     def get_entry_from_multiple_key_pairs(self, key_value_pairs):
         """
-            Retrieve an entry from the MongoDB collection based on multiple key-value pairs.
+            Retrieve an entry from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]
 
             :param key_value_pairs: List of dictionaries representing key-value pairs.
             :return: The first entry matching the specified pair. Returns None if nothing matches.

@@ -21,6 +21,8 @@ class EntryModel:
         self.ars_file_link = ""
         self.batch_list_name = ""
         self.image_check_sum = -1 # Default value
+        self.erda_sync = validate_enum.ValidateEnum.NO.value
+
 
     def create_joblist(self):
         job_mapping = self.util.get_value(self.pipeline_job_config_path, self.pipeline)
@@ -45,12 +47,13 @@ class EntryModel:
             "_id": self._id,
             "created_timestamp": self.created_time,
             "pipeline": self.pipeline,
+            "batch_list_name": self.batch_list_name,
             "job_list": self.job_list,
             "is_on_hpc": self.is_on_hpc,
             "is_in_ars": self.is_in_ars,
             "jobs_status": self.jobs_status,
             "ars_file_link": self.ars_file_link,
-            "batch_list_name": self.batch_list_name,
-            "image_check_sum": self.image_check_sum
+            "image_check_sum": self.image_check_sum,
+            "erda_sync": self.erda_sync
         }
         return entry_data
