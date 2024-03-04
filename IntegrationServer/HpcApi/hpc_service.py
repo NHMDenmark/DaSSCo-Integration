@@ -121,10 +121,19 @@ class SlurmService():
         job_name = queue_data.job_name
         job_start_time = queue_data.timestamp
 
+        if guid is None:
+            return False
+        else:
+            asset = self.mongo_track.get_entry("_id", guid)
+            if asset is None:
+                return False
+
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
         self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
+        return True
+    
     def get_httplink(self, asset_guid):
         
         httplink = self.mongo_track.get_value_for_key(asset_guid, "ars_file_link")        

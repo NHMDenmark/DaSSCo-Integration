@@ -40,7 +40,10 @@ async def update_asset(update_data: update_model):
 
 @app.post("/api/v1/queue_job")
 async def queue_job(queue_data: queue_model):
-    service.job_queued(queue_data)
+    updated = service.job_queued(queue_data)
+
+    if updated is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
 @app.post("/api/v1/asset_ready")
 async def asset_ready(asset_guid: str):
