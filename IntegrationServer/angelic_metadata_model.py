@@ -42,7 +42,7 @@ class MetadataAsset(BaseModel):
     preparation_type: Optional[List[str]]
     pushed_to_specify_date: Optional[datetime]
     restricted_access: Optional[bool] # or a Optional[List[str]] from the restricted access enum
-    specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown 
+    specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown, needs to be dicts for mapping in case of multiple specimens
     status: Optional[str]
     tags: Optional[List[dict]] # basically a way to add comments
     workstation_name: Optional[str]

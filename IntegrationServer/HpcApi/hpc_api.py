@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Any, Optional, List, Dict
@@ -35,7 +36,7 @@ async def receive_metadata(metadata: metadata_model):
 
 @app.post("/api/v1/update_asset")
 async def update_asset(update_data: update_model):
-    service.update_from_slurm(update_data)
+    service.update_from_hpc(update_data)
 
 @app.post("/api/v1/queue_job")
 async def queue_job(queue_data: queue_model):
@@ -53,4 +54,8 @@ def get_httplink(asset_guid: str):
 @app.get("/api/v1/metadata_asset")
 def get_metadata(asset_guid: str):
     asset = service.get_metadata_asset(asset_guid)
+
+    if asset is None:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+
     return asset   

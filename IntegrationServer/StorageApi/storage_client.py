@@ -30,7 +30,14 @@ class StorageClient():
 
           data = response_body.get("data")
           status = response_body.get("status_code")
-          
-
 
           # TODO handle response body, get the http link and save it primarily
+     
+     def sync_erda(self, guid, pipeline, workstation):
+
+          # TODO call sync erda api, get status back check its 200
+          pass
+
+     def get_asset_status(self, guid):
+          # TODO call get asset status api return the status value from the response.
+          return "COMPLETED"
