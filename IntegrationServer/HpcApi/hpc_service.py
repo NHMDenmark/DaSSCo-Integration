@@ -39,16 +39,20 @@ class SlurmService():
         self.update_mongo_track(guid, job, update_status)
 
         # Update jobs JSON file unless its a test guid
-        if guid != "test_0001":
+        try:
             self.update_jobs_json(guid, job, update_status)
+        except FileNotFoundError as e:
+            pass
 
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
             
             self.update_mongo_metadata(guid, data_dict)
             
-            if guid != "test_0001":
+            try:
                 self.update_metadata_json(guid, data_dict)
+            except FileNotFoundError as e:
+                pass
         
         if update_status == self.status.ERROR.value:
             # TODO handle error
@@ -100,7 +104,7 @@ class SlurmService():
 
         # Define job file name and path
         job_file_name = guid + "_jobs.json"
-        in_process_path = os.path.join(project_root, "Files\InProcess")        
+        in_process_path = os.path.join(project_root, "Files/InProcess")        
         job_file_path = os.path.join(in_process_path, f"{pipeline}/{batch_date}/{guid}/{job_file_name}")
 
         # Update jobs JSON file

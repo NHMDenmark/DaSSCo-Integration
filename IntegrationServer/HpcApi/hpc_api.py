@@ -16,7 +16,7 @@ from HpcApi.update_model import UpdateAssetModel
 from HpcApi.queue_model import QueueModel
 
 """
-Rest api setup for receiving data from the slurm. 
+Rest api setup for receiving data from hpc. 
 """
 
 app = FastAPI()
