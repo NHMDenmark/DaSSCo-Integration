@@ -49,6 +49,10 @@ async def asset_ready(asset_guid: str):
 @app.get("/api/v1/httplink")
 def get_httplink(asset_guid: str):
     link = service.get_httplink(asset_guid)
+
+    if link is None:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+
     return link
 
 @app.get("/api/v1/metadata_asset")
