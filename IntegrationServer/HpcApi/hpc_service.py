@@ -90,7 +90,7 @@ class SlurmService():
         # Define job file name and path
         job_file_name = guid + "_jobs.json"
         in_process_path = os.path.join(project_root, "Files\InProcess")        
-        job_file_path = os.path.join(in_process_path, f"{pipeline}\{batch_date}\{guid}\{job_file_name}")
+        job_file_path = os.path.join(in_process_path, f"{pipeline}/{batch_date}/{guid}/{job_file_name}")
 
         # Update jobs JSON file
         self.util.update_json(job_file_path, job, status)
@@ -107,8 +107,8 @@ class SlurmService():
 
         # Define metadata file name and path
         metadata_file_name = guid + ".json"
-        in_process_path = os.path.join(project_root, "Files\InProcess")
-        metadata_file_path = os.path.join(in_process_path, f"{pipeline}\{batch_date}\{guid}\{metadata_file_name}")
+        in_process_path = os.path.join(project_root, "Files/InProcess")
+        metadata_file_path = os.path.join(in_process_path, f"{pipeline}/{batch_date}/{guid}/{metadata_file_name}")
 
         # Update metadata JSON file with key-value pairs from the dictionary
         for key, value in dictionary.items():
@@ -138,4 +138,11 @@ class SlurmService():
         return metadata
 
     def asset_ready(self, asset_guid):
-        self.mongo_track.update_entry(asset_guid, "is_on_hpc", validate_enum.ValidateEnum.YES.value)
+
+        asset = self.get_metadata_asset(asset_guid)
+
+        if asset is not None:
+            self.mongo_track.update_entry(asset_guid, "is_on_hpc", validate_enum.ValidateEnum.YES.value)
+            return True
+        else:
+            return False
