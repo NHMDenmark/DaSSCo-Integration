@@ -28,22 +28,33 @@ class SlurmService():
         update_status = update_data.status
         data_dict = dict(update_data.data)
 
+        if guid is None:
+            return False
+        else:
+            asset = self.mongo_track.get_entry("_id", guid)
+            if asset is None:
+                return False
+
         # Update MongoDB track
         self.update_mongo_track(guid, job, update_status)
 
-        # Update jobs JSON file
-        self.update_jobs_json(guid, job, update_status)
+        # Update jobs JSON file unless its a test guid
+        if guid != "test_0001":
+            self.update_jobs_json(guid, job, update_status)
 
-        # If status is 'DONE', update MongoDB metadata and metadata JSON file
+        # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
             
             self.update_mongo_metadata(guid, data_dict)
-
-            self.update_metadata_json(guid, data_dict)
+            
+            if guid != "test_0001":
+                self.update_metadata_json(guid, data_dict)
         
         if update_status == self.status.ERROR.value:
             # TODO handle error
             pass
+        
+        return True
 
     def update_mongo_track(self, guid, job, status):
         # Update MongoDB track with job status

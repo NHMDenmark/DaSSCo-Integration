@@ -36,7 +36,10 @@ async def receive_metadata(metadata: metadata_model):
 
 @app.post("/api/v1/update_asset")
 async def update_asset(update_data: update_model):
-    service.update_from_hpc(update_data)
+    updated = service.update_from_hpc(update_data)
+
+    if updated is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
 @app.post("/api/v1/queue_job")
 async def queue_job(queue_data: queue_model):

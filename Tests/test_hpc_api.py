@@ -64,6 +64,25 @@ class TestHPCApi(unittest.TestCase):
         response = self.client.post("/api/v1/queue_job", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
+    def test_update_asset(self):
+        test_model = {
+            "guid": "test_0001",
+            "job": "testing",
+            "status": "DONE",
+            "data": {
+                "funding": "triple up"
+            }
+        }
+        model_json = json.dumps(test_model)
+        response = self.client.post("/api/v1/update_asset", data = model_json)
+        self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
+
+        
+        test_model["guid"] = "bogus"
+        model_json = json.dumps(test_model)
+        response = self.client.post("/api/v1/update_asset", data= model_json)
+        self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
+        
 
 if __name__ == "__main__":
     unittest.main()
