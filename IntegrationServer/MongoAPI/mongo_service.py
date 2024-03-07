@@ -19,7 +19,7 @@ class MongoService():
         self.availability_mdbc = mongo_connection.MongoConnection("availability")
         
         self.util = utility.Utility()
-        
+
         self.validate_enum = validate_enum.ValidateEnum
         self.enum_status = status_enum.StatusEnum
         self.nt_status_enum = asset_status_nt.AssetStatusNT
@@ -110,3 +110,24 @@ class MongoService():
         metadata = self.metadata_mdbc.get_entry("_id", guid)
 
         return http_status, metadata
+    
+    def get_entry(self, name, key, value):
+
+        try:
+            mdbc = mongo_connection.MongoConnection(name)
+
+            entry = mdbc.get_entry(key, value)
+
+            if entry is not None:
+                http_status = 200
+                return http_status, entry
+
+            else:
+                http_status = 422
+                msg = {f"status": "COULD NOT FIND ENTRY FOR {key} : {value}"}
+                return http_status, msg
+
+        except Exception as e:
+            http_status = 422
+            msg = {f"status": "COULD NOT CONNECT TO {name}"}
+            return http_status, msg
