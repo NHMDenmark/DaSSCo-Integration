@@ -46,3 +46,12 @@ def get_metadata(guid: str):
 def update_metadata(guid: str, data: Dict[str: str]):
     http_status, metadata = ms.update_metadata(guid, data)
     return JSONResponse(content=metadata, status_code=http_status)
+# untested
+@mongo_app.get("/api/v1/get_entry/{mdbname}/{key}/{value}")
+def get_entry(mdbname: str, key: str, value: str):
+
+    http_status, entry = ms.get_entry(mdbname, key, value)
+
+    return JSONResponse(content=entry, status_code=http_status)
+
+
