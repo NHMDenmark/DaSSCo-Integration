@@ -50,6 +50,9 @@ class MongoConnection:
         print(f"connected to: {self.name}")
         
 
+    def close_mdb(self):
+        self.client.close()
+
     def create_track_entry(self, guid, pipeline):
         """
         Create a new track entry in the MongoDB collection.

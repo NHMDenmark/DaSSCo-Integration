@@ -118,6 +118,8 @@ class MongoService():
 
             entry = mdbc.get_entry(key, value)
 
+            mdbc.close_mdb()
+
             if entry is not None:
                 http_status = 200
                 return http_status, entry
