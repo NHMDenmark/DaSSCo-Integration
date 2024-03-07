@@ -35,3 +35,14 @@ def index():
 async def create_asset_entries(metadata: metadata, file_links: filelinks):
     http_status, msg = ms.create_new_asset_entries(metadata, file_links)
     return JSONResponse(content={f"status": {msg}}, status_code=http_status)
+
+# untested
+@mongo_app.get("/api/v1/get_metadata/{guid}")
+def get_metadata(guid: str):
+    http_status, metadata = ms.get_metadata(guid)
+    return JSONResponse(content=metadata, status_code=http_status)
+# untested
+@mongo_app.put("/api/v1/update_metadata/{guid}")
+def update_metadata(guid: str, data: Dict[str: str]):
+    http_status, metadata = ms.update_metadata(guid, data)
+    return JSONResponse(content=metadata, status_code=http_status)

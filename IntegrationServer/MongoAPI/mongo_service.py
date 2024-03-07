@@ -40,11 +40,11 @@ class MongoService():
             metadata["status"] = self.nt_status_enum.WORKING_COPY.value
 
         # Must include these values 
-        has_value = self.check_metadata_field(metadata, "asset_guid")
-        has_value = self.check_metadata_field(metadata, "collection")
-        has_value = self.check_metadata_field(metadata, "pipeline_name")
-        has_value = self.check_metadata_field(metadata, "institution")
-        has_value = self.check_metadata_field(metadata, "workstation_name")
+        has_value = self.check_metadata_field_contains_value(metadata, "asset_guid")
+        has_value = self.check_metadata_field_contains_value(metadata, "collection")
+        has_value = self.check_metadata_field_contains_value(metadata, "pipeline_name")
+        has_value = self.check_metadata_field_contains_value(metadata, "institution")
+        has_value = self.check_metadata_field_contains_value(metadata, "workstation_name")
         
         if has_value is False:
             http_status = 422
@@ -66,7 +66,8 @@ class MongoService():
         http_status = 200
         msg = "CREATED"
 
-        # TODO persist file links in track entry i think
+        # TODO persist file links in track entry i think, not sure this is needed, depends on how ingestion client handles this
+        # self.track_mdbc.update_entry(guid, "asset_file_links", link_list)
 
         return http_status, msg
     
@@ -74,3 +75,38 @@ class MongoService():
 
         if metadata[field_name] == "" or metadata[field_name] == None:
             return False
+        
+    def get_metadata(self, guid):
+        metadata = self.metadata_mdbc.get_entry("_id", guid)
+
+        if metadata is None:
+            http_status = 422
+            metadata = {"status": "NO ENTRY FOUND"}
+            return http_status, metadata
+        
+        http_status = 200
+
+        return http_status, metadata
+    
+    def update_metadata(self, guid, data):
+        metadata = self.metadata_mdbc.get_entry("_id", guid)
+
+        if metadata is None:
+            http_status = 422
+            metadata = {"status": "NO ENTRY FOUND"}
+            return http_status, metadata
+        
+        for key, value in data.items():
+            
+            if key not in metadata:
+                http_status = 422
+                metadata = {"status": "INVALID FIELD"}
+                return http_status, metadata
+        
+        for key, value in data.items():
+            self.metadata_mdbc.update_entry(guid, key, value)
+        
+        http_status = 200
+        metadata = self.metadata_mdbc.get_entry("_id", guid)
+
+        return http_status, metadata
