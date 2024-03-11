@@ -126,10 +126,37 @@ class MongoService():
 
             else:
                 http_status = 422
-                msg = {f"status": "COULD NOT FIND ENTRY FOR {key} : {value}"}
+                msg = {"status": f"COULD NOT FIND ENTRY FOR {key} : {value}"}
                 return http_status, msg
 
         except Exception as e:
             http_status = 422
-            msg = {f"status": "COULD NOT CONNECT TO {name}"}
+            msg = {"status": f"COULD NOT CONNECT TO {name}"}
+            return http_status, msg
+        
+    def update_entry_key_value(self, mdbname, guid, key, value):
+
+        try:
+            mdbc = mongo_connection.MongoConnection(mdbname)
+
+            entry = mdbc.get_entry("_id", guid)
+
+            if entry is None:
+                http_status = 422
+                msg = {"status": f"COULD NOT FIND ENTRY FOR: {guid}"}
+                return http_status, msg
+            
+            if key not in entry:
+                http_status = 422
+                entry = {"status": f"INVALID FIELD: {key}"}
+                return http_status, key
+            
+            mdbc.update_entry(guid, key, value)
+        
+            http_status = 200
+            metadata = mdbc.get_entry("_id", guid)
+
+        except Exception as e:
+            http_status = 422
+            msg = {"status": f"COULD NOT CONNECT TO {mdbname}"}
             return http_status, msg

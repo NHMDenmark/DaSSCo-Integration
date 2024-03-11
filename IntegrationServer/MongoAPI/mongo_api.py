@@ -36,21 +36,28 @@ async def create_asset_entries(metadata: metadata, file_links: filelinks):
     http_status, msg = ms.create_new_asset_entries(metadata, file_links)
     return JSONResponse(content={f"status": {msg}}, status_code=http_status)
 
-# untested
 @mongo_app.get("/api/v1/get_metadata/{guid}")
 def get_metadata(guid: str):
     http_status, metadata = ms.get_metadata(guid)
     return JSONResponse(content=metadata, status_code=http_status)
-# untested
+
+# TODO ensure we send barcodes and other strings that want to be lists of in actual lists
 @mongo_app.put("/api/v1/update_metadata/{guid}")
-def update_metadata(guid: str, data: Dict[str: str]):
+def update_metadata(guid: str, data: Dict):
     http_status, metadata = ms.update_metadata(guid, data)
     return JSONResponse(content=metadata, status_code=http_status)
-# untested
+
 @mongo_app.get("/api/v1/get_entry/{mdbname}/{key}/{value}")
 def get_entry(mdbname: str, key: str, value: str):
 
     http_status, entry = ms.get_entry(mdbname, key, value)
+
+    return JSONResponse(content=entry, status_code=http_status)
+
+@mongo_app.put("/api/v1/update_entry/{mdbname}/{guid}/{key}/{value}")
+def update_entry(mdbname: str, guid: str, key: str, value: str):
+
+    http_status, entry = ms.update_entry_key_value(mdbname, guid, key, value)
 
     return JSONResponse(content=entry, status_code=http_status)
 
