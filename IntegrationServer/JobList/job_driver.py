@@ -39,9 +39,9 @@ class JobDriver:
 
     def process_new_directories_from_ndrive(self):
 
-        input_dir = "/work/data/DaSSCo-integration/IntegrationServer/Files/NewFiles"
-        in_process_dir = "/work/data/DaSSCo-integration/IntegrationServer/Files/InProcess"
-        error_path = "/work/data/DaSSCo-integration/IntegrationServer/Files/Error"
+        input_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
+        in_process_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/InProcess"
+        error_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/Error"
 
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):
