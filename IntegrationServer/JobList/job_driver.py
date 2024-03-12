@@ -23,7 +23,7 @@ class JobDriver:
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
 
-        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        self.mongo_config_path = "/work/data/DaSSCo-integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
         # self.database_name = next(iter(self.mongo_config_data.keys()))
         self.mongo_track = mongo_connection.MongoConnection("track")
@@ -39,9 +39,9 @@ class JobDriver:
 
     def process_new_directories_from_ndrive(self):
 
-        input_dir = "IntegrationServer/Files/NewFiles"
-        in_process_dir = "IntegrationServer/Files/InProcess"
-        error_path = "IntegrationServer/Files/Error"
+        input_dir = "/work/data/DaSSCo-integration/IntegrationServer/Files/NewFiles"
+        in_process_dir = "/work/data/DaSSCo-integration/IntegrationServer/Files/InProcess"
+        error_path = "/work/data/DaSSCo-integration/IntegrationServer/Files/Error"
 
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):

@@ -16,7 +16,7 @@ class JobAssigner:
     def __init__(self):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
-        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
+        self.pipeline_job_config_path = "/work/data/DaSSCo-integration/IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
     def create_jobs(self, pipeline_name):
         try:

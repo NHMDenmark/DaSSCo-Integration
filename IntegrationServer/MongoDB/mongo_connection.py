@@ -29,9 +29,9 @@ class MongoConnection:
         self.name = name
 
         # Needs to use absolute path here for api to work
-        self.slurm_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
+        self.slurm_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
 
-        self.mongo_config_path = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        self.mongo_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
         self.host = self.config_values.get("host")
