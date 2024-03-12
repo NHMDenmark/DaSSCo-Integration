@@ -2,31 +2,31 @@
   "metadata": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
-    "collection_name": "Metadata"
+    "data_base": "test",
+    "collection_name": "metadata"
   },
   "track": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "test",
     "collection_name": "track"
   },
   "batch": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "test",
     "collection_name": "batch_list"
   },
   "slurm":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "test",
     "collection_name": "slurm_list"
   },
   "availability":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "test",
     "collection_name": "slurm_availability"
   }
 }
