@@ -172,11 +172,17 @@ class MongoConnection:
                 Delete an entry from the MongoDB collection based on its unique identifier.
 
                 :param guid: The unique identifier of the entry.
-                """
+        """
         query = {"_id": guid}
         self.collection.delete_one(query)
     
     def add_entry_to_list(self, guid, list_name):
+        """
+                Adds an assets guid to a list. Used to keep track of which batch assets belong to.
+
+                :param guid: The unique identifier of the entry.
+                :param list_name: The unique identifier of the list.
+        """
         entry = self.get_entry("_id", list_name)
 
         if entry is None:
@@ -188,7 +194,11 @@ class MongoConnection:
     
      
     def find_running_jobs_older_than(self):
+        """
+                Finds an entry based on its job_start_time compared to current time and the max time set in the config file. 
 
+                :return the first entry with a timestamp too old
+        """
         max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
         
         time_ago = datetime.utcnow() - timedelta(hours=max_time)
@@ -196,3 +206,24 @@ class MongoConnection:
         result = self.collection.find({"job_list.job_start_time": {"$lt": time_ago}})
         
         return result
+    
+    def append_existing_list(self, guid, list_key, value):
+        """
+                Appends an existing list in an entry with a value.
+
+                :param guid: The unique identifier of the entry.
+                :param list_key: The key identifier of the list.
+                :param value: The value to be appended to the list.
+        """
+        entry = self.get_entry("_id", guid)
+
+        if entry is None:
+            return False
+        
+        if list_key not in entry:
+            return False
+
+        entry[list_key].append(value)
+
+        self.collection.update_one({"_id": guid}, {"$set": entry})
+

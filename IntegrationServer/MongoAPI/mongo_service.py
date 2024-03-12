@@ -144,17 +144,53 @@ class MongoService():
             if entry is None:
                 http_status = 422
                 msg = {"status": f"COULD NOT FIND ENTRY FOR: {guid}"}
+                mdbc.close_mdb()
                 return http_status, msg
             
             if key not in entry:
                 http_status = 422
-                entry = {"status": f"INVALID FIELD: {key}"}
-                return http_status, key
+                msg = {"status": f"INVALID FIELD: {key}"}
+                mdbc.close_mdb()
+                return http_status, msg
             
             mdbc.update_entry(guid, key, value)
         
             http_status = 200
-            metadata = mdbc.get_entry("_id", guid)
+            data = mdbc.get_entry("_id", guid)
+            mdbc.close_mdb()
+            return http_status, data
+
+        except Exception as e:
+            http_status = 422
+            msg = {"status": f"COULD NOT CONNECT TO {mdbname}"}
+            return http_status, msg
+        
+    def append_list(self, mdbname, guid, list_key, value):
+
+        try:
+            mdbc = mongo_connection.MongoConnection(mdbname)
+
+            entry = mdbc.get_entry("_id", guid)
+
+            if entry is None:
+                http_status = 422
+                msg = {"status": f"COULD NOT FIND ENTRY FOR: {guid}"}
+                mdbc.close_mdb()
+                return http_status, msg
+            
+            if list_key not in entry:
+                http_status = 422
+                msg = {"status": f"INVALID LIST: {list_key}"}
+                mdbc.close_mdb()
+                return http_status, msg
+            
+
+            mdbc.append_existing_list(guid, list_key, value) 
+        
+            http_status = 200
+            data = mdbc.get_entry("_id", guid)
+            mdbc.close_mdb()
+            return http_status, data
 
         except Exception as e:
             http_status = 422
