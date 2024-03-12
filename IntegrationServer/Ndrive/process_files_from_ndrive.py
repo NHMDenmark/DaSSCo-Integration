@@ -21,8 +21,8 @@ class ProcessNewFiles:
 
         self.jobby = job_driver.JobDriver()
 
-        self.new_files_path = "IntegrationServer/Files/NewFiles"
-        self.updated_files_path = "IntegrationServer/Files/UpdatedFiles"
+        self.new_files_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
+        self.updated_files_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/UpdatedFiles"
         
         self.run = True
         self.count = 3

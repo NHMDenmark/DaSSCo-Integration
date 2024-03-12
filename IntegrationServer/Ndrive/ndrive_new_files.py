@@ -20,9 +20,9 @@ class NdriveNewFilesFinder:
 
         self.util = utility.Utility()
 
-        self.new_files_path = "IntegrationServer/Files/NewFiles"
-        self.workstations_config_path = "IntegrationServer/ConfigFiles/workstations_config.json"
-        self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
+        self.new_files_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
+        self.workstations_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/workstations_config.json"
+        self.ndrive_import_path = self.util.get_value("/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         
         self.run = True
         self.count = 2
