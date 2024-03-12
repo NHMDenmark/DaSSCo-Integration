@@ -104,7 +104,8 @@ class JobDriver:
                         self.mongo_track.create_track_entry(subdirectory, pipeline_name)
 
                         # Add image file checksums(s) to track entry
-                        for extension in image_extension:                            
+                        for extension in image_extension:
+                            extension = extension.lower()                            
                             img_file_name = json_file_name.replace('.json', extension)
                             img_file_path = os.path.join(subdirectory_path, img_file_name)
                             check_sum = self.util.calculate_crc_checksum(img_file_path)
