@@ -9,7 +9,7 @@ class EntryModel:
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
-        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
+        self.pipeline_job_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
         self._id = guid
         self.created_time = datetime.utcnow()
