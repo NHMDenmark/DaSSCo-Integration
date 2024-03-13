@@ -35,12 +35,12 @@ def test():
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
     # mongo = mongo_connection.MongoConnection("track")
-    # meta_mongo = mongo_connection.MongoConnection("metadata")
+    meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
     # job_caller = hpc_job_caller.HPCJobCaller()
-    hpc_creator = hpc_asset_creator.HPCAssetCreator()
+    # hpc_creator = hpc_asset_creator.HPCAssetCreator()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
 
     # api.get_bearer_token()
@@ -60,7 +60,7 @@ def test():
     relPath = "IntegrationServer/Files/NewFiles/test.json"
     # meta_mongo.create_metadata_entry(relPath, util.get_value(relPath, "asset_guid"))
     # print(meta_mongo.get_entry("_id", util.get_value(relPath, "asset_guid")))
-    
+    print(meta_mongo.get_entry("_id", "second0002"))
     # print(util.calculate_sha256_checksum("IntegrationServer/Files/InProcess/PIPEHERB0001/2024-01-08/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000.tif"))
     
     # print(util.calculate_sha256_checksum("Tests/checksum.txt"))
