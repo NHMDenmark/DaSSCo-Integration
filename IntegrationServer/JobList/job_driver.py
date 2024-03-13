@@ -108,7 +108,9 @@ class JobDriver:
                             img_file_name = json_file_name.replace('.json', extension)
                             img_file_path = os.path.join(subdirectory_path, img_file_name)
                             check_sum = self.util.calculate_crc_checksum(img_file_path)
-                            self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
+
+                            self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
+                            # self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
 
                         # Add batchlist name to the track entry
                         workstation_name = self.util.get_value(json_file_path, "workstation_name")
