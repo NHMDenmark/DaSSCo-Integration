@@ -40,9 +40,11 @@ def test():
     # new_files = process_files_from_ndrive.ProcessNewFiles()
     # ars = storage_client.StorageClient()
     # job_caller = hpc_job_caller.HPCJobCaller()
-    hpc_creator = hpc_asset_creator.HPCAssetCreator()
+    # hpc_creator = hpc_asset_creator.HPCAssetCreator()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
+    storage = storage_client.StorageClient()
 
+    storage.create_asset("second0002")
     # api.get_bearer_token()
     # api.create_asset()
     # api.update_asset()

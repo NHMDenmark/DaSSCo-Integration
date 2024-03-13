@@ -25,11 +25,13 @@ class StorageClient():
      def create_asset(self, asset_guid):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
-
+          print(json_data)
           response_body = self.client.assets.create_asset(json_data)
 
           data = response_body.get("data")
           status = response_body.get("status_code")
+
+          print(data)
 
           # TODO handle response body, get the http link and save it primarily
      
