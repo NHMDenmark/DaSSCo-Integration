@@ -74,7 +74,8 @@ class StorageService():
         
         self.get_metadata_creation_body(guid)
         
-        data = self.api_metadata.model_dump_json() 
+        data = self.api_metadata.model_dump_json()
+
         return data
     
     def convert_str_to_datetime(self, timestring):

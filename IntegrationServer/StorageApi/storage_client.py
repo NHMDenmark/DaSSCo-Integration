@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 from dasscostorageclient import DaSSCoStorageClient
 from StorageApi import storage_service
+import json
 
 class StorageClient():
      def __init__(self):
@@ -17,16 +18,25 @@ class StorageClient():
 
      def test(self):
           
-          institutions = self.client.institutions.list_institutions()
+          response = self.client.institutions.list()
 
-          for key, value in institutions.items():
-               print(key, value)
+          data = response.json()
+
+          for item in data:
+               print(item)
 
      def create_asset(self, asset_guid):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
-          print(json_data)
-          response_body = self.client.assets.create_asset(json_data)
+          data_dict = json.loads(json_data)
+
+          # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
+          data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
+          data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
+          
+          # TODO change the amount of requested space for the asset from 1 to nearest mb amount
+
+          response_body = self.client.assets.create(data_dict, 1)
 
           data = response_body.get("data")
           status = response_body.get("status_code")
@@ -35,11 +45,83 @@ class StorageClient():
 
           # TODO handle response body, get the http link and save it primarily
      
-     def sync_erda(self, guid, pipeline, workstation):
+     def sync_erda(self, guid):
+          try:
+               response = self.client.file_proxy.synchronize_erda(guid)
 
-          # TODO call sync erda api, get status back check its 200
-          pass
+               if response.status_code == 204:
+                    return True
+               else:
+                    return False
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
 
      def get_asset_status(self, guid):
-          # TODO call get asset status api return the status value from the response.
-          return "COMPLETED"
+          try:
+               response = self.client.assets.get_status(guid)
+
+               status = response["data"].status
+               
+               status_code = response["status_code"]
+
+               if status_code == 200:
+                    status = response["data"].status
+                    return status
+               else:
+                    return False
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
+
+     def open_share(self, guid, institution, collection, mb_allocation):
+
+          user_list = ["TEST_USERS"]
+
+          try:
+               response = self.client.file_proxy.open_share(institution, collection, guid, user_list, mb_allocation)
+
+               status_code = response["status_code"]
+               allocation_status = response["data"].http_allocation_status
+
+               if status_code == 200 and allocation_status == "SUCCESS":
+
+                    path = response["data"].path
+                    hostname = response["data"].hostname
+               
+                    link = hostname + path
+                    
+                    return link
+               else:
+                    return False
+
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
+          
+     def update_metadata(self, guid, update_user):
+
+          json_data = self.service.get_metadata_json_format(guid)
+          data_dict = json.loads(json_data)
+
+          data_dict['updateUser'] = update_user
+
+          # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
+          data_dict["payload_type"] = "INSERT_FROM_UPDATE_METADATA"
+          data_dict["asset_pid"] = "INSERT_FROM_UPDATE_METADATA"
+
+          try:
+               response = self.client.assets.update(guid, data_dict)
+
+               status_code = response["status_code"]
+
+               if status_code == 200:
+
+                    return True
+               else:
+                    return False
+
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
+          

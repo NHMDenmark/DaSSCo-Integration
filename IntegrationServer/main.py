@@ -44,7 +44,12 @@ def test():
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     storage = storage_client.StorageClient()
 
-    storage.create_asset("second0002")
+    #storage.test()
+    #storage.create_asset("second0002")
+    storage.update_metadata("second0002", "Shorty")
+    #print(storage.sync_erda("second0002"))
+    #print(storage.get_asset_status("second0002"))
+    #print(storage.open_share("second0002", "test-institution", "test-collection", 610))
     # api.get_bearer_token()
     # api.create_asset()
     # api.update_asset()
