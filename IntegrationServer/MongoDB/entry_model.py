@@ -22,6 +22,7 @@ class EntryModel:
         self.batch_list_name = ""
         self.image_check_sum = -1 # Default value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
+        self.update_metadata = validate_enum.ValidateEnum.NO.value
 
 
     def create_joblist(self):
@@ -54,6 +55,7 @@ class EntryModel:
             "jobs_status": self.jobs_status,
             "ars_file_link": self.ars_file_link,
             "image_check_sum": self.image_check_sum,
-            "erda_sync": self.erda_sync
+            "erda_sync": self.erda_sync,
+            "update_metadata": self.update_metadata
         }
         return entry_data

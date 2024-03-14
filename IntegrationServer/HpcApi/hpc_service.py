@@ -7,13 +7,14 @@ sys.path.append(project_root)
 import utility
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
-from Enums import validate_enum
+from Enums.validate_enum import ValidateEnum
 
 class SlurmService():
 
     def __init__(self):
         self.util = utility.Utility()
         self.status = StatusEnum
+        self.validate = ValidateEnum
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
 
@@ -53,7 +54,9 @@ class SlurmService():
                 self.update_metadata_json(guid, data_dict)
             except FileNotFoundError as e:
                 pass
-        
+            
+            self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+
         if update_status == self.status.ERROR.value:
             # TODO handle error
             pass
@@ -166,7 +169,7 @@ class SlurmService():
         asset = self.get_metadata_asset(asset_guid)
 
         if asset is not None:
-            self.mongo_track.update_entry(asset_guid, "is_on_hpc", validate_enum.ValidateEnum.YES.value)
+            self.mongo_track.update_entry(asset_guid, "is_on_hpc", self.validate.YES.value)
             return True
         else:
             return False

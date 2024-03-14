@@ -9,17 +9,19 @@ from MongoDB import mongo_connection
 from StorageApi import storage_client
 from Enums import validate_enum
 
+
 """
-Responsible for checking for assets that are ready for erda syncing after they have been transferred to HPC cluster.
+Responsible updating metadata and changing the status of the update_metadata field in the track db.
 """
 
-class SyncErda:
+class UpdateMetadata:
 
     def __init__(self):
 
         self.track_mongo = mongo_connection.MongoConnection("track")
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
+        
         self.run = True
         self.count = 2
 
@@ -29,16 +31,18 @@ class SyncErda:
 
         while self.run:
             
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_on_hpc" : self.validate_enum.YES.value, "erda_sync": self.validate_enum.NO.value}])
+            asset = self.track_mongo.get_entry("update_metadata", self.validate_enum.YES.value)
 
             if asset is not None:
                 guid = asset["_id"]
                 
-                synced = self.storage_api.sync_erda(guid)
-                
-                if synced is True:
-                    self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
-                
+                updated = self.storage_api.update_metadata(guid)
+
+                if updated is True:
+                    self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)
+            
+            # TODO handle false better than ignoring it
+
                 time.sleep(1)
 
             if asset is None:
@@ -51,4 +55,4 @@ class SyncErda:
 
 
 if __name__ == '__main__':
-    SyncErda()
+    UpdateMetadata()

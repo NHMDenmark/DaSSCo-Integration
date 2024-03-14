@@ -99,7 +99,7 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
           
-     def update_metadata(self, guid, update_user):
+     def update_metadata(self, guid, update_user = "OCTOPUS"):
 
           json_data = self.service.get_metadata_json_format(guid)
           data_dict = json.loads(json_data)
