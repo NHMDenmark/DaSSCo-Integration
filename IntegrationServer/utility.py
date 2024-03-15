@@ -120,5 +120,5 @@ class Utility:
     
     def calculate_file_size_round_to_next_mb(self, file_path):
         size_in_bytes = os.path.getsize(file_path)
-        size_in_mb = math.ceil(size_in_bytes / (1024 * 1024))
+        size_in_mb = math.ceil(size_in_bytes / (1000 * 1000))
         return size_in_mb

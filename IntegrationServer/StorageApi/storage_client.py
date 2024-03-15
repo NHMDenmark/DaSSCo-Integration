@@ -25,7 +25,7 @@ class StorageClient():
           for item in data:
                print(item)
 
-     def create_asset(self, asset_guid):
+     def create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
           data_dict = json.loads(json_data)
@@ -33,17 +33,22 @@ class StorageClient():
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
           data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
           data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
+
+
+          try:
+               response = self.client.assets.create(data_dict, allocation_size)
+               
+               status_code = response["status_code"]
+
+               if status_code == 200:
+                    
+                    return True
+               else:
+                    return False
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
           
-          # TODO change the amount of requested space for the asset from 1 to nearest mb amount
-
-          response_body = self.client.assets.create(data_dict, 1)
-
-          data = response_body.get("data")
-          status = response_body.get("status_code")
-
-          print(data)
-
-          # TODO handle response body, get the http link and save it primarily
      
      def sync_erda(self, guid):
           try:
@@ -124,4 +129,24 @@ class StorageClient():
           except Exception as e:
                print(f"Api or wrapper fail: {e}")
                return False
+     
+     def upload_file(self, guid, institution, collection, filepath):
           
+          try:
+               response = self.client.file_proxy.upload(filepath, institution, collection, guid)
+
+               status_code = response["status_code"]
+
+               if status_code == 200:
+
+                    expected_crc = response["data"].expected_crc
+                    actual_crc = response["data"].actual_crc
+
+                    if expected_crc == actual_crc:
+                         return True
+               else:
+                    return False
+
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False

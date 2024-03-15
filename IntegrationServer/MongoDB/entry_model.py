@@ -19,8 +19,11 @@ class EntryModel:
         self.is_in_ars = validate_enum.ValidateEnum.NO.value
         self.jobs_status = status_enum.StatusEnum.WAITING.value
         self.ars_file_link = ""
+        self.has_new_file = validate_enum.ValidateEnum.NO.value
         self.batch_list_name = ""
         self.image_check_sum = -1 # Default value
+        self.image_size = -1 # Default value
+        self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
 
@@ -54,7 +57,10 @@ class EntryModel:
             "is_in_ars": self.is_in_ars,
             "jobs_status": self.jobs_status,
             "ars_file_link": self.ars_file_link,
+            "has_new_file": self.has_new_file,
             "image_check_sum": self.image_check_sum,
+            "image_size": self.image_size,
+            "has_open_share": self.has_open_share,
             "erda_sync": self.erda_sync,
             "update_metadata": self.update_metadata
         }

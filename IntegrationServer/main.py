@@ -45,8 +45,8 @@ def test():
     storage = storage_client.StorageClient()
 
     #storage.test()
-    #storage.create_asset("second0002")
-    storage.update_metadata("second0002", "Shorty")
+    print(storage.create_asset("third0003"))
+    #storage.update_metadata("second0002", "Shorty")
     #print(storage.sync_erda("second0002"))
     #print(storage.get_asset_status("second0002"))
     #print(storage.open_share("second0002", "test-institution", "test-collection", 610))
@@ -78,9 +78,10 @@ def test():
         util.write_full_json(relPath, entry)
     
     crc = util.calculate_crc_checksum("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
-    mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
-    print(crc, mb)
     """
+    #mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/CP0002637_L_selago_Fuji_ICC.tif")
+    #print(mb)
+    
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/
