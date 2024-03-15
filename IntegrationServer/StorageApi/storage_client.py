@@ -130,10 +130,10 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
      
-     def upload_file(self, guid, institution, collection, filepath):
+     def upload_file(self, guid, institution, collection, filepath, file_size_mb):
           
           try:
-               response = self.client.file_proxy.upload(filepath, institution, collection, guid)
+               response = self.client.file_proxy.upload(filepath, institution, collection, guid, file_size_mb)
 
                status_code = response["status_code"]
 

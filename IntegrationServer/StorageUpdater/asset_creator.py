@@ -37,7 +37,7 @@ class AssetCreator:
             if asset is not None:
                 guid = asset["_id"]
                 
-                if asset["image_size"] is not -1:
+                if asset["image_size"] != -1:
                     created = self.storage_api.create_asset(guid, asset["image_size"])
                 else:
                     created = self.storage_api.create_asset(guid)
@@ -46,7 +46,7 @@ class AssetCreator:
                 if created is True:
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-                    if asset["image_size"] is not -1:
+                    if asset["image_size"] != -1:
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
             # TODO handle false better than ignoring it set AWAIT or some other status for is_in_ars maybe
