@@ -1,5 +1,12 @@
 | **Meta Data Field name in json** | **written by      ** | **when** | **saved where** | **when** | **Relevant into ** |
 |----------------------------------|----------------------|----------|-----------------|----------|--------------------|
+| asset_created_by                 | ARS    |upon event |ARS     |upon ARS call |             |
+| asset_deleted_by                 | ARS    |upon event |ARS     |upon ARS call |             |
+| asset_guid                 | IngestionClient for uploaded assets; pipeline for derivatives    |running IngestionClient/pipeline | IngestionClient-->metadata file; pipline -->ARS   | |             |
+| asset_pid                 |     | |     | |             |
+| asset_subject                  | pipeline    |running pipeline |   ARS  |upon ARS call |             |
+| date_asset_taken                 | IngestionClient for uploaded assets; pipeline for derivatives    |running IngestionClient/pipeline |IngestionClient-->metadata file; pipline -->ARS     | |             |
+
 | Asset Subject                    | pipeline/manual?     | |ARS??     | |label             |
 | Barcode                          |                      | |ARS       |                    ||
 | Tags                             |                      |  |            |   | MSO??              |
