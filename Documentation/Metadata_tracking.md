@@ -2,10 +2,10 @@
 |----------------------------------|----------------------|----------|-----------------|----------|--------------------|
 | asset_created_by                 | ARS    |upon event |ARS     |upon ARS call |             |
 | asset_deleted_by                 | ARS    |upon event |ARS     |upon ARS call |             |
-| asset_guid                 | IngestionClient for uploaded assets    |running IngestionClient| metadata file   |running IngestionClient |             |
+| asset_guid                 | IngestionClient    |running IngestionClient| metadata file   |running IngestionClient |             |
 | asset_pid                 |     | |     | |             |
 | asset_subject                  | pipeline    |running pipeline |   ARS  |upon ARS call |             |
-| date_asset_taken                 | IngestionClient for uploaded assets    |running IngestionClient|metadata file    |running IngestionClient |             |
+| date_asset_taken                 | IngestionClient   |running IngestionClient|metadata file    |running IngestionClient |             |
 | asset_updated_by                   |   | |     | |             |
 | audited                    |     | |     | |             |
 | audited_by                    |      | |     | |             |
