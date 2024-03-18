@@ -1,7 +1,8 @@
 from datetime import datetime
-
+import time
 import utility
 from Enums import status_enum, validate_enum
+from MongoDB.file_model import FileModel
 
 class EntryModel:
 
@@ -12,17 +13,17 @@ class EntryModel:
         self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
         self._id = guid
-        self.created_time = datetime.utcnow()
+        self.created_time = datetime.now() #datetime.utcnow()
         self.pipeline = pipeline
-        self.job_list = self.create_joblist()
-        self.is_on_hpc = validate_enum.ValidateEnum.NO.value
-        self.is_in_ars = validate_enum.ValidateEnum.NO.value
-        self.jobs_status = status_enum.StatusEnum.WAITING.value
-        self.ars_file_link = ""
-        self.has_new_file = validate_enum.ValidateEnum.NO.value
         self.batch_list_name = ""
-        self.image_check_sum = -1 # Default value
-        self.image_size = -1 # Default value
+        self.job_list = self.create_joblist()
+        self.jobs_status = status_enum.StatusEnum.WAITING.value
+        self.file_list = []
+        self.files_status = status_enum.StatusEnum.WAITING.value
+        self.asset_size = -1
+        self.hpc_ready = validate_enum.ValidateEnum.NO.value
+        self.is_in_ars = validate_enum.ValidateEnum.NO.value
+        self.has_new_file = validate_enum.ValidateEnum.NO.value
         self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
@@ -53,13 +54,13 @@ class EntryModel:
             "pipeline": self.pipeline,
             "batch_list_name": self.batch_list_name,
             "job_list": self.job_list,
-            "is_on_hpc": self.is_on_hpc,
-            "is_in_ars": self.is_in_ars,
             "jobs_status": self.jobs_status,
-            "ars_file_link": self.ars_file_link,
+            "file_list": self.file_list,
+            "files_status": self.files_status,
+            "asset_size": self.asset_size,
+            "hpc_ready": self.hpc_ready,
+            "is_in_ars": self.is_in_ars,
             "has_new_file": self.has_new_file,
-            "image_check_sum": self.image_check_sum,
-            "image_size": self.image_size,
             "has_open_share": self.has_open_share,
             "erda_sync": self.erda_sync,
             "update_metadata": self.update_metadata

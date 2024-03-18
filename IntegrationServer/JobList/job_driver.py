@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import shutil
 import utility
 from JobList import job_assigner
-from MongoDB import mongo_connection
+from MongoDB import mongo_connection, file_model
 from Enums import status_enum, validate_enum
 import json
 
@@ -23,6 +23,7 @@ class JobDriver:
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
         self.validate = validate_enum.ValidateEnum
+        self.file_model = file_model.FileModel()
 
         self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
@@ -105,15 +106,31 @@ class JobDriver:
                         self.mongo_track.create_track_entry(subdirectory, pipeline_name)
 
                         # Add image file checksums(s) and img file size to track entry
-                        for extension in image_extension:                            
+                        for extension in image_extension:
+
                             img_file_name = json_file_name.replace('.json', extension)
                             img_file_path = os.path.join(subdirectory_path, img_file_name)
 
                             img_size = self.util.calculate_file_size_round_to_next_mb(img_file_path)
                             check_sum = self.util.calculate_crc_checksum(img_file_path)
+                            file_type = extension
 
-                            self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
-                            self.mongo_track.update_entry(guid, "image_size", img_size)
+                            self.file_model = file_model.FileModel()
+
+                            self.file_model.file_size = img_size
+                            self.file_model.check_sum = check_sum
+                            self.file_model.erda_sync = self.validate.NO.value
+                            self.file_model.name = img_file_name
+                            self.file_model.type = file_type
+                            self.file_model.deleted = False
+                            
+                            file_data = self.file_model.model_dump_json()
+
+                            self.mongo_track.append_existing_list(guid, "file_list", file_data)
+
+
+                            #self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
+                            #self.mongo_track.update_entry(guid, "image_size", img_size)
                             # self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
 
                         if len(image_extension) > 0:

@@ -42,36 +42,19 @@ def test():
     # job_caller = hpc_job_caller.HPCJobCaller()
     # hpc_creator = hpc_asset_creator.HPCAssetCreator()
     #  cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
-    storage = storage_client.StorageClient()
+    #storage = storage_client.StorageClient()
 
     #storage.test()
-    print(storage.create_asset("third0003"))
+    #print(storage.create_asset("third0003"))
     #storage.update_metadata("second0002", "Shorty")
     #print(storage.sync_erda("second0002"))
     #print(storage.get_asset_status("second0002"))
     #print(storage.open_share("second0002", "test-institution", "test-collection", 610))
-    # api.get_bearer_token()
-    # api.create_asset()
-    # api.update_asset()
-    # api.api_get_asset()
-
-    #  smb.test_run()
-    # jobby.process_new_directories()
- 
-    # mongo.update_entry("exa", "funding", "bringle")
-    # mongo.create_track_entry("exa", "EXAMPLE")
-    # mongo.update_track_job_status("7e8-1-08-08-29-07-0-000-00-000-03158e-00000", "label", "FULLPATH")
-    # print(mongo.get_entry("_id", "exa"))
-    # mongo.delete_entry("exa")
+    
 
     relPath = "IntegrationServer/Files/NewFiles/test.json"
-    # meta_mongo.create_metadata_entry(relPath, util.get_value(relPath, "asset_guid"))
-    # print(meta_mongo.get_entry("_id", util.get_value(relPath, "asset_guid")))
-    
-    # print(util.calculate_sha256_checksum("IntegrationServer/Files/InProcess/PIPEHERB0001/2024-01-08/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000/7e8-1-08-08-29-07-0-000-00-000-0439e4-00000.tif"))
-    
-    # print(util.calculate_sha256_checksum("Tests/checksum.txt"))
-    # ars.test()
+    #name = os.path.basename(relPath)
+    #print(name)
     """
     x = mongo.find_running_jobs_older_than()
     for entry in x:
