@@ -11,31 +11,31 @@
 | audited_by                    |      | |     | |             |
 | audited_date                  |      | |     | |             |
 |barcode| pipeline     |running pipeline |  ARS   |upon ARS call |             |
-|collection| IngestionClient for uploaded assets     | running IngestionClient|   metadata file   |running IngestionClient  |             |
+|collection| IngestionClient    | running IngestionClient|   metadata file   |running IngestionClient  |             |
 |date_asset_created|      | |     | |             |
 |date_asset_deleted|      | |     | |             |
 |date_asset_finalised|      | |     | |             |
 |date_asset_updated|      | |     | |             |
-|date_metadata_created|     suggestion:IngestionClient     |suggestion:running IngestionClient  |suggestion: metadata file    | |             |
+|date_metadata_created|     suggestion:IngestionClient     |suggestion:running IngestionClient  |suggestion: metadata file    |suggestion:running IngestionClient |             |
 |date_metadata_updated| ARS    |upon event |ARS     |upon ARS call |             |
 |date_metadata_uploaded| ARS    |upon event |ARS     |upon ARS call |             |
-|digitiser|IngestionClient for uploaded assets |running IngestionClient     |metadata file |             ||
+|digitiser|IngestionClient |running IngestionClient     |metadata file |  running IngestionClient           ||
 |external_publisher|      | |     | |             |
-|file_format| IngestionClient for uploaded assets |running IngestionClient     |metadata file |             ||
-|funding| IngestionClient for uploaded assets|running IngestionClient     |metadata file |             ||
-|institution| IngestionClient for uploaded assets|running IngestionClient    |metadata file |             ||
-|metadata_created_by| suggestion:IngestionClient     |suggestion:running IngestionClient  |suggestion: metadata file    | |             |
+|file_format| IngestionClient  |running IngestionClient     |metadata file |running IngestionClient             ||
+|funding| IngestionClient |running IngestionClient     |metadata file |   running IngestionClient          ||
+|institution| IngestionClient |running IngestionClient    |metadata file | running IngestionClient            ||
+|metadata_created_by| suggestion:IngestionClient     |suggestion:running IngestionClient  |suggestion: metadata file    |suggestion:running IngestionClient |             |
 |metadata_updated_by|      | |     | |             |
 |metadata_uploaded_by|      | |     | |             |
 |multispecimen| pipeline     | running pipeline|    ARS |upon ARS call |             |
-|parent_guid| pipeline     |running pipeline:derivative |metadata file     | |             |
-|payload_type| IngestionClient for uploaded assets |running IngestionClient     |metadata file |             ||
-|pipeline_name| IngestionClient for uploaded assets |running IngestionClient     |metadata file |             ||
-|preparation_type| IngestionClient for uploaded assets   |running IngestionClient/pipeline  |metadata file      | |             |
+|parent_guid| pipeline     |running pipeline:derivative |metadata file     |running IngestionClient |             |
+|payload_type| IngestionClient |running IngestionClient     |metadata file |  running IngestionClient           ||
+|pipeline_name| IngestionClient |running IngestionClient     |metadata file | running IngestionClient            ||
+|preparation_type| IngestionClient    |running IngestionClient/pipeline  |metadata file      |running IngestionClient |             |
 |pushed_to_specify_date|      | |     | |             |
 |restricted_access|      | |     | |             |
 |specimen_pid|      | |     | |             |
 |status|      | |     | |             |
 |tags|      | |     | |             |
-|workstation_name| IngestionClient for uploaded assets    |running IngestionClient |  metadata file    | |             |
+|workstation_name| IngestionClient    |running IngestionClient |  metadata file    |running IngestionClient |             |
 
