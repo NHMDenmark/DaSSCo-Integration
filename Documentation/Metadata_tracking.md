@@ -7,9 +7,9 @@
 | asset_subject                  | pipeline    |running pipeline |   ARS  |upon ARS call |             |
 | date_asset_taken                 | IngestionClient for uploaded assets    |running IngestionClient|metadata file    |running IngestionClient |             |
 | asset_updated_by                   |   | |     | |             |
-| audited                    | TBD    | |     | |             |
-| audited_by                    | TBD     | |     | |             |
-| audited_date                  | TBD     | |     | |             |
+| audited                    |     | |     | |             |
+| audited_by                    |      | |     | |             |
+| audited_date                  |      | |     | |             |
 |barcode| pipeline     |running pipeline |  ARS   |upon ARS call |             |
 |collection| IngestionClient for uploaded assets     | running IngestionClient|   metadata file   |running IngestionClient  |             |
 |date_asset_created|      | |     | |             |
