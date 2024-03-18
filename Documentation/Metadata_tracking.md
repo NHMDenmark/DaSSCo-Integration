@@ -18,16 +18,16 @@
 |date_asset_finalised| TBD     | |     | |             |
 |date_asset_updated| TBD     | |     | |             |
 |date_metadata_created| TBD     | |     | |             |
-    |date_metadata_updated| TBD     | |     | |             |
-    |date_metadata_uploaded| TBD     | |     | |             |
+    |date_metadata_updated| ARS    |upon event |ARS     |upon ARS call |             |
+    |date_metadata_uploaded| ARS    |upon event |ARS     |upon ARS call |             |
     |digitiser|IngestionClient for uploaded assets; pipeline for derivatives |running IngestionClient/pipeline     |metadata file |             ||
     |external_publisher| TBD     | |     | |             |
     |file_format| IngestionClient for uploaded assets; pipeline for derivatives |running IngestionClient/pipeline     |metadata file |             ||
     |funding| IngestionClient for uploaded assets; pipeline for derivatives |running IngestionClient/pipeline     |metadata file |             ||
     |institution| IngestionClient for uploaded assets; pipeline for derivatives |running IngestionClient/pipeline     |metadata file |             ||
-    "metadata_created_by| TBD     | |     | |             |
-    "metadata_updated_by| TBD     | |     | |             |
-    "metadata_uploaded_by| TBD     | |     | |             |
+    |metadata_created_by| TBD     | |     | |             |
+    |metadata_updated_by| TBD     | |     | |             |
+    |metadata_uploaded_by| TBD     | |     | |             |
     |multispecimen| pipeline     | running pipeline|    ARS |upon ARS call |             |
     |parent_guid| pipeline     |running pipeline |metadata file     | |             |
     |payload_type| IngestionClient for uploaded assets; pipeline for derivatives |running IngestionClient/pipeline     |metadata file |             ||
@@ -40,31 +40,3 @@
     |tags|      | |     | |             |
     |workstation_name| IngestionClient for uploaded assets; pipeline for derivatives     |running IngestionClient/pipeline |  metadata file    | |             |
 
-
-
-| barcode                          |                      | |ARS       |                    ||
-| Tags                             |                      |  |            |   | MSO??              |
-| Multispecimen                    | pipeline             | |ARS       |   |                 |
-| Uploaded by                      |                      |  |              | |                    |
-| Funding                          | Ingestion client     | |ARS        | |dassco             |
-| Parent GUID                      |                      | |ARS       |                    |
-| Payload type                     | Ingestion client     | |ARS       | |image,ctscan,txt   |
-| Prepration Type                  | Ingestion client     | |ARS       | |sheet.pinned,dry   |
-| Status                           | ARS            | |ARS      |  |                  |
-| Asset Locked                     |                      | |ARS       | |                   |
-| Tags                             |                      |  |            |   | status list?       |
-| Specimen pid                     |        Specify?????? |  |             |  |                    |
-| date_asset_create                |  ARS           | |ARS       |       |             |
-| date_asset_deleted               |  ARS           | |ARS       |        |            |
-| date_asset_updated               |  ARS           | |ARS       |         |           |
-| asset_created_by                 |  ARS           | |ARS       |          |          |
-| asset_deleted_by                 |  ARS           | |ARS       |           |         |
-| asset_updated_by                 |  ARS           | |ARS       |            |        |
-| digitser                         |  intgestion client   | |                | |                   |
-| file format                      |  ingestion client    |  |               | |can there be several per asset?       |
-| asset guid/mediaguid             |  ingestion client    |  |               |  |                  |
-| asset_taken_date                 |  ingestion client    | |ARS       |         |           |
-| pushed_to_specify                |  ARS??         | ARS?      | |               |    |
-|                                  |                      |     ||           |                    |
-|                                  |                      |      ||          |                    |
-|                                  |                      |       ||          |                    |
