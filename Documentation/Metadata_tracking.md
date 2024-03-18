@@ -10,7 +10,6 @@
 | audited                    | TBD    | |     | |             |
 | audited_by                    | TBD     | |     | |             |
 | audited_date                  | TBD     | |     | |             |
-
 |barcode| pipeline     |running pipeline |  ARS   |upon ARS call |             |
 |collection| IngestionClient for uploaded assets     | running IngestionClient|   metadata file   |running IngestionClient  |             |
 |date_asset_created|      | |     | |             |
