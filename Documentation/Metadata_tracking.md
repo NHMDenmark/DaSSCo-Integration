@@ -36,6 +36,6 @@
 |restricted_access|      | |     | |             |
 |specimen_pid|      | |     | |             |
 |status|      | |     | |             |
-|tags|      | |     | |             |
+|tags| suggestion:IngestionClient     |suggestion:running IngestionClient  |suggestion: metadata file    |suggestion:running IngestionClient |  "version":"v2.0.5"           |
 |workstation_name| IngestionClient    |running IngestionClient |  metadata file    |running IngestionClient |             |
 
