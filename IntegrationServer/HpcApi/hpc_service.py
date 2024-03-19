@@ -47,7 +47,7 @@ class HPCService():
 
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
-            
+
             self.update_mongo_metadata(guid, data_dict)
             
             try:
