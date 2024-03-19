@@ -19,7 +19,7 @@ class EntryModel:
         self.job_list = self.create_joblist()
         self.jobs_status = status_enum.StatusEnum.WAITING.value
         self.file_list = []
-        self.files_status = status_enum.StatusEnum.WAITING.value
+        self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
         self.is_in_ars = validate_enum.ValidateEnum.NO.value

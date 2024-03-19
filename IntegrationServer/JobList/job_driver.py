@@ -126,6 +126,8 @@ class JobDriver:
                             
                             file_data = self.file_model.model_dump_json()
 
+                            file_data = json.loads(file_data)
+
                             self.mongo_track.append_existing_list(guid, "file_list", file_data)
 
 
