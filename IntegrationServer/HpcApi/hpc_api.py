@@ -50,7 +50,7 @@ async def queue_job(queue_data: job_model):
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
 @app.post("/api/v1/start_job")
-async def queue_job(start_data: job_model):
+async def start_job(start_data: job_model):
     started = service.job_started(start_data)
 
     if started is False:
