@@ -114,6 +114,8 @@ class JobDriver:
                             img_size = self.util.calculate_file_size_round_to_next_mb(img_file_path)
                             check_sum = self.util.calculate_crc_checksum(img_file_path)
                             file_type = extension
+                            file_type = file_type[-3:]
+                            file_type = file_type.lower()
 
                             self.file_model = file_model.FileModel()
 

@@ -87,7 +87,7 @@ class NdriveNewFilesFinder:
                 print(f"An error occurred: {e}")
 
     """
-    Renames the batch directory on the server the import was done from. Adds the prefix imported_ to the directory.
+    Renames the batch directory on the direcory the import was done from. Adds the prefix imported_ to the directory.
     """
 
     def rename_batch_directory_after_import(self, local_path):
@@ -95,31 +95,10 @@ class NdriveNewFilesFinder:
 
         # Define the new path
         new_path = os.path.join(os.path.dirname(local_path), f"imported_{batch_name}")
+        old_path = os.path.join(os.path.dirname(local_path), batch_name)
 
-        # Create the new directory
-        os.makedirs(new_path, exist_ok=True)
-
-        # Move contents from the old directory to the new one
-        for item in os.listdir(local_path):
-            old_item_path = os.path.join(local_path, item)
-            new_item_path = os.path.join(new_path, item)
-            shutil.copy(old_item_path, new_item_path)
-
-        # Check if everything has been moved successfully
-        old_contents = set(os.listdir(local_path))
-        new_contents = set(os.listdir(new_path))
-
-        if old_contents == new_contents:
-            # If contents are the same, remove the old directory
-            shutil.rmtree(local_path)
-        else:
-            for file in old_contents:
-                print(file)
-            for file in new_contents:
-                print(file)
-            # TODO Handle the case where not everything was moved successfully
-            print(f"Error: Not all contents in {local_path} were successfully moved.")
-
+        # Rename the directory
+        os.rename(old_path, new_path)
 
     def get_batch_directory_path(self, remote_folder):
         # Read workstation configuration data from JSON file
