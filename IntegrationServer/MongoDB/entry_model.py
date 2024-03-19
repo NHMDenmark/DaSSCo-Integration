@@ -39,6 +39,7 @@ class EntryModel:
                 "name": label,
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
+                "job_queued_time": None, # Default timestamp
                 "job_start_time": None,  # Default timestamp
                 "hpc_job_id": -9,  # Default job ID, changed to -9 from -1 due to agreement with HPC scripts to use -1 as error when queueing
             }

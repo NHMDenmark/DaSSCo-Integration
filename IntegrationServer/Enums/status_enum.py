@@ -7,3 +7,4 @@ class StatusEnum(Enum):
     STARTING = "STARTING"
     ERROR = "ERROR"
     NONE = "NONE"
+    QUEUED = "QUEUED"

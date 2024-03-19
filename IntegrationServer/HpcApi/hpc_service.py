@@ -9,7 +9,7 @@ from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 
-class SlurmService():
+class HPCService():
 
     def __init__(self):
         self.util = utility.Utility()
@@ -137,7 +137,26 @@ class SlurmService():
         guid = queue_data.guid
         job_id = queue_data.job_id
         job_name = queue_data.job_name
-        job_start_time = queue_data.timestamp
+        job_queued_time = queue_data.timestamp
+
+        if guid is None:
+            return False
+        else:
+            asset = self.mongo_track.get_entry("_id", guid)
+            if asset is None:
+                return False
+
+        self.mongo_track.update_track_job_status(guid, job_name, self.status.QUEUED.value)
+        self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
+        self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
+
+        return True
+    
+    def job_started(self, started_data):
+
+        guid = started_data.guid
+        job_name = started_data.job_name
+        job_start_time = started_data.timestamp
 
         if guid is None:
             return False
@@ -147,7 +166,6 @@ class SlurmService():
                 return False
 
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
-        self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
         return True

@@ -199,11 +199,25 @@ class MongoConnection:
 
                 :return the first entry with a timestamp too old
         """
-        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
+        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_running_job")
         
-        time_ago = datetime.utcnow() - timedelta(hours=max_time)
+        time_ago = datetime.now() - timedelta(hours=max_time)
 
         result = self.collection.find({"job_list.job_start_time": {"$lt": time_ago}})
+        
+        return result
+    
+    def find_queued_jobs_older_than(self):
+        """
+                Finds an entry based on its job_queued_time compared to current time and the max time set in the config file. 
+
+                :return the first entry with a timestamp too old
+        """
+        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
+        
+        time_ago = datetime.now() - timedelta(hours=max_time)
+
+        result = self.collection.find({"job_list.job_queued_time": {"$lt": time_ago}})
         
         return result
     

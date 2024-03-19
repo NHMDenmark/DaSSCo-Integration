@@ -13,7 +13,7 @@ import utility
 from metadata_model import MetadataAsset
 from HpcApi import hpc_service
 from HpcApi.update_model import UpdateAssetModel
-from HpcApi.queue_model import QueueModel
+from HpcApi.job_model import JobModel
 
 """
 Rest api setup for receiving data from hpc. 
@@ -21,10 +21,10 @@ Rest api setup for receiving data from hpc.
 
 app = FastAPI()
 util = utility.Utility()
-service = hpc_service.SlurmService()
+service = hpc_service.HPCService()
 metadata_model = MetadataAsset
 update_model = UpdateAssetModel
-queue_model = QueueModel
+job_model = JobModel
 
 @app.get("/")
 def index():
@@ -43,10 +43,17 @@ async def update_asset(update_data: update_model):
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
 @app.post("/api/v1/queue_job")
-async def queue_job(queue_data: queue_model):
+async def queue_job(queue_data: job_model):
     updated = service.job_queued(queue_data)
 
     if updated is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+
+@app.post("/api/v1/start_job")
+async def queue_job(start_data: job_model):
+    started = service.job_started(start_data)
+
+    if started is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
 @app.post("/api/v1/asset_ready")
