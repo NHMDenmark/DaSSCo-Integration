@@ -51,9 +51,23 @@ class HPCOpenShare:
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 asset_size = self.mongo_track.get_value_for_key(guid, "asset_size")
                 
-                self.storage_api.open_share(guid, institution, collection, asset_size)
+                proxy_path = self.storage_api.open_share(guid, institution, collection, asset_size)
                 
-                
+                if proxy_path is not False:
+
+                    # create links for all files in the asset
+                    files = asset["file_list"]
+
+                    for file in files:
+                        if file["deleted"] is not True:
+                            name = file["name"]
+                            link = proxy_path + name
+                            self.mongo_track.update_track_file_list(guid, file, "ars_link", link)
+
+                    
+                    self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
+
+                # TODO handle if proxy path is false
 
 if __name__ == '__main__':
     HPCOpenShare()
