@@ -72,7 +72,7 @@ class StorageClient():
 
                if status_code == 200:
                     status = response["data"].status
-                    print(status)
+
                     return status
                else:
                     return False
