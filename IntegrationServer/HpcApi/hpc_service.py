@@ -171,9 +171,14 @@ class HPCService():
         return True
     
     def get_httplink(self, asset_guid):
+        # TODO handle multiple files for one asset
+        asset = self.mongo_track.get_entry("_id", asset_guid)        
         
-        httplink = self.mongo_track.get_value_for_key(asset_guid, "ars_file_link")        
-        
+        files = asset["file_list"]
+
+        for file in files:
+            httplink = file["ars_link"]
+
         return httplink
     
     def get_metadata_asset(self, asset_guid):
@@ -187,7 +192,7 @@ class HPCService():
         asset = self.get_metadata_asset(asset_guid)
 
         if asset is not None:
-            self.mongo_track.update_entry(asset_guid, "is_on_hpc", self.validate.YES.value)
+            self.mongo_track.update_entry(asset_guid, "hpc_ready", self.validate.YES.value)
             return True
         else:
             return False
