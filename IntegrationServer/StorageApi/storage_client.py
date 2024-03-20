@@ -87,13 +87,17 @@ class StorageClient():
           try:
                response = self.client.file_proxy.open_share(institution, collection, guid, user_list, mb_allocation)
 
-               status_code = response["status_code"]
-               allocation_status = response["data"].http_allocation_status
+               status_code = response.status_code
 
-               if status_code == 200 and allocation_status == "SUCCESS":
+               if status_code == 200:
+                    data = response.json()
 
-                    path = response["data"].path
-                    hostname = response["data"].hostname
+               allocation_status = data["http_allocation_status"]
+
+               if allocation_status == "SUCCESS":
+
+                    path = data["path"]
+                    hostname = data["hostname"]
                
                     link = hostname + path
                     

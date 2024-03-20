@@ -68,6 +68,15 @@ class HPCOpenShare:
                     self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
 
                 # TODO handle if proxy path is false
+                    
+
+            self.count -= 1
+
+            if self.count == 0:
+                self.run = False
+                self.mongo_metadata.close_mdb()
+                self.mongo_metadata.close_mdb()
+
 
 if __name__ == '__main__':
     HPCOpenShare()

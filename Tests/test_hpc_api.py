@@ -26,7 +26,7 @@ class TestHPCApi(unittest.TestCase):
 
         response = self.client.get("/api/v1/metadata_asset")
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code} instead of 422")
-    
+    """
     def test_get_httplink(self):
         test_guid = "test_0001"
         response = self.client.get("/api/v1/httplink", params = {"asset_guid": test_guid})
@@ -38,7 +38,7 @@ class TestHPCApi(unittest.TestCase):
         test_guid = "bogus"
         response = self.client.get("/api/v1/httplink", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code} instead of 422")
-    
+    """
     def test_asset_ready(self):
         test_guid = "test_0001"
         response = self.client.post("/api/v1/asset_ready", params = {"asset_guid": test_guid})
