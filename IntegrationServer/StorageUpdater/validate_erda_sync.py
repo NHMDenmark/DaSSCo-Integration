@@ -39,10 +39,12 @@ class SyncErda:
                 asset_status = self.storage_api.get_asset_status(guid)
                 
                 if asset_status == self.erda_enum.COMPLETED.value:
-                    
+
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.YES.value)
                     
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+
+                    self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.NO.value)
 
                     for file in asset["file_list"]:
                         self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
