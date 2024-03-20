@@ -127,6 +127,23 @@ class MongoConnection:
 
         self.collection.update_one(query, update_data)
 
+    def update_track_file_list(self, guid, file, key, value):
+        """
+            Update an existing track_entry with a new entry for a job in the MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param job: The job name to be updated.
+            :param key: The key (field) to be updated or created.
+            :param value: The new value for the specified key.
+        """
+
+        query = {"_id": guid, "file_list.name": file}
+        file_entry = f"file_list.$.{key}"
+        update_data = {"$set": {file_entry: value}}
+
+        self.collection.update_one(query, update_data)
+    
+
     def get_entry(self, key, value):
         """
                 Retrieve an entry from the MongoDB collection based on a key value pair.

@@ -37,16 +37,27 @@ class FileUploader:
             if asset is not None:
                 guid = asset["_id"]
                 metadata = self.metadata_mongo.get_entry("_id", guid)
-                if asset["image_size"] != -1:
-                    root = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer"
-                    file_path = root + "/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + ".tif"
-                    # C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
-                    print(file_path)
-                    uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, asset["image_size"])
+                if asset["asset_size"] != -1:
 
-                    if uploaded is True:
-                        self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
-                        self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
+                    asset_files = asset["file_list"]
+
+                    for file in asset_files:
+                        
+
+                        if file["erda_sync"] == validate_enum.ValidateEnum.NO.value:
+                            
+                            type = file["type"]
+                            size = file["file_size"]
+
+                            root = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer"
+                            file_path = root + "/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
+                            # C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
+                            print(file_path)
+                            uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
+
+                            if uploaded is True:
+                                self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
             # TODO handle fails    
                 time.sleep(1)
 

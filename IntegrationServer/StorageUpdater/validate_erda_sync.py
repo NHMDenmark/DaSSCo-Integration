@@ -38,14 +38,20 @@ class SyncErda:
                 
                 asset_status = self.storage_api.get_asset_status(guid)
                 
-                if asset_status is self.erda_enum.COMPLETE.value:
+                if asset_status == self.erda_enum.COMPLETED.value:
+                    
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.YES.value)
+                    
+                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
 
-                if asset_status is self.erda_enum.ASSET_RECEIVED.value:
+                    for file in asset["file_list"]:
+                        self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
+
+                if asset_status == self.erda_enum.ASSET_RECEIVED.value:
                     # TODO figure out if pointing to another asset is needed here
                     pass
 
-                if asset_status is self.erda_enum.ERDA_ERROR.value:
+                if asset_status == self.erda_enum.ERDA_ERROR.value:
                     # TODO figure out how to handle this situation further.
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
 

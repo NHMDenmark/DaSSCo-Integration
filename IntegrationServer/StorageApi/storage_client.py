@@ -72,6 +72,7 @@ class StorageClient():
 
                if status_code == 200:
                     status = response["data"].status
+                    print(status)
                     return status
                else:
                     return False
@@ -119,7 +120,6 @@ class StorageClient():
                response = self.client.assets.update(guid, data_dict)
 
                status_code = response["status_code"]
-
                if status_code == 200:
 
                     return True
@@ -135,12 +135,12 @@ class StorageClient():
           try:
                response = self.client.file_proxy.upload(filepath, institution, collection, guid, file_size_mb)
 
-               status_code = response["status_code"]
+               status_code = response.status_code
 
                if status_code == 200:
-
-                    expected_crc = response["data"].expected_crc
-                    actual_crc = response["data"].actual_crc
+                    data = response.json()
+                    expected_crc = data["expected_crc"]
+                    actual_crc = data["actual_crc"]
 
                     if expected_crc == actual_crc:
                          return True

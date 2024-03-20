@@ -1,7 +1,7 @@
 from enum import Enum
 
 class ErdaStatus(Enum):
-    COMPLETE = "COMPLETE"
+    COMPLETED = "COMPLETED"
     ASSET_RECEIVED = "ASSET_RECEIVED"
     METADATA_RECEIVED = "METADATA_RECEIVED"
     ERDA_ERROR = "ERDA_ERROR"
