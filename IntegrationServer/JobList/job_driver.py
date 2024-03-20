@@ -26,8 +26,6 @@ class JobDriver:
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
-        # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
-        # self.database_name = next(iter(self.mongo_config_data.keys()))
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
         self.mongo_batchlist = mongo_connection.MongoConnection("batch")
@@ -105,7 +103,10 @@ class JobDriver:
                         # Add new track entry to mongoDB
                         self.mongo_track.create_track_entry(subdirectory, pipeline_name)
 
-                        # Add image file checksums(s) and img file size to track entry
+                        # default asset size
+                        asset_size = -1
+
+                        # Add image file checksums(s) and img file size to track entry, calculates total asset size
                         for extension in image_extension:
 
                             img_file_name = json_file_name.replace('.json', extension)
@@ -132,11 +133,16 @@ class JobDriver:
 
                             self.mongo_track.append_existing_list(guid, "file_list", file_data)
 
+                            if asset_size == -1:
+                                asset_size = img_size
+                            else:
+                                asset_size = asset_size + img_size
 
-                            #self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
-                            #self.mongo_track.update_entry(guid, "image_size", img_size)
-                            # self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
+                        # Sets asset size to the total amount of required space in mb
+                        if asset_size != -1:
+                            self.mongo_track.update_entry(guid, "asset_size", asset_size)    
 
+                        # updates has new file enum if files were added
                         if len(image_extension) > 0:
                             self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
