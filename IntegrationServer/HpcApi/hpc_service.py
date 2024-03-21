@@ -174,13 +174,17 @@ class HPCService():
         # TODO handle multiple files for one asset
         asset = self.mongo_track.get_entry("_id", asset_guid)        
         
-        files = asset["file_list"]
+        if asset is not None:
+            files = asset["file_list"]
 
-        for file in files:
-            httplink = file["ars_link"]
-
-        return httplink
-    
+            for file in files:
+                httplink = file["ars_link"]
+            
+            if httplink is not None:
+                return httplink
+        else:
+                return None    
+        
     def get_metadata_asset(self, asset_guid):
 
         metadata = self.mongo_metadata.get_entry("_id", asset_guid)

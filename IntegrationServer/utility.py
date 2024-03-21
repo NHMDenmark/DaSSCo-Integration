@@ -8,6 +8,7 @@ import math
 import json
 import hashlib
 import binascii
+from datetime import datetime
 """
 Class with helper methods that are used throughout the different processes.
 Mostly contains functions that has to do with reading/updating .json files.
@@ -50,8 +51,15 @@ class Utility:
     def write_full_json(self, file_path, data):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
+        def custom_serializer(obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            raise TypeError("Type not serializable")
+
         with open(file_path, 'w', encoding="utf-8") as file:
-            json.dump(data, file, indent=2, sort_keys=True)
+            json.dump(data, file, indent=2, default=custom_serializer, sort_keys=True)
+
+
     """
     Updates a single value in a json file. 
     """

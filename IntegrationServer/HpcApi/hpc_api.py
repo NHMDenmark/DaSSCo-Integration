@@ -70,7 +70,7 @@ def get_httplink(asset_guid: str):
     if link is None:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
-    return link
+    return {"link": link}
 
 @app.get("/api/v1/metadata_asset")
 def get_metadata(asset_guid: str):

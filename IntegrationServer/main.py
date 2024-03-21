@@ -9,6 +9,9 @@ import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
 from HpcSsh import hpc_job_caller, hpc_asset_creator
+import json
+from bson.json_util import dumps
+from datetime import datetime
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -34,7 +37,7 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    # mongo = mongo_connection.MongoConnection("track")
+    mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
@@ -52,7 +55,7 @@ def test():
     #print(storage.open_share("second0002", "test-institution", "test-collection", 610))
     
 
-    relPath = "IntegrationServer/Files/NewFiles/test.json"
+    relPath = "Tests/TestConfigFiles/test_track_entry.json"
     #name = os.path.basename(relPath)
     #print(name)
     """
@@ -64,7 +67,13 @@ def test():
     """
     #mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/CP0002637_L_selago_Fuji_ICC.tif")
     #print(mb)
-    
+    #entry = mongo.get_entry("_id", "sixth0006")
+    #entry_dict = json.loads(dumps(entry))
+
+    #util.write_full_json(relPath, entry)
+
+    mongo.create_metadata_entry(relPath, "test_0001")
+
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/
