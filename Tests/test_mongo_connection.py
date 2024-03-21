@@ -17,9 +17,11 @@ class TestMongoConnection(unittest.TestCase):
         self.track = MongoConnection("track")
         self.metadata = MongoConnection("metadata")
 
+        self.bogus = "bogus"
         self.guid = "test_mongo"
         self.pipeline = "EXAMPLE"
         self.job = "test"
+
 
         self.track.create_track_entry(self.guid, self.pipeline)
         
@@ -81,9 +83,9 @@ class TestMongoConnection(unittest.TestCase):
 
         self.assertEqual(updated, True, f"Failed to update metadata entry with guid {self.guid} and key {key} and value {value}")
 
-        updated = self.metadata.update_entry("bogus", key, value)
+        updated = self.metadata.update_entry(self.bogus, key, value)
 
-        self.assertEqual(updated, False, f"Should have failed to update metadata entry with guid: bogus and key {key} and value {value}")
+        self.assertEqual(updated, False, f"Should have failed to update metadata entry with guid {self.bogus} and key {key} and value {value}")
 
     def test_update_track_job_status(self):
 
@@ -91,13 +93,37 @@ class TestMongoConnection(unittest.TestCase):
 
         self.assertEqual(updated, True, f"Failed to update job status for guid {self.guid}")
 
-        updated = self.track.update_track_job_status(self.guid, "bogus", StatusEnum.RUNNING.value)
+        updated = self.track.update_track_job_status(self.guid, self.bogus, StatusEnum.RUNNING.value)
 
-        self.assertEqual(updated, False, f"Updated job status for job: bogus")
+        self.assertEqual(updated, False, f"Updated job status for job: {self.bogus}")
 
-        updated = self.track.update_track_job_status("bogus", self.job, StatusEnum.RUNNING.value)
+        updated = self.track.update_track_job_status(self.bogus, self.job, StatusEnum.RUNNING.value)
 
-        self.assertEqual(updated, False, f"Updated job status for entry with guid: bogus")
+        self.assertEqual(updated, False, f"Updated job status for entry with guid: {self.bogus}")
+    
+    def test_update_track_job_list(self):
+
+        updated = self.track.update_track_job_list(self.guid, self.job, "priority", 9)
+
+        self.assertEqual(updated, True, f"Failed to update job for guid {self.guid}")
+
+        updated = self.track.update_track_job_list(self.guid, self.bogus, "priority", 8)
+
+        self.assertEqual(updated, False, f"Updated job status for job: {self.bogus}")
+
+        updated = self.track.update_track_job_list(self.bogus, self.job, "priority", 7)
+
+        self.assertEqual(updated, False, f"Updated job status for entry with guid: {self.bogus}")
+
+    def test_update_track_file_list(self):
+
+        updated = self.track.update_track_file_list(self.guid, "self.job", "deleted", True)
+
+        self.assertEqual(updated, False, f"Updated file for entry with guid: {self.guid}")
+
+        updated = self.track.update_track_file_list(self.bogus, "self.job", "deleted", True)
+
+        self.assertEqual(updated, False, f"Updated file for entry with guid: {self.bogus}")
 
 if __name__ == "__main__":
     unittest.main()

@@ -149,7 +149,18 @@ class MongoConnection:
             :param job: The job name to be updated.
             :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
         """
+
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the job_list
+        job_exists = any(d['name'] == job for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
 
         query = {"_id": guid, "job_list.name": job}
         job_entry = f"job_list.$.{key}"
@@ -157,21 +168,36 @@ class MongoConnection:
 
         self.collection.update_one(query, update_data)
 
+        return True
+
     def update_track_file_list(self, guid, file, key, value):
         """
-            Update an existing track_entry with a new entry for a job in the MongoDB collection.
+            Update an existing track_entry with a new entry for a file in the track MongoDB collection.
 
             :param guid: The unique identifier of the entry.
-            :param job: The job name to be updated.
+            :param file: The file name to be updated.
             :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
         """
+
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the file exists in the file_list
+        file_exists = any(d['name'] == file for d in entry.get('file_list', []))
+        if not file_exists:
+            return False
 
         query = {"_id": guid, "file_list.name": file}
         file_entry = f"file_list.$.{key}"
         update_data = {"$set": {file_entry: value}}
 
         self.collection.update_one(query, update_data)
+
+        return True
     
 
     def get_entry(self, key, value):
