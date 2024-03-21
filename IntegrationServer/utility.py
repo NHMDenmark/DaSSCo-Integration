@@ -22,10 +22,13 @@ class Utility:
     Returns the contents of a json file.
     """
     def read_json(self, file_path):
-        with open(file_path, 'r', encoding="utf-8") as json_file:
-            data = json.load(json_file)
-        return data
-
+        try:
+            with open(file_path, 'r', encoding="utf-8") as json_file:
+                data = json.load(json_file)
+            return data
+        except Exception as e:
+            return False
+        
     """
     Returns a value from a key/value pair in a json file.
     """

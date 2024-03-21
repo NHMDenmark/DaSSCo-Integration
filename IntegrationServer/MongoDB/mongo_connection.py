@@ -75,12 +75,20 @@ class MongoConnection:
         Create a new metadata entry in the MongoDB collection.
         :param json_path: The path to the metadata file.
         :param guid: The unique identifier of the entry.
+        :return: A boolean denoting success or failure.
         """        
-        data = self.util.read_json(json_path)        
+        data = self.util.read_json(json_path)
+
+        if data is False:
+            return False        
 
         if self.get_entry("_id", guid) is None:
 
             self.collection.insert_one({"_id": guid, **data})
+            
+            return True
+        
+        return False
 
     def create_metadata_entry_from_api(self, guid, data):
 
