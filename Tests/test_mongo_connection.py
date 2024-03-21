@@ -7,6 +7,7 @@ sys.path.append(project_root)
 
 
 from IntegrationServer.MongoDB.mongo_connection import MongoConnection
+from IntegrationServer.Enums.status_enum import StatusEnum
 
 class TestMongoConnection(unittest.TestCase):
     
@@ -18,6 +19,7 @@ class TestMongoConnection(unittest.TestCase):
 
         self.guid = "test_mongo"
         self.pipeline = "EXAMPLE"
+        self.job = "test"
 
         self.track.create_track_entry(self.guid, self.pipeline)
         
@@ -70,6 +72,32 @@ class TestMongoConnection(unittest.TestCase):
 
         self.assertEqual(created, True, f"Failed to create metadata entry with guid {self.guid}")
 
+    def test_update_entry(self):
+
+        key = "digitiser" 
+        value = "Emperor Palpatine"
+
+        updated = self.metadata.update_entry(self.guid, key, value)
+
+        self.assertEqual(updated, True, f"Failed to update metadata entry with guid {self.guid} and key {key} and value {value}")
+
+        updated = self.metadata.update_entry("bogus", key, value)
+
+        self.assertEqual(updated, False, f"Should have failed to update metadata entry with guid: bogus and key {key} and value {value}")
+
+    def test_update_track_job_status(self):
+
+        updated = self.track.update_track_job_status(self.guid, self.job, StatusEnum.RUNNING.value)
+
+        self.assertEqual(updated, True, f"Failed to update job status for guid {self.guid}")
+
+        updated = self.track.update_track_job_status(self.guid, "bogus", StatusEnum.RUNNING.value)
+
+        self.assertEqual(updated, False, f"Updated job status for job: bogus")
+
+        updated = self.track.update_track_job_status("bogus", self.job, StatusEnum.RUNNING.value)
+
+        self.assertEqual(updated, False, f"Updated job status for entry with guid: bogus")
 
 if __name__ == "__main__":
     unittest.main()

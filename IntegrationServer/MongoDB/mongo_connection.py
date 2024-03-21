@@ -52,6 +52,7 @@ class MongoConnection:
 
     def close_mdb(self):
         self.client.close()
+        print(f"closed connection to: {self.name}")
 
     def create_track_entry(self, guid, pipeline):
         """
@@ -100,17 +101,22 @@ class MongoConnection:
 
     def update_entry(self, guid, key, value):
         """
-            Update an existing entry in the MongoDB collection.
+            Update or add to an entry in the MongoDB collection.
 
             :param guid: The unique identifier of the entry.
             :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
         """
+        if self.get_entry("_id", guid) is None:
+            return False
 
         query = {"_id": guid}
         update_data = {"$set": {key: value}}
 
         self.collection.update_one(query, update_data)
+
+        return True
     
     def update_track_job_status(self, guid, job, status):
         """
@@ -119,8 +125,21 @@ class MongoConnection:
             :param guid: The unique identifier of the entry.
             :param job: The job name to be updated.
             :param status: The new status for the specified job.
+            :return: A boolean denoting success or failure.
         """
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the job_list
+        job_exists = any(d['name'] == job for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
+
         self.collection.update_one({"_id": guid, "job_list.name": job}, {"$set": {"job_list.$.status": status}})
+
+        return True
     
     def update_track_job_list(self, guid, job, key, value):
         """
