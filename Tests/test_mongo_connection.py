@@ -16,11 +16,17 @@ class TestMongoConnection(unittest.TestCase):
     def setUpClass(self):
         self.track = MongoConnection("track")
         self.metadata = MongoConnection("metadata")
+        self.batch = MongoConnection("batch")
 
         self.bogus = "bogus"
         self.guid = "test_mongo"
         self.pipeline = "EXAMPLE"
         self.job = "test"
+        self.batch_list = "testy_listy"
+
+        self.file_for_filelist = {"name": "crazy_frog.png", "type": "png", "time_added": "2002-02-22T10:59:09.870+00:00",
+                                   "check_sum": 3247235, "file_size": 100, "ars_link": "fake/link", "erda_sync": False, "deleted":False}
+
 
 
         self.track.create_track_entry(self.guid, self.pipeline)
@@ -30,7 +36,9 @@ class TestMongoConnection(unittest.TestCase):
         
         self.track.delete_entry(self.guid)
         self.metadata.delete_entry(self.guid)
+        self.batch.delete_entry(self.batch_list)
 
+        self.batch.close_mdb()
         self.track.close_mdb()
         self.metadata.close_mdb()
 
@@ -124,6 +132,45 @@ class TestMongoConnection(unittest.TestCase):
         updated = self.track.update_track_file_list(self.bogus, "self.job", "deleted", True)
 
         self.assertEqual(updated, False, f"Updated file for entry with guid: {self.bogus}")
+
+    def test_get_value_for_key(self):
+        
+        key = "digitiser" 
+        insert = "Emperor Palpatine"
+
+        self.metadata.update_entry(self.guid, key, insert)
+
+        value = self.metadata.get_value_for_key(self.guid, "digitiser")
+
+        self.assertEqual(value, insert, f"Failed to find {insert} as digitiser for guid: {self.guid}. Found {value} instead.")
+
+        value = self.metadata.get_value_for_key(self.bogus, "digitiser")
+
+        self.assertIsNone(value, f"Failed to return none for the guid: {self.bogus}")
+
+    def test_add_entry_to_list(self):
+
+        created = self.batch.add_entry_to_list(self.guid, self.batch_list)
+
+        self.assertTrue(created, f"Failed to create new list for guid: {self.guid}")
+
+        updated = self.batch.add_entry_to_list(self.bogus, self.batch_list)
+
+        self.assertTrue(updated, f"Failed to update {self.batch_list} with guid: {self.guid}" )
+
+        list = self.batch.get_entry("_id", self.batch_list)
+
+        self.assertEqual(len(list), 2, f"Failed to confirm 2 entries in the list: {self.batch_list}")
+
+    def test_append_existing_list(self):
+        
+        appended = self.track.append_existing_list(self.guid, "file_list", self.file_for_filelist)
+
+        self.assertTrue(appended, f"Failed to append {self.file_for_filelist} to track entry with guid: {self.guid}")
+
+        appended = self.track.append_existing_list(self.guid, self.bogus, self.file_for_filelist)
+
+        self.assertFalse(appended, f"Append {self.file_for_filelist} to the list {self.bogus} for track entry with guid: {self.guid}")
 
 if __name__ == "__main__":
     unittest.main()

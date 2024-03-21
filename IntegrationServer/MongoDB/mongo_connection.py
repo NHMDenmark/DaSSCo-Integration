@@ -262,6 +262,7 @@ class MongoConnection:
 
                 :param guid: The unique identifier of the entry.
                 :param list_name: The unique identifier of the list.
+                :return: A boolean denoting success or failure. This cant fail unless there is no connection to a database. 
         """
         entry = self.get_entry("_id", list_name)
 
@@ -271,8 +272,11 @@ class MongoConnection:
         else:
             # If the list already exists, append the guid to the existing list
             self.collection.update_one({"_id": list_name}, {"$push": {"guids": guid}})
-    
+
+        return True
      
+    # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
+    # TODO missing unit test
     def find_running_jobs_older_than(self):
         """
                 Finds an entry based on its job_start_time compared to current time and the max time set in the config file. 
@@ -287,6 +291,8 @@ class MongoConnection:
         
         return result
     
+    # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
+    # TODO missing unit test
     def find_queued_jobs_older_than(self):
         """
                 Finds an entry based on its job_queued_time compared to current time and the max time set in the config file. 
@@ -308,6 +314,7 @@ class MongoConnection:
                 :param guid: The unique identifier of the entry.
                 :param list_key: The key identifier of the list.
                 :param value: The value to be appended to the list.
+                :return: A boolean denoting success or failure.
         """
         entry = self.get_entry("_id", guid)
 
@@ -321,3 +328,4 @@ class MongoConnection:
 
         self.collection.update_one({"_id": guid}, {"$set": entry})
 
+        return True
