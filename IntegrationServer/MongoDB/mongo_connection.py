@@ -66,6 +66,9 @@ class MongoConnection:
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
             self.collection.insert_one(entry_data)
+            return True
+        else:
+            return False
     
     def create_metadata_entry(self, json_path, guid):
         """
@@ -189,9 +192,16 @@ class MongoConnection:
                 Delete an entry from the MongoDB collection based on its unique identifier.
 
                 :param guid: The unique identifier of the entry.
+                :return: A boolean denoting success or failure.
         """
+
+        if self.get_entry("_id", guid) is None:
+            return False
+
         query = {"_id": guid}
         self.collection.delete_one(query)
+
+        return True
     
     def add_entry_to_list(self, guid, list_name):
         """
