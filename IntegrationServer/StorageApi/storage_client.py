@@ -40,8 +40,7 @@ class StorageClient():
                
                status_code = response["status_code"]
 
-               if status_code == 200:
-                    
+               if status_code == 200:                    
                     return True
                else:
                     return False

@@ -62,9 +62,13 @@ class StorageService():
 
                 self.api_metadata.specimens.append(self.specimen)
         
+        # This should maybe not be empty. Not sure when or with which specific values we want to populate this.
+        """
         if self.api_metadata.restricted_access is []:
             self.api_metadata.restricted_access.append(restricted_access_nt.RestrictedAccessNT.USER.value)
-
+        """
+            
+        # This field cannot be empty
         if self.api_metadata.status == "":
             self.api_metadata.status = asset_status_nt.AssetStatusNT.WORKING_COPY.value
 
