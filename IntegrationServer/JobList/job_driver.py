@@ -25,6 +25,10 @@ class JobDriver:
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        self.input_dir = "IntegrationServer/Files/NewFiles"
+        self.in_process_dir = "IntegrationServer/Files/InProcess"
+        self.error_path = "IntegrationServer/Files/Error"
+
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
         self.mongo_batchlist = mongo_connection.MongoConnection("batch")
@@ -37,9 +41,9 @@ class JobDriver:
 
     def process_new_directories_from_ndrive(self):
 
-        input_dir = "IntegrationServer/Files/NewFiles"
-        in_process_dir = "IntegrationServer/Files/InProcess"
-        error_path = "IntegrationServer/Files/Error"
+        input_dir = self.input_dir
+        in_process_dir = self.in_process_dir
+        error_path = self.error_path
 
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):
