@@ -85,7 +85,10 @@ class StorageService():
     def convert_str_to_datetime(self, timestring):
 
         if isinstance(timestring, str):
-            date_object = datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S%z")
-            return date_object
+            try:
+                date_object = datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S%z")
+                return date_object
+            except Exception as e:
+                return timestring
         else:
             return timestring
