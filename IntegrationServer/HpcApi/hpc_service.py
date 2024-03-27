@@ -17,6 +17,7 @@ class HPCService():
         self.validate = ValidateEnum
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
+        self.mongo_mos = mongo_connection.MongoConnection("MOS")
 
     def persist_new_metadata(self, new_metadata):
         metadata_json = new_metadata.__dict__
@@ -149,21 +150,69 @@ class HPCService():
         if None in [guid, job_name, status, MSO, MOS, label]:
             return False
 
-        asset = self.mongo_track.get_entry("_id", guid)
-        if asset is None:
+        track_asset = self.mongo_track.get_entry("_id", guid)
+         
+        if track_asset is None:
             return False
         
-        self.update_mongo_track(guid, job_name, status)
-
-        if MOS:
-            if label:
-                pass
-            # Handle MOS database
-            pass        
-
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
 
-        self.update_mongo_metadata(guid, metadata_update)        
+        self.update_mongo_metadata(guid, metadata_update)
+        self.update_mongo_track(guid, job_name, status)
+
+        # check if asset is part of a mos
+        if MOS:
+            
+            metadata_asset = self.mongo_metadata.get_entry("_id", guid)
+
+            # build spid
+            institution = metadata_asset["institution"]
+            collection = metadata_asset["collection"]
+            barcode = barcode_list[0]
+            spid = f"{institution}_{collection}_{barcode}" # TODO verify this is how the spid should look
+
+            # build unique label id
+            batch_id = track_asset["batch_list_name"]
+            unique_label_id = f"{batch_id}_{disposable}"
+
+            label_connections = []
+
+            # find all guids with unique label id, create label connection list, update existing label connection lists
+            mos_entries = self.mongo_mos.get_entries("unique_label_id", unique_label_id)
+
+            if mos_entries != []:
+                
+                for mos in mos_entries:
+
+                    mos_entry_guid = mos["guid"]
+                    
+                    # build the new assets list of connecting mos asset guids                    
+                    label_connections.append(mos_entry_guid)
+
+                    # update mos with the new assets guid in its label_connections list
+                    self.mongo_mos.append_existing_list(mos_entry_guid, "label_connections", guid)
+
+                    # if mos is a label update its barcode metadata list with the barcode from the new asset
+                    if mos["label"] is True:
+                        self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
+
+                    # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
+                    if MOS is True:
+                        
+                        barcode_from_mos_entry_list = self.mongo_metadata.get_value_for_key(mos_entry_guid, "barcode")
+
+                        self.mongo_metadata.append_existing_list(guid, "barcode", barcode_from_mos_entry_list[0])
+            
+            data = {"label": label,
+                    "spid": spid,
+                     "disposable_id": disposable,
+                      "unique_label_id": unique_label_id,
+                       "label_connections": label_connections }
+
+            self.mongo_mos.create_mos_entry(guid, data)
+
+        return True       
+       
 
 
     def job_queued(self, queue_data):
