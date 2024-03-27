@@ -69,7 +69,7 @@ class TestHPCApi(unittest.TestCase):
         test_model = {
             "guid": "test_0001",
             "job_name": "testing",
-            "job_id": "-8",
+            "job_id": "-7",
             "timestamp": "1999-09-09T08:32:23.548+00:00" 
             }
         model_json = json.dumps(test_model)
@@ -99,7 +99,27 @@ class TestHPCApi(unittest.TestCase):
         model_json = json.dumps(test_model)
         response = self.client.post("/api/v1/update_asset", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
+
+    def test_barcode(self):
+        test_model = {
+            "guid": "test_0001",
+            "job": "testing",
+            "status": "DONE",
+            "barcodes": ["hyx-345-982"],
+            "asset_subject": "specimen",
+            "MOS": True,
+            "label": False,
+            "disposable": "Disposable99"
+        }
+        model_json = json.dumps(test_model)
         
+        response = self.client.post("/api/v1/barcode", data = model_json)
+        self.assertEqual(response.status_code, 200, f"Failed to update asset with guid: {test_model["guid"]} Got status code: {response.status_code}")
+        
+        test_model["guid"] = "bogus"
+        model_json = json.dumps(test_model)
+        response = self.client.post("/api/v1/update_asset", data= model_json)
+        self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
 if __name__ == "__main__":
     unittest.main()

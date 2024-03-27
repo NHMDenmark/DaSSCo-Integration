@@ -163,8 +163,7 @@ class HPCService():
         metadata_update = {"barcode": barcode_list, "multispecimen": MOS, "asset_subject": asset_subject}
 
         self.update_mongo_metadata(guid, metadata_update)        
-
-        return True
+        
 
     def job_queued(self, queue_data):
 
