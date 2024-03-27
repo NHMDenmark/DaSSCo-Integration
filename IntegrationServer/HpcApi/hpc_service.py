@@ -141,11 +141,12 @@ class HPCService():
         status = barcode_data.status
         barcode_list = barcode_data.barcodes
         asset_subject = barcode_data.asset_subject
+        MSO = barcode_data.MSO
         MOS = barcode_data.MOS
         label = barcode_data.label
         disposable = barcode_data.disposable
 
-        if None in [guid, job_name, status, MOS, label]:
+        if None in [guid, job_name, status, MSO, MOS, label]:
             return False
 
         asset = self.mongo_track.get_entry("_id", guid)
@@ -160,10 +161,10 @@ class HPCService():
             # Handle MOS database
             pass        
 
-        metadata_update = {"barcode": barcode_list, "multispecimen": MOS, "asset_subject": asset_subject}
+        metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
 
         self.update_mongo_metadata(guid, metadata_update)        
-        
+
 
     def job_queued(self, queue_data):
 

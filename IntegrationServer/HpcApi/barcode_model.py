@@ -7,6 +7,7 @@ class BarcodeModel(BaseModel):
     status: str
     barcodes: List[str]
     asset_subject: str
+    MSO: bool
     MOS: bool
     label: bool
     disposable: str = None

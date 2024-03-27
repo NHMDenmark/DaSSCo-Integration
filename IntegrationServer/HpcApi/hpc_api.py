@@ -51,8 +51,7 @@ async def insert_barcode(barcode_data: barcode_model):
 
     if updated is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
-    
-    return updated
+
 
 @app.post("/api/v1/queue_job")
 async def queue_job(queue_data: job_model):
