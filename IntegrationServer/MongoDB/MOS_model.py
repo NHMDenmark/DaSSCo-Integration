@@ -9,7 +9,7 @@ class MOSModel(BaseModel):
     _id: str
     label: bool
     spid: str = "NOT_AVAILABLE"
-    label_id: str
+    disposable_id: str
     unique_label_id: str
     label_connections: List[str]
     

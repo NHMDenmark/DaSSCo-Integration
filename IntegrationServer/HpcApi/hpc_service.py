@@ -120,6 +120,8 @@ class HPCService():
         # Update MongoDB metadata with key-value pairs from the dictionary
         for key, value in dictionary.items():
             self.mongo_metadata.update_entry(guid, key, value)
+        
+        self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
 
     def update_metadata_json(self, guid, dictionary):
         # Extract pipeline name and batch date from MongoDB metadata
@@ -135,6 +137,7 @@ class HPCService():
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
 
+    # TODO tests
     def insert_barcode(self, barcode_data):
 
         guid = barcode_data.guid
@@ -160,6 +163,7 @@ class HPCService():
         self.update_mongo_metadata(guid, metadata_update)
         self.update_mongo_track(guid, job_name, status)
 
+
         # check if asset is part of a mos
         if MOS:
             
@@ -168,8 +172,11 @@ class HPCService():
             # build spid
             institution = metadata_asset["institution"]
             collection = metadata_asset["collection"]
-            barcode = barcode_list[0]
-            spid = f"{institution}_{collection}_{barcode}" # TODO verify this is how the spid should look
+            if len(barcode_list) > 0:
+                barcode = barcode_list[0]
+                spid = f"{institution}_{collection}_{barcode}" # TODO verify this is how the spid should look
+            else:
+                spid = "NOT_AVAILABLE"
 
             # build unique label id
             batch_id = track_asset["batch_list_name"]
@@ -184,7 +191,7 @@ class HPCService():
                 
                 for mos in mos_entries:
 
-                    mos_entry_guid = mos["guid"]
+                    mos_entry_guid = mos["_id"]
                     
                     # build the new assets list of connecting mos asset guids                    
                     label_connections.append(mos_entry_guid)
@@ -195,9 +202,10 @@ class HPCService():
                     # if mos is a label update its barcode metadata list with the barcode from the new asset
                     if mos["label"] is True:
                         self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
+                        self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.YES.value)
 
                     # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
-                    if MOS is True:
+                    if label is True:
                         
                         barcode_from_mos_entry_list = self.mongo_metadata.get_value_for_key(mos_entry_guid, "barcode")
 
