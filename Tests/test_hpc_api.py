@@ -107,6 +107,7 @@ class TestHPCApi(unittest.TestCase):
             "status": "DONE",
             "barcodes": ["hyx-345-982"],
             "asset_subject": "specimen",
+            "MSO": False,
             "MOS": True,
             "label": False,
             "disposable": "Disposable99"
