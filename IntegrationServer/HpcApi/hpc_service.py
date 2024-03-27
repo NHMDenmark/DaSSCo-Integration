@@ -39,12 +39,14 @@ class HPCService():
         # Update MongoDB track
         self.update_mongo_track(guid, job, update_status)
 
+        """
+        Not using this anymore.
         # Update jobs JSON file unless its a test guid
         try:
             self.update_jobs_json(guid, job, update_status)
         except FileNotFoundError as e:
             pass
-
+        """
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
 
@@ -131,6 +133,38 @@ class HPCService():
         # Update metadata JSON file with key-value pairs from the dictionary
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
+
+    def insert_barcode(self, barcode_data):
+
+        guid = barcode_data.guid
+        job_name =  barcode_data.job
+        status = barcode_data.status
+        barcode_list = barcode_data.barcodes
+        asset_subject = barcode_data.asset_subject
+        MOS = barcode_data.MOS
+        label = barcode_data.label
+        disposable = barcode_data.disposable
+
+        if None in [guid, job_name, status, MOS, label]:
+            return False
+
+        asset = self.mongo_track.get_entry("_id", guid)
+        if asset is None:
+            return False
+        
+        self.update_mongo_track(guid, job_name, status)
+
+        if MOS:
+            if label:
+                pass
+            # Handle MOS database
+            pass        
+
+        metadata_update = {"barcode": barcode_list, "multispecimen": MOS, "asset_subject": asset_subject}
+
+        self.update_mongo_metadata(guid, metadata_update)        
+
+        return True
 
     def job_queued(self, queue_data):
 

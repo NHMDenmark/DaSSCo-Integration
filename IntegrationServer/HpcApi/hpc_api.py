@@ -14,6 +14,7 @@ from metadata_model import MetadataAsset
 from HpcApi import hpc_service
 from HpcApi.update_model import UpdateAssetModel
 from HpcApi.job_model import JobModel
+from HpcApi.barcode_model import BarcodeModel
 
 """
 Rest api setup for receiving data from hpc. 
@@ -24,6 +25,7 @@ util = utility.Utility()
 service = hpc_service.HPCService()
 metadata_model = MetadataAsset
 update_model = UpdateAssetModel
+barcode_model = BarcodeModel
 job_model = JobModel
 
 @app.get("/")
@@ -38,6 +40,14 @@ async def receive_metadata(metadata: metadata_model):
 @app.post("/api/v1/update_asset")
 async def update_asset(update_data: update_model):
     updated = service.update_from_hpc(update_data)
+
+    if updated is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+
+@app.post("/api/v1/barcode")
+async def insert_barcode(barcode_data: barcode_model):
+
+    updated = service.insert_barcode(barcode_data)
 
     if updated is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
