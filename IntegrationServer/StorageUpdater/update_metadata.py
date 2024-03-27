@@ -34,16 +34,20 @@ class UpdateMetadata:
             asset = self.track_mongo.get_entry("update_metadata", self.validate_enum.YES.value)
 
             if asset is not None:
-                guid = asset["_id"]
+                if asset["is_in_ars"] == self.validate_enum.YES.value:
+
+                    # TODO handle if is in ars == NO
+
+                    guid = asset["_id"]
+                    
+                    updated = self.storage_api.update_metadata(guid)
+
+                    if updated is True:
+                        self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)
                 
-                updated = self.storage_api.update_metadata(guid)
+                # TODO handle false better than ignoring it
 
-                if updated is True:
-                    self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)
-            
-            # TODO handle false better than ignoring it
-
-                time.sleep(1)
+                    time.sleep(1)
 
             if asset is None:
                 time.sleep(1)
