@@ -1,3 +1,6 @@
+# Introduction
+This document reflects the interactions between Refinery and the Integration Server.
+
 # Sequence
 
 Integration server has persisted the asset in ARS and locally. These are the requirements for starting the sequence.
