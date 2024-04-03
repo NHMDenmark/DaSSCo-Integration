@@ -7,7 +7,7 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+Metadata can be updated manually, via pipelines and via Specify 
 
 **Why do we have this field:**  
 Because it tells us something important  

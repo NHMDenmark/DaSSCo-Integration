@@ -13,7 +13,7 @@ Yada yada
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Upon event
 
 **Updated where and when:**  
 Never

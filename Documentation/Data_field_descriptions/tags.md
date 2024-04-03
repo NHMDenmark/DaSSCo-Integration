@@ -7,7 +7,7 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+We are still developing our pipelines and can imagine the need to add additional fields in the future. It would be good to have a field to cover ourselves if we discover the need to additionally annotate our metadata assets until we can add more. 
 
 **Why do we have this field:**  
 Because it tells us something important  

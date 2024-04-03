@@ -7,13 +7,13 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+This is the name of the person who audited the asset. Auditing will be done independently of the digitisation and usually by the technical team leader or a senior digitiser.
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
-**Populated by whom and when:**  
-Note  
+TBD
 
 **Updated where and when:**  
 Never
