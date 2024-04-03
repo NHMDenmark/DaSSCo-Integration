@@ -7,13 +7,17 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+"This refers to a physical barcode on the specimen consisting of 8 digits. It is part of an ID unique to that specimen and consisting of: 
+An institution acronym, a collection acronym, and the barcode. 
+We can have one specimen barcode related to multiple assets and in sme cases one asset with multiple specimen barcodes (an example of the later is a multispecimen herbarium sheet)."
+
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Running pipeline
 
 **Updated where and when:**  
 Never
