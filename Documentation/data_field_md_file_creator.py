@@ -6,7 +6,7 @@ Dont run unless you want to overwrite existing data.
 """
 def create_field_description_file(link, field_name):
     
-    doc = "Metadata"
+    doc = "MOS"
 
     if link[:5] == "Track":
         doc = "Track"
@@ -37,7 +37,7 @@ Never
         f.write(content)
 
 def main():
-    with open('C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/Documentation/Metadata_tracking.md', 'r') as f:
+    with open('C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/Documentation/MOS_fields.md', 'r') as f:
         lines = f.readlines()
 
     for line in lines:
