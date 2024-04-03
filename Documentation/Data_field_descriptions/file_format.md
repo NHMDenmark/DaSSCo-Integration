@@ -7,13 +7,15 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+The format of the asset
+
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Running IngestionClient/pipeline 
 
 **Updated where and when:**  
 Never
