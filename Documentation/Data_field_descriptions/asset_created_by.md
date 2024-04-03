@@ -14,7 +14,7 @@ An asset is created by a pipeline or sync with Specify. Hence this field will be
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Upon event
 
 **Updated where and when:**  
 Never
