@@ -7,13 +7,15 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+This is the collection name (a collection of related specimens) within the institution that holds the specimen and should align with Specify collections for synchronisation (also part of specimen registration number for NHMA).
+
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
