@@ -7,13 +7,15 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+This is the date the asset was audited. Auditing happens following complete processing of the asset following digitisation.
+
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+TBD
 
 **Updated where and when:**  
 Never
