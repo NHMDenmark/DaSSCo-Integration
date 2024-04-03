@@ -17,3 +17,4 @@ Integration server when it receives an update denoting an asset as part of a MOS
 
 **Updated where and when:**  
 Never
+

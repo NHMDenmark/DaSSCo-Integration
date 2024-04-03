@@ -17,3 +17,4 @@ Integration server when it receives an update about an asset denoting it as a MO
 
 **Updated where and when:**  
 Never
+
