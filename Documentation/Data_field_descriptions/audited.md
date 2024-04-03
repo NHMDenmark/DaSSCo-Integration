@@ -7,13 +7,14 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+This is to mark the record as to having been manually audited. This will occur after complete processing and syncing with Specify.
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+TBD
 
 **Updated where and when:**  
 Never
