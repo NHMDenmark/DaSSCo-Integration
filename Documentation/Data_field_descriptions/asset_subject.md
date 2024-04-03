@@ -7,13 +7,14 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+This is to define what the asset is a representation of
+
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Running pipeline
 
 **Updated where and when:**  
 Never
