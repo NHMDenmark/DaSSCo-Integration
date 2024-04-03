@@ -1,19 +1,19 @@
 ## "update_metadata"
 
 **Type of field:**  
-String  
+String from the validate enum 
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+Uses the validate enum to show if an asset needs to have its metadata updated via the storage api. 
 
 **Why do we have this field:**  
-Because it tells us something important  
+Lets us keep track of whether the metadata has been updated through ARS yet.   
 
 **Populated by whom and when:**  
-Note  
+Integration server. When asset is received.   
 
 **Updated where and when:**  
-Never
+Integration server. When the metadata receives an update or the metadata has been updated through the storage api. 

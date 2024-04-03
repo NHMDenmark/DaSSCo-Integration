@@ -7,13 +7,13 @@ String
 Track
 
 **Description:**  
-Yada yada  
+Part of the file object populating the file_list. This is the file extension of the file(tif, jpg etc). 
 
 **Why do we have this field:**  
-Because it tells us something important  
+It lets us know what kind of file we have. This could be important for jobs on the hpc server.   
 
 **Populated by whom and when:**  
-Note  
+Integration server. When the file_list is populated with a file object. 
 
 **Updated where and when:**  
 Never

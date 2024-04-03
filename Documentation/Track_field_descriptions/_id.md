@@ -7,13 +7,13 @@ String
 Track
 
 **Description:**  
-Yada yada  
+This is the unique identifier for the document  
 
 **Why do we have this field:**  
-Because it tells us something important  
+It is a requirement for having a document in a database 
 
 **Populated by whom and when:**  
-Note  
+Populated by the integration server when it receives a new asset  
 
 **Updated where and when:**  
-Never
+Never - its unique and cannot be changed

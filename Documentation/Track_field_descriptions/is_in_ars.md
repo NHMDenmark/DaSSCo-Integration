@@ -1,19 +1,19 @@
 ## "is_in_ars"
 
 **Type of field:**  
-String  
+String, from the validate enum  
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+Shows whether the asset has been "created" in ARS through the api.   
 
 **Why do we have this field:**  
-Because it tells us something important  
+It lets us know if the metadata has been persisted in ARS.   
 
 **Populated by whom and when:**  
-Note  
+Integration server when an asset is received.  
 
 **Updated where and when:**  
-Never
+Integration server. When using the create asset endpoint. 

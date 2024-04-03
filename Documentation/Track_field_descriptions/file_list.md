@@ -1,19 +1,19 @@
 ## "file_list"
 
 **Type of field:**  
-String  
+Array 
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+This is an array containing the file objects. 
 
 **Why do we have this field:**  
-Because it tells us something important  
+It allows for an asset to have multiple different files attached to it.    
 
 **Populated by whom and when:**  
-Note  
+Integration server. When an asset is received.   
 
 **Updated where and when:**  
-Never
+When a new file is added to an asset.

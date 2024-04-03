@@ -1,19 +1,19 @@
 ## "job_list"
 
 **Type of field:**  
-String  
+Array  
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+Contains the job objects for each asset.   
 
 **Why do we have this field:**  
-Because it tells us something important  
+It allows for an asset to have multiple different jobs/processes it needs to go through.
 
 **Populated by whom and when:**  
-Note  
+Integration server. When the asset is received.   
 
 **Updated where and when:**  
-Never
+Never - this will change at some point in the future. 

@@ -1,19 +1,19 @@
 ## "deleted"
 
 **Type of field:**  
-String  
+Boolean  
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+Part of the file object populating the file_list. Tells if the file has been deleted from the asset.  
 
 **Why do we have this field:**  
-Because it tells us something important  
+To keep track of files belonging to an asset.   
 
 **Populated by whom and when:**  
-Note  
+Integration server when an asset is received or when a new file is added to an asset.   
 
 **Updated where and when:**  
-Never
+Integration server. When the file is deleted from the asset.

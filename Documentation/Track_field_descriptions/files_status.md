@@ -7,13 +7,13 @@ String
 Track
 
 **Description:**  
-Yada yada  
+Tells the overall status for all files belonging to an asset. 
 
 **Why do we have this field:**  
-Because it tells us something important  
+Nice to have field in case there is an error with files belonging to an asset.  
 
 **Populated by whom and when:**  
-Note  
+Integration server when an asset is received.  
 
 **Updated where and when:**  
-Never
+Unknown - we have not implemented error handling yet.

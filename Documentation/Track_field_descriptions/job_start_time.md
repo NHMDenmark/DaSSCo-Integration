@@ -1,19 +1,19 @@
 ## "job_start_time"
 
 **Type of field:**  
-String  
+Datetime  
 
 **Part of which document:**  
 Track
 
 **Description:**  
-Yada yada  
+Part of the job object populating the job_list. Tells when a job started on the hpc server.  
 
 **Why do we have this field:**  
-Because it tells us something important  
+To keep track of how many ressources we can expect similar jobs to need.  
 
 **Populated by whom and when:**  
-Note  
+Integration server. When a job starts on the hpc server.  
 
 **Updated where and when:**  
 Never

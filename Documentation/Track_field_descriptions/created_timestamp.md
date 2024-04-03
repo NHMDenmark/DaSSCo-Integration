@@ -7,13 +7,13 @@ String
 Track
 
 **Description:**  
-Yada yada  
+Internal timestamp for when the document was added to the track database.   
 
 **Why do we have this field:**  
-Because it tells us something important  
+In case we want to reconstruct a timeline for an asset.   
 
 **Populated by whom and when:**  
-Note  
+Integration server when an asset is received.  
 
 **Updated where and when:**  
 Never
