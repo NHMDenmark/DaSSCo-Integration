@@ -7,13 +7,15 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+A short description of funding source used to create the asset
+
+ 
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
