@@ -8,7 +8,7 @@ __pycache__
 *.txt
 .idea/
 !ConfigFiles/**/*.json
-!ConfigFiles/*.json
+!/ConfigFiles/*.json
 Files/Error/**
 Files/NewFiles/**
 Files/InProcess/**
