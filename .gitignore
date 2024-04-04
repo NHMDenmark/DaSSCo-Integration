@@ -5,10 +5,11 @@ __pycache__
 *.json
 *.tif
 *.jpg
-/.idea/
+*.txt
+.idea/
 !ConfigFiles/**/*.json
+!ConfigFiles/*.json
 Files/Error/**
 Files/NewFiles/**
 Files/InProcess/**
 Files/UpdatedFiles/**
-postman.txt
