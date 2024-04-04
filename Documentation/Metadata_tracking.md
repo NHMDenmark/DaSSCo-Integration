@@ -77,5 +77,3 @@
 | [erda_sync](Track_field_descriptions/erda_sync.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon ARS call |  |
 | [update_metadata](Track_field_descriptions/update_metadata.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call / Upon ARS call |  |
 | t | h | e | e | n | d |
-
-

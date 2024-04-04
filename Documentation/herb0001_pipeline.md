@@ -5,6 +5,8 @@ This document reflects the interactions between Refinery and the Integration Ser
 Pre requisite :  An asset has been created in the ARS 
 Integration server has persisted the asset in ARS and has a local copy. 
 
+The basic prepration of HERB001 pipeline is initiated: getting the image file from the ARS
+
 1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [Hpc asset creator script](Component_write_up/hpc_asset_creator.md)
 2. the pipeline script has saved the image file localaly on HPC server from ARS - [Hpc asset loader](Component_write_up\hpc_pipeline_asset_loader.md)
 3. HPC server notifies the integration server that it has received files from ARS - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
