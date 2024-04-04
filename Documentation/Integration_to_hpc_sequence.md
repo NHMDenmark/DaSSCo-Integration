@@ -2,18 +2,20 @@
 This document reflects the interactions between Refinery and the Integration Server.
 
 # Sequence
+Pre requisite :  An asset has been created in the ARS 
+Integration server has persisted the asset in ARS and has a local copy. 
 
-Integration server has persisted the asset in ARS and locally. These are the requirements for starting the sequence.
+The basic prepration of HERB001 pipeline is initiated: getting the image file from the ARS
 
-1. Integration server asks HPC server to get the asset from ARS - [Hpc asset creator script](Component_write_up/hpc_asset_creator.md)
-2. HPC server acquires the asset files from ARS - [Hpc asset loader](Component_write_up\hpc_pipeline_asset_loader.md)
+1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [Hpc asset creator script](Component_write_up/hpc_asset_creator.md)
+2. the pipeline script has saved the image file localaly on HPC server from ARS - [Hpc asset loader](Component_write_up\hpc_pipeline_asset_loader.md)
 3. HPC server notifies the integration server that it has received files from ARS - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
 4. Integration server updates its track database with the information that HPC has received the asset files - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
 
 -- Start of Pipeline Execution --
 
-5. Integration server asks HPC server to start a pipeline job for the asset - [Hpc job caller](Component_write_up\hpc_job_caller.md)
-6. HPC queues the pipeline job for the asset and notifies the integration server - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
+5. Integration server asks HPC server(script) to start a pipeline job for the asset - [Hpc job caller](Component_write_up\hpc_job_caller.md)
+6. HPC queues the pipeline job for the asset and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 7. Integration server updates the track database with the new information about the queued asset - 
 8. HPC server notifies the integration server when the queued job has started - [Hpc job started](Component_write_up/hpc_api_start_job.md)
 9. Integration server updates the track database with the new information about the asset -
