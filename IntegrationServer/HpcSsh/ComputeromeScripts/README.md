@@ -1,0 +1,1 @@
+Folder containing the test scripts on computerome. Note they cant run unless paths are changed, some env variables are set for client user and the anaconda python environment has been created.
