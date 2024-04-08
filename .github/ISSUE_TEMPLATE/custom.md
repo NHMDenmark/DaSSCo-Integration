@@ -10,52 +10,39 @@ assignees: ''
 # Template for isues/tickets 
 ##  What is the issue ?
 
+_Detailed description of the issue._
+_It could include examples,reference to similar issue and clear boundaries of the issue._
 
-```
-# Detailed description of the issue. 
-# It could include examples,reference to similar issue and clear boundaries of the issue.
-
-
-```
 
 ## Why is it needed/relevant ?
-```
-# Explain the need, relevance.
-# Give scenario(s) of why and when this could be relevant. 
+_Explain the need, relevance._
+_Give scenario(s) of why and when this could be relevant._ 
 
-```
 ## Estimate level of effort required.
 
-```
-# easy
-# difficult
-# hard
-
-```
+#easy
+#difficult
+#hard
 
 ## What is the expected acceptable result.
 
-```
-#  How to approach it?
-#  Give a clear approach/potential solution on how to resolve it.
-#  What steps would be required to do this ?
-#  It might also be an idea to put some pseudocode if relevant.
+_How to approach it?
+_Give a clear approach/potential solution on how to resolve it._
+_What steps would be required to do this ?_
+_It might also be an idea to put some pseudocode if relevant._
 
-```
 
 # What could be the challenges ? 
 
-```
-Is there a potential risk to this. 
-Could it affect another part of the project. 
-```
+_Is there a potential risk to this._
+_Could it affect another part of the project._
 
 # What test are required ?
 
-`New tests/Could include reference to the existing test`
+_New tests/Could include reference to the existing test_
 
 # What documentation required?
 
-`Could refer to existing documentation and changes in relevant doc files.`
+_Could refer to existing documentation and changes in relevant doc files._
 
 # Remarks
