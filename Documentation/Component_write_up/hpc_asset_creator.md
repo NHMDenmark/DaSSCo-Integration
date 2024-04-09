@@ -29,4 +29,4 @@ Sends the following info in the call:
 - Batch ID  
 
 **Calls:**  
-HPC server's asset loader script.
+[HPC server's asset loader script]( https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_loader.md).
