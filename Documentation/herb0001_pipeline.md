@@ -8,9 +8,10 @@ Integration server has persisted the asset in ARS and has a local copy.
 The basic prepration of HERB001 pipeline is initiated: getting the image file from the ARS
 
 1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [Hpc asset creator script](Component_write_up/hpc_asset_creator.md)
-2. the pipeline script has saved the image file localaly on HPC server from ARS - [Hpc asset loader](Component_write_up\hpc_pipeline_asset_loader.md)
-3. HPC server notifies the integration server that it has received files from ARS - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
-4. Integration server updates its track database with the information that HPC has received the asset files - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
+2.  HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
+3. the pipeline script has saved the image file locally on HPC server from ARS - [Hpc asset loader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_loader.md)
+5. HPC server notifies the integration server that it has received files from ARS - [Hpc_pipeline asset ready]([Component_write_up/hpc_api_asset_ready.md](https://github.com/NHMDenmark/DaSSCo-Integration/edit/main/Documentation/Component_write_up/hpc_pipeline_asset_ready.md))
+6. Integration server updates its track database with the information that HPC has received the asset files - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
 
 -- Start of Pipeline Execution --
 
