@@ -15,14 +15,14 @@ a) whether it could queue the assetLoader into the execution queue and
 b) when the asset has been loaded successfully.
 
 **Outputs/Updates:**  
-Sends the following info in the a) call to Hpc_api endpoint queue_job:
+Sends the following info in the a) call to [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md):
 - Asset_guid
 - Job_name: assetLoader
 - Job_id: HPC job ID if the queue is not already full, otherwise -1
 - Timestamp
 
-Sends the following info in the b) call to Hpc_api endpoint asset_ready:
+Sends the following info in the b) call to[HPC_pipeline_asset_ready](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_ready.md):
 - Asset_guid
 
 **Calls:**  
-Calls Hpc_api endpoint queue_job and, in case of success, Hpc_api endpoint asset_ready.
+Calls [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and, in case of success, [HPC_pipeline_asset_ready](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_ready.md).
