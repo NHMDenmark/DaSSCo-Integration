@@ -17,40 +17,39 @@ The basic prepration of HERB001 pipeline is initiated: getting the image file fr
 
 _Module barcode reader_
 
-7. Integration server asks HPC server(script) to start a pipeline job for the asset - [HPC_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md)
+7. Integration server asks HPC server(script) to start a barcode reader job for the asset - [HPC_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md)
 8. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 9. Integration server updates the track database with the new information about the queued asset.
 10. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 11. Integration server updates the track database with the new information about the asset.
 12. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
-13. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database - 
-14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
+13. Integration server updates the metadata and track databases with the new information about the asset. Integration server updates the MOS database if the asset is a MOS.
+14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
 
 _Module OCR_
 
-15. Integration server asks HPC server(script) to start a pipeline job for the asset - [HPC_pipeline_OCR]()
+15. Integration server asks HPC server(script) to start a OCR  job for the asset - [HPC_pipeline_OCR]()
 16. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 17. Integration server updates the track database with the new information about the queued asset.
 18. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 19. Integration server updates the track database with the new information about the asset.
 20. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc job finished](Component_write_up/hpc_api_update_asset.md)
-21. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database -
-22. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
+21. Integration server updates the metadata and track databases with the new information about the asset.
+22. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. 
 
 _Module Cropping & Derivative_
 
-23. Integration server asks HPC server(script) to start a pipeline job for the asset - [HPC_pipeline_cropping&derivatives]()
+23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [HPC_pipeline_cropping&derivatives]()
 24. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 25. Integration server updates the track database with the new information about the queued asset.
 26. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 27. Integration server updates the track database with the new information about the asset.
 28. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc_api_new asset]()
-29. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database -
-30. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
+29. All jobs are done and the integration server updates the track database.
 
+_Clean_up_script_
 
-
-
+30. NOT IMPLEMENTED. Integration server asks HPC server(script) to start the clean up job for the asset - [HPC_pipeline_clean_up]()
 
 
 # Glossary
@@ -65,7 +64,7 @@ A database located on the integration server. It keeps track of most things (see
 A database located on the integration server. It contains the metadata belonging to an asset. This gets updated when we receive new information about the asset and gets populated when the integration server receives a new asset.
 
 **MOS Database:**  
-A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
+Multi object speciment. A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
 
 **Endpoint:**  
 Endpoints created by us are continually running and ready to receive some information. They then update the databases on the integration server depending on the information they received.
@@ -74,14 +73,17 @@ Endpoints created by us are continually running and ready to receive some inform
 Our permanent databases (ERDA and graphdb) for both the asset's metadata and the asset's other files. It is updated through the use of endpoints created and maintained by NorthTech.
 
 **HPC:**  
-A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
+High performance computing. A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
 
 **COMPUTEROME:**  
-HPC server that does not allow us to connect via SSH, and therefore we are having trouble automating the process of running the pipeline/job scripts for the assets.
+HPC server that does not allow us to automatically connect via SSH, and therefore we are having trouble automating the process of running the pipeline/job scripts for the assets. We will be using periodic api calls to check if any jobs needs to run. Makes it require more infrastructure on both the integrationserver and on computerome server.
+Uses torque for scheduling.
 
 **DEIC/Slurm:**  
-HPC server that allows us to connect via SSH.
+HPC server that allows us to connect via SSH and directly start jobs.
+Uses slurm for scheduling.
 
 **Rites/Slurm:**  
-HPC server that allows us to connect via SSH.
+HPC server that allows us to connect via SSH and directly start jobs.
+Uses slurm for scheduling.
 
