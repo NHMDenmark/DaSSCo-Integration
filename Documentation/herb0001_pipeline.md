@@ -26,14 +26,15 @@ _Module barcode reader_
 13. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database - 
 14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
 
-ModuleOCR
-16. 
+Module
+15. asd
+16. asd
 17. asd
-18. as
-19. dasd
+18. asd
+19. asd
 20. asd
-21. asd
-22. 
+
+
 
 _Module OCR_
 15. Integration server asks HPC server(script) to start a pipeline job for the asset - [HPC_pipeline_OCR]()
