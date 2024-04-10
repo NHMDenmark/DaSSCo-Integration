@@ -20,7 +20,11 @@ It reports to the [Hpc_api update_asset] endpoint that the job has finished.
 
 **Outputs/Updates:**  
 Sends the following info in the first call to [Hpc_api create new asset]() endpoint:
-- asset_guid
+- asset_guid 400 ppi (TIF)
+- metadata file
+
+Sends the following info in the second call to [Hpc_api create new asset]() endpoint:
+- asset_guid 72 ppi (JPEG)
 - metadata file
 
 Sends the following info in the third call to [Hpc_api update_asset](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_api_update_asset.md) endpoint:
