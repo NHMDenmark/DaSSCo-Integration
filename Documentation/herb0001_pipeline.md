@@ -25,14 +25,18 @@ _Module barcode reader_
 12. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
 13. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database - 
 14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
+15. sda
+16. as
+17. asf
+18. afs
 
-Module
-15. asd
-16. asd
-17. asd
-18. asd
+
 19. asd
 20. asd
+21. asd
+22. asd
+23. asd
+24. asd
 
 
 
