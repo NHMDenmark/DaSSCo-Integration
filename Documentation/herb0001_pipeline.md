@@ -47,8 +47,8 @@ _Module Cropping & Derivative_
 28. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc_api_new asset]()
 29. All jobs are done and the integration server updates the track database.
 
-_Derivative upload_
 30. NOT IMPLEMENTED. Integration server asks HPC server(script) to start the upload of the created derivative image data to ARS job for the asset - [HPC_pipeline_derivative_upload]()
+
 
 _Clean_up_script_
 
