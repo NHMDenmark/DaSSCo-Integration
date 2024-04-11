@@ -28,7 +28,7 @@ _Module barcode reader_
 
 _Module OCR_
 
-15. Integration server asks HPC server(script) to start a OCR  job for the asset - [HPC_pipeline_OCR]()
+15. Integration server asks HPC server(script) to start a OCR  job for the asset - [HPC_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md)
 16. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 17. Integration server updates the track database with the new information about the queued asset.
 18. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
@@ -39,7 +39,7 @@ _Module OCR_
 
 _Module Cropping & Derivative_
 
-23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [HPC_pipeline_cropping&derivatives]()
+23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [HPC_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md)
 24. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 25. Integration server updates the track database with the new information about the queued asset.
 26. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
