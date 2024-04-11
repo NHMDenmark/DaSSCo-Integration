@@ -44,7 +44,7 @@ _Module Cropping & Derivative_
 25. Integration server updates the track database with the new information about the queued asset.
 26. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 27. Integration server updates the track database with the new information about the asset.
-28. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well via [Hpc_api_new asset]()
+28. HPC server notifies the integration server that the job has finished and sends the output from the job [HPC_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md) to the integration server as well via [Hpc_api_new asset]()
 29. All jobs are done and the integration server updates the track database.
 
 _Derivative upload_
