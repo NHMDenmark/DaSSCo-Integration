@@ -19,31 +19,31 @@ _Module barcode reader_
 
 7. Integration server asks HPC server(script) to start a barcode reader job for the asset - [HPC_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md)
 8. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
-9. Integration server updates the track database with the new information about the queued asset.
+9. Integration server updates the track database with the information it received in the previous step about the queued asset - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
 10. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
-11. Integration server updates the track database with the new information about the asset.
+11. Integration server updates the track database with the information it received in the previous step about the asset.
 12. HPC server notifies the integration server that the job has finished and sends the output from the job  [HPC_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md) to the integration server as well via [Hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
-13. Integration server updates the metadata and track databases with the new information about the asset. Integration server updates the MOS database if the asset is a MOS.
+13. Integration server updates the metadata and track databases with the information it received in the previous step about the asset. Integration server updates the MOS database if the asset is a MOS.
 14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
 
 _Module OCR_
 
 15. Integration server asks HPC server(script) to start a OCR  job for the asset - [HPC_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md)
 16. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
-17. Integration server updates the track database with the new information about the queued asset.
+17. Integration server updates the track database with the information it received in the previous step about the queued asset.
 18. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
-19. Integration server updates the track database with the new information about the asset.
+19. Integration server updates the track database with the information it received in the previous step about the asset.
 20. HPC server notifies the integration server that the job has finished and sends the output from the job [HPC_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md) to the integration server as well via [Hpc job finished](Component_write_up/hpc_api_update_asset.md)
-21. Integration server updates the metadata and track databases with the new information about the asset.
+21. Integration server updates the metadata and track databases with the information it received in the previous step about the asset.
 22. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. 
 
 _Module Cropping & Derivative_
 
 23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [HPC_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md)
 24. HPC queues the job via [HPC_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
-25. Integration server updates the track database with the new information about the queued asset.
+25. Integration server updates the track database with the information it received in the previous step about the queued asset.
 26. HPC server notifies the integration server when the queued job has started - [Hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
-27. Integration server updates the track database with the new information about the asset.
+27. Integration server updates the track database with the information it received in the previous step about the asset.
 28. HPC server notifies the integration server that the job has finished and sends the output from the job [HPC_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md) to the integration server as well via [Hpc_api_new asset]()
 29. All jobs are done and the integration server updates the track database.
 
