@@ -9,7 +9,8 @@ Metadata
 **Description:**  
 This is to define what the asset is a representation of
 
-
+**Values:**
+One of the following strings: folder, device target, specimen, label
 **Why do we have this field:**  
 Because it tells us something important  
 
