@@ -11,10 +11,11 @@ Metadata
 An institution acronym, a collection acronym, and the barcode. 
 We can have one specimen barcode related to multiple assets and in sme cases one asset with multiple specimen barcodes (an example of the later is a multispecimen herbarium sheet)."
 
-
-
+**Value**
+8 Digit code prefaced by the institution. The institution string is NOT part of the encoded digit code.
+Fx NHMD00929517
 **Why do we have this field:**  
-Because it tells us something important  
+Because it tells us something important 
 
 **Populated by whom and when:**  
 Running pipeline

@@ -9,7 +9,8 @@ Metadata
 **Description:**  
 The format of the asset
 
-
+**Value**
+tif, jpeg, raf
 
 **Why do we have this field:**  
 Because it tells us something important  
