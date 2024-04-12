@@ -1,7 +1,6 @@
 | Meta Data Field name in json   | Written by          | When          | Saved where        | When       | Relevant into      |
 |--------------------------------|---------------------|---------------|--------------------|------------|--------------------|
 | [asset_created_by](Data_field_descriptions/asset_created_by.md) | ARS | Upon event | ARS | Upon ARS call | |
-| [asset_created_by](Data_field_descriptions/asset_created_by.md) | ARS | Upon event | ARS | Upon ARS call | |
 | [asset_deleted_by](Data_field_descriptions/asset_deleted_by.md) | ARS | Upon event | ARS | Upon ARS call | |
 | [asset_guid](Data_field_descriptions/asset_guid.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration call / Upon ARS call |
 | [asset_pid](Data_field_descriptions/asset_pid.md) | TBD | TBD | ARS / Integration | TBD | We have not figured out what this is or how its created yet. |
