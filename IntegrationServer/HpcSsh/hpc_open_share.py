@@ -74,7 +74,7 @@ class HPCOpenShare:
 
             if self.count == 0:
                 self.run = False
-                self.mongo_metadata.close_mdb()
+                self.mongo_track.close_mdb()
                 self.mongo_metadata.close_mdb()
 
 

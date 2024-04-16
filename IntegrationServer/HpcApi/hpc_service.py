@@ -27,10 +27,10 @@ class HPCService():
     def receive_derivative_metadata(self, metadata):
 
         try:
-            parent = None
-            parent = self.mongo_metadata.get_entry("_id", metadata.parent_guid)
+            t_parent = None
+            t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
 
-            if parent is None:
+            if t_parent is None:
                 return False
 
             mdata = True
@@ -41,6 +41,8 @@ class HPCService():
 
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
+
+            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", t_parent["asset_size"])          
 
             return mdata
         

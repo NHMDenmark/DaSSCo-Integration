@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from MongoDB import mongo_connection
 from StorageApi import storage_client
-from Enums import validate_enum
+from Enums import validate_enum, status_enum
 
 
 """
@@ -22,7 +22,8 @@ class FileUploader:
         self.metadata_mongo = mongo_connection.MongoConnection("metadata")
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
-        
+        self.status_enum = status_enum.StatusEnum
+
         self.run = True
         self.count = 2
 
@@ -32,7 +33,7 @@ class FileUploader:
 
         while self.run:
             
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value, "jobs_status" : self.status_enum.WAITING.value}])
 
             if asset is not None:
                 guid = asset["_id"]
