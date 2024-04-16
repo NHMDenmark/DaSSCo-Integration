@@ -6,7 +6,7 @@ from MongoDB.file_model import FileModel
 
 class EntryModel:
 
-    def __init__(self, guid, pipeline):
+    def __init__(self, guid, pipeline, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
@@ -16,8 +16,12 @@ class EntryModel:
         self.created_time = datetime.now() #datetime.utcnow()
         self.pipeline = pipeline
         self.batch_list_name = ""
-        self.job_list = self.create_joblist()
+        self.job_list = []
+        if derivative is False:
+            self.job_list = self.create_joblist()
         self.jobs_status = status_enum.StatusEnum.WAITING.value
+        if derivative is True:
+            self.jobs_status = status_enum.StatusEnum.DONE.value
         self.file_list = []
         self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1

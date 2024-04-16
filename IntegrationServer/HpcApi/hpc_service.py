@@ -23,6 +23,31 @@ class HPCService():
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
+    def receive_derivative_metadata(self, metadata):
+        
+        """
+        try:
+            metadata_json = metadata.__dict__
+            self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{metadata.asset_guid}.json", metadata_json)
+        except Exception as e:
+            return False
+        """
+        try:
+            mdata = True
+            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata)
+
+            if mdata is True:
+                mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
+
+                if mdata is False:
+                    self.mongo_metadata.delete_entry(metadata.asset_guid)        
+
+            return mdata
+        
+        except Exception as e:
+            return False
+        
+            
     def update_from_hpc(self, update_data):
         # Extract data from the input
         guid = update_data.guid

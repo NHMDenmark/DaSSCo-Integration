@@ -71,6 +71,23 @@ class MongoConnection:
         else:
             return False
     
+    def create_derivative_track_entry(self, guid, pipeline):
+        """
+        Create a new track entry in the MongoDB collection.
+
+        :param guid: The unique identifier of the asset.
+        :param pipeline: The value for the 'pipeline' field.
+        """
+        model = entry_model.EntryModel(guid, pipeline, derivative=True)
+        entry_data = model.get_entry_data()
+
+        if self.get_entry("_id", guid) is None:
+            # Insert the new document into the collection
+            self.collection.insert_one(entry_data)
+            return True
+        else:
+            return False
+    
     def create_metadata_entry(self, json_path, guid):
         """
         Create a new metadata entry in the MongoDB collection.
