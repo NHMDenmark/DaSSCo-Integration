@@ -33,6 +33,7 @@ def index():
     return "keep out"
 
 """
+Deprecated since we use the derivative endpoint instead.
 # TODO receive metadata does not have unit test
 @app.post("/api/v1/metadata_asset")
 async def receive_metadata(metadata: metadata_model):

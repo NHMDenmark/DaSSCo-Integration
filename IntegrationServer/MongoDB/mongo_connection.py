@@ -73,10 +73,11 @@ class MongoConnection:
     
     def create_derivative_track_entry(self, guid, pipeline):
         """
-        Create a new track entry in the MongoDB collection.
+        Create a new track entry in the MongoDB collection for a derivative.
 
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
+        :return: A boolean denoting success or failure.
         """
         model = entry_model.EntryModel(guid, pipeline, derivative=True)
         entry_data = model.get_entry_data()
