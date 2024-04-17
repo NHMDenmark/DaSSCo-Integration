@@ -46,6 +46,8 @@ class SyncErda:
 
                     self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.NO.value)
 
+                    self.track_mongo.update_entry(guid, "proxy_path", "")
+
                     for file in asset["file_list"]:
                         self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
 

@@ -25,6 +25,7 @@ class EntryModel:
         self.file_list = []
         self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1
+        self.proxy_path = ""
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
         self.is_in_ars = validate_enum.ValidateEnum.NO.value
         self.has_new_file = validate_enum.ValidateEnum.NO.value
@@ -63,6 +64,7 @@ class EntryModel:
             "file_list": self.file_list,
             "files_status": self.files_status,
             "asset_size": self.asset_size,
+            "proxy_path": self.proxy_path,
             "hpc_ready": self.hpc_ready,
             "is_in_ars": self.is_in_ars,
             "has_new_file": self.has_new_file,

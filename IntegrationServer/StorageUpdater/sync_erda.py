@@ -38,6 +38,7 @@ class SyncErda:
                 
                 if synced is True:
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
+                    
                 
                 time.sleep(1)
 

@@ -16,9 +16,12 @@ class HPCUploader:
 
         self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
         self.job_detail_path = "IntegrationServer/ConfigFiles/job_detail_config.json"
+        self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
+
+        self.upload_file_script = self.util.get_value(self.slurm_config_path, "upload_file_script")
 
         self.cons.create_ssh_connection(self.ssh_config_path)
         self.con = self.cons.get_connection()
@@ -40,9 +43,21 @@ class HPCUploader:
             else: 
                  
                 guid = asset["_id"]
+                proxy_path = asset["proxy_path"]
+
+                pipeline = self.mongo_metadata.get_value_for_key(guid, "pipeline_name")
+                collection = self.mongo_metadata.get_value_for_key(guid, "collection")
+
+                try:
+                    self.con.ssh_command(f"bash {self.upload_file_script} {guid} {pipeline} {collection} {proxy_path}")
+
+                    self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.AWAIT.value)
+
+
+                except Exception as e:
+                    pass # TODO handle exception
                 
-                
-                    
+
 
             self.count -= 1
 

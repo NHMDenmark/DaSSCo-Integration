@@ -55,6 +55,8 @@ class HPCOpenShare:
                 
                 if proxy_path is not False:
 
+                    self.track_mongo.update_entry(guid, "proxy_path", proxy_path)
+                    
                     # create links for all files in the asset
                     files = asset["file_list"]
 
