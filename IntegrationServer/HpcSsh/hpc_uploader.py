@@ -51,7 +51,7 @@ class HPCUploader:
                 try:
                     self.con.ssh_command(f"bash {self.upload_file_script} {guid} {pipeline} {collection} {proxy_path}")
 
-                    self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.AWAIT.value)
+                    self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
 
 
                 except Exception as e:

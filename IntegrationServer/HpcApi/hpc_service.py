@@ -318,3 +318,17 @@ class HPCService():
             return True
         else:
             return False
+        
+    def derivative_files_uploaded(self, asset_guid):
+
+        track_data = self.mongo_track.get_entry("_id", asset_guid)
+
+        if track_data is not None:
+            
+            self.mongo_track.update_entry(asset_guid, "has_new_file", self.validate.AWAIT.value)
+
+            # TODO find total asset size, add files to file list, probably want to receive file list from slurm here including their size
+
+            return True
+        else:
+            return False
