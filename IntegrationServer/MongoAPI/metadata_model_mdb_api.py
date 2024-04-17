@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 """
 Model class for the metadata file.
@@ -44,5 +44,5 @@ class MetadataModel(BaseModel):
     restricted_access: Optional[bool] # or a Optional[List[str]] from the restricted access enum
     specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown 
     status: Optional[str]
-    tags: Optional[List[dict]] # basically a way to add comments
+    tags: Optional[Dict[str, str]] # basically a way to add comments
     workstation_name: Optional[str]
