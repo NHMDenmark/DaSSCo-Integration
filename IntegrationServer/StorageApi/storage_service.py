@@ -43,9 +43,7 @@ class StorageService():
         self.api_metadata.pipeline = entry["pipeline_name"]
         self.api_metadata.workstation = entry["workstation_name"]
         self.api_metadata.digitizer = entry["digitiser"]
-        for t in entry["tags"]:
-            self.api_metadata.tags.append({"key": t["key"], "value": t["value"]})
-
+        self.api_metadata.tags = entry["tags"]
         self.api_metadata.institution = entry["institution"]
         self.api_metadata.collection = entry["collection"]
         barcode = []
