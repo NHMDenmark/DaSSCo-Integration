@@ -1,27 +1,37 @@
 from datetime import datetime
-
+import time
 import utility
 from Enums import status_enum, validate_enum
+from MongoDB.file_model import FileModel
 
 class EntryModel:
 
-    def __init__(self, guid, pipeline):
+    def __init__(self, guid, pipeline, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
         self.pipeline_job_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/pipeline_job_config.json"
 
         self._id = guid
-        self.created_time = datetime.utcnow()
+        self.created_time = datetime.now() #datetime.utcnow()
         self.pipeline = pipeline
-        self.job_list = self.create_joblist()
-        self.is_on_hpc = validate_enum.ValidateEnum.NO.value
-        self.is_in_ars = validate_enum.ValidateEnum.NO.value
-        self.jobs_status = status_enum.StatusEnum.WAITING.value
-        self.ars_file_link = ""
         self.batch_list_name = ""
-        self.image_check_sum = -1 # Default value
+        self.job_list = []
+        if derivative is False:
+            self.job_list = self.create_joblist()
+        self.jobs_status = status_enum.StatusEnum.WAITING.value
+        if derivative is True:
+            self.jobs_status = status_enum.StatusEnum.DONE.value
+        self.file_list = []
+        self.files_status = status_enum.StatusEnum.NONE.value
+        self.asset_size = -1
+        self.proxy_path = ""
+        self.hpc_ready = validate_enum.ValidateEnum.NO.value
+        self.is_in_ars = validate_enum.ValidateEnum.NO.value
+        self.has_new_file = validate_enum.ValidateEnum.NO.value
+        self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
+        self.update_metadata = validate_enum.ValidateEnum.NO.value
 
 
     def create_joblist(self):
@@ -34,6 +44,7 @@ class EntryModel:
                 "name": label,
                 "status": self.status.WAITING.value,  # Set default status
                 "priority": (len(job_list) + 1),  # Set priority
+                "job_queued_time": None, # Default timestamp
                 "job_start_time": None,  # Default timestamp
                 "hpc_job_id": -9,  # Default job ID, changed to -9 from -1 due to agreement with HPC scripts to use -1 as error when queueing
             }
@@ -49,11 +60,16 @@ class EntryModel:
             "pipeline": self.pipeline,
             "batch_list_name": self.batch_list_name,
             "job_list": self.job_list,
-            "is_on_hpc": self.is_on_hpc,
-            "is_in_ars": self.is_in_ars,
             "jobs_status": self.jobs_status,
-            "ars_file_link": self.ars_file_link,
-            "image_check_sum": self.image_check_sum,
-            "erda_sync": self.erda_sync
+            "file_list": self.file_list,
+            "files_status": self.files_status,
+            "asset_size": self.asset_size,
+            "proxy_path": self.proxy_path,
+            "hpc_ready": self.hpc_ready,
+            "is_in_ars": self.is_in_ars,
+            "has_new_file": self.has_new_file,
+            "has_open_share": self.has_open_share,
+            "erda_sync": self.erda_sync,
+            "update_metadata": self.update_metadata
         }
         return entry_data

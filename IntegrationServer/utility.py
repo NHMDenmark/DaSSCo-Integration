@@ -8,6 +8,7 @@ import math
 import json
 import hashlib
 import binascii
+from datetime import datetime
 """
 Class with helper methods that are used throughout the different processes.
 Mostly contains functions that has to do with reading/updating .json files.
@@ -21,10 +22,13 @@ class Utility:
     Returns the contents of a json file.
     """
     def read_json(self, file_path):
-        with open(file_path, 'r', encoding="utf-8") as json_file:
-            data = json.load(json_file)
-        return data
-
+        try:
+            with open(file_path, 'r', encoding="utf-8") as json_file:
+                data = json.load(json_file)
+            return data
+        except Exception as e:
+            return False
+        
     """
     Returns a value from a key/value pair in a json file.
     """
@@ -50,8 +54,15 @@ class Utility:
     def write_full_json(self, file_path, data):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
+        def custom_serializer(obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            raise TypeError("Type not serializable")
+
         with open(file_path, 'w', encoding="utf-8") as file:
-            json.dump(data, file, indent=2, sort_keys=True)
+            json.dump(data, file, indent=2, default=custom_serializer, sort_keys=True)
+
+
     """
     Updates a single value in a json file. 
     """
@@ -120,5 +131,5 @@ class Utility:
     
     def calculate_file_size_round_to_next_mb(self, file_path):
         size_in_bytes = os.path.getsize(file_path)
-        size_in_mb = math.ceil(size_in_bytes / (1024 * 1024))
+        size_in_mb = math.ceil(size_in_bytes / (1000 * 1000))
         return size_in_mb

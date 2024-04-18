@@ -7,14 +7,13 @@ sys.path.append(project_root)
 import shutil
 import utility
 from JobList import job_assigner
-from MongoDB import mongo_connection
-from Enums import status_enum
+from MongoDB import mongo_connection, file_model
+from Enums import status_enum, validate_enum
 import json
 
 """
 Responsible for the internal processing of assets. 
 """
-
 
 class JobDriver:
 
@@ -22,26 +21,32 @@ class JobDriver:
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
+        self.validate = validate_enum.ValidateEnum
+        self.file_model = file_model.FileModel()
 
         self.mongo_config_path = "/work/data/DaSSCo-integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
         # self.database_name = next(iter(self.mongo_config_data.keys()))
+        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        self.input_dir = "IntegrationServer/Files/NewFiles"
+        self.in_process_dir = "IntegrationServer/Files/InProcess"
+        self.error_path = "IntegrationServer/Files/Error"
+
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
         self.mongo_batchlist = mongo_connection.MongoConnection("batch")
 
     """
-    Takes care of creating a _jobs.json containing the jobs an asset needs done based on its pipeline.
     Creates the pipeline folder and moves the assets into it based on the date the asset was taken.
     If something goes wrong moves the asset to the error folder.
-    Creates a new entry in the mongodb for the asset. 
+    Creates new entries in the mongodb for the asset. 
     """
 
     def process_new_directories_from_ndrive(self):
 
-        input_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
-        in_process_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/InProcess"
-        error_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/Error"
+        input_dir = self.input_dir
+        in_process_dir = self.in_process_dir
+        error_path = self.error_path
 
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):
@@ -55,101 +60,113 @@ class JobDriver:
 
             # Check if it's a directory
             if os.path.isdir(subdirectory_path):
-                # Look for a JSON job file in the subdirectory
-                json_job_files = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}_jobs.json"]
-                # check if _jobs file already exist, it shouldnt
-                if json_job_files:
-                    # check other folders for similar names, then maybe move files to error folder, depend on job status?
-                    print("error joblist already exist")
-                else:
-                    # Look for a JSON file in the subdirectory
-                    json_files = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}.json"]
-                    error_dir = os.path.join(error_path, subdirectory)
+                # Look for a JSON file in the subdirectory
+                json_files = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}.json"]
+                error_dir = os.path.join(error_path, subdirectory)
 
-                    # if no json files are present or more than 1 file is, move files to error dir
-                    if len(json_files) == 0 or len(json_files) > 1:
+                # if no json files are present or more than 1 file is, move files to error dir
+                if len(json_files) == 0 or len(json_files) > 1:
+                    shutil.move(subdirectory_path, error_dir)
+                    print(f"No json or too many jsons in: {subdirectory}")
+                    continue
+
+                if json_files:
+                    json_file_name = json_files[0]
+                    json_file_path = os.path.join(subdirectory_path, json_file_name)
+
+                    # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
+                    pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
+                    guid = self.util.get_value(json_file_path, "asset_guid")
+                    parent = self.util.get_value(json_file_path, "parent_guid")
+                    image_extension = []
+                    for format in self.util.get_value(json_file_path, "file_format"):
+                        format = "." + format
+                        image_extension.append(format)
+                    date_value = self.util.get_value(json_file_path, "date_asset_taken")
+                    batch_name = ""
+
+                    if date_value is not None:
+                        batch_name = date_value[:10]
+                    else:
                         shutil.move(subdirectory_path, error_dir)
-                        print(f"No json or too many jsons in: {subdirectory}")
                         continue
+                        
+                    # Add new track entry to mongoDB
+                    self.mongo_track.create_track_entry(subdirectory, pipeline_name)
 
-                    if json_files:
-                        json_file_name = json_files[0]
-                        json_file_path = os.path.join(subdirectory_path, json_file_name)
+                    # default asset size
+                    asset_size = -1
 
-                        # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
-                        pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
-                        guid = self.util.get_value(json_file_path, "asset_guid")
-                        parent = self.util.get_value(json_file_path, "parent_guid")
-                        image_extension = []
-                        for format in self.util.get_value(json_file_path, "file_format"):
-                            format = "." + format
-                            image_extension.append(format)
-                        date_value = self.util.get_value(json_file_path, "date_asset_taken")
-                        batch_name = ""
+                    # Add image file checksums(s) and img file size to track entry, calculates total asset size
+                    for extension in image_extension:
+                        extension = extension.lower()
+                        img_file_name = json_file_name.replace('.json', extension)
+                        img_file_path = os.path.join(subdirectory_path, img_file_name)
 
-                        if date_value is not None:
-                            batch_name = date_value[:10]
+                        img_size = self.util.calculate_file_size_round_to_next_mb(img_file_path)
+                        check_sum = self.util.calculate_crc_checksum(img_file_path)
+                        file_type = extension
+                        file_type = file_type[-3:]
+
+                        self.file_model = file_model.FileModel()
+
+                        self.file_model.file_size = img_size
+                        self.file_model.check_sum = check_sum
+                        self.file_model.erda_sync = self.validate.NO.value
+                        self.file_model.name = img_file_name
+                        self.file_model.type = file_type
+                        self.file_model.deleted = False
+                            
+                        file_data = self.file_model.model_dump_json()
+
+                        file_data = json.loads(file_data)
+
+                        self.mongo_track.append_existing_list(guid, "file_list", file_data)
+
+                        if asset_size == -1:
+                            asset_size = img_size
                         else:
-                            shutil.move(subdirectory_path, error_dir)
-                            continue
+                            asset_size = asset_size + img_size
 
-                        # Create jobs dictionary
-                        jobs_json = self.jobby.create_jobs(pipeline_name)
+                    # Sets asset size to the total amount of required space in mb
+                    if asset_size != -1:
+                        self.mongo_track.update_entry(guid, "asset_size", asset_size)    
 
-                        if jobs_json is None:
-                            shutil.move(subdirectory_path, error_dir)
-                            continue
+                    # updates has new file enum if files were added
+                    if len(image_extension) > 0:
+                        self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
-                        # Add new track entry to mongoDB
-                        self.mongo_track.create_track_entry(subdirectory, pipeline_name)
+                    # Add batchlist name to the track entry
+                    workstation_name = self.util.get_value(json_file_path, "workstation_name")
+                    batchlist_name = workstation_name + "_" + batch_name
+                    self.mongo_track.update_entry(guid, "batch_list_name", batchlist_name)
 
-                        # Add image file checksums(s) to track entry
-                        for extension in image_extension:
-                            extension = extension.lower()                            
-                            img_file_name = json_file_name.replace('.json', extension)
-                            img_file_path = os.path.join(subdirectory_path, img_file_name)
-                            check_sum = self.util.calculate_crc_checksum(img_file_path)
-                            # TODO something is wrong here with the way it updates in the commented out line
-                            self.mongo_track.update_entry(guid, "image_check_sum", check_sum)
-                            # self.mongo_track.update_entry(guid, f"image_check_sum_{extension}", check_sum)
+                    # Add asset to batch list in mongodb
+                    self.mongo_batchlist.add_entry_to_list(guid, batchlist_name)
 
-                        # Add batchlist name to the track entry
-                        workstation_name = self.util.get_value(json_file_path, "workstation_name")
-                        batchlist_name = workstation_name + "_" + batch_name
-                        self.mongo_track.update_entry(guid, "batch_list_name", batchlist_name)
+                    # Need to change from "" to null if there is no parent guid for NT api
+                    if parent == "":
+                        self.util.update_json(json_file_path, "parent_guid", None)
 
-                        # Add asset to batch list in mongodb
-                        self.mongo_batchlist.add_entry_to_list(guid, batchlist_name)
+                    # Add new metadata entry to mongoDB
+                    self.mongo_metadata.create_metadata_entry(json_file_path, guid)
 
-                        # Need to change from "" to null if there is no parent guid for NT api
-                        if parent == "":
-                            self.util.update_json(json_file_path, "parent_guid", None)
+                    # Move the directory to the 'InProcess' directory or error if it already exists
+                    new_directory_path = os.path.join(in_process_dir,
+                                                      f"{pipeline_name}/{batch_name}/{subdirectory}")
 
-                        # Add new metadata entry to mongoDB
-                        self.mongo_metadata.create_metadata_entry(json_file_path, guid)
-
-                        # Create a new JSON file with '_jobs' suffix
-                        jobs_file_name = json_file_name.replace('.json', '_jobs.json')
-                        jobs_file_path = os.path.join(subdirectory_path, jobs_file_name)
-
-                        with open(jobs_file_path, 'w') as jobs_file:
-                            json.dump(jobs_json, jobs_file, indent=2)
-
-                        # Move the directory to the 'InProcess' directory or error if it already exists
-                        new_directory_path = os.path.join(in_process_dir,
-                                                          f"{pipeline_name}/{batch_name}/{subdirectory}")
-
-                        if os.path.exists(new_directory_path):
-                            shutil.move(subdirectory_path, error_dir)
-                        else:
-                            shutil.move(subdirectory_path, new_directory_path)
-
+                    if os.path.exists(new_directory_path):
+                        shutil.move(subdirectory_path, error_dir)
+                    else:
+                        shutil.move(subdirectory_path, new_directory_path)
+                    
+    
     """
     Takes processed metadata files from slurm and updates job status for those files. 
     Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
 
     """
-    # Deprecated- was used back when we moved files through ssh to and from slurm. 
+    # Not in use - was used back when we moved files through ssh to and from slurm. 
     def process_updated_directories(self):
 
         input_dir = "./Files/UpdatedFiles"

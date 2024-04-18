@@ -7,20 +7,49 @@ sys.path.append(project_root)
 import utility
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
-from Enums import validate_enum
+from Enums.validate_enum import ValidateEnum
 
-class SlurmService():
+class HPCService():
 
     def __init__(self):
         self.util = utility.Utility()
         self.status = StatusEnum
+        self.validate = ValidateEnum
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
+        self.mongo_mos = mongo_connection.MongoConnection("MOS")
 
+    # This is not in use. Writing directly to the db is easier. 
     def persist_new_metadata(self, new_metadata):
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
+    def receive_derivative_metadata(self, metadata):
+
+        try:
+            t_parent = None
+            t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
+
+            if t_parent is None:
+                return False
+
+            mdata = True
+            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata)
+
+            if mdata is True:
+                mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
+
+                if mdata is False:
+                    self.mongo_metadata.delete_entry(metadata.asset_guid)        
+
+            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", t_parent["asset_size"])          
+
+            return mdata
+        
+        except Exception as e:
+            return False
+        
+            
     def update_from_hpc(self, update_data):
         # Extract data from the input
         guid = update_data.guid
@@ -38,22 +67,26 @@ class SlurmService():
         # Update MongoDB track
         self.update_mongo_track(guid, job, update_status)
 
+        """
+        Not using this anymore.
         # Update jobs JSON file unless its a test guid
         try:
             self.update_jobs_json(guid, job, update_status)
         except FileNotFoundError as e:
             pass
-
+        """
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
-            
+
             self.update_mongo_metadata(guid, data_dict)
             
             try:
                 self.update_metadata_json(guid, data_dict)
             except FileNotFoundError as e:
                 pass
-        
+            
+            self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+
         if update_status == self.status.ERROR.value:
             # TODO handle error
             pass
@@ -114,6 +147,8 @@ class SlurmService():
         # Update MongoDB metadata with key-value pairs from the dictionary
         for key, value in dictionary.items():
             self.mongo_metadata.update_entry(guid, key, value)
+        
+        self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
 
     def update_metadata_json(self, guid, dictionary):
         # Extract pipeline name and batch date from MongoDB metadata
@@ -129,12 +164,117 @@ class SlurmService():
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
 
+    # TODO tests
+    def insert_barcode(self, barcode_data):
+
+        guid = barcode_data.guid
+        job_name =  barcode_data.job
+        status = barcode_data.status
+        barcode_list = barcode_data.barcodes
+        asset_subject = barcode_data.asset_subject
+        MSO = barcode_data.MSO
+        MOS = barcode_data.MOS
+        label = barcode_data.label
+        disposable = barcode_data.disposable
+
+        if None in [guid, job_name, status, MSO, MOS, label]:
+            return False
+
+        track_asset = self.mongo_track.get_entry("_id", guid)
+         
+        if track_asset is None:
+            return False
+        
+        metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
+
+        self.update_mongo_metadata(guid, metadata_update)
+        self.update_mongo_track(guid, job_name, status)
+
+
+        # check if asset is part of a mos
+        if MOS:
+            
+            metadata_asset = self.mongo_metadata.get_entry("_id", guid)
+
+            # build spid
+            institution = metadata_asset["institution"]
+            collection = metadata_asset["collection"]
+            if len(barcode_list) > 0:
+                barcode = barcode_list[0]
+                spid = f"{institution}_{collection}_{barcode}" # TODO verify this is how the spid should look
+            else:
+                spid = "NOT_AVAILABLE"
+
+            # build unique label id
+            batch_id = track_asset["batch_list_name"]
+            unique_label_id = f"{batch_id}_{disposable}"
+
+            label_connections = []
+
+            # find all guids with unique label id, create label connection list, update existing label connection lists
+            mos_entries = self.mongo_mos.get_entries("unique_label_id", unique_label_id)
+
+            if mos_entries != []:
+                
+                for mos in mos_entries:
+
+                    mos_entry_guid = mos["_id"]
+                    
+                    # build the new assets list of connecting mos asset guids                    
+                    label_connections.append(mos_entry_guid)
+
+                    # update mos with the new assets guid in its label_connections list
+                    self.mongo_mos.append_existing_list(mos_entry_guid, "label_connections", guid)
+
+                    # if mos is a label update its barcode metadata list with the barcode from the new asset
+                    if mos["label"] is True:
+                        self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
+                        self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.YES.value)
+
+                    # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
+                    if label is True:
+                        
+                        barcode_from_mos_entry_list = self.mongo_metadata.get_value_for_key(mos_entry_guid, "barcode")
+
+                        self.mongo_metadata.append_existing_list(guid, "barcode", barcode_from_mos_entry_list[0])
+            
+            data = {"label": label,
+                    "spid": spid,
+                     "disposable_id": disposable,
+                      "unique_label_id": unique_label_id,
+                       "label_connections": label_connections }
+
+            self.mongo_mos.create_mos_entry(guid, data)
+
+        return True       
+       
+
+
     def job_queued(self, queue_data):
 
         guid = queue_data.guid
         job_id = queue_data.job_id
         job_name = queue_data.job_name
-        job_start_time = queue_data.timestamp
+        job_queued_time = queue_data.timestamp
+
+        if guid is None:
+            return False
+        else:
+            asset = self.mongo_track.get_entry("_id", guid)
+            if asset is None:
+                return False
+
+        self.mongo_track.update_track_job_status(guid, job_name, self.status.QUEUED.value)
+        self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
+        self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
+
+        return True
+    
+    def job_started(self, started_data):
+
+        guid = started_data.guid
+        job_name = started_data.job_name
+        job_start_time = started_data.timestamp
 
         if guid is None:
             return False
@@ -144,17 +284,25 @@ class SlurmService():
                 return False
 
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
-        self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
         return True
     
     def get_httplink(self, asset_guid):
+        # TODO handle multiple files for one asset
+        asset = self.mongo_track.get_entry("_id", asset_guid)        
         
-        httplink = self.mongo_track.get_value_for_key(asset_guid, "ars_file_link")        
+        if asset is not None:
+            files = asset["file_list"]
+
+            for file in files:
+                httplink = file["ars_link"]
+            
+            if httplink is not None:
+                return httplink
+        else:
+                return None    
         
-        return httplink
-    
     def get_metadata_asset(self, asset_guid):
 
         metadata = self.mongo_metadata.get_entry("_id", asset_guid)
@@ -166,7 +314,21 @@ class SlurmService():
         asset = self.get_metadata_asset(asset_guid)
 
         if asset is not None:
-            self.mongo_track.update_entry(asset_guid, "is_on_hpc", validate_enum.ValidateEnum.YES.value)
+            self.mongo_track.update_entry(asset_guid, "hpc_ready", self.validate.YES.value)
+            return True
+        else:
+            return False
+        
+    def derivative_files_uploaded(self, asset_guid):
+
+        track_data = self.mongo_track.get_entry("_id", asset_guid)
+
+        if track_data is not None:
+            
+            self.mongo_track.update_entry(asset_guid, "has_new_file", self.validate.AWAIT.value)
+
+            # TODO find total asset size, add files to file list, probably want to receive file list from slurm here including their size
+
             return True
         else:
             return False

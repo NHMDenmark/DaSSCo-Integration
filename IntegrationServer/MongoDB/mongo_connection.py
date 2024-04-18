@@ -52,6 +52,7 @@ class MongoConnection:
 
     def close_mdb(self):
         self.client.close()
+        print(f"closed connection to: {self.name}")
 
     def create_track_entry(self, guid, pipeline):
         """
@@ -66,19 +67,49 @@ class MongoConnection:
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
             self.collection.insert_one(entry_data)
+            return True
+        else:
+            return False
+    
+    def create_derivative_track_entry(self, guid, pipeline):
+        """
+        Create a new track entry in the MongoDB collection for a derivative.
+
+        :param guid: The unique identifier of the asset.
+        :param pipeline: The value for the 'pipeline' field.
+        :return: A boolean denoting success or failure.
+        """
+        model = entry_model.EntryModel(guid, pipeline, derivative=True)
+        entry_data = model.get_entry_data()
+
+        if self.get_entry("_id", guid) is None:
+            # Insert the new document into the collection
+            self.collection.insert_one(entry_data)
+            return True
+        else:
+            return False
     
     def create_metadata_entry(self, json_path, guid):
         """
         Create a new metadata entry in the MongoDB collection.
         :param json_path: The path to the metadata file.
         :param guid: The unique identifier of the entry.
+        :return: A boolean denoting success or failure.
         """        
-        data = self.util.read_json(json_path)        
+        data = self.util.read_json(json_path)
+
+        if data is False:
+            return False        
 
         if self.get_entry("_id", guid) is None:
 
             self.collection.insert_one({"_id": guid, **data})
+            
+            return True
+        
+        return False
 
+    # TODO missing unit test
     def create_metadata_entry_from_api(self, guid, data):
 
         if self.get_entry("_id", guid) is None:
@@ -87,19 +118,39 @@ class MongoConnection:
         else:
             return False
 
+    def create_mos_entry(self, guid, data):
+        """
+        Create a new mos entry in the MongoDB collection.
+        :param guid: The unique identifier of the entry.
+        :param data: The data for the entry.
+        :return: A boolean denoting success or failure.
+        """  
+
+        if self.get_entry("_id", guid) is None:
+
+            self.collection.insert_one({"_id": guid, **data})
+            return True
+        else:
+            return False
+
     def update_entry(self, guid, key, value):
         """
-            Update an existing entry in the MongoDB collection.
+            Update or add to an entry in the MongoDB collection.
 
             :param guid: The unique identifier of the entry.
             :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
         """
+        if self.get_entry("_id", guid) is None:
+            return False
 
         query = {"_id": guid}
         update_data = {"$set": {key: value}}
 
         self.collection.update_one(query, update_data)
+
+        return True
     
     def update_track_job_status(self, guid, job, status):
         """
@@ -108,8 +159,21 @@ class MongoConnection:
             :param guid: The unique identifier of the entry.
             :param job: The job name to be updated.
             :param status: The new status for the specified job.
+            :return: A boolean denoting success or failure.
         """
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the job_list
+        job_exists = any(d['name'] == job for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
+
         self.collection.update_one({"_id": guid, "job_list.name": job}, {"$set": {"job_list.$.status": status}})
+
+        return True
     
     def update_track_job_list(self, guid, job, key, value):
         """
@@ -119,13 +183,56 @@ class MongoConnection:
             :param job: The job name to be updated.
             :param key: The key (field) to be updated or created.
             :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
         """
+
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the job_list
+        job_exists = any(d['name'] == job for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
 
         query = {"_id": guid, "job_list.name": job}
         job_entry = f"job_list.$.{key}"
         update_data = {"$set": {job_entry: value}}
 
         self.collection.update_one(query, update_data)
+
+        return True
+
+    def update_track_file_list(self, guid, file, key, value):
+        """
+            Update an existing track_entry with a new entry for a file in the track MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param file: The file name to be updated.
+            :param key: The key (field) to be updated or created.
+            :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
+        """
+
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the file exists in the file_list
+        file_exists = any(d['name'] == file for d in entry.get('file_list', []))
+        if not file_exists:
+            return False
+
+        query = {"_id": guid, "file_list.name": file}
+        file_entry = f"file_list.$.{key}"
+        update_data = {"$set": {file_entry: value}}
+
+        self.collection.update_one(query, update_data)
+
+        return True
+    
 
     def get_entry(self, key, value):
         """
@@ -139,6 +246,18 @@ class MongoConnection:
         entry = self.collection.find_one(query)
         return entry
     
+    def get_entries(self, key, value):
+        """
+        Retrieve entries from the MongoDB collection based on a key value pair.
+
+        :param key: Key to be found.
+        :param value: Value to be found. 
+        :return: A list of entries matching the specified pair. Returns an empty list if nothing matches.
+        """
+        query = {key: value}
+        entries = list(self.collection.find(query))
+        return entries
+
     def get_entry_from_multiple_key_pairs(self, key_value_pairs):
         """
             Retrieve an entry from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]
@@ -172,9 +291,16 @@ class MongoConnection:
                 Delete an entry from the MongoDB collection based on its unique identifier.
 
                 :param guid: The unique identifier of the entry.
+                :return: A boolean denoting success or failure.
         """
+
+        if self.get_entry("_id", guid) is None:
+            return False
+
         query = {"_id": guid}
         self.collection.delete_one(query)
+
+        return True
     
     def add_entry_to_list(self, guid, list_name):
         """
@@ -182,6 +308,7 @@ class MongoConnection:
 
                 :param guid: The unique identifier of the entry.
                 :param list_name: The unique identifier of the list.
+                :return: A boolean denoting success or failure. This cant fail unless there is no connection to a database. 
         """
         entry = self.get_entry("_id", list_name)
 
@@ -191,19 +318,38 @@ class MongoConnection:
         else:
             # If the list already exists, append the guid to the existing list
             self.collection.update_one({"_id": list_name}, {"$push": {"guids": guid}})
-    
+
+        return True
      
+    # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
+    # TODO missing unit test
     def find_running_jobs_older_than(self):
         """
                 Finds an entry based on its job_start_time compared to current time and the max time set in the config file. 
 
                 :return the first entry with a timestamp too old
         """
-        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
+        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_running_job")
         
-        time_ago = datetime.utcnow() - timedelta(hours=max_time)
+        time_ago = datetime.now() - timedelta(hours=max_time)
 
         result = self.collection.find({"job_list.job_start_time": {"$lt": time_ago}})
+        
+        return result
+    
+    # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
+    # TODO missing unit test
+    def find_queued_jobs_older_than(self):
+        """
+                Finds an entry based on its job_queued_time compared to current time and the max time set in the config file. 
+
+                :return the first entry with a timestamp too old
+        """
+        max_time = self.util.get_value(self.slurm_config_path, "max_expected_time_in_queue")
+        
+        time_ago = datetime.now() - timedelta(hours=max_time)
+
+        result = self.collection.find({"job_list.job_queued_time": {"$lt": time_ago}})
         
         return result
     
@@ -214,6 +360,7 @@ class MongoConnection:
                 :param guid: The unique identifier of the entry.
                 :param list_key: The key identifier of the list.
                 :param value: The value to be appended to the list.
+                :return: A boolean denoting success or failure.
         """
         entry = self.get_entry("_id", guid)
 
@@ -227,3 +374,4 @@ class MongoConnection:
 
         self.collection.update_one({"_id": guid}, {"$set": entry})
 
+        return True

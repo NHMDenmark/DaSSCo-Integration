@@ -53,7 +53,7 @@ async def get_entry(mdbname: str, key: str, value: str):
     http_status, entry = ms.get_entry(mdbname, key, value)
 
     return JSONResponse(content=entry, status_code=http_status)
-# untested
+
 @mongo_app.put("/api/v1/update_entry/{mdbname}/{guid}/{key}/{value}")
 async def update_entry(mdbname: str, guid: str, key: str, value: str):
 

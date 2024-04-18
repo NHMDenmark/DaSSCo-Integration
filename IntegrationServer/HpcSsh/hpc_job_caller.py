@@ -38,14 +38,15 @@ class HPCJobCaller:
         while self.run:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": validate_enum.ValidateEnum.YES.value, "jobs_status": status_enum.StatusEnum.WAITING.value}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, 
+                                                                         "jobs_status": status_enum.StatusEnum.WAITING.value}])
             
             if asset is None:
-                print("No asset found")
+                
                 time.sleep(1)        
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
-                print(f"Asset found: {guid}")
+                
                 for job in jobs:
                     
                     name = job["name"]

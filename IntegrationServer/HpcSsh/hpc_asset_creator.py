@@ -43,20 +43,30 @@ class HPCAssetCreator:
         while self.run:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": validate_enum.ValidateEnum.NO.value,
-                                                                          "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.YES.value,
+                                                                          "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
+                                                                            "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 print("No asset found")
                 time.sleep(1)        
             else: 
+
                 guid = asset["_id"]
                 batch_id = asset["batch_list_name"]                
-                link = asset["ars_file_link"]
-                script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
+                files = asset["file_list"]
 
-                self.mongo_track.update_entry(guid, "is_on_hpc", validate_enum.ValidateEnum.AWAIT.value)
+                link = None
 
-                self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
+                # TODO handle multiple files belonging to an asset
+                for file in files:
+                    link = file["ars_link"]
+
+                if link is not None:
+                    script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
+
+                    self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
+
+                    self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
                 
                 time.sleep(1)
 

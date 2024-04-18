@@ -29,15 +29,16 @@ class SyncErda:
 
         while self.run:
             
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_on_hpc" : self.validate_enum.YES.value, "erda_sync": self.validate_enum.NO.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_new_file" : self.validate_enum.AWAIT.value, "erda_sync": self.validate_enum.NO.value}])
 
             if asset is not None:
                 guid = asset["_id"]
-                workstation = asset["batch_list_name"][:-11]
-                pipeline = asset["pipeline"]
-                self.storage_api.sync_erda(guid, pipeline, workstation)
-                # TODO get status back from api and check its ok before update entry
-                self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
+                
+                synced = self.storage_api.sync_erda(guid)
+                
+                if synced is True:
+                    self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
+                    
                 
                 time.sleep(1)
 

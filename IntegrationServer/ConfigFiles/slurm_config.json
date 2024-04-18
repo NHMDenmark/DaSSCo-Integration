@@ -2,10 +2,12 @@
   "max_queued_jobs": 6,
   "parallel_jobs": 3,
   "max_expected_time": 2000,
+  "max_expected_time_running_job": 1,
   "max_expected_time_in_queue": 1,
   "job_list_script_path": "/work/dassco_23_request/ldam/job_list.sh",
   "export_to_path": "/work/dassco_23_request/ldam/received",
   "temporary_persist_path": "/work/dassco_23_request/ldam/waiting",
   "initiate_script": "/work/dassco_23_request/ldam/test_init.sh",
-  "clean_up_script": "path/to/script"
+  "clean_up_script": "path/to/script",
+  "upload_file_script": "path/to/script"
 }
