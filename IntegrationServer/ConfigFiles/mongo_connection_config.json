@@ -32,7 +32,7 @@
   "MOS":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "test",
     "collection_name": "MOS"
   }
 }
