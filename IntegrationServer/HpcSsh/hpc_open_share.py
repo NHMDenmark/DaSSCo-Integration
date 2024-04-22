@@ -55,7 +55,7 @@ class HPCOpenShare:
                 
                 if proxy_path is not False:
 
-                    self.track_mongo.update_entry(guid, "proxy_path", proxy_path)
+                    self.mongo_track.update_entry(guid, "proxy_path", proxy_path)
                     
                     # create links for all files in the asset
                     files = asset["file_list"]
@@ -64,7 +64,7 @@ class HPCOpenShare:
                         if file["deleted"] is not True:
                             name = file["name"]
                             link = proxy_path + name
-                            self.mongo_track.update_track_file_list(guid, file, "ars_link", link)
+                            self.mongo_track.update_track_file_list(guid, name, "ars_link", link)
 
                     
                     self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
