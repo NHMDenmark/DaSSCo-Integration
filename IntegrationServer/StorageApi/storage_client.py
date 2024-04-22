@@ -6,12 +6,14 @@ sys.path.append(project_root)
 from dasscostorageclient import DaSSCoStorageClient
 from StorageApi import storage_service
 import json
+from dotenv import load_dotenv
 
 class StorageClient():
      def __init__(self):
-          
-          client_id = os.environ.get("client_id")
-          client_secret = os.environ.get("client_secret")
+          load_dotenv()
+
+          client_id = os.getenv("client_id")
+          client_secret = os.getenv("client_secret")
 
           self.client = DaSSCoStorageClient(client_id, client_secret)
           self.service = storage_service.StorageService()
