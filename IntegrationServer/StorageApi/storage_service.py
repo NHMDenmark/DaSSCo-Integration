@@ -23,7 +23,6 @@ class StorageService():
     def get_metadata_creation_body(self, guid):
         
         self.api_metadata = api_metadata_model.ApiMetadataModel()
-        specimen = api_metadata_model.Specimen
 
         entry = self.metadata_db.get_entry("_id", guid)
 
@@ -34,8 +33,10 @@ class StorageService():
         self.api_metadata.multi_specimen = entry["multispecimen"]
         self.api_metadata.funding = entry["funding"]
         self.api_metadata.subject = entry["asset_subject"]
-        for p in entry["payload_type"]:
-            self.api_metadata.payload_type.append(p) 
+        
+        #for p in entry["payload_type"]:
+        #    self.api_metadata.payload_type.append(p) 
+        self.api_metadata.payload_type = entry["payload_type"]
         self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides
         self.api_metadata.restricted_access = entry["restricted_access"] # needs to ensure agreed upon data here
         self.api_metadata.audited = entry["audited"]
@@ -53,13 +54,14 @@ class StorageService():
 
         if len(barcode) != 0:
             for b in barcode:
-                specimen.barcode = barcode
-                specimen.collection = self.api_metadata.collection
-                specimen.institution = self.api_metadata.institution
-                specimen.preparation_type = entry["preparation_type"]
-                specimen.specimen_pid = entry["speciment_pid"]
+                new_specimen = api_metadata_model.Specimen()  # Create a new instance of Specimen
+                new_specimen.barcode = b
+                new_specimen.collection = self.api_metadata.collection
+                new_specimen.institution = self.api_metadata.institution
+                new_specimen.preparation_type = entry["preparation_type"]
+                new_specimen.specimen_pid = entry["specimen_pid"]
 
-                self.api_metadata.specimens.append(self.specimen)
+                self.api_metadata.specimens.append(new_specimen)
         
         # This should maybe not be empty. Not sure when or with which specific values we want to populate this.
         """
@@ -75,9 +77,9 @@ class StorageService():
 
     def get_metadata_json_format(self, guid):
         
-        self.get_metadata_creation_body(guid)
+        data = self.get_metadata_creation_body(guid)
         
-        data = self.api_metadata.model_dump_json()
+        data = data.model_dump_json()
 
         return data
     

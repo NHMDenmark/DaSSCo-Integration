@@ -8,11 +8,11 @@ class Tag(BaseModel):
     value: str
 
 class Specimen(BaseModel):
-    institution: str
-    collection: str
-    barcode: str
-    specimen_pid: str
-    preparation_type: List[str]
+    institution: str = ""
+    collection: str = ""
+    barcode: str = ""
+    specimen_pid: str = ""
+    preparation_type: str = ""
 
 class ApiMetadataModel(BaseModel):
     asset_pid: str = ""
@@ -23,7 +23,7 @@ class ApiMetadataModel(BaseModel):
     specimens: List[Specimen] = []
     funding: str = ""
     subject: str = ""
-    payload_type: List[str] = []
+    payload_type: str = "" # List[str] = []
     file_formats: List[str] = []
     asset_locked: bool = False
     restricted_access: List[str] = []
