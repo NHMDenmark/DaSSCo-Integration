@@ -12,6 +12,7 @@ from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 from bson.json_util import dumps
 from datetime import datetime
+from dotenv import load_dotenv
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -29,7 +30,7 @@ class IntegrationServer(object):
         self.ssh_config_path = "IntegrationServer/ConfigFiles/ssh_connections_config.json"
 
         self.cons.create_ssh_connections(self.ssh_config_path)
-
+        load_dotenv()
 
 def test():
     util = utility.Utility()
@@ -37,7 +38,7 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    mongo = mongo_connection.MongoConnection("track")
+    # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
@@ -72,8 +73,8 @@ def test():
 
     #util.write_full_json(relPath, entry)
 
-    mongo.create_metadata_entry(relPath, "test_0001")
-
+    #mongo.create_metadata_entry(relPath, "test_0001")
+    # print(os.getenv("password"))
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/
