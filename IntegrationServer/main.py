@@ -74,7 +74,7 @@ def test():
     #util.write_full_json(relPath, entry)
 
     #mongo.create_metadata_entry(relPath, "test_0001")
-    # print(os.getenv("password"))
+    print(os.getenv("password"))
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/
