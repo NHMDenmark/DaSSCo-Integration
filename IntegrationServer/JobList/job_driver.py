@@ -75,6 +75,7 @@ class JobDriver:
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guid")
+                    # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
                     image_extension = []
                     for format in self.util.get_value(json_file_path, "file_format"):
                         format = "." + format

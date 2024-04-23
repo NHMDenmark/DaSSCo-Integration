@@ -58,8 +58,16 @@ class StorageService():
                 new_specimen.barcode = b
                 new_specimen.collection = self.api_metadata.collection
                 new_specimen.institution = self.api_metadata.institution
+                # TODO need to figure out this exactly, what can and what cant be lists
                 new_specimen.preparation_type = entry["preparation_type"]
+                if new_specimen.preparation_type == []:
+                    new_specimen.preparation_type = ""
+                else:
+                    new_specimen.preparation_type = new_specimen.preparation_type[0]
+                # TODO again issue with something potentially being a list
                 new_specimen.specimen_pid = entry["specimen_pid"]
+                if new_specimen.specimen_pid == []:
+                        new_specimen.specimen_pid = ""
 
                 self.api_metadata.specimens.append(new_specimen)
         

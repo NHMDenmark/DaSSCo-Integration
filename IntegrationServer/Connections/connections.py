@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 from Connections.ssh import SSHConnection
 from utility import Utility
+from dotenv import load_dotenv
 
 """
 Creates ssh connections from a _connection_config.json file.
@@ -17,6 +18,7 @@ Includes functions for creating, getting and shutting down connection(s).
 
 class Connections:
     def __init__(self):
+        load_dotenv()
         self.util = Utility()
         self.connection = None
     """
