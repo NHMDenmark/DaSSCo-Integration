@@ -37,7 +37,8 @@ class StorageService():
         #for p in entry["payload_type"]:
         #    self.api_metadata.payload_type.append(p) 
         self.api_metadata.payload_type = entry["payload_type"]
-        self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides
+        # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides TODO messy 
+        self.api_metadata.file_formats.append(entry["file_format"].upper())
         self.api_metadata.restricted_access = entry["restricted_access"] # needs to ensure agreed upon data here
         self.api_metadata.audited = entry["audited"]
         self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
