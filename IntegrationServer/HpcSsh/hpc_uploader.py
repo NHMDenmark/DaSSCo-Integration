@@ -14,9 +14,9 @@ class HPCUploader:
 
     def __init__(self):
 
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.job_detail_path = "IntegrationServer/ConfigFiles/job_detail_config.json"
-        self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
+        self.slurm_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -49,7 +49,7 @@ class HPCUploader:
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
 
                 try:
-                    self.con.ssh_command(f"bash {self.upload_file_script} {guid} {pipeline} {collection} {proxy_path}")
+                    self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
 
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
 

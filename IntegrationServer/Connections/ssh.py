@@ -24,7 +24,7 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
-        self.config_path = f"IntegrationServer/ConfigFiles/{self.name}_connection_config.json"
+        self.config_path = f"{project_root}/ConfigFiles/{self.name}_connection_config.json"
         self.status = ""
         self.is_slurm = ""
         self.new_import_directory_path = ""
@@ -107,7 +107,7 @@ class SSHConnection:
 
     def get_batch_directory_path(self, remote_folder):
         # Read pipeline configuration data from JSON file
-        pipeline_job_config_data = self.util.read_json("./ConfigFiles/pipeline_job_config.json")
+        pipeline_job_config_data = self.util.read_json(f"{project_root}/ConfigFiles/pipeline_job_config.json")
 
         # Get a list of keys from the pipeline configuration data
         pipeline_list = list(pipeline_job_config_data.keys())

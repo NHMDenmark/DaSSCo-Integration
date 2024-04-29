@@ -20,9 +20,9 @@ class NdriveNewFilesFinder:
 
         self.util = utility.Utility()
 
-        self.new_files_path = "IntegrationServer/Files/NewFiles"
-        self.workstations_config_path = "IntegrationServer/ConfigFiles/workstations_config.json"
-        self.ndrive_import_path = self.util.get_value("IntegrationServer/ConfigFiles/ndrive_path_config.json", "ndrive_path")
+        self.new_files_path = f"{project_root}/Files/NewFiles"
+        self.workstations_config_path = f"{project_root}/ConfigFiles/workstations_config.json"
+        self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         
         self.run = True
         self.count = 2
@@ -65,7 +65,7 @@ class NdriveNewFilesFinder:
                 for base_name, file_list in file_groups.items():
 
                     # Check if a directory with the same base_name already exists in the Error directory
-                    error_directory_path = os.path.join("IntegrationServer/Files/Error", base_name)
+                    error_directory_path = os.path.join(f"{project_root}/Files/Error", base_name)
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
                         print(f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
                     else:

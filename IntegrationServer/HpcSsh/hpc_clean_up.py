@@ -21,8 +21,8 @@ class HPCCleanUp:
 
     def __init__(self):
 
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.hpc_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
 
         self.run = True
         self.count = 2

@@ -24,10 +24,10 @@ class JobDriver:
         self.validate = validate_enum.ValidateEnum
         self.file_model = file_model.FileModel()
 
-        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
-        self.input_dir = "IntegrationServer/Files/NewFiles"
-        self.in_process_dir = "IntegrationServer/Files/InProcess"
-        self.error_path = "IntegrationServer/Files/Error"
+        self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
+        self.input_dir = f"{project_root}/Files/NewFiles"
+        self.in_process_dir = f"{project_root}/Files/InProcess"
+        self.error_path = f"{project_root}/Files/Error"
 
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
