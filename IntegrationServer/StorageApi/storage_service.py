@@ -23,8 +23,11 @@ class StorageService():
     def get_metadata_creation_body(self, guid):
         
         self.api_metadata = api_metadata_model.ApiMetadataModel()
-
+        
         entry = self.metadata_db.get_entry("_id", guid)
+        
+        if entry is None:
+            return None
 
         self.api_metadata.asset_guid = guid
         self.api_metadata.asset_pid = entry["asset_pid"]

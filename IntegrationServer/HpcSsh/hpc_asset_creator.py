@@ -69,7 +69,7 @@ class HPCAssetCreator:
 
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
                 
-                time.sleep(1)
+                time.sleep(3)
 
             #self.count -= 1
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"

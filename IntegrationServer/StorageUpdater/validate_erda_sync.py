@@ -55,6 +55,7 @@ class SyncErda:
                         self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
 
                 if asset_status == self.erda_enum.ASSET_RECEIVED.value:
+                    time.sleep(10)
                     # TODO figure out if pointing to another asset is needed here
                     pass
 

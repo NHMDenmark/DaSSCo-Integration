@@ -62,6 +62,7 @@ class HPCUploader:
                 except Exception as e:
                     pass # TODO handle exception
                 
+                time.sleep(3)
             
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             

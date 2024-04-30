@@ -37,11 +37,11 @@ class AssetCreator:
 
             if asset is not None:
                 guid = asset["_id"]
-                
+                storage_api = storage_client.StorageClient()
                 if asset["asset_size"] != -1:
-                    created = self.storage_api.create_asset(guid, asset["asset_size"])
+                    created = storage_api.create_asset(guid, asset["asset_size"])
                 else:
-                    created = self.storage_api.create_asset(guid)
+                    created = storage_api.create_asset(guid)
 
 
                 if created is True:
@@ -53,9 +53,9 @@ class AssetCreator:
             # TODO handle false better than ignoring it set AWAIT or some other status for is_in_ars maybe
                 elif created is False:
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.AWAIT.value)
+                    time.sleep(10)
 
-
-                time.sleep(1)
+                time.sleep(3)
 
             if asset is None:
                 time.sleep(10)

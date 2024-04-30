@@ -14,7 +14,7 @@ class StorageClient():
 
           client_id = os.getenv("client_id")
           client_secret = os.getenv("client_secret")
-          print(client_id, client_secret)
+          # print(client_id, client_secret)
           self.client = DaSSCoStorageClient(client_id, client_secret)
           self.service = storage_service.StorageService()
 
@@ -30,6 +30,10 @@ class StorageClient():
      def create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
+
+          if json_data is None:
+               return False
+
           data_dict = json.loads(json_data)
 
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE

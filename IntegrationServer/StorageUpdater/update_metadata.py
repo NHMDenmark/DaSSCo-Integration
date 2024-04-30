@@ -40,15 +40,15 @@ class UpdateMetadata:
                     # TODO handle if is in ars == NO
 
                     guid = asset["_id"]
-                    
-                    updated = self.storage_api.update_metadata(guid)
+                    storage_api = storage_client.StorageClient()
+                    updated = storage_api.update_metadata(guid)
 
                     if updated is True:
                         self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)
                 
                 # TODO handle false better than ignoring it
 
-                    time.sleep(1)
+                time.sleep(3)
 
             if asset is None:
                 time.sleep(10)

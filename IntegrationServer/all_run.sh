@@ -1,6 +1,6 @@
 #!/bin/bash
 
-root="/work/data/DaSSCo-Integration/Integration"
+root="/work/data/DaSSCo-Integration/IntegrationServer"
 
 nohup python "$root/Ndrive/ndrive_new_files.py" > "$root/Ndrive/ndrive_new_files.out" 2>&1 &
 nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process_files_from_ndrive.out" 2>&1 &

@@ -24,12 +24,12 @@ class HPCJobCaller:
         self.run = True
         self.count = 2
 
-        self.cons = connections.Connections()
         self.util = utility.Utility()
         self.mongo_track = mongo_connection.MongoConnection("track")
 
-        self.cons.create_ssh_connection(self.ssh_config_path)
-        self.con = self.cons.get_connection()
+        #self.cons = connections.Connections()
+        #self.cons.create_ssh_connection(self.ssh_config_path)
+        #self.con = self.cons.get_connection()
 
         self.loop()
     
@@ -47,6 +47,10 @@ class HPCJobCaller:
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
+                cons = connections.Connections()
+                cons.create_ssh_connection(self.ssh_config_path)
+                con = cons.get_connection()
+
                 for job in jobs:
                     
                     name = job["name"]
@@ -58,8 +62,10 @@ class HPCJobCaller:
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                     print(script_path, name)
-                    self.con.ssh_command(f"bash {script_path} {guid}")
-                    time.sleep(1)
+                    con.ssh_command(f"bash {script_path} {guid}")
+                    
+                time.sleep(3)
+                cons.close_connection()
 
             # self.count -= 1
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
@@ -67,10 +73,10 @@ class HPCJobCaller:
             self.run = self.util.get_value(run_config_path, "run")
             if self.run == "False":
                 self.run = False
-                self.cons.close_connection()
+                #self.cons.close_connection()
             if self.count == 0:
                 self.run = False
-                self.cons.close_connection()
+                #self.cons.close_connection()
 
 
     def get_guid_and_jobs(self, asset):

@@ -19,7 +19,7 @@ class HPCOpenShare:
 
     def __init__(self):
 
-        self.hpc_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
 
         self.run = True
         self.count = 4
@@ -28,7 +28,7 @@ class HPCOpenShare:
 
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
-        self.storage_api = storage_client.StorageClient()
+        #self.storage_api = storage_client.StorageClient()
 
         self.loop()
 
@@ -45,13 +45,15 @@ class HPCOpenShare:
                 print("No asset found")
                 time.sleep(10)        
             else: 
-                 
+                time.sleep(5) 
                 guid = asset["_id"]
+                print(guid)
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 asset_size = self.mongo_track.get_value_for_key(guid, "asset_size")
                 
-                proxy_path = self.storage_api.open_share(guid, institution, collection, asset_size)
+                storage_api = storage_client.StorageClient()
+                proxy_path = storage_api.open_share(guid, institution, collection, asset_size)
                 
                 if proxy_path is not False:
 

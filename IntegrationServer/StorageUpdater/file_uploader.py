@@ -56,13 +56,14 @@ class FileUploader:
                             print(os.access(file_path, os.F_OK), os.access(file_path, os.X_OK))
                             # C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
                             print(file_path)
-                            uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
+                            storage_api = storage_client.StorageClient()
+                            uploaded = storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
             # TODO handle fails    
-                time.sleep(10)
+                time.sleep(3)
 
             if asset is None:
                 time.sleep(10)

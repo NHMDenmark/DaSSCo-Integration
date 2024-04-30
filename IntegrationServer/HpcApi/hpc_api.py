@@ -38,7 +38,7 @@ job_model = JobModel
 
 @app.get("/")
 def index():
-    return "keep out"
+    return "keep out both of you"
 
 """
 Deprecated since we use the derivative endpoint instead.

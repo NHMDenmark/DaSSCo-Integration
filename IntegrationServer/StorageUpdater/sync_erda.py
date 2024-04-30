@@ -35,14 +35,14 @@ class SyncErda:
 
             if asset is not None:
                 guid = asset["_id"]
-                
-                synced = self.storage_api.sync_erda(guid)
+                storage_api = storage_client.StorageClient()
+                synced = storage_api.sync_erda(guid)
                 
                 if synced is True:
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
                     
                 
-                time.sleep(1)
+                time.sleep(3)
 
             if asset is None:
                 time.sleep(10)
