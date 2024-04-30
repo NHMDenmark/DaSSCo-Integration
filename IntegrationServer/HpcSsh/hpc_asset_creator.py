@@ -23,6 +23,7 @@ class HPCAssetCreator:
 
         self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
         self.hpc_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
+        
 
         self.run = True
         self.count = 4
@@ -48,7 +49,7 @@ class HPCAssetCreator:
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 print("No asset found")
-                time.sleep(1)        
+                time.sleep(10)        
             else: 
 
                 guid = asset["_id"]
@@ -70,8 +71,13 @@ class HPCAssetCreator:
                 
                 time.sleep(1)
 
-            self.count -= 1
-
+            #self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+                self.cons.close_connection()
             if self.count == 0:
                 self.run = False
                 self.cons.close_connection()

@@ -43,7 +43,7 @@ class HPCOpenShare:
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 print("No asset found")
-                time.sleep(1)        
+                time.sleep(10)        
             else: 
                  
                 guid = asset["_id"]
@@ -73,8 +73,14 @@ class HPCOpenShare:
                 # TODO handle if proxy path is false
                     
 
-            self.count -= 1
-
+            #self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+                self.mongo_track.close_mdb()
+                self.mongo_metadata.close_mdb()
             if self.count == 0:
                 self.run = False
                 self.mongo_track.close_mdb()

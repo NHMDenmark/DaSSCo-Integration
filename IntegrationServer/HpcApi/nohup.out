@@ -3183,3 +3183,81 @@ INFO:     10.161.0.1:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
 INFO:     10.161.0.1:0 - "GET / HTTP/1.1" 200 OK
 INFO:     10.161.0.1:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
 INFO:     10.161.0.1:0 - "GET / HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET / HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-17-0-001-00-000-0382a5-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-17-0-001-00-000-0382a5-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-2b-0-001-00-000-0024db-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-2b-0-001-00-000-0024db-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-08-0-001-00-000-03d6fc-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-08-0-001-00-000-03d6fc-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-34-0-001-00-000-04ea8a-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-20-0-001-00-000-06811a-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-34-0-001-00-000-04ea8a-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-20-0-001-00-000-06811a-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-10-0b-3a-0-001-00-000-02e4cf-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-10-0b-3a-0-001-00-000-02e4cf-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "GET /api/v1/metadata_asset?asset_guid=7e8-4-0a-0e-09-3b-0-001-00-000-02141d-00000 HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/asset_ready?asset_guid=7e8-4-0a-0e-09-3b-0-001-00-000-02141d-00000 HTTP/1.1" 200 OK
+wait jobs
+INFO:     10.161.0.1:0 - "POST /api/v1/update_asset HTTP/1.1" 200 OK
+INFO:     10.161.0.1:0 - "POST /api/v1/queue_job HTTP/1.1" 200 OK
+start or run job
+INFO:     10.161.0.1:0 - "POST /api/v1/start_job HTTP/1.1" 200 OK

@@ -43,7 +43,7 @@ class HPCJobCaller:
             
             if asset is None:
                 
-                time.sleep(1)        
+                time.sleep(10)        
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
@@ -61,8 +61,13 @@ class HPCJobCaller:
                     self.con.ssh_command(f"bash {script_path} {guid}")
                     time.sleep(1)
 
-            self.count -= 1
-
+            # self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+                self.cons.close_connection()
             if self.count == 0:
                 self.run = False
                 self.cons.close_connection()

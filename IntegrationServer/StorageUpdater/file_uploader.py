@@ -8,7 +8,7 @@ import time
 from MongoDB import mongo_connection
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
-
+import utility
 
 """
 Responsible uploading files to open shares. 
@@ -23,6 +23,7 @@ class FileUploader:
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.util = utility.Utility() 
 
         self.run = True
         self.count = 2
@@ -61,16 +62,25 @@ class FileUploader:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
             # TODO handle fails    
-                time.sleep(1)
+                time.sleep(10)
 
             if asset is None:
-                time.sleep(1)
+                time.sleep(10)
 
-            self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+                self.track_mongo.close_mdb()
+                self.metadata_mongo.close_mdb()
+
+            #self.count -= 1
 
             if self.count == 0:
                 self.run = False
-
+                self.track_mongo.close_mdb()
+                self.metadata_mongo.close_mdb()
 
 if __name__ == '__main__':
     FileUploader()

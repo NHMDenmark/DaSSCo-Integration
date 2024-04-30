@@ -35,9 +35,15 @@ class NdriveNewFilesFinder:
 
             self.copy_from_ndrive_and_update_ndrive_dirs(self.ndrive_import_path, self.new_files_path)
 
-            time.sleep(1)
+            time.sleep(10)
 
-            self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+
+            #self.count -= 1
 
             if self.count == 0:
                 self.run = False
@@ -85,6 +91,8 @@ class NdriveNewFilesFinder:
 
             except Exception as e:
                 print(f"An error occurred: {e}")
+        else:
+            time.sleep(60)
 
     """
     Renames the batch directory on the direcory the import was done from. Adds the prefix imported_ to the directory.

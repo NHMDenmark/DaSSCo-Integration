@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 from JobList import job_driver
+import utility
 import time
 
 """
@@ -20,6 +21,7 @@ class ProcessNewFiles:
     def __init__(self):
 
         self.jobby = job_driver.JobDriver()
+        self.util = utility.Utility()
 
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
@@ -35,9 +37,15 @@ class ProcessNewFiles:
 
             self.jobby.process_new_directories_from_ndrive()
 
-            time.sleep(2)
+            time.sleep(10)
 
-            self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+
+            #self.count -= 1
 
             if self.count == 0:
                 self.run = False

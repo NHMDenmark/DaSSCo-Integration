@@ -8,6 +8,7 @@ import time
 from MongoDB import mongo_connection
 from StorageApi import storage_client
 from Enums import validate_enum
+import utility
 
 """
 Responsible for checking for assets that are ready for erda syncing after they have been transferred to HPC cluster.
@@ -20,6 +21,7 @@ class SyncErda:
         self.track_mongo = mongo_connection.MongoConnection("track")
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
+        self.util = utility.Utility()
         self.run = True
         self.count = 4
 
@@ -43,13 +45,21 @@ class SyncErda:
                 time.sleep(1)
 
             if asset is None:
-                time.sleep(1)
+                time.sleep(10)
 
-            self.count -= 1
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            self.run = self.util.get_value(run_config_path, "run")
+            if self.run == "False":
+                self.run = False
+                self.track_mongo.close_mdb()
+            
+
+            # self.count -= 1
 
             if self.count == 0:
                 self.run = False
-
+                self.track_mongo.close_mdb()
 
 if __name__ == '__main__':
     SyncErda()
