@@ -42,7 +42,18 @@ class HPCAssetCreator:
     def loop(self):
 
         while self.run:
+            output = "dead"
+            output = self.con.ssh_command("echo alive")
             
+            if output != "alive":
+                try:
+                    self.cons.create_ssh_connection(self.ssh_config_path)
+                    self.con = self.cons.get_connection()
+                except Exception as e:
+                    print(f"{e} : exception while reconnecting to hpc server")
+                    time.sleep(60)
+                    continue
+
             asset = None
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,

@@ -51,7 +51,7 @@ async def receive_metadata(metadata: metadata_model):
 # TODO receive derivative does not have unit test
 @app.post("/api/v1/derivative")
 async def receive_derivative_metadata(metadata: metadata_model):
-    print("hejsa")
+    
     received = service.received_derivative(metadata)
 
     if received is False:
