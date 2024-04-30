@@ -67,7 +67,7 @@ class HPCAssetCreator:
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
 
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
-                    print(f"bash {script_path} {guid} {batch_id} {link}")
+                
                 time.sleep(1)
 
             self.count -= 1

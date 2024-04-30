@@ -49,7 +49,6 @@ class StorageService():
         self.api_metadata.workstation = entry["workstation_name"]
         self.api_metadata.digitizer = entry["digitiser"]
         self.api_metadata.tags = entry["tags"]
-
         self.api_metadata.institution = entry["institution"]
         self.api_metadata.collection = entry["collection"]
         barcode = []
