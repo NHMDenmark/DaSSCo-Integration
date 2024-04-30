@@ -7,6 +7,7 @@ __pycache__
 *.jpg
 *.txt
 *.env
+*.out
 .idea/
 !ConfigFiles/**/*.json
 !/ConfigFiles/*.json
