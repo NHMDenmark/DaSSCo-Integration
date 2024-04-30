@@ -21,7 +21,7 @@ class SyncErda:
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
         self.run = True
-        self.count = 2
+        self.count = 4
 
         self.loop()
 

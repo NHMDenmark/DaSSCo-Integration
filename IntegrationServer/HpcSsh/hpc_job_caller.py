@@ -18,8 +18,8 @@ class HPCJobCaller:
 
     def __init__(self):
 
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.job_detail_path = "IntegrationServer/ConfigFiles/job_detail_config.json"
+        self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
+        self.job_detail_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/job_detail_config.json"
 
         self.run = True
         self.count = 2
@@ -58,7 +58,7 @@ class HPCJobCaller:
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                     print(script_path, name)
-                    self.con.ssh_command(f"bash {script_path} {guid}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
+                    self.con.ssh_command(f"bash {script_path} {guid}")
                     time.sleep(1)
 
             self.count -= 1

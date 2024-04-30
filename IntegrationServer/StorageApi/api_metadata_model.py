@@ -8,11 +8,11 @@ class Tag(BaseModel):
     value: str
 
 class Specimen(BaseModel):
-    institution: str
-    collection: str
-    barcode: str
-    specimen_pid: str
-    preparation_type: List[str]
+    institution: str = ""
+    collection: str = ""
+    barcode: str = ""
+    specimen_pid: str = ""
+    preparation_type: str = ""
 
 class ApiMetadataModel(BaseModel):
     asset_pid: str = ""

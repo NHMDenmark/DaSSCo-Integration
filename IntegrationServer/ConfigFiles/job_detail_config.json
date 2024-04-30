@@ -15,9 +15,9 @@
     "time_est": "00:00:05",
     "script": "/work/dassco_23_request/ldam/testing_job.sh"
     },
-  "spoof":{
-  "time_est": "01:00:00",
-  "script": "path/to/script"
+  "cropping_derivative":{
+  "time_est": "00:05:00",
+  "script": "/work/dassco_23_request/testPIPEHERB0001/scripts/DaSSCo-Image-Refinery/src/dasscorefinery/cropping_derivative.sh"
   },
   "label":{
   "time_est": "01:00:00",

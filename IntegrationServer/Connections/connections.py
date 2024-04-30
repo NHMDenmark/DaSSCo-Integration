@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 from Connections.ssh import SSHConnection
 from utility import Utility
+from dotenv import load_dotenv
 
 """
 Creates ssh connections from a _connection_config.json file.
@@ -18,6 +19,7 @@ Includes functions for creating, getting and shutting down connection(s).
 class Connections:
     def __init__(self):
         self.util = Utility()
+        load_dotenv()
         self.connection = None
     """
     Creates a ssh connection and sets a number of attributes for that connection. Retrieves the information for the
@@ -28,16 +30,16 @@ class Connections:
 
         for connection_name, connection_details in config.items():
             con_user = connection_name + "_USER"
-            con_user.upper()
+            con_user = con_user.upper()
             con_pwd = connection_name + "_PWD"
-            con_pwd.upper()
-
+            con_pwd = con_pwd.upper()
+            print(con_user)
             username = os.getenv(con_user)
             password = os.getenv(con_pwd)
 
             if username == None:
-                username = os.environ.get(con_user)
-
+                username = os.getenv(con_user)
+            print(username)
             connection = SSHConnection(
                 connection_name,
                 connection_details['host'],

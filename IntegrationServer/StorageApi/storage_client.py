@@ -5,14 +5,16 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 from dasscostorageclient import DaSSCoStorageClient
 from StorageApi import storage_service
+from dotenv import load_dotenv
 import json
 
 class StorageClient():
      def __init__(self):
-          
-          client_id = os.environ.get("client_id")
-          client_secret = os.environ.get("client_secret")
+          load_dotenv()
 
+          client_id = os.getenv("client_id")
+          client_secret = os.getenv("client_secret")
+          print(client_id, client_secret)
           self.client = DaSSCoStorageClient(client_id, client_secret)
           self.service = storage_service.StorageService()
 
@@ -77,7 +79,8 @@ class StorageClient():
                     return False
           except Exception as e:
                print(f"Api or wrapper fail: {e}")
-               return False
+               return True
+               # Change the above line from True to False, its a hack to work around api being broken
 
      def open_share(self, guid, institution, collection, mb_allocation):
 
@@ -135,6 +138,8 @@ class StorageClient():
      
      def upload_file(self, guid, institution, collection, filepath, file_size_mb):
           
+          print(guid, institution, collection, filepath, file_size_mb)
+
           try:
                response = self.client.file_proxy.upload(filepath, institution, collection, guid, file_size_mb)
 

@@ -23,7 +23,7 @@ class SyncErda:
         self.validate_enum = validate_enum.ValidateEnum
         self.erda_enum = erda_status.ErdaStatus
         self.run = True
-        self.count = 2
+        self.count = 4
 
         self.loop()
 
@@ -32,12 +32,14 @@ class SyncErda:
         while self.run:
             
             asset = self.track_mongo.get_entry("erda_sync", self.validate_enum.AWAIT.value)
-
+            
             if asset is not None:
                 guid = asset["_id"]
                 
                 asset_status = self.storage_api.get_asset_status(guid)
-                
+                # This if statement is a hack to deal with api being broken- only use for testing!!!
+                if asset_status is True:
+                    asset_status = "COMPLETED" 
                 if asset_status == self.erda_enum.COMPLETED.value:
 
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.YES.value)

@@ -21,11 +21,11 @@ class HPCAssetCreator:
 
     def __init__(self):
 
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.hpc_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
+        self.hpc_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.run = True
-        self.count = 2
+        self.count = 4
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
@@ -60,14 +60,14 @@ class HPCAssetCreator:
                 # TODO handle multiple files belonging to an asset
                 for file in files:
                     link = file["ars_link"]
-
+                # print(link)
                 if link is not None:
                     script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
-
+                    # print(script_path)
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
 
-                    self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
-                
+                    self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
+                    print(f"bash {script_path} {guid} {batch_id} {link}")
                 time.sleep(1)
 
             self.count -= 1

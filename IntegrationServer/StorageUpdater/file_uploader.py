@@ -50,8 +50,9 @@ class FileUploader:
                             type = file["type"]
                             size = file["file_size"]
 
-                            root = "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/IntegrationServer"
+                            root = "/work/data/DaSSCo-Integration/IntegrationServer"
                             file_path = root + "/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
+                            print(os.access(file_path, os.F_OK), os.access(file_path, os.X_OK))
                             # C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
                             print(file_path)
                             uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)

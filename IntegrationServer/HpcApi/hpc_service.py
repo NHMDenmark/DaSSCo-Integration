@@ -8,6 +8,7 @@ import utility
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
+from PIL import Image
 
 class HPCService():
 
@@ -24,8 +25,8 @@ class HPCService():
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
-    def receive_derivative_metadata(self, metadata):
-
+    def received_derivative(self, metadata):
+        
         try:
             t_parent = None
             t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
@@ -34,7 +35,7 @@ class HPCService():
                 return False
 
             mdata = True
-            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata)
+            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
 
             if mdata is True:
                 mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
@@ -56,7 +57,7 @@ class HPCService():
         job = update_data.job
         update_status = update_data.status
         data_dict = dict(update_data.data)
-
+        
         if guid is None:
             return False
         else:
@@ -106,6 +107,10 @@ class HPCService():
             return
 
         jobs = entry["job_list"]
+        
+        #for job in jobs:
+        #    print(job)
+
 
         all_done = all(job["status"] == StatusEnum.DONE.value for job in jobs)
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
@@ -124,9 +129,11 @@ class HPCService():
         
         if any_running or any_starting:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RUNNING.value)
+            print("start or run job")
             return
 
         if any_waiting:
+            print("wait jobs")
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.WAITING.value)
             return
 
@@ -176,7 +183,7 @@ class HPCService():
         MOS = barcode_data.MOS
         label = barcode_data.label
         disposable = barcode_data.disposable
-
+        #print("received data", guid, job_name, status, barcode_list, asset_subject, MSO, MOS, label, disposable)
         if None in [guid, job_name, status, MSO, MOS, label]:
             return False
 
@@ -193,7 +200,7 @@ class HPCService():
 
         # check if asset is part of a mos
         if MOS:
-            
+            #print(guid, MOS, label, disposable)
             metadata_asset = self.mongo_metadata.get_entry("_id", guid)
 
             # build spid
@@ -228,24 +235,25 @@ class HPCService():
 
                     # if mos is a label update its barcode metadata list with the barcode from the new asset
                     if mos["label"] is True:
+                        barcodes_from_guid = self.mongo_metadata.get_value_for_key(guid, "barcode")
+                        barcode = barcodes_from_guid[0]
                         self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
                         self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.YES.value)
 
                     # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
-                    if label is True:
-                        
+                    if label is True:                        
                         barcode_from_mos_entry_list = self.mongo_metadata.get_value_for_key(mos_entry_guid, "barcode")
-
-                        self.mongo_metadata.append_existing_list(guid, "barcode", barcode_from_mos_entry_list[0])
+                        barcode_for_label = barcode_from_mos_entry_list[0]                        
+                        self.mongo_metadata.append_existing_list(guid, "barcode", barcode_for_label)
             
             data = {"label": label,
                     "spid": spid,
                      "disposable_id": disposable,
                       "unique_label_id": unique_label_id,
                        "label_connections": label_connections }
-
+            #print("data we send to mongo:", guid, data)
             self.mongo_mos.create_mos_entry(guid, data)
-
+            
         return True       
        
 
@@ -264,7 +272,7 @@ class HPCService():
             if asset is None:
                 return False
 
-        self.mongo_track.update_track_job_status(guid, job_name, self.status.QUEUED.value)
+        self.update_mongo_track(guid, job_name, self.status.QUEUED.value)
         self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
 
@@ -283,7 +291,7 @@ class HPCService():
             if asset is None:
                 return False
 
-        self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
+        self.update_mongo_track(guid, job_name, self.status.RUNNING.value)
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
         return True
@@ -332,3 +340,17 @@ class HPCService():
             return True
         else:
             return False
+    
+    def get_file_paths(self, folder_path):
+        file_names = []
+        folder_path = f"/work/data/lars/displayer/page/{folder_path}"
+        for file_name in os.listdir(folder_path):
+
+            # Open the TIFF image
+            #tiff_image = Image.open("example.tif")
+
+            # Convert the image to JPEG format
+            #jpeg_image = tiff_image.convert("RGB")
+            file_names.append(file_name)
+    
+        return file_names

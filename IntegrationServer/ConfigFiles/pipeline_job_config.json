@@ -6,11 +6,11 @@
    "job_4": "spoof"
  },
  "PIPEHERB0001": {
-   "job_1": "test",
-   "job_2": "label"
+   "job_1": "assetLoader",
+   "job_2": "cropping_derivative"
  },
  "ti-p1": {
-  "job_1": "test",
-  "job_2": "label"
+  "job_1": "assetLoader",
+  "job_2": "test"
  }
 }

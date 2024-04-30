@@ -27,10 +27,10 @@ class JobDriver:
         self.mongo_config_path = "/work/data/DaSSCo-integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
         # self.database_name = next(iter(self.mongo_config_data.keys()))
-        self.mongo_config_path = "IntegrationServer/ConfigFiles/mongo_connection_config.json"
-        self.input_dir = "IntegrationServer/Files/NewFiles"
-        self.in_process_dir = "IntegrationServer/Files/InProcess"
-        self.error_path = "IntegrationServer/Files/Error"
+        self.mongo_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
+        self.input_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
+        self.in_process_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/InProcess"
+        self.error_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/Error"
 
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
@@ -78,10 +78,11 @@ class JobDriver:
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guid")
-                    image_extension = []
-                    for format in self.util.get_value(json_file_path, "file_format"):
-                        format = "." + format
-                        image_extension.append(format)
+                    image_extension = self.util.get_value(json_file_path, "file_format")
+                    #image_extension = []
+                    #for format in self.util.get_value(json_file_path, "file_format"):
+                    #    format = "." + format
+                    #    image_extension.append(format)
                     date_value = self.util.get_value(json_file_path, "date_asset_taken")
                     batch_name = ""
 
@@ -98,9 +99,11 @@ class JobDriver:
                     asset_size = -1
 
                     # Add image file checksums(s) and img file size to track entry, calculates total asset size
-                    for extension in image_extension:
+                    #for extension in image_extension:
+                    if True:
+                        extension = image_extension
                         extension = extension.lower()
-                        img_file_name = json_file_name.replace('.json', extension)
+                        img_file_name = json_file_name.replace('.json', f".{extension}")
                         img_file_path = os.path.join(subdirectory_path, img_file_name)
 
                         img_size = self.util.calculate_file_size_round_to_next_mb(img_file_path)

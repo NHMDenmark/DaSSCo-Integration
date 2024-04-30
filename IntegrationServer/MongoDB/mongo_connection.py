@@ -115,6 +115,8 @@ class MongoConnection:
         if self.get_entry("_id", guid) is None:
 
             self.collection.insert_one({"_id": guid, **data})
+            print("created metadata from api")
+            return True
         else:
             return False
 

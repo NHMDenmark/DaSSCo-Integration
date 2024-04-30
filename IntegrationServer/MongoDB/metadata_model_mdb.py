@@ -10,7 +10,7 @@ class MetadataAsset(BaseModel):
     asset_created_by: Optional[str]
     asset_deleted_by: Optional[str]
     asset_guid: Optional[str]
-    asset_locked: Optional[bool]
+    #asset_locked: Optional[bool]
     asset_pid: Optional[str]
     asset_subject: Optional[str]
     date_asset_taken: Optional[datetime]
@@ -41,7 +41,7 @@ class MetadataAsset(BaseModel):
     pipeline_name: Optional[str]
     preparation_type: Optional[List[str]]
     pushed_to_specify_date: Optional[datetime]
-    restricted_access: Optional[bool] # or a Optional[List[str]] from the restricted access enum
+    restricted_access: Optional[List[str]] # or a Optional[List[str]] from the restricted access enum
     specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown 
     status: Optional[str]
     tags: Optional[Dict[str, str]] # basically a way to add comments

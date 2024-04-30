@@ -22,7 +22,7 @@ class HPCOpenShare:
         self.hpc_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.run = True
-        self.count = 2
+        self.count = 4
 
         self.util = utility.Utility()
 
@@ -55,7 +55,7 @@ class HPCOpenShare:
                 
                 if proxy_path is not False:
 
-                    self.track_mongo.update_entry(guid, "proxy_path", proxy_path)
+                    self.mongo_track.update_entry(guid, "proxy_path", proxy_path)
                     
                     # create links for all files in the asset
                     files = asset["file_list"]
@@ -63,8 +63,9 @@ class HPCOpenShare:
                     for file in files:
                         if file["deleted"] is not True:
                             name = file["name"]
-                            link = proxy_path + name
-                            self.mongo_track.update_track_file_list(guid, file, "ars_link", link)
+                            link = f"{proxy_path}{name}"
+                            print(file)
+                            self.mongo_track.update_track_file_list(guid, name, "ars_link", link)
 
                     
                     self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)

@@ -4,13 +4,19 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Response
+from starlette.responses import FileResponse
+from libtiff import TIFF
+from PIL import Image
+from io import BytesIO
+from pathlib import Path
+from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Any, Optional, List, Dict
 import utility
-from metadata_model import MetadataAsset
+from HpcApi.metadata_model import MetadataAsset
 from HpcApi import hpc_service
 from HpcApi.update_model import UpdateAssetModel
 from HpcApi.job_model import JobModel
@@ -21,6 +27,8 @@ Rest api setup for receiving data from hpc.
 """
 
 app = FastAPI()
+app.mount("/display", StaticFiles(directory="/work/data/lars/displayer/page"), name='/display')
+
 util = utility.Utility()
 service = hpc_service.HPCService()
 metadata_model = MetadataAsset
@@ -43,6 +51,7 @@ async def receive_metadata(metadata: metadata_model):
 # TODO receive derivative does not have unit test
 @app.post("/api/v1/derivative")
 async def receive_derivative_metadata(metadata: metadata_model):
+    print("hejsa")
     received = service.received_derivative(metadata)
 
     if received is False:
@@ -112,3 +121,9 @@ def get_metadata(asset_guid: str):
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
     return asset   
+
+@app.get("/api/display/{folder_name}")
+def get_file_names(folder_name: str):
+    paths = service.get_file_paths(folder_name)
+
+    return paths
