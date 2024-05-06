@@ -43,7 +43,7 @@ class HPCCleanUp:
         while self.run:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"is_on_hpc": validate_enum.ValidateEnum.YES.value,
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 print("No asset found")
@@ -52,7 +52,7 @@ class HPCCleanUp:
                 guid = asset["_id"]
                 script_path = self.hpc_config_path["clean_up_script"]
 
-                self.mongo_track.update_entry(guid, "is_on_hpc", validate_enum.ValidateEnum.NO.value)
+                self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
 
                 self.con.ssh_command(f"bash {script_path} {guid}")
 
