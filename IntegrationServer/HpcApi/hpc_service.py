@@ -5,6 +5,8 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import utility
+import json
+from HpcApi.file_model import FileModel
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
@@ -318,7 +320,8 @@ class HPCService():
             return True
         else:
             return False
-        
+    
+    # TODO needs testing
     def derivative_files_uploaded(self, asset_guid):
 
         track_data = self.mongo_track.get_entry("_id", asset_guid)
@@ -328,6 +331,40 @@ class HPCService():
             self.mongo_track.update_entry(asset_guid, "has_new_file", self.validate.AWAIT.value)
 
             # TODO find total asset size, add files to file list, probably want to receive file list from slurm here including their size
+
+            return True
+        else:
+            return False
+    
+    # TODO needs testing
+    def add_derivative_file(self, file_info):
+
+        guid = file_info.guid
+        file_name = file_info.name
+        type = file_info.type
+        check_sum = file_info.check_sum
+        file_size = file_info.file_size
+
+        track_data = self.mongo_track.get_entry("_id", guid)
+
+        if track_data is not None:
+
+            file_model = FileModel()
+
+            file_model.file_size = file_size
+            file_model.check_sum = check_sum
+            file_model.erda_sync = self.validate.NO.value
+            file_model.name = file_name
+            file_model.type = type
+            file_model.deleted = False
+                            
+            file_data = file_model.model_dump_json()
+
+            file_data = json.loads(file_data)
+
+            self.mongo_track.append_existing_list(guid, "file_list", file_data)
+
+            # TODO should update asset size, need call change allocation end point here, should steal the update of track data from derivative
 
             return True
         else:
