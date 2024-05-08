@@ -26,6 +26,7 @@ class HPCService():
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
+    # TODO this is untested
     def receive_derivative_metadata(self, metadata):
 
         try:
@@ -43,8 +44,19 @@ class HPCService():
 
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
+                    return mdata
 
-            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", t_parent["asset_size"])          
+            # add a slightly too large buffer to the total asset size
+            est_size = 0
+            # tif estimate 400 mb
+            if metadata.file_format == "tif":
+                est_size = 450
+            # jpg estimate 10mb
+            if metadata.file_format == "jpeg":
+                est_size = 30
+            
+                
+            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
 
             return mdata
         
@@ -346,6 +358,7 @@ class HPCService():
         file_size = file_info.file_size
 
         track_data = self.mongo_track.get_entry("_id", guid)
+        
 
         if track_data is not None:
 
@@ -364,7 +377,20 @@ class HPCService():
 
             self.mongo_track.append_existing_list(guid, "file_list", file_data)
 
-            # TODO should update asset size, need call change allocation end point here, should steal the update of track data from derivative
+            file_size_est = 0
+            type = self.mongo_metadata.get_value_for_key(guid, "file_format")
+            if type == "tif":
+                file_size_est = 450
+            if type == "jpeg":
+                file_size_est = 30
+                       
+            # add new file size to total asset size, check that parent has some kind of file added
+            if track_data["asset_size"] > 0:
+                self.mongo_track.update_entry(guid, "asset_size", (track_data["asset_size"] + file_size - file_size_est))
+            else:
+                self.mongo_track.update_entry(guid, "asset_size", track_data["asset_size"])
+
+            self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
             return True
         else:
