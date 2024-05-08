@@ -21,12 +21,12 @@ class HPCService():
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
         self.mongo_mos = mongo_connection.MongoConnection("MOS")
 
-    # This is not in use. Writing directly to the db is easier. 
+    # This is not in use. Writing directly to the db is easier/better. s 
     def persist_new_metadata(self, new_metadata):
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
-    # TODO this is untested
+    # TODO this is untested - this should be used for new assets that are either derivatives or cropped versions of their parents
     def receive_derivative_metadata(self, metadata):
 
         try:
@@ -46,7 +46,7 @@ class HPCService():
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return mdata
 
-            # add a slightly too large buffer to the total asset size
+            # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
             est_size = 0
             # tif estimate 400 mb
             if metadata.file_format == "tif":
@@ -63,7 +63,7 @@ class HPCService():
         except Exception as e:
             return False
         
-            
+    # generic update after some type of job has run on hpc that has updates for the metadata         
     def update_from_hpc(self, update_data):
         # Extract data from the input
         guid = update_data.guid
@@ -78,7 +78,7 @@ class HPCService():
             if asset is None:
                 return False
 
-        # Update MongoDB track
+        # Update MongoDB track - call is to a local function in hpcservice
         self.update_mongo_track(guid, job, update_status)
 
         """
@@ -107,6 +107,7 @@ class HPCService():
         
         return True
 
+    # TODO make use of QUEUED status 
     def update_mongo_track(self, guid, job, status):
         # Update MongoDB track with job status
         self.mongo_track.update_track_job_status(guid, job, status)
@@ -121,12 +122,14 @@ class HPCService():
 
         jobs = entry["job_list"]
 
+        # flags for settign jobs_status
         all_done = all(job["status"] == StatusEnum.DONE.value for job in jobs)
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
         any_error = any(job["status"] == StatusEnum.ERROR.value for job in jobs)
         any_waiting = any(job["status"] == StatusEnum.WAITING.value for job in jobs)
         
+        # checks the flags in a sensible order to determine what the overall jobs_status should be
         if any_error:
             # TODO handle error
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.ERROR.value)
@@ -178,7 +181,7 @@ class HPCService():
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
 
-    # TODO tests
+    # TODO tests - updates barcode fields and MOS database if necessary, every asset will have this job performed (barcode reading and mos) 
     def insert_barcode(self, barcode_data):
 
         guid = barcode_data.guid
@@ -263,7 +266,7 @@ class HPCService():
         return True       
        
 
-
+    # update track database that a job has queued
     def job_queued(self, queue_data):
 
         guid = queue_data.guid
@@ -284,6 +287,7 @@ class HPCService():
 
         return True
     
+    # update track database that a job has started
     def job_started(self, started_data):
 
         guid = started_data.guid
@@ -302,6 +306,7 @@ class HPCService():
 
         return True
     
+    # this is currently 8/5/24 not in use, but it could be useful for other hpc setups to be able to get the fileshare link
     def get_httplink(self, asset_guid):
         # TODO handle multiple files for one asset
         asset = self.mongo_track.get_entry("_id", asset_guid)        
@@ -315,14 +320,16 @@ class HPCService():
             if httplink is not None:
                 return httplink
         else:
-                return None    
-        
+                return None
+            
+    # gets the metadata for an asset, used by hpc when creating derivatives    
     def get_metadata_asset(self, asset_guid):
 
         metadata = self.mongo_metadata.get_entry("_id", asset_guid)
 
         return metadata
-
+    
+    # when an asset has successfully been transfered to hpc
     def asset_ready(self, asset_guid):
 
         asset = self.get_metadata_asset(asset_guid)
@@ -377,6 +384,7 @@ class HPCService():
 
             self.mongo_track.append_existing_list(guid, "file_list", file_data)
 
+            # this part assumes that we can only receive one file per derivative- would need a check of file_list size if/when we want more files
             file_size_est = 0
             type = self.mongo_metadata.get_value_for_key(guid, "file_format")
             if type == "tif":
