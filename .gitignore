@@ -9,6 +9,7 @@ __pycache__
 *.env
 *.out
 .idea/
+!requirements.txt
 !ConfigFiles/**/*.json
 !/ConfigFiles/*.json
 Files/Error/**
