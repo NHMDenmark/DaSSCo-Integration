@@ -1,4 +1,4 @@
-## UploasAPI verify script
+## UploadAPI verify script
 
 **Where:**  
 Runs on the refinery server under the url https://refinery.dassco.dk/verify.
