@@ -37,6 +37,7 @@ class FileUploader:
 
             if asset is not None:
                 guid = asset["_id"]
+                # TODO check metadata exist handle fail
                 metadata = self.metadata_mongo.get_entry("_id", guid)
                 if asset["asset_size"] != -1:
 
@@ -44,16 +45,16 @@ class FileUploader:
 
                     for file in asset_files:
                         
-
                         if file["erda_sync"] == validate_enum.ValidateEnum.NO.value:
                             
                             type = file["type"]
                             size = file["file_size"]
 
                             root = f"{project_root}"
+                            # TODO check filepath exist handle fail
                             file_path = f"{project_root}/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
                             # root\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
-                            print(file_path)
+                            # print(file_path)
                             uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
