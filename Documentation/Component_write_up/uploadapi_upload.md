@@ -17,15 +17,19 @@ The input is a POST request with
 
 
 **Description:**  
-This script has two tasks:
-1. if contacted by a GET request, it will send a CSRF token back so a secure connection can be established.
-2. if contacted by a POST request, the user credentials are checked with our database to verify whether that user exists and the password is correct
+This script receives the asset and some additional information. Then it cascades into multiple integrity checks
+1. Saves the image and metadatafile on the N-Drive in a timestamped folder under the respective workstation folder.
+2. Checks whether the size of the saved image is the same as the size information sent in the POST request.
+3. Checks whether the checksum of the saved image is the same as the checksum information sent in the POST request.
+4. Checks whether no asset of the same name already exists in the database.
+2. If steps 2 to 4 have return Yes, the asset is put into the database and a positive status code is retured (200).
+3. If any of the steps 2 to 4 have returned No, the asset is deleted and a negative status code is returned.
+
 
 **Outputs/Updates:**  
-The output of the GET contact is a CSRF token.
-The output of the POST contact is a status code:
-* 200 for successful authentication
-* everything else for no success in authentcating the user
+One of hte following two options:
+* 200 for successful upload
+* everything else for no success in uploading 
 
 **Calls:**  
 N/A
