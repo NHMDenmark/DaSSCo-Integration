@@ -1,26 +1,91 @@
 # Introduction
 This document reflects the interactions between Refinery and the Integration Server.
 
-# Sequence
+# Part I: Ingesting assets to the N-Drive
+Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
+1. The digitizer starts the IngestionClient on the workstation.
+2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
+3. The digitizer selects the digitization session folder.
+4. The digitizer fills in all necessary data regarding the digitization session, fx institution, collection, preparation type, ....
+5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
+6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
+7. The IngestionClient creates a _metadata file_ (.json format) that contains all metadata information input by the digitizers.
+8. The IngestionClient checks if any images if any images contain no information data ( 0 MB files).
+9. The IngestionClient reads the time each image was taken.
+10. The IngestionClient creates a GUID for each image from the supplied information and renames all _converted_ images and the _metdata files_ to their GUID.
+11. The IngestionClient sends each _converted_ image, its corresponding _metadata file_, and the image size and image checksum to the [uploadapi_upload endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/edit/main/Documentation/Component_write_up/uploadapi_upload.md). 
+12. If the return message is positive, the _raw_ image, _converted_ image and _metadata file_ are deleted from the workstation.
+
+
+# Part II: Ingesting assets to ARS
+* Create asset in ARS
+* Upload image to ARS
+
+
+# Part III: Processing assets on HPC
+
 Pre requisite :  An asset has been created in the ARS 
 Integration server has persisted the asset in ARS and has a local copy. 
 
-1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [Hpc asset creator script](Component_write_up/hpc_asset_creator.md)
-2. the pipeline script has saved the image file localaly on HPC server from ARS - [Hpc asset loader](Component_write_up\hpc_pipeline_asset_loader.md)
-3. HPC server notifies the integration server that it has received files from ARS - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
-4. Integration server updates its track database with the information that HPC has received the asset files - [Hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
-
 -- Start of Pipeline Execution --
 
-5. Integration server asks HPC server(script) to start a pipeline job for the asset - [Hpc job caller](Component_write_up\hpc_job_caller.md)
-6. HPC queues the pipeline job for the asset and notifies the integration server job_id and asset_guid - [Hpc job queued](Component_write_up/hpc_api_queue_job.md)
-7. Integration server updates the track database with the new information about the queued asset - 
-8. HPC server notifies the integration server when the queued job has started - [Hpc job started](Component_write_up/hpc_api_start_job.md)
-9. Integration server updates the track database with the new information about the asset -
-10. HPC server notifies the integration server that the job has finished and sends the output from the job to the integration server as well - [Hpc job finished](Component_write_up/hpc_api_update_asset.md) or [Hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
-11. Integration server updates the databases with the new information about the asset. This includes potentially all 3 databases, but most likely just the track and metadata database -
-12. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. After this step, the sequence can begin again after the Start of Pipeline Execution if there are more pipeline jobs that need to run on the HPC -
+_Module: Asset Loader_
 
+1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [hpc asset creator script](Component_write_up/hpc_asset_creator.md)
+2.  HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+3. the pipeline script has saved the image file locally on HPC server from ARS - [hpc asset loader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_loader.md)
+5. HPC server notifies the integration server that it has received files from ARS - [hpc_pipeline asset ready](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_ready.md)
+6. Integration server updates its track database with the information that HPC has received the asset files - [hpc asset ready](Component_write_up/hpc_api_asset_ready.md)
+
+
+
+_Module: Barcode reader_
+
+7. Integration server asks HPC server(script) to start a barcode reader job for the asset - [hpc_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md)
+8. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+9. Integration server updates the track database with the information it received in the previous step about the queued asset - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+10. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
+11. Integration server updates the track database with the information it received in the previous step about the asset.
+12. HPC server notifies the integration server that the job has finished and sends the output from the job  [hpc_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md) to the integration server as well via [hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
+13. Integration server updates the metadata and track databases with the information it received in the previous step about the asset. Integration server updates the MOS database if the asset is a MOS.
+14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
+
+_Module: OCR_
+
+15. Integration server asks HPC server(script) to start a OCR  job for the asset - [hpc_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md)
+16. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+17. Integration server updates the track database with the information it received in the previous step about the queued asset.
+18. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
+19. Integration server updates the track database with the information it received in the previous step about the asset.
+20. HPC server notifies the integration server that the job has finished and sends the output from the job [hpc_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md) to the integration server as well via [hpc job finished](Component_write_up/hpc_api_update_asset.md)
+21. Integration server updates the metadata and track databases with the information it received in the previous step about the asset.
+22. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. 
+
+_Module: Cropping & Derivative_
+
+23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [hpc_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md)
+24. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+25. Integration server updates the track database with the information it received in the previous step about the queued asset.
+26. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
+27. Integration server updates the track database with the information it received in the previous step about the asset.
+28. HPC server notifies the integration server that the job has finished and sends the output from the job [hpc_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md) to the integration server as well via [hpc_api_new asset]()
+29. All jobs are done and the integration server updates the track database.
+
+_Derivative upload_
+
+30. Integration server asks HPC server(script) to start upload the derivative of the asset - [hpc_pipeline_derivative_upload](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_derivative_upload.md)
+31.  HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued]
+32. Integration server updates the track database with the information it received in the previous step about the queued asset.
+33. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
+34.  Integration server updates the track database with the information it received in the previous step about the asset.
+35.  HPC server notifies the integration server that the job has finished and sends the output from the job [hpc_pipeline_derivative_upload](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_derivative_upload.md) to the integration server.
+
+_Clean_up_script_
+
+31. NOT TESTED. Integration server asks HPC server(script) to start the clean up job for the asset - [hpc_pipeline_clean_up]()
+
+# Part IV: Finalizing asset
+* Closing share
 # Glossary
 
 **Integration Server:**  
@@ -33,7 +98,7 @@ A database located on the integration server. It keeps track of most things (see
 A database located on the integration server. It contains the metadata belonging to an asset. This gets updated when we receive new information about the asset and gets populated when the integration server receives a new asset.
 
 **MOS Database:**  
-A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
+Multi object speciment. A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
 
 **Endpoint:**  
 Endpoints created by us are continually running and ready to receive some information. They then update the databases on the integration server depending on the information they received.
@@ -42,14 +107,47 @@ Endpoints created by us are continually running and ready to receive some inform
 Our permanent databases (ERDA and graphdb) for both the asset's metadata and the asset's other files. It is updated through the use of endpoints created and maintained by NorthTech.
 
 **HPC:**  
-A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
+High performance computing. A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
 
 **COMPUTEROME:**  
-HPC server that does not allow us to connect via SSH, and therefore we are having trouble automating the process of running the pipeline/job scripts for the assets.
+HPC server that does not allow us to automatically connect via SSH, and therefore we are having trouble automating the process of running the pipeline/job scripts for the assets. We will be using periodic api calls to check if any jobs needs to run. Makes it require more infrastructure on both the integrationserver and on computerome server.
+Uses torque for scheduling.
 
 **DEIC/Slurm:**  
-HPC server that allows us to connect via SSH.
+HPC server that allows us to connect via SSH and directly start jobs.
+Uses slurm for scheduling.
 
 **Rites/Slurm:**  
-HPC server that allows us to connect via SSH.
+HPC server that allows us to connect via SSH and directly start jobs.
+Uses slurm for scheduling.
+
+
+**SSH:**
+SSH (Secure Shell Protocol) is a protocol that allows users to remotely login into servers/computers and use the command line for task execution while ensuring certain safety standards.]
+
+**Workstation**
+A workstation consists of a computer and a digitization setup (fx camera with scaffolding) that is deployed and operated in one of our institutions. 
+
+**IngestionClient** 
+The IngestionClient is a software program that is installed on the workstation. It is used manually by digitizers. Simplified, it is responsible for sending standardized assets to the N-Drive.
+It is responsible for:
+* creating metadata files for digitized specimen according to our standards
+*  preforming simple quality checks
+* authenticating the digitizers' credentials via connecting to our database on the Refinery Server
+* Sent the digitized specimen and their metadata files to the UploadAPI
+* Track errors of the tasks above
+
+**N-Drive**
+Shared drive administered by KU-IT.
+
+**UploadAPI**
+Software program that runs continuously on the Refinery Server. Simplified, it is responsible for receiving asset from the IngestionClient and administering them on the N-Drive.
+ Its task are to authenticate connection requests/users, receive & save  assets (digitized specimen and metadata files) to the N-Drive, and log every asset into a database.  
+
+**Refinery Server**
+The Refinery Server is a server in the KU intranet that is running the UploadAPI. The N-Drive is also mounted on the server, meaning that files stored there can be access from the Refinery Server and new files can be uploaded.
+
+
+
+
 
