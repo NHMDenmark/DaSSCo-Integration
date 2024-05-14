@@ -38,6 +38,7 @@ class SyncErda:
             assets = self.track_mongo.get_entries_from_multiple_key_pairs([{"erda_sync": self.validate_enum.AWAIT.value}])
 
             if len(assets) == 0:
+                # no assets found that needed validation
                 time.sleep(1)
                 continue
 
@@ -59,19 +60,25 @@ class SyncErda:
                     for file in asset["file_list"]:
                         self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
 
+                    print(f"Validated erda sync for asset: {guid}")
+
                 if asset_status == self.erda_enum.ASSET_RECEIVED.value:
                     # no action needed here since asset is basically queued to be synced and just waiting for that to happen
+                    print(f"Waiting on erda sync for asset: {guid}")
                     pass    
 
                 if asset_status == self.erda_enum.ERDA_ERROR.value:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
+                    # currently resetting sync status to "NO" attempts a new sync 
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
 
                 if asset_status is False:
                     # TODO handle when something went wrong with api call
                     pass
-
                 time.sleep(1)
+
+            # total delay after one run
+            time.sleep(1)
 
 
 if __name__ == '__main__':
