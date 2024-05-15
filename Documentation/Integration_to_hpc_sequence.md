@@ -1,5 +1,5 @@
 # Introduction
-This document reflects the interactions between Refinery and the Integration Server.
+This document reflects the digitization process from workstation to storage in ARS.
 
 # Part I: Ingesting assets to the N-Drive
 Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
