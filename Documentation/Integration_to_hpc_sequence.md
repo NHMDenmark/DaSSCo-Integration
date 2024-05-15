@@ -26,7 +26,7 @@ N-Drive is mounted on the intergration server.
 
 1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a config LINK LIST OF WORKSTATIONS file (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
 2. Every asset in a new upload folder is copied to the local storage of the integration server.
-3. The metadata file is kept and the information is added to the Metadata Database.
+3. The metadata file is kept and the information is added to the Metadata Database LINK.
 4. For every asset a new entry is created in the track database. This entry contains a variety of information about processing, some derived from the metadata. A full over view can be found [Track database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md).
 5. Depending on the entry of the metadata field _pipeline_, a job list with a fixed sequence is created in the track database. See [Config files README](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/README.md)
 6. The ARS endpoint [create_asset] is contacted to create an asset on ARS. Only a subset of metadata is passed onto ARS. For ARS documentation see [here](https://northtech.atlassian.net/wiki/spaces/DAS/pages/2188902401/Web+API).
