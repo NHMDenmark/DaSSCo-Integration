@@ -127,6 +127,8 @@ Uses slurm for scheduling.
 **Endpoint:**  
 Endpoints created by us are continually running and ready to receive some information. They then update the databases on the integration server depending on the information they received.
 
+**File share/proxy/cache DECIDE ON NAME**
+
 **IngestionClient** 
 The IngestionClient is a software program that is installed on the workstation. It is used manually by digitizers. Simplified, it is responsible for sending standardized assets to the N-Drive.
 It is responsible for:
