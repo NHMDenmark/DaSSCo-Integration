@@ -1,5 +1,5 @@
-# Introduction
-This document reflects the digitization process from workstation to storage in ARS.
+# Introduction to PIPEHERB0001
+This document reflects the digitization process from workstation to storage in ARS for NHMD Herbarium pipeline 1.
 
 # Part I: Ingesting assets to the N-Drive
 This part takes care of uploading locally created assets from workstations to a centrally accessible temporary storage, the N-Drive.
