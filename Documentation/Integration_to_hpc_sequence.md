@@ -117,6 +117,7 @@ _Clean_up_script_
 
 # Part V: Finalizing asset
 * Closing share
+* date asset finalized
 # Glossary
 
 **ARS:**  
