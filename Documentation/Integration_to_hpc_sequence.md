@@ -88,45 +88,20 @@ _Clean_up_script_
 * Closing share
 # Glossary
 
-**Integration Server:**  
-A server running microservices (apps/scripts), local databases, and API endpoints for receiving data. It is responsible for keeping track of assets and their data, initiating processes for assets as needed. Processes are initiated when certain criteria are met, and criteria are changed in the database when inputs are received through the endpoints.
-
-**Track Database:**  
-A database located on the integration server. It keeps track of most things (see MOS database) that relate to an asset's status and the status of its files (e.g., images). It gets updated when any status or files change for the asset and gets populated when the integration server receives a new asset.
-
-**Metadata Database:**  
-A database located on the integration server. It contains the metadata belonging to an asset. This gets updated when we receive new information about the asset and gets populated when the integration server receives a new asset.
-
-**MOS Database:**  
-Multi object speciment. A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
-
-**Endpoint:**  
-Endpoints created by us are continually running and ready to receive some information. They then update the databases on the integration server depending on the information they received.
-
 **ARS:**  
 Our permanent databases (ERDA and graphdb) for both the asset's metadata and the asset's other files. It is updated through the use of endpoints created and maintained by NorthTech.
-
-**HPC:**  
-High performance computing. A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
 
 **COMPUTEROME:**  
 HPC server that does not allow us to automatically connect via SSH, and therefore we are having trouble automating the process of running the pipeline/job scripts for the assets. We will be using periodic api calls to check if any jobs needs to run. Makes it require more infrastructure on both the integrationserver and on computerome server.
 Uses torque for scheduling.
 
+
 **DEIC/Slurm:**  
 HPC server that allows us to connect via SSH and directly start jobs.
 Uses slurm for scheduling.
 
-**Rites/Slurm:**  
-HPC server that allows us to connect via SSH and directly start jobs.
-Uses slurm for scheduling.
-
-
-**SSH:**
-SSH (Secure Shell Protocol) is a protocol that allows users to remotely login into servers/computers and use the command line for task execution while ensuring certain safety standards.]
-
-**Workstation**
-A workstation consists of a computer and a digitization setup (fx camera with scaffolding) that is deployed and operated in one of our institutions. 
+**Endpoint:**  
+Endpoints created by us are continually running and ready to receive some information. They then update the databases on the integration server depending on the information they received.
 
 **IngestionClient** 
 The IngestionClient is a software program that is installed on the workstation. It is used manually by digitizers. Simplified, it is responsible for sending standardized assets to the N-Drive.
@@ -137,15 +112,47 @@ It is responsible for:
 * Sent the digitized specimen and their metadata files to the UploadAPI
 * Track errors of the tasks above
 
+**Integration Server:**  
+A server running microservices (apps/scripts), local databases, and API endpoints for receiving data. It is responsible for keeping track of assets and their data, initiating processes for assets as needed. Processes are initiated when certain criteria are met, and criteria are changed in the database when inputs are received through the endpoints.
+
+**HPC:**  
+High performance computing. A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
+
+**Metadata Database:**  
+A database located on the integration server. It contains the metadata belonging to an asset. This gets updated when we receive new information about the asset and gets populated when the integration server receives a new asset.
+
+**MOS Database:**  
+Multi object speciment. A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
+
 **N-Drive**
 Shared drive administered by KU-IT.
+
+**Refinery Server**
+The Refinery Server is a server in the KU intranet that is running the UploadAPI. The N-Drive is also mounted on the server, meaning that files stored there can be access from the Refinery Server and new files can be uploaded.
+
+**Rites/Slurm:**  
+HPC server that allows us to connect via SSH and directly start jobs.
+Uses slurm for scheduling.
+
+**SSH:**
+SSH (Secure Shell Protocol) is a protocol that allows users to remotely login into servers/computers and use the command line for task execution while ensuring certain safety standards.
+
+**Track Database:**  
+A database located on the integration server. It keeps track of most things (see MOS database) that relate to an asset's status and the status of its files (e.g., images). It gets updated when any status or files change for the asset and gets populated when the integration server receives a new asset.
 
 **UploadAPI**
 Software program that runs continuously on the Refinery Server. Simplified, it is responsible for receiving asset from the IngestionClient and administering them on the N-Drive.
  Its task are to authenticate connection requests/users, receive & save  assets (digitized specimen and metadata files) to the N-Drive, and log every asset into a database.  
 
-**Refinery Server**
-The Refinery Server is a server in the KU intranet that is running the UploadAPI. The N-Drive is also mounted on the server, meaning that files stored there can be access from the Refinery Server and new files can be uploaded.
+**Workstation**
+A workstation consists of a computer and a digitization setup (fx camera with scaffolding) that is deployed and operated in one of our institutions. 
+
+
+
+
+
+
+
 
 
 
