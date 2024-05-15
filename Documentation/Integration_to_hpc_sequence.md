@@ -4,7 +4,7 @@ This document reflects the digitization process from workstation to storage in A
 # Part I: Ingesting assets to the N-Drive
 This part takes care of uploading locally created assets from workstations to a centrally accessible temporary storage, the N-Drive.
 
-Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
+Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing at least 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
 1. The digitizer starts the IngestionClient on the workstation.
 2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
 3. The digitizer selects the digitization session folder.
