@@ -2,6 +2,8 @@
 This document reflects the digitization process from workstation to storage in ARS.
 
 # Part I: Ingesting assets to the N-Drive
+This part takes care of uploading locally created assets from workstations to a centrally accessible temporary storage, the N-Drive.
+
 Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
 1. The digitizer starts the IngestionClient on the workstation.
 2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
@@ -18,14 +20,28 @@ Pre requisite :  A digitization session has been successfully finished by a digi
 
 
 # Part II: Ingesting assets to ARS
-* Create asset in ARS
-* Upload image to ARS
+This part is repsonsible for uploading assets from the N-Drive to our persistent image and metadata storage, ARS.
+N-Drive is mounted on the intergraton server.
+
+1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a config file (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
+2. Every asset in a new upload folder is copied to the local storage of the integration server.
+3. The metadata file is kept but the information is dissolved into the Metadata database.
+4. For every asset a new entry is created in the track database. This entry contains a variety of information about processing, some derived from the metadata. A full over view can be found [Track database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md).
+5. Depending on the entry of the metadata field _pipeline_, a job list with a fixed sequence is created in the track database. See [Config files README](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/README.md)
+6. The ARS endpoint [create_asset] is contacted to create an asset on ARS. Only a subset of metadata is passed onto ARS. For ARS documentation see [here](https://northtech.atlassian.net/wiki/spaces/DAS/pages/2188902401/Web+API).
+7. If the asset has been created succesfully, the image is uploaded to the respective assets file share. The file share is a temporary storage space where the image is available for acessing, but also deletable.
+8. When the image has been uploaded, the ARS endpoint [syncronize_ERDA] is called to push the image to the persistent storage on ERDA. This closes the file share, i.e. the file is not accessible anymore.
+9. Now, the synronization is validated by contacting the ARS endpoint [get_asset_status] and checking the asset status.
+
+# Part III: Preparing asset for processing
+This part prepares syncorized asset for processing.
 
 
-# Part III: Processing assets on HPC
 
-Pre requisite :  An asset has been created in the ARS 
-Integration server has persisted the asset in ARS and has a local copy. 
+# Part VI: Processing assets on HPC
+This part executes the processing of the respective pipeline.
+
+Pre requisite :  An asset has been created in the ARS, the Integration server has persisted the asset in ARS and the asset has an open share. 
 
 -- Start of Pipeline Execution --
 
@@ -84,7 +100,7 @@ _Clean_up_script_
 
 31. NOT TESTED. Integration server asks HPC server(script) to start the clean up job for the asset - [hpc_pipeline_clean_up]()
 
-# Part IV: Finalizing asset
+# Part V: Finalizing asset
 * Closing share
 # Glossary
 
