@@ -81,7 +81,7 @@ _Module: OCR_
 18. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 19. Integration server updates the track database with the information it received in the previous step about the asset.
 20. HPC server notifies the integration server that the job has finished and sends the output from the job [hpc_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md) to the integration server as well via [hpc job finished](Component_write_up/hpc_api_update_asset.md)
-21. Integration server updates the metadata and track databases with the information it received in the previous step about the asset.
+21. Integration server updates the metadata (tags:ocr) and track databases with the information it received in the previous step about the asset.
 22. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened. 
 
 _Module: Cropping & Derivative_
