@@ -47,7 +47,7 @@ class HPCAssetCreator:
                                                                           "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
-                print("No asset found")
+                print("No asset found for creation on HPC")
                 time.sleep(1)        
             else: 
 
@@ -67,7 +67,7 @@ class HPCAssetCreator:
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
 
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}", "C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/postman.txt")
-                
+                # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(1)
 
             self.count -= 1
