@@ -39,14 +39,14 @@ N-Drive is mounted on the intergration server.
 # Part III: Preparing asset for processing
 This part prepares syncronized assets for processing.
 
-1. The integration API checks the track database for assets that have the following properties:
+1. The integration API checks the Track Database for assets that have the following properties:
    * _jobs_status_: WAITING, means that the asset has jobs that have not been started yet
    * _synced_with_erda_: YES, means that the asset is already persisted in ARS
    * _open_share_: NO, means that the asset has no open share yet for processing
-   * _is_in_ARS_: YES, means that the metadata for the asset is accesible
+   * _is_in_ARS_: YES, means that the metadata for the asset is accessible
    * _has_new_file_:NO, means that there is no new file belonging to the asset that needs to be persisted with ERDA first
    * _hpc_ready_:NO, means the asset is not already on the HPC
-3. Integration API is calling the RS endpoint [open_share] to reopen the file share for the asset. This means that the persisted version of the image if downloaded into the file share from ERDA.
+3. Integration API calls the ARS endpoint [open_share] to reopen the file share in the ARS for the asset. This means that the persisted version of the image is downloaded into the file share from ERDA. 
 
 # Part VI: Processing assets on HPC
 This part executes the processing of the respective pipeline.
