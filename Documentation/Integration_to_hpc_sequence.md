@@ -51,13 +51,13 @@ This part prepares syncronized assets for processing.
 # Part VI: Processing assets on HPC
 This part executes the processing of the respective pipeline.
 
-Pre requisite :  An asset has been created in the ARS, the Integration server has persisted the asset in ARS and the asset has an open share. 
+Pre requisite :  An asset has been created in the ARS, the Integration server has persisted the asset in ARS and the asset has an open file share. 
 
 -- Start of Pipeline Execution --
 
 _Module: Asset Loader_
 
-1. Integration server asks script running on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [hpc asset creator script](Component_write_up/hpc_asset_creator.md)
+1. Integration server invokes script on HPC server to get the asset from ARS by providing the asset guid and the link to download the image file - [hpc asset creator script](Component_write_up/hpc_asset_creator.md)
 2.  HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
 3. the pipeline script has saved the image file locally on HPC server from ARS - [hpc asset loader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_loader.md)
 5. HPC server notifies the integration server that it has received files from ARS - [hpc_pipeline asset ready](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_ready.md)
@@ -140,8 +140,12 @@ It is responsible for:
 * Sent the digitized specimen and their metadata files to the UploadAPI
 * Track errors of the tasks above
 
+**Integration HPC API**
+
+
 **Integration Server:**  
 A server running microservices (apps/scripts), local databases, and API endpoints for receiving data. It is responsible for keeping track of assets and their data, initiating processes for assets as needed. Processes are initiated when certain criteria are met, and criteria are changed in the database when inputs are received through the endpoints.
+
 
 **HPC:**  
 High performance computing. A general name for the server(s) where we compute new data for the assets. Pipeline scripts and other helper scripts are found here. We are looking to connect and run these scripts primarily through SSH connections when possible.
