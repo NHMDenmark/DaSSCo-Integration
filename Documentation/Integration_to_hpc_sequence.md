@@ -76,7 +76,7 @@ _Module: Barcode reader_
 14. Integration server updates the metadata (asset_subject, barcode, multispecimen) and track databases with the information it received in the previous step about the asset. Integration server updates the MOS database if the asset is a MOS.
 15. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
 
-_Module: OCR_
+_Module: OCR_ in development
 
 15. Integration server asks HPC server(script) to start a OCR  job for the asset - [hpc_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md)
 16. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
