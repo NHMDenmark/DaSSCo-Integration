@@ -17,6 +17,7 @@ Pre requisite :  A digitization session has been successfully finished by a digi
 10. The IngestionClient creates a GUID for each image from the supplied information and renames all _converted_ images and the _metdata files_ to their GUID.
 11. The IngestionClient sends each _converted_ image, its corresponding _metadata file_, and the image size and image checksum to the [uploadapi_upload endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/edit/main/Documentation/Component_write_up/uploadapi_upload.md). 
 12. If the return message is positive, the _raw_ image, _converted_ image and _metadata file_ are deleted from the workstation.
+13. If any error occured in the preceeding processes, an issue is created in the github repository with workstation information (https://github.com/NHMDenmark/DaSSCo-Image-IngestionClient/issues)
 
 
 # Part II: Ingesting assets to ARS
