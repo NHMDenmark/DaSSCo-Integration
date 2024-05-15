@@ -11,7 +11,7 @@ Receives one argument on invocation:
 This component crops the asset image, downsamples it to 400 ppi (TIF) and 72 ppi (JPEG) and saves them locally on the HPC. It copies the parent's metadata and populates the metadata file field "parent_guid" with the received asset_guid.
 The cropping algorithm works as follows:
 1. An edge detection is run on the image, finding differences in channel intensities. The intensities are assumed to be important image features. The most extrem outliers create a rectangular bounding box for the edges.
-2. The L-shaped side ruler is located in the image and its bounding box is calculated.
+2. The NHMD herbarium specific, L-shaped side ruler, is located in the image and its bounding box is calculated.
 3. These two bounding boxes are combined to a new bounding box by using the maximum and minimum coordinates in the 4 directions (positive x, negative x, positive y, negative y), ensuring that the image is never cropped below the side ruler dimension, but in case more extreme outliers are found, the image is cropped to include those.
 
 
