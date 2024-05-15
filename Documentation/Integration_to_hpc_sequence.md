@@ -90,6 +90,7 @@ _Module: OCR_ in development
 
 _Module: Cropping & Derivative_
 
+CHANGE REFINERY AND DOCUMENTATION HERE TO GET METADATA FOR THE ASSET NOW AGAIN, OTHERWISE OCR IS NOT PRESENT IN THE METADATA
 23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [hpc_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md)
 24. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
 25. Integration server updates the track database with the information it received in the previous step about the queued asset.
@@ -97,8 +98,9 @@ _Module: Cropping & Derivative_
 27. Integration server updates the track database with the information it received in the previous step about the asset.
 28. EXPLAIN GOAL OF CROPPING AND WHEN IT FAILS; HOW TO DEAL WITH CROPPING FAILURES AND REPPORT THEM
 29. CORRECT THAT ONLY 1 DERIVATIVE IS CREATED AS OF NOW
-30. HPC server notifies the integration server that the job has finished and sends the output from the job[hpc_pipeline_cropping&derivatives_nhmd_herbarium](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives_nhmd_herbarium.md) to the integration server as well via [hpc_api_new asset]()
-31. All jobs are done and the integration server updates the track database.
+30. MORE INFO ABOUT OUTPUTS (DERIVATIVE & METADATA)
+31. HPC server notifies the integration server that the job has finished and sends the output from the job[hpc_pipeline_cropping&derivatives_nhmd_herbarium](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives_nhmd_herbarium.md) to the integration server as well via [hpc_api_new asset]()
+32. All jobs are done and the integration server updates the track database.
 
 _Module: Derivative upload_
 
