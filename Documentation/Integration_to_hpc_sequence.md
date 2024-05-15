@@ -49,7 +49,7 @@ This part prepares syncronized assets for processing.
 3. Integration API calls the ARS endpoint [open_share] to reopen the file share in the ARS for the asset. This means that the persisted version of the image is downloaded into the file share from ERDA. 
 
 # Part VI: Processing assets on HPC
-This part executes the processing of the respective pipeline.
+This part executes the processing of the respective pipeline. The processing has to happen in this order, no parallelization possible.
 
 Pre requisite :  An asset has been created in the ARS, the Integration server has persisted the asset in ARS and the asset has an open file share. 
 
