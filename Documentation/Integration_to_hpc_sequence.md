@@ -31,8 +31,9 @@ N-Drive is mounted on the intergration server.
 5. Depending on the entry of the metadata field _pipeline_, a job list with a fixed sequence is created in the track database. See [Config files README](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/README.md)
 6. The ARS endpoint [create_asset] is contacted to create an asset on ARS. Only a subset of metadata is passed onto ARS. For ARS documentation see [here](https://northtech.atlassian.net/wiki/spaces/DAS/pages/2188902401/Web+API).
 7. If the asset has been created succesfully, the image is uploaded to the respective assets file share. The file share is a temporary storage space where the image is available for acessing, but also deletable.
-8. When the image has been uploaded, the ARS endpoint [syncronize_ERDA] is called to push the image to the persistent storage on ERDA. This closes the file share, i.e. the file is not accessible anymore.
-9. Now, the synronization is validated by contacting the ARS endpoint [get_asset_status] and checking the asset status.
+8. When the image has been uploaded to the file share, the ARS endpoint [syncronize_ERDA] is called to push the image to the persistent storage on ERDA. This closes the file share, i.e. the file is not accessible anymore.
+9. Now, the syncronization is validated by contacting the ARS endpoint [get_asset_status] and checking the asset status.
+10. If the validation fails, error processes need to be executed (DEFINE ERROR PROCESSES).
 
 # Part III: Preparing asset for processing
 This part prepares syncronized assets for processing.
