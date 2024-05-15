@@ -1,3 +1,5 @@
+USE SPELLCHECKING
+
 # Introduction to PIPEHERB0001
 This document reflects the digitization process from workstation to storage in ARS for NHMD Herbarium pipeline 1.
 
