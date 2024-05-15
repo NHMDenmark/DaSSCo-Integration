@@ -12,19 +12,19 @@ Pre requisite :  A digitization session has been successfully finished by a digi
 5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
 6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
 7. The IngestionClient creates a _metadata file_ (.json format) that contains all metadata information input by the digitizers, see [example](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/metadata_example.json).
-8. The IngestionClient checks if any images if any images contain no information data ( 0 MB files).
+8. The IngestionClient checks if any images contain no information data ( 0 MB files).
 9. The IngestionClient reads the time each image was taken.
 10. The IngestionClient creates a GUID for each image from the supplied information and renames all _converted_ images and the _metdata files_ to their GUID.
 11. The IngestionClient sends each _converted_ image, its corresponding _metadata file_, and the image size and image checksum to the [uploadapi_upload endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/edit/main/Documentation/Component_write_up/uploadapi_upload.md). 
 12. If the return message is positive, the _raw_ image, _converted_ image and _metadata file_ are deleted from the workstation.
-13. If any error occured in the preceeding processes, an issue is created in the github repository with workstation information (https://github.com/NHMDenmark/DaSSCo-Image-IngestionClient/issues)
+13. If any error occured in the preceeding processes, an issue is created in the [github repository] (https://github.com/NHMDenmark/DaSSCo-Image-IngestionClient/issues) with workstation information.
 
 
 # Part II: Ingesting assets to ARS
 This part is repsonsible for uploading assets from the N-Drive to our persistent image and metadata storage, ARS.
-N-Drive is mounted on the intergraton server.
+N-Drive is mounted on the intergration server.
 
-1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a config file (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
+1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a config LINK LIST OF WORKSTATIONS file (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
 2. Every asset in a new upload folder is copied to the local storage of the integration server.
 3. The metadata file is kept but the information is dissolved into the Metadata database.
 4. For every asset a new entry is created in the track database. This entry contains a variety of information about processing, some derived from the metadata. A full over view can be found [Track database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md).
