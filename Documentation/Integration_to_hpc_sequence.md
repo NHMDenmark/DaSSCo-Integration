@@ -34,6 +34,7 @@ N-Drive is mounted on the intergration server.
 8. When the image has been uploaded to the file share, the ARS endpoint [syncronize_ERDA] is called to push the image to the persistent storage on ERDA. This closes the file share, i.e. the file is not accessible anymore.
 9. Now, the syncronization is validated by contacting the ARS endpoint [get_asset_status] and checking the asset status.
 10. If the validation fails, error processes need to be executed (DEFINE ERROR PROCESSES).
+11. At this stage, no files have been deleted from the Integration server.
 
 # Part III: Preparing asset for processing
 This part prepares syncronized assets for processing.
