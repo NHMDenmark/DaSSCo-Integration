@@ -69,9 +69,9 @@ _Module: Barcode reader_
 9. Integration server updates the track database with the information it received in the previous step about the queued asset - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
 10. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 11. Integration server updates the track database with the information it received in the previous step about the asset.
-12. HPC server notifies the integration server that the job has finished and sends the output from the job  [hpc_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md) to the integration server as well via [hpc barcode reading finished](Component_write_up/hpc_api_barcode.md)
-13. Integration server updates the metadata and track databases with the information it received in the previous step about the asset. Integration server updates the MOS database if the asset is a MOS.
-14. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
+12. HPC server notifies the integration server that the job has finished and sends the output from the job  [hpc_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md) to the integration server as well via [hpc barcode reading finished](Component_write_up/hpc_api_barcode.md). 
+14. Integration server updates the metadata (asset_subject, barcode, multispecimen) and track databases with the information it received in the previous step about the asset. Integration server updates the MOS database if the asset is a MOS.
+15. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
 
 _Module: OCR_
 
