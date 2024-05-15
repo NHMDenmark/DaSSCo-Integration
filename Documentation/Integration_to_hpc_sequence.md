@@ -11,7 +11,7 @@ Pre requisite :  A digitization session has been successfully finished by a digi
 4. The digitizer fills in all necessary data regarding the digitization session, fx institution, collection, preparation type, ....
 5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
 6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
-7. The IngestionClient creates a _metadata file_ (.json format) that contains all metadata information input by the digitizers.
+7. The IngestionClient creates a _metadata file_ (.json format) that contains all metadata information input by the digitizers, see [example](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/metadata_example.json).
 8. The IngestionClient checks if any images if any images contain no information data ( 0 MB files).
 9. The IngestionClient reads the time each image was taken.
 10. The IngestionClient creates a GUID for each image from the supplied information and renames all _converted_ images and the _metdata files_ to their GUID.
@@ -34,9 +34,16 @@ N-Drive is mounted on the intergraton server.
 9. Now, the synronization is validated by contacting the ARS endpoint [get_asset_status] and checking the asset status.
 
 # Part III: Preparing asset for processing
-This part prepares syncorized asset for processing.
+This part prepares syncronized assets for processing.
 
-
+1. The integration API checks the track database for assets that have the following properties:
+   _jobs_status_: WAITING, means that the asset has jobs that have not been started yet
+   _synced_with_erda_: YES, means that the asset is already persisted in ARS
+   _open_share_: NO, means that the asset has no open share yet for processing
+   _is_in_ARS_: YES, means that the metadata for the asset is accesible
+   _has_new_file_:NO, means that there is no new file belonging to the asset that needs to be persisted with ERDA first
+   _hpc_ready_:NO, means the asset is not already on the HPC
+3. Integration API is calling the RS endpoint [open_share] to reopen the file share for the asset. This means that the persisted version of the image if downloaded into the file share from ERDA.
 
 # Part VI: Processing assets on HPC
 This part executes the processing of the respective pipeline.
