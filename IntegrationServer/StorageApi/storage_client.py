@@ -27,13 +27,15 @@ class StorageClient():
           for item in data:
                print(item)
 
-     def create_asset(self, asset_guid, allocation_size = 1):
+     def  create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
           data_dict = json.loads(json_data)
 
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
-          data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
+          if data_dict["payload_type"] == "" or len(data_dict["payload_type"]) == 0:
+               data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
+          
           data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
 
 
