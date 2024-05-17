@@ -36,6 +36,7 @@ class SyncErda:
                 
                 synced = self.storage_api.sync_erda(guid)
                 
+                # TODO handle if false - api fail
                 if synced is True:
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
                     

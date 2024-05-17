@@ -37,8 +37,9 @@ class FileUploader:
 
             if asset is not None:
                 guid = asset["_id"]
-                # TODO check metadata exist handle fail
+                # TODO check metadata exist handle fail, maybe this is too much checking - someone would have had to tamper with the db for this to not be there
                 metadata = self.metadata_mongo.get_entry("_id", guid)
+                # TODO handle if asset size is -1, something else went wrong since it should not be able to have this with the new files status set to YES
                 if asset["asset_size"] != -1:
 
                     asset_files = asset["file_list"]
