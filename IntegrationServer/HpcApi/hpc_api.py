@@ -127,3 +127,10 @@ def get_file_names(folder_name: str):
     paths = service.get_file_paths(folder_name)
 
     return paths
+
+@app.get("/api/v1/nifi/{input}")
+def get_nifi_check(input: str):
+    if input == "true":
+        return JSONResponse(content={"input": "input was true"}, status_code=200)
+    else:
+        return JSONResponse(content={"input": "input was not true"}, status_code=200)

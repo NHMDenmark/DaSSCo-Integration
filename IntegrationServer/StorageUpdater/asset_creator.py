@@ -62,8 +62,8 @@ class AssetCreator:
 
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             
-            self.run = self.util.get_value(run_config_path, "run")
-            if self.run == "False":
+            run = self.util.get_value(run_config_path, "run")
+            if run == "False":
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()

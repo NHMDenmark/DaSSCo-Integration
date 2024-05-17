@@ -39,8 +39,8 @@ class NdriveNewFilesFinder:
 
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             
-            self.run = self.util.get_value(run_config_path, "run")
-            if self.run == "False":
+            run = self.util.get_value(run_config_path, "run")
+            if run == "False":
                 self.run = False
 
             #self.count -= 1
@@ -75,7 +75,8 @@ class NdriveNewFilesFinder:
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
                         print(f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
                     else:
-                        local_folder = os.path.join(local_destination, base_name)
+                        # name with the wait_ prefix to prevent job_driver from using the folder too early.
+                        local_folder = os.path.join(local_destination, f"wait_{base_name}")
                         os.makedirs(local_folder, exist_ok=True)
 
                         # Copy the files
@@ -84,6 +85,8 @@ class NdriveNewFilesFinder:
                             remote_path = os.path.join(remote_folder, file)
 
                             shutil.copy(remote_path, local_path)
+                    # rename to actual name when all files have been copied correctly
+                    self.rename_new_files_folder(local_folder)
 
                 print(f"Copy successful from {remote_folder} to {local_destination}.")
 
@@ -107,6 +110,15 @@ class NdriveNewFilesFinder:
 
         # Rename the directory
         os.rename(old_path, new_path)
+    
+    def rename_new_files_folder(self, path):
+        batch_name = os.path.basename(path)
+
+        # Define the new path
+        new_path = os.path.join(os.path.dirname(path), batch_name[5:])
+
+        # Rename the directory
+        os.rename(path, new_path)
 
     def get_batch_directory_path(self, remote_folder):
         # Read workstation configuration data from JSON file

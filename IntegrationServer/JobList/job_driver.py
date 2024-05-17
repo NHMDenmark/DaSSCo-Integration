@@ -10,6 +10,7 @@ from JobList import job_assigner
 from MongoDB import mongo_connection, file_model
 from Enums import status_enum, validate_enum
 import json
+import time
 
 """
 Responsible for the internal processing of assets. 
@@ -51,6 +52,9 @@ class JobDriver:
         # Iterate over subdirectories in the input directory
         for subdirectory in os.listdir(input_dir):
             subdirectory_path = os.path.join(input_dir, subdirectory)
+            # Move on from folders that dont necessarilyhave all their files yet.
+            if subdirectory_path.startswith("wait_"):
+                continue
 
             # Check if a directory with the same name exists in the error path
             error_directory_path = os.path.join(error_path, subdirectory)

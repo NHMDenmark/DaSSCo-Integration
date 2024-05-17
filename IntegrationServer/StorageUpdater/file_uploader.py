@@ -38,6 +38,7 @@ class FileUploader:
 
             if asset is not None:
                 guid = asset["_id"]
+                print(guid)
                 metadata = self.metadata_mongo.get_entry("_id", guid)
                 if asset["asset_size"] != -1:
 
@@ -53,12 +54,12 @@ class FileUploader:
 
                             root = "/work/data/DaSSCo-Integration/IntegrationServer"
                             file_path = root + "/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
-                            print(os.access(file_path, os.F_OK), os.access(file_path, os.X_OK))
+                            #print(os.access(file_path, os.F_OK), os.access(file_path, os.X_OK))
                             # C:\Users\tvs157\Desktop\VSC_projects\DaSSCo-Integration\IntegrationServer\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
-                            print(file_path)
+                            #print(file_path)
                             storage_api = storage_client.StorageClient()
                             uploaded = storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
-
+                            print(f"file uploaded: {uploaded}")
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
@@ -67,11 +68,12 @@ class FileUploader:
 
             if asset is None:
                 time.sleep(10)
-
+            run=True
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             
-            self.run = self.util.get_value(run_config_path, "run")
-            if self.run == "False":
+            run = self.util.get_value(run_config_path, "run")
+            print(run)
+            if run == "False":
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()

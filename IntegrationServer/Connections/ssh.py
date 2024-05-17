@@ -333,17 +333,12 @@ class SSHConnection:
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
 
-            # Print the output
-            # print("Command Output:")
             output = stdout.read().decode('utf-8')
-            # print(output)
 
             if write_to_path is not None:
                 with open(write_to_path, 'w', encoding='utf-8') as f:
                     f.write(output)
-            # Print any errors
-            # print("Command Errors:")
-            # print(stderr.read().decode('utf-8'))
+            
             return output
         except Exception as e:
             print(f"An error occurred while executing ssh command: {command} : {e}")
