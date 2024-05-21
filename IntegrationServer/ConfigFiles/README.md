@@ -107,3 +107,22 @@ Path to the folder on the ndrive where we keep the workstation name folders.
 ```bash
   "ndrive_path": "N:/something/that/leads/to/the/path/with/the/workstation/names"
 ```
+
+## mail_config.json
+Mail configuration file. Test is setup using gmail as a host here.
+```bash
+  {
+    "{name}":{
+          "server_host": "localhost",
+          "server_port": 587,
+          "sender_address": "example@dassco.dk",
+          "receiver_address": "maintenance@dassco.dk"
+      },
+      "test":{
+          "server_host": "smtp.gmail.com",
+          "server_port": 587,
+          "sender_address": "",
+          "receiver_address": ""
+      }
+    }
+```

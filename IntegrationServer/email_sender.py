@@ -16,7 +16,6 @@ class EmailSender:
         self.util = utility.Utility()
         self.mail_config_path = f"{project_root}/IntegrationServer/ConfigFiles/mail_config.json"
         self.mail_configs = self.util.get_value(self.mail_config_path, mail)
-        self.debug_level = self.mail_configs.get("debug_level")
         self.server_host = self.mail_configs.get("server_host") 
         self.server_port = self.mail_configs.get("server_port")  
         self.address_from = self.mail_configs.get("sender_address")
@@ -47,12 +46,10 @@ class EmailSender:
         server.ehlo()
         server.starttls()
         server.login(self.mail_server_user, self.mail_server_pass)
-        server.set_debuglevel(self.debug_level)
         server.sendmail(self.address_from, self.address_to, msg)
-        server.rset()
         server.quit()
 
-    # Creates the email that is being send.     
+    # Creates the email content that is being send.     
     def create_error_mail_content(self, guid, service, status, error_msg):
 
         mail_subject = f"{status} - {service} - {guid}"

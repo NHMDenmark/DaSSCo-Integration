@@ -7,11 +7,12 @@ class SlackWebhook:
 
     def __init__(self):
         load_dotenv()
+        # the url to the slack webhook app that we are using. 
         self.url = os.getenv("slack_url")
     
     def message_from_integration(self, guid = "NO_GUID", service = "No_SERVICE", status = "NO_SERVICE"):
         
-        # Define the payload
+        # Define the content that will be displayed in the slack chat. 
         payload = {
             "text": f"STATUS: {status} - SERVICE: {service} - GUID: {guid}"
         }
