@@ -5,4 +5,4 @@ class ValidateEnum(Enum):
     AWAIT = "AWAIT"
     UPLOADING = "UPLOADING"
     NO = "NO"
-    
+    ERROR = "ERROR"

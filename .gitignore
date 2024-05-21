@@ -11,7 +11,7 @@ __pycache__
 .idea/
 !requirements.txt
 !ConfigFiles/**/*.json
-!/ConfigFiles/*.json
+!IntegrationServer/ConfigFiles/*.json
 Files/Error/**
 Files/NewFiles/**
 Files/InProcess/**

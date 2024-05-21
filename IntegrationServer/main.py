@@ -13,6 +13,7 @@ import json
 from bson.json_util import dumps
 from datetime import datetime
 from dotenv import load_dotenv
+import email_sender
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -70,11 +71,13 @@ def test():
     #print(mb)
     #entry = mongo.get_entry("_id", "sixth0006")
     #entry_dict = json.loads(dumps(entry))
+    email = email_sender.EmailSender("test")
+    email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
 
     #util.write_full_json(relPath, entry)
 
     #mongo.create_metadata_entry(relPath, "test_0001")
-    print(os.getenv("password"))
+    #print(os.getenv("password"))
 
 if __name__ == '__main__':
     # git rm -r --cached .idea/
