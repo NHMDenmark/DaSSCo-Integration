@@ -27,7 +27,7 @@ class EntryModel:
         self.asset_size = -1
         self.proxy_path = ""
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
-        self.is_in_ars = validate_enum.ValidateEnum.NO.value
+        self.is_in_ars = validate_enum.ValidateEnum.AWAIT.value
         self.has_new_file = validate_enum.ValidateEnum.NO.value
         self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value

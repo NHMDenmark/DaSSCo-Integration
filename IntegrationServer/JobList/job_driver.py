@@ -160,6 +160,8 @@ class JobDriver:
                         shutil.move(subdirectory_path, error_dir)
                     else:
                         shutil.move(subdirectory_path, new_directory_path)
+
+                    self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
                     
     
     """

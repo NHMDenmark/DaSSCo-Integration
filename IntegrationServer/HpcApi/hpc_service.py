@@ -45,7 +45,7 @@ class HPCService():
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return mdata
-
+                
             # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
             est_size = 0
             # tif estimate 400 mb
@@ -57,7 +57,8 @@ class HPCService():
             
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
-
+            self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
+            
             return mdata
         
         except Exception as e:

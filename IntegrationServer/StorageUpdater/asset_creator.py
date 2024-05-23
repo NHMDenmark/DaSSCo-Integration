@@ -44,14 +44,15 @@ class AssetCreator:
 
 
                 if created is True:
+                    metadata = self.metadata_mongo.get_entry("_id", guid)
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-                    if asset["asset_size"] != -1:
+                    if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
             # TODO handle false better than ignoring it set AWAIT or some other status for is_in_ars maybe
                 elif created is False:
-                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.AWAIT.value)
+                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value)
 
 
                 time.sleep(1)
