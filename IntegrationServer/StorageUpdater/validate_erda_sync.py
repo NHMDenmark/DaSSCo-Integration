@@ -14,7 +14,7 @@ import utility
 Responsible validating files have been synced with erda and updating track data accordingly.
 """
 
-class SyncErda:
+class ValidateErda:
 
     def __init__(self):
 
@@ -36,11 +36,12 @@ class SyncErda:
             
             if asset is not None:
                 guid = asset["_id"]
-                
+                print(guid)
                 asset_status = self.storage_api.get_asset_status(guid)
                 # This if statement is a hack to deal with api being broken- only use for testing!!!
                 if asset_status is True:
-                    asset_status = "COMPLETED" 
+                    asset_status = "COMPLETED"
+
                 if asset_status == self.erda_enum.COMPLETED.value:
 
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.YES.value)
@@ -82,4 +83,4 @@ class SyncErda:
                 self.track_mongo.close_mdb()
 
 if __name__ == '__main__':
-    SyncErda()
+    ValidateErda()

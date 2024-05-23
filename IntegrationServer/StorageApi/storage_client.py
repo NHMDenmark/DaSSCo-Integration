@@ -83,7 +83,7 @@ class StorageClient():
                     return False
           except Exception as e:
                print(f"Api or wrapper fail: {e}")
-               return True
+               return False
                # Change the above line from True to False, its a hack to work around api being broken
 
      def open_share(self, guid, institution, collection, mb_allocation):

@@ -5,11 +5,6 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 from fastapi import FastAPI, Response
-from starlette.responses import FileResponse
-from libtiff import TIFF
-from PIL import Image
-from io import BytesIO
-from pathlib import Path
 from fastapi.responses import JSONResponse, HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -27,7 +22,7 @@ Rest api setup for receiving data from hpc.
 """
 
 app = FastAPI()
-app.mount("/display", StaticFiles(directory="/work/data/lars/displayer/page"), name='/display')
+# app.mount("/display", StaticFiles(directory="/work/data/lars/displayer/page"), name='/display')
 
 util = utility.Utility()
 service = hpc_service.HPCService()
@@ -39,6 +34,11 @@ job_model = JobModel
 @app.get("/")
 def index():
     return "keep out both of you"
+
+@app.get("/api/test")
+def test():
+    return "test complete"
+
 
 """
 Deprecated since we use the derivative endpoint instead.
@@ -121,7 +121,7 @@ def get_metadata(asset_guid: str):
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
     return asset   
-
+"""
 @app.get("/api/display/{folder_name}")
 def get_file_names(folder_name: str):
     paths = service.get_file_paths(folder_name)
@@ -134,3 +134,4 @@ def get_nifi_check(input: str):
         return JSONResponse(content={"input": "input was true"}, status_code=200)
     else:
         return JSONResponse(content={"input": "input was not true"}, status_code=200)
+"""

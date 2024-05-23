@@ -167,6 +167,8 @@ class JobDriver:
                     else:
                         shutil.move(subdirectory_path, new_directory_path)
                     
+                    self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
+                    
     
     """
     Takes processed metadata files from slurm and updates job status for those files. 

@@ -8,7 +8,7 @@ import utility
 from MongoDB import mongo_connection
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
-from PIL import Image
+# from PIL import Image
 
 class HPCService():
 
@@ -41,9 +41,21 @@ class HPCService():
                 mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
 
                 if mdata is False:
-                    self.mongo_metadata.delete_entry(metadata.asset_guid)        
+                    self.mongo_metadata.delete_entry(metadata.asset_guid)   
+                    return mdata     
 
-            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", t_parent["asset_size"])          
+            # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
+            est_size = 0
+            # tif estimate 400 mb
+            if metadata.file_format == "tif":
+                est_size = 450
+            # jpg estimate 10mb
+            if metadata.file_format == "jpeg":
+                est_size = 30
+            
+                
+            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
+            self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
 
             return mdata
         
@@ -129,11 +141,11 @@ class HPCService():
         
         if any_running or any_starting:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RUNNING.value)
-            print("start or run job")
+            # print(f"{guid} : start or run job")
             return
 
         if any_waiting:
-            print("wait jobs")
+            # print(f"{guid} : has waiting jobs")
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.WAITING.value)
             return
 
@@ -340,7 +352,7 @@ class HPCService():
             return True
         else:
             return False
-    
+    """
     def get_file_paths(self, folder_path):
         file_names = []
         folder_path = f"/work/data/lars/displayer/page/{folder_path}"
@@ -354,3 +366,4 @@ class HPCService():
             file_names.append(file_name)
     
         return file_names
+    """

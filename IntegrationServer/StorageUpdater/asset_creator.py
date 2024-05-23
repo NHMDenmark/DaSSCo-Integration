@@ -45,6 +45,7 @@ class AssetCreator:
 
 
                 if created is True:
+                    print(f"created {guid}")
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
                     if asset["asset_size"] != -1:
@@ -52,12 +53,14 @@ class AssetCreator:
 
             # TODO handle false better than ignoring it set AWAIT or some other status for is_in_ars maybe
                 elif created is False:
-                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.AWAIT.value)
+                    print(f"failed to create {guid}")
+                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value)
                     time.sleep(10)
 
                 time.sleep(3)
 
             if asset is None:
+                print(f"failed to find assets")
                 time.sleep(10)
 
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
