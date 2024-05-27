@@ -147,18 +147,13 @@ class StorageClient():
                status_code = response.status_code
 
                if status_code == 200:
-                    data = response.json()
-                    expected_crc = data["expected_crc"]
-                    actual_crc = data["actual_crc"]
-
-                    return True
+                    return True, 200
                
                # Reponse indicates a mismatch between received crc and the expected crc
                if status_code == 507:
-
                     return False, 507
 
-
           except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
+               e = f"Api or wrapper fail: {e}"
+               print(e)
+               return False, e

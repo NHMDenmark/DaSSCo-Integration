@@ -8,6 +8,9 @@ import time
 from MongoDB import mongo_connection
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
+import slack_webhook
+import email_sender
+import utility
 
 
 """
@@ -23,6 +26,10 @@ class FileUploader:
         self.storage_api = storage_client.StorageClient()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.slack_webhook = slack_webhook.SlackWebhook()
+        self.email_sender = email_sender.EmailSender()
+        self.util = utility.Utility()
+        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
 
         self.run = True
         self.count = 2
@@ -50,47 +57,60 @@ class FileUploader:
                             
                             type = file["type"]
                             size = file["file_size"]
-
-                            root = f"{project_root}"
-                            # TODO check filepath exist handle fail
+                            
                             file_path = f"{project_root}/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
-                            # root\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
-                            # print(file_path)
+
+                            # check filepath exist and handle fail
+                            if self.util.verify_path(file_path) is False:
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
+                                self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.ERROR.value, f"Expected file not found at: {file_path}")
+                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.ERROR.value)
+                                continue
+
                             uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
 
+                            # If we receive a message back saying the crc values for the uploaded file doesnt fit our value then we move the asset to the TEMP_ERROR status, send a mail and slack message
+                            # TODO create a service that handles TEMP_ERROR status assets. 
                             if uploaded is False and status == 507:
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.TEMP_ERROR.value)
+                                self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.TEMP_ERROR.value, f"File failed to upload correctly due to crc failing to verify. Status: {status}")
+                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.TEMP_ERROR.value)
 
-                            if uploaded is False and status is None:
+                            # In case of an unforeseen issue the service will set its run config to False, send a mail and slack message about the error
+                            # TODO implement a less decisive way of handling this (maybe)
+                            # TODO implement a test run after setting "run" to false
+                            if uploaded is False and status != 507:
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
-            # TODO handle fails    
-                time.sleep(1)
+                                self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.ERROR.value, status)
+                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.ERROR.value)
+                                self.util.update_json(self.run_config_path, "file_uploader_run", False)
+    
+                        time.sleep(1)
 
             if asset is None:
-                time.sleep(1)
+                time.sleep(10)
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            all_run = self.util.get_value(run_config_path, "all_run")
-            service_run = self.util.get_value(run_config_path, "file_uploader_run")
+            all_run = self.util.get_value(self.run_config_path, "all_run")
+            service_run = self.util.get_value(self.run_config_path, "file_uploader_run")
 
             if all_run == "False" or service_run == "False":
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()
 
+            """
             self.count -= 1
 
             if self.count == 0:
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()
-
+            """
 
 if __name__ == '__main__':
     FileUploader()
