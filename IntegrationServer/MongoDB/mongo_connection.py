@@ -49,6 +49,8 @@ class MongoConnection:
         self.collection = self.mdb[self.collection_name]
         print(f"connected to: {self.name}")
         
+    def get_collection(self):
+        return self.collection
 
     def close_mdb(self):
         self.client.close()

@@ -151,10 +151,13 @@ class StorageClient():
                     expected_crc = data["expected_crc"]
                     actual_crc = data["actual_crc"]
 
-                    if expected_crc == actual_crc:
-                         return True
-               else:
-                    return False
+                    return True
+               
+               # Reponse indicates a mismatch between received crc and the expected crc
+               if status_code == 507:
+
+                    return False, 507
+
 
           except Exception as e:
                print(f"Api or wrapper fail: {e}")

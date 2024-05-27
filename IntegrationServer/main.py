@@ -4,7 +4,7 @@ import os
 import utility
 # from IntegrationServer.JobList import job_driver
 # from IntegrationServer.Connections import northtech_rest_api
-from MongoDB import mongo_connection
+from MongoDB import mongo_connection, track_repository
 import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
@@ -72,11 +72,15 @@ def test():
     #print(mb)
     #entry = mongo.get_entry("_id", "sixth0006")
     #entry_dict = json.loads(dumps(entry))
-    email = email_sender.EmailSender("test")
-    email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
+    #email = email_sender.EmailSender("test")
+    #email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
     #sl = slack_webhook.SlackWebhook()
     #sl.message_from_integration("zxy", "CHIPS EATING MACHINE", "BREAK A LEG")
     #util.write_full_json(relPath, entry)
+    track = track_repository.TrackRepository()
+    track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
+    print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
+    
 
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))

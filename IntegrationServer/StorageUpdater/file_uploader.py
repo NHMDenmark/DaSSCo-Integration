@@ -56,12 +56,16 @@ class FileUploader:
                             file_path = f"{project_root}/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
                             # root\Files\InProcess\ti-p1\2022-10-02\third0003\third0003.tif
                             # print(file_path)
-                            uploaded = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
+                            uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
-                            if uploaded is False:
+
+                            if uploaded is False and status == 507:
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.TEMP_ERROR.value)
+
+                            if uploaded is False and status is None:
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
             # TODO handle fails    
                 time.sleep(1)
@@ -79,7 +83,7 @@ class FileUploader:
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()
-        
+
             self.count -= 1
 
             if self.count == 0:
