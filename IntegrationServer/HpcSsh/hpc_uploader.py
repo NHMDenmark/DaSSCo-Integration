@@ -10,6 +10,7 @@ from Enums import status_enum, validate_enum
 import utility
 import time
 
+
 class HPCUploader:
 
     def __init__(self):
@@ -57,7 +58,17 @@ class HPCUploader:
                 except Exception as e:
                     pass # TODO handle exception
                 
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "hpc_uploader_run")
 
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                self.mongo_track.close_mdb()
+                self.mongo_metadata.close_mdb()
+                self.cons.close_connection()
 
             self.count -= 1
 

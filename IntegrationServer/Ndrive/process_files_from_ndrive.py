@@ -37,6 +37,15 @@ class ProcessNewFiles:
 
             time.sleep(2)
 
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "process_files_from_ndrive_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+
             self.count -= 1
 
             if self.count == 0:

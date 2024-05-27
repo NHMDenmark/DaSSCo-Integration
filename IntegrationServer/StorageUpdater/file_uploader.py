@@ -61,16 +61,31 @@ class FileUploader:
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
+                            if uploaded is False:
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
             # TODO handle fails    
                 time.sleep(1)
 
             if asset is None:
                 time.sleep(1)
 
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "file_uploader_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                self.track_mongo.close_mdb()
+                self.metadata_mongo.close_mdb()
+        
             self.count -= 1
 
             if self.count == 0:
                 self.run = False
+                self.track_mongo.close_mdb()
+                self.metadata_mongo.close_mdb()
 
 
 if __name__ == '__main__':

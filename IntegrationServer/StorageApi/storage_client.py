@@ -33,10 +33,10 @@ class StorageClient():
           data_dict = json.loads(json_data)
 
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
-          if data_dict["payload_type"] == "" or len(data_dict["payload_type"]) == 0:
+          if data_dict["payload_type"] == "":
                data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
-          
-          data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
+          if data_dict["asset_pid"] == "":
+               data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
 
 
           try:
@@ -120,8 +120,10 @@ class StorageClient():
           data_dict['updateUser'] = update_user
 
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
-          data_dict["payload_type"] = "INSERT_FROM_UPDATE_METADATA"
-          data_dict["asset_pid"] = "INSERT_FROM_UPDATE_METADATA"
+          if data_dict["payload_type"] == "":
+               data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
+          if data_dict["asset_pid"] == "":
+               data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
 
           try:
                response = self.client.assets.update(guid, data_dict)

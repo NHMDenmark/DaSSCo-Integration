@@ -1,0 +1,15 @@
+{
+    "all_run":"False",
+    "file_uploader_run":"True",
+    "asset_creator_run":"True",
+    "sync_erda_run":"True",
+    "update_metadata_run":"True",
+    "validate_erda_sync_run":"True",
+    "ndrive_new_files_run":"True",
+    "process_files_from_ndrive_run":"True",
+    "hpc_asset_creator_run":"True",
+    "hpc_clean_up_run":"True",
+    "hpc_job_caller_run":"True",
+    "hpc_open_share_run":"True",
+    "hpc_uploader_run":"True"
+}

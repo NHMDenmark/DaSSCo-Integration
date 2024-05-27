@@ -58,12 +58,23 @@ class HPCCleanUp:
 
                 time.sleep(1)
 
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "hpc_clean_up_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                self.mongo_track.close_mdb()
+                self.cons.close_connection()
+
             self.count -= 1
 
             if self.count == 0:
                 self.run = False
                 self.cons.close_connection()
-
+                self.mongo_track.close_mdb()
 
 if __name__ == '__main__':
     HPCCleanUp()

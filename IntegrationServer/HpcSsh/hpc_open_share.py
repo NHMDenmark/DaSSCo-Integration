@@ -70,7 +70,17 @@ class HPCOpenShare:
                     self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
 
                 # TODO handle if proxy path is false
-                    
+            
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "hpc_open_share_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                self.mongo_track.close_mdb()
+                self.mongo_metadata.close_mdb()
 
             self.count -= 1
 

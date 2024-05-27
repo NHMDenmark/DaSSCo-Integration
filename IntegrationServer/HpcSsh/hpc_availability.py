@@ -10,7 +10,7 @@ import utility
 import time
 
 """
-Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
+# TODO Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
 """
 
 class HPCAvailability:

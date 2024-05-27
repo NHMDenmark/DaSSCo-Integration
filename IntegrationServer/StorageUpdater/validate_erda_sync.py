@@ -35,6 +35,18 @@ class SyncErda:
             if self.count == 0:
                 self.run = False
 
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "validate_erda_sync_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                self.track_mongo.close_mdb()
+                self.metadata_mongo.close_mdb()
+                continue
+
             assets = self.track_mongo.get_entries_from_multiple_key_pairs([{"erda_sync": self.validate_enum.AWAIT.value}])
 
             if len(assets) == 0:

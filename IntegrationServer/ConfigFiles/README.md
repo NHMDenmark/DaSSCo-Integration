@@ -126,3 +126,24 @@ Mail configuration file. Test is setup using gmail as a host here.
       }
     }
 ```
+
+## run_config.json
+Service run configuration file. Sets the state for each service running to either true or false. 
+Also can set the status for all services (all_run) at once. Basically a on/off button for the entire integration server. 
+```bash
+{
+    "all_run":"False",
+    "file_uploader_run":"True",
+    "asset_creator_run":"True",
+    "sync_erda_run":"True",
+    "update_metadata_run":"True",
+    "validate_erda_sync_run":"True",
+    "ndrive_new_files_run":"True",
+    "process_files_from_ndrive_run":"True",
+    "hpc_asset_creator_run":"True",
+    "hpc_clean_up_run":"True",
+    "hpc_job_caller_run":"True",
+    "hpc_open_share_run":"True",
+    "hpc_uploader_run":"True"
+}
+```
