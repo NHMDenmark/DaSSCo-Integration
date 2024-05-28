@@ -1,0 +1,45 @@
+{
+  "_id": "test_0001",
+  "asset_size": 9,
+  "batch_list_name": "ti-ws-01_2022-08-0",
+  "created_timestamp": "1999-09-09T08:32:23.548+00:00",
+  "erda_sync": "YES",
+  "file_list": [
+    {
+      "ars_link": "test/link/",
+      "check_sum": 4032106524,
+      "deleted": false,
+      "erda_sync": "YES",
+      "file_size": 9,
+      "name": "test_0001.tif",
+      "time_added": "2000-01-01T10:59:09.813996",
+      "type": "tif"
+    }
+  ],
+  "files_status": "NONE",
+  "has_new_file": "NO",
+  "has_open_share": "YES",
+  "hpc_ready": "YES",
+  "is_in_ars": "YES",
+  "job_list": [
+    {
+      "hpc_job_id": -8,
+      "job_queued_time": null,
+      "job_start_time": "1999-09-09T08:32:23.548+00:00",
+      "name": "testing",
+      "priority": 1,
+      "status": "DONE"
+    },
+    {
+      "hpc_job_id": -1,
+      "job_queued_time": null,
+      "job_start_time": "2024-02-26T08:32:23.548+00:00",
+      "name": "label",
+      "priority": 3,
+      "status": "WAITING"
+    }
+  ],
+  "jobs_status": "WAITING",
+  "pipeline": "ti-p1",
+  "update_metadata": "NO"
+}
