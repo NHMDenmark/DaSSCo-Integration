@@ -21,4 +21,3 @@
 
 | P | js | fs | a s | ready | ars | n file | open sha | e sync | upd mdata |
 
-Updated with status going through AWAIT before NO for is_in_ars. Update asset_size to include estimate for derivatives.

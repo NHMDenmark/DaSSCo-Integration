@@ -15,6 +15,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import email_sender
 import slack_webhook
+import subprocess
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -72,14 +73,14 @@ def test():
     #print(mb)
     #entry = mongo.get_entry("_id", "sixth0006")
     #entry_dict = json.loads(dumps(entry))
-    #email = email_sender.EmailSender("test")
-    #email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
+    email = email_sender.EmailSender("test")
+    email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
     #sl = slack_webhook.SlackWebhook()
-    #sl.message_from_integration("zxy", "CHIPS EATING MACHINE", "BREAK A LEG")
+    #sl.message_from_integration("Lars", "MIGHTY WARRIOR", "GET WELL")
     #util.write_full_json(relPath, entry)
-    track = track_repository.TrackRepository()
-    track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
-    print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
+    #track = track_repository.TrackRepository()
+    #track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
+    #print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
     
 
     #mongo.create_metadata_entry(relPath, "test_0001")

@@ -7,10 +7,13 @@ sys.path.append(project_root)
 import datetime
 import smtplib
 import utility
+import subprocess
 from dotenv import load_dotenv
 
 class EmailSender:
-
+    """
+    Note only one version of send_error_mail should be available at a time. Which one depends on which OS we are on. 
+    """
     def __init__(self, mail):
         load_dotenv()
         self.util = utility.Utility()
@@ -30,7 +33,26 @@ class EmailSender:
         self.mail_server_user = os.getenv(f"mail_server_user_{mail}")
         self.mail_server_pass = os.getenv(f"mail_server_pass_{mail}")
 
+    """
+    This requires sendmail to be installed on the system. Also requires the system to be linux.
+    """
+    # TODO needs to be tested
+    """
+    def send_error_mail(self, guid = "NO_GUID", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE"):
+        
+        subj, message =self.create_error_mail_content(guid, service, status, error_msg)
 
+        subject = f"{subj}\n\n{message}"
+        
+        command = ['sendmail', self.address_to]
+
+        # Using subprocess.Popen for more control, including sending input via stdin
+        process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
+        process.communicate(input=subject)
+    """
+    """
+    This requires a mailserver to be setup and configured.
+    """
     def send_error_mail(self, guid = "NO_GUID", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE"):
 
         mail_subject, msg_content = self.create_error_mail_content(guid, service, status, error_msg)
@@ -48,7 +70,8 @@ class EmailSender:
         server.login(self.mail_server_user, self.mail_server_pass)
         server.sendmail(self.address_from, self.address_to, msg)
         server.quit()
-
+    
+        
     # Creates the email content that is being send.     
     def create_error_mail_content(self, guid, service, status, error_msg):
 

@@ -1,5 +1,5 @@
 {
-    "all_run":"False",
+    "all_run":"True",
     "file_uploader_run":"True",
     "asset_creator_run":"True",
     "sync_erda_run":"True",
