@@ -17,10 +17,7 @@ Class for connecting to and interacting with a MongoDB. Takes the name of the da
 We use this to keep track of jobs and their status for each asset. 
 Should have full CRUD available. 
 """
-
-
 # TODO ensure full crud functionalities have been added.
-# TODO integrate with old system for keeping track of jobs through _jobs.json
 
 class MongoConnection:
 
@@ -55,6 +52,13 @@ class MongoConnection:
     def close_mdb(self):
         self.client.close()
         print(f"closed connection to: {self.name}")
+
+    """
+    TODO Everything below here isnt strictly needed in this file. At some point it should be deleted since all the methods
+    have already been moved to either their respective repositories or to the all_repository.
+    Deleting should not be done without being sure everything else has changed to using the new setup for repositories. This 
+    includes tests.     
+    """
 
     def create_track_entry(self, guid, pipeline):
         """
