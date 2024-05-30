@@ -29,7 +29,7 @@ class LogClass:
     
     """
     Method for logging a message - would normally only be used for warnings.
-    Returns the entry as a string. 
+    Returns the entry as a string with info separated by #. 
     """
     def log_msg(self, msg, level = log_enum.LogEnum.WARNING.value):
         
@@ -38,10 +38,11 @@ class LogClass:
         entry_handler = EntryHandler()
 
         # create formatter
-        formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+        formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+        formatter_entry = logging.Formatter("%(levelname)s#%(asctime)s#%(name)s#%(message)s")
         
-        message_handler.setFormatter(formatter)
-        entry_handler.setFormatter(formatter)
+        message_handler.setFormatter(formatter_msg)
+        entry_handler.setFormatter(formatter_entry)
 
         self.logger.addHandler(message_handler)
         self.logger.addHandler(entry_handler)
@@ -62,16 +63,18 @@ class LogClass:
 
     """
     Method for logging an exception with potential to add a context message.
-    Returns the entry as a string. 
+    Returns the entry as a string with info separated by #. 
     """
     def log_exc(self, msg = "No message from dev", exc = None, level = log_enum.LogEnum.WARNING.value):
         
         exception_handler = logging.FileHandler(self.filepath, encoding="utf-8")
         entry_handler = EntryHandler()
 
-        formatter = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
+        formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
+        formatter_entry = logging.Formatter("%(levelname)s#%(asctime)s#%(name)s#%(message)s#%(exc_info)s")
 
-        exception_handler.setFormatter(formatter)
+        exception_handler.setFormatter(formatter_msg)
+        entry_handler.setFormatter(formatter_entry)
 
         self.logger.addHandler(exception_handler)
         self.logger.addHandler(entry_handler)
