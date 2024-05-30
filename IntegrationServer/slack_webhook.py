@@ -27,4 +27,4 @@ class SlackWebhook:
                 raise ValueError(f"Request to Slack returned an error {response.status_code}, the response is:\n{response.text}")
         
         except Exception as e:
-            print(f"Slack webhook not working: {e}")
+            print(f"Slack webhook not working for asset: {guid} With error: {e}")

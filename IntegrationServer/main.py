@@ -1,7 +1,12 @@
 # from IntegrationServer.Connections import smb_connecter
 # from IntegrationServer.Connections import connections
+import logging.handlers
 import os
 import utility
+import sys
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
 # from IntegrationServer.JobList import job_driver
 # from IntegrationServer.Connections import northtech_rest_api
 from MongoDB import mongo_connection, track_repository
@@ -16,6 +21,8 @@ from dotenv import load_dotenv
 import email_sender
 import slack_webhook
 import subprocess
+import logging
+
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -27,6 +34,7 @@ class IntegrationServer(object):
         self.util = utility.Utility()
         # self.jobby = job_driver.JobDriver()
         # self.cons = connections.Connections()
+        
 
         self.new_files_path = "IntegrationServer/Files/NewFiles/"
         self.updated_files_path = "IntegrationServer/Files/UpdatedFiles/"
@@ -73,20 +81,57 @@ def test():
     #print(mb)
     #entry = mongo.get_entry("_id", "sixth0006")
     #entry_dict = json.loads(dumps(entry))
-    email = email_sender.EmailSender("test")
-    email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
+
+    
+
+    #email = email_sender.EmailSender("test")
+    #email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
     #sl = slack_webhook.SlackWebhook()
     #sl.message_from_integration("Lars", "MIGHTY WARRIOR", "GET WELL")
     #util.write_full_json(relPath, entry)
     #track = track_repository.TrackRepository()
     #track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
     #print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
+    logger = logging.getLogger("IntegrationServer.main.py")
+    ice = "icecream"
+    logger.info("noooo")
+    logger.warning("jubii %s", ice)
+    logger.error("yohoøøø")
     
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.WARNING)
+    fh = logging.FileHandler("hi.log")
+    fh.setLevel(logging.WARNING)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+
+    logger.info("noooo")
+
+    try:
+        with open("/shda") as f:
+            pass
+    except Exception as e:
+        logger.warning("message from devs", exc_info=e)
+        
+        #logger.exception(e)
+    logger.removeHandler(ch)
+    logger.info("nooo222o")
 
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))
 
 if __name__ == '__main__':
+    logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
+    
     # git rm -r --cached .idea/
     # i = IntegrationServer()
     test()
