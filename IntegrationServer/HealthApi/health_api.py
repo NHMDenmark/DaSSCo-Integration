@@ -16,8 +16,9 @@ def index():
 
 @health.post("/api/warning")
 def receive_warning(warning: str, guid: str = None):
-    
-    service.receive_warning(warning, guid)
+    if guid is not None or guid != "":
+        handled = service.receive_warning(warning, guid)
+    else:
+        handled = service.receive_warning(warning)
 
-    
-    return True
+    return handled

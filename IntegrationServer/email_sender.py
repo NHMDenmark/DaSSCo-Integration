@@ -55,7 +55,7 @@ class EmailSender:
     """
     def send_error_mail(self, guid = "NO_GUID", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE", timestamp = None, exception = "None"):
 
-        mail_subject, msg_content = self.create_error_mail_content(guid, service, status, error_msg, timestamp = None, exception = "None")
+        mail_subject, msg_content = self.create_error_mail_content(guid, service, status, error_msg, timestamp, exception)
 
         msg_from = "From: " + self.address_from + "\r\n"
         msg_to = "To: " + self.address_to + "\r\n"
