@@ -47,10 +47,11 @@ class StorageClient():
                if status_code == 200:                    
                     return True
                else:
-                    return False
+                    return False, f"Received {status_code}, while creating asset."
           except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
+               exc = f"Api or wrapper fail: {e}"
+               print(exc)
+               return False, "Api or wrapper fail", e
           
      
      def sync_erda(self, guid):

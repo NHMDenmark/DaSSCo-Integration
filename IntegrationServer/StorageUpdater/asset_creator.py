@@ -8,21 +8,28 @@ import time
 from MongoDB import mongo_connection
 from StorageApi import storage_client
 from Enums import validate_enum
+from InformationModule.log_class import LogClass
+from HealthUtility import health_caller
 
 
 """
 Responsible creating new metadata assets in ars.
 """
 
-class AssetCreator:
+class AssetCreator(LogClass):
 
     def __init__(self):
+
+        super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.basename(os.path.abspath(__file__)))
 
         self.track_mongo = mongo_connection.MongoConnection("track")
         self.metadata_mongo = mongo_connection.MongoConnection("metadata")
         self.storage_api = storage_client.StorageClient()
+        self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
         
+        self.service_name = "Asset creator ARS"
+
         self.run = True
         self.count = 2
 
@@ -38,9 +45,9 @@ class AssetCreator:
                 guid = asset["_id"]
                 
                 if asset["asset_size"] != -1:
-                    created = self.storage_api.create_asset(guid, asset["asset_size"])
+                    created, response, exc = self.storage_api.create_asset(guid, asset["asset_size"])
                 else:
-                    created = self.storage_api.create_asset(guid)
+                    created, response, exc = self.storage_api.create_asset(guid)
 
 
                 if created is True:
@@ -50,9 +57,12 @@ class AssetCreator:
                     if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
-            # TODO handle false better than ignoring it set AWAIT or some other status for is_in_ars maybe
                 elif created is False:
-                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value)
+                    
+                    message = self.log_exc(response, exc)
+                    self.health_caller.warning(self.service_name, message)
+                    time.sleep(1)
+                    # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value)
 
 
                 time.sleep(1)
@@ -66,6 +76,17 @@ class AssetCreator:
             all_run = self.util.get_value(run_config_path, "all_run")
             service_run = self.util.get_value(run_config_path, "asset_creator_run")
 
+            counter = 0
+
+            while service_run == "Pause":
+                sleep = 15
+                counter += 1
+                time.sleep(sleep)
+                wait_time = sleep * counter
+                entry = self.log_msg(f"{self.service_name} is in pause mode and has been so for ~{wait_time} seconds")
+                self.health_caller.warning(self.service_name, entry)
+                service_run = self.util.get_value(run_config_path, "asset_creator_run")                   
+                
             if all_run == "False" or service_run == "False":
                 self.run = False
                 self.track_mongo.close_mdb()

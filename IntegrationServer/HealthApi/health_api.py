@@ -17,7 +17,7 @@ def index():
     return "sickening"
 
 @health.post("/api/warning")
-def receive_warning(warning: message_model):
+async def receive_warning(warning: message_model):
     
     handled = service.receive_warning(warning)
 
