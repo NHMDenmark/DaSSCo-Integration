@@ -13,6 +13,7 @@ import email_sender
 import utility
 
 
+
 """
 Responsible uploading files to open shares. 
 """
@@ -72,7 +73,7 @@ class FileUploader:
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
-
+                            
                             # If we receive a message back saying the crc values for the uploaded file doesnt fit our value then we move the asset to the TEMP_ERROR status, send a mail and slack message
                             # TODO create a service that handles TEMP_ERROR status assets. 
                             if uploaded is False and status == 507:

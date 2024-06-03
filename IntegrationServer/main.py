@@ -22,7 +22,7 @@ import email_sender
 import slack_webhook
 import subprocess
 import logging
-
+from HealthCaller import health_caller
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -92,6 +92,7 @@ def test():
     #track = track_repository.TrackRepository()
     #track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
     #print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
+    """
     logger = logging.getLogger("IntegrationServer.main.py")
     ice = "icecream"
     logger.info("noooo")
@@ -125,12 +126,14 @@ def test():
         #logger.exception(e)
     logger.removeHandler(ch)
     logger.info("nooo222o")
-
+    """
+    c = health_caller.HealthCaller()
+    c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
+    #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     
     # git rm -r --cached .idea/
     # i = IntegrationServer()

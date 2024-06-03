@@ -6,19 +6,19 @@ sys.path.append(project_root)
 
 from fastapi import FastAPI
 from HealthApi import health_service
+from HealthApi.message_model import MessageModel
 
 health = FastAPI()
 service = health_service.HealthService()
+message_model = MessageModel
 
 @health.get("/")
 def index():
     return "sickening"
 
 @health.post("/api/warning")
-def receive_warning(warning: str, guid: str = None):
-    if guid is not None or guid != "":
-        handled = service.receive_warning(warning, guid)
-    else:
-        handled = service.receive_warning(warning)
+def receive_warning(warning: message_model):
+    
+    handled = service.receive_warning(warning)
 
     return handled
