@@ -9,7 +9,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 # from IntegrationServer.JobList import job_driver
 # from IntegrationServer.Connections import northtech_rest_api
-from MongoDB import mongo_connection, track_repository
+from MongoDB import mongo_connection, track_repository, health_repository
 import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
@@ -18,11 +18,11 @@ import json
 from bson.json_util import dumps
 from datetime import datetime
 from dotenv import load_dotenv
-import email_sender
-import slack_webhook
+import InformationModule.email_sender as email_sender
+import InformationModule.slack_webhook as slack_webhook
 import subprocess
 import logging
-from HealthCaller import health_caller
+from HealthUtility import health_caller
 
 """"
 Test area for the different processes. May contain deprecated information.
@@ -127,8 +127,11 @@ def test():
     logger.removeHandler(ch)
     logger.info("nooo222o")
     """
-    c = health_caller.HealthCaller()
-    c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
+    #c = health_caller.HealthCaller()
+    #c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
+    h = health_repository.HealthRepository()
+    h.create_health_entry_from_api({"test":"tap", "triple":"trouble"})
+    h.close_connection()
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))
 

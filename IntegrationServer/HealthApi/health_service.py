@@ -4,9 +4,10 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-import email_sender
-import slack_webhook
-from MongoDB import track_repository
+import json
+import InformationModule.email_sender as email_sender
+import InformationModule.slack_webhook as slack_webhook
+from MongoDB import track_repository, health_repository, health_model
 from Enums import status_enum, validate_enum
 
 class HealthService():
@@ -15,6 +16,7 @@ class HealthService():
         self.mail = email_sender.EmailSender("test")
         self.slack = slack_webhook.SlackWebhook()
         self.track = track_repository.TrackRepository()
+        self.health = health_repository.HealthRepository()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
 
@@ -28,8 +30,9 @@ class HealthService():
 
         msg_parts = self.split_message(warning.message)
 
-        # TODO create db entry in warning db
-        self.create_db_entry(warning)
+        # create db entry in health db
+        model_data = self.create_health_model(warning, msg_parts)
+        self.health.create_health_entry_from_api(model_data)
         
         if warning.guid and warning.flag is not None:
             updated = self.update_track_db(warning.guid, warning.flag)
@@ -38,14 +41,27 @@ class HealthService():
         else:
             warning.guid = "No guid"
 
-        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. 
+        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
         self.inform_slack_mail(msg_parts, warning.guid)
 
         return True
     
-    def create_db_entry(self, warning):
-        pass
+    def create_health_model(self, warning, msg_parts):
+        
+        model = health_model.HealthModel()
+        model.service = warning.service
+        model.timestamp = msg_parts[1]
+        model.severity_level = msg_parts[0]
+        model.message = msg_parts[3]
+        model.guid = warning.guid
+        model.flag = warning.flag
+        if len(msg_parts) == 5:
+            model.exception = msg_parts[4]
+        
+        model_data = model.model_dump_json()
+        model_data = json.loads(model_data)
 
+        return model_data
 
     def update_track_db(self, guid, flag):
         self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)

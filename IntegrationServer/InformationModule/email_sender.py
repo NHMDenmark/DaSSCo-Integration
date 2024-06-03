@@ -17,7 +17,7 @@ class EmailSender:
     def __init__(self, mail):
         load_dotenv()
         self.util = utility.Utility()
-        self.mail_config_path = f"{project_root}/IntegrationServer/ConfigFiles/mail_config.json"
+        self.mail_config_path = f"{project_root}/ConfigFiles/mail_config.json"
         self.mail_configs = self.util.get_value(self.mail_config_path, mail)
         self.server_host = self.mail_configs.get("server_host") 
         self.server_port = self.mail_configs.get("server_port")  
