@@ -14,7 +14,7 @@ class SlackWebhook:
         
         # Define the content that will be displayed in the slack chat. 
         payload = {
-            "text": f"STATUS: {status} - SERVICE: {service_name} - GUID: {guid}"
+            "text": f"{status} - SERVICE: {service_name} - GUID: {guid}"
         }
 
         try:

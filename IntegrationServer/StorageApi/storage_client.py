@@ -10,13 +10,19 @@ from dotenv import load_dotenv
 
 class StorageClient():
      def __init__(self):
+          
           load_dotenv()
-
+          self.service = storage_service.StorageService()
           client_id = os.getenv("client_id")
           client_secret = os.getenv("client_secret")
 
-          self.client = DaSSCoStorageClient(client_id, client_secret)
-          self.service = storage_service.StorageService()
+          try:
+               self.client = DaSSCoStorageClient(client_id, client_secret)
+          except Exception as exc:
+               self.client = None
+               self.status_code = self.get_status_code_from_exc(exc)
+               self.exc = exc
+               
 
      def test(self):
           
@@ -38,20 +44,32 @@ class StorageClient():
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
 
-
           try:
                response = self.client.assets.create(data_dict, allocation_size)
-               
-               status_code = response["status_code"]
 
-               if status_code == 200:                    
-                    return True, None, None
-               else:
-                    return False, f"Received {status_code}, while creating asset.", None
-          except Exception as e:
-                              
-               return False, "Api or wrapper fail", e
+               status_code = response["status_code"]
           
+               if status_code == 200:                    
+                    return True, None, None, status_code
+               else:
+                    return False, f"Received {status_code}, while creating asset.", None, status_code
+          except Exception as exc:
+                    
+                    status_code = self.get_status_code_from_exc(exc)
+                    
+                    if 400 <= status_code <= 499:
+                         return False, "ARS api failed to create asset.", exc, status_code
+                    
+                    if 500 <= status_code <= 599:
+                         return False, "ARS api, keycloak or dassco sdk failure", exc, status_code
+
+     # helper function that extracts the status code from the exception received from dassco-storage-client 
+     def get_status_code_from_exc(self, exc):
+          exc_str = exc.__str__()
+          exc_split = exc_str.split(":")
+          status_code = exc_split[0][-3:]
+          status_code = int(status_code)
+          return status_code
      
      def sync_erda(self, guid):
           try:
