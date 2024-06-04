@@ -1,8 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 class MessageModel(BaseModel):
-    guid: str = None
+    guid: Optional[str] = None
     service: str
-    flag: str = None
+    flag: Optional[str] = None
     message: str

@@ -7,10 +7,10 @@ Model class for entries added  to the health collection.
 """
 
 class HealthModel(BaseModel):
-    service: Optional[str]
+    service: Optional[str] = None
     timestamp: datetime = datetime.now()
     severity_level: str = "WARNING"
-    message: Optional[str]
+    message: Optional[str] = None
     guid: Optional[str] = None
     exception: Optional[str] = None
     flag: Optional[str] = None

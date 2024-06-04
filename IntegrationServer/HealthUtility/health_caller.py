@@ -14,23 +14,24 @@ class HealthCaller():
     def warning(self, service, message, guid = None, flag = None):
         
         url = f"{self.url}/api/warning"
-        if guid and flag is not None:
-            content = {
-                    "guid": guid,
-                    "service": service,
-                    "flag": flag,
-                    "message": message
-                        }
-        else:
-            content = {
+        
+        content = {
+                "guid": guid,
                 "service": service,
+                "flag": flag,
                 "message": message
-            }
+                }
+        
         
         try:
+            
             response = requests.post(url, json=content)
-            print(response)
+            
+            if response.status_code != 200:
+                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+
         except Exception as e:
+            # TODO create log entry
             print(e)
 
         

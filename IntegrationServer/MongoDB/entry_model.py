@@ -4,6 +4,9 @@ import utility
 from Enums import status_enum, validate_enum
 from MongoDB.file_model import FileModel
 
+"""
+Model used when creating a new entry in the track collection. 
+"""
 class EntryModel:
 
     def __init__(self, guid, pipeline, derivative=False):

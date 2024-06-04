@@ -10,6 +10,7 @@ from StorageApi import storage_client
 from Enums import validate_enum
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
+import utility
 
 
 """
@@ -20,6 +21,7 @@ class AssetCreator(LogClass):
 
     def __init__(self):
 
+        # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.basename(os.path.abspath(__file__)))
 
         self.track_mongo = mongo_connection.MongoConnection("track")
@@ -27,11 +29,12 @@ class AssetCreator(LogClass):
         self.storage_api = storage_client.StorageClient()
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
-        
+        self.util = utility.Utility()
+
+        # service name for logging/info purposes
         self.service_name = "Asset creator ARS"
 
         self.run = True
-        self.count = 2
 
         self.loop()
 
@@ -57,13 +60,17 @@ class AssetCreator(LogClass):
                     if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
-                elif created is False:
-                    
+                elif created is False:                    
                     message = self.log_exc(response, exc)
-                    self.health_caller.warning(self.service_name, message)
+
+                    if exc is not None:
+                        message = self.log_exc(response, exc, self.log_enum.ERROR.value)
+                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
+                    else:
+                        message = self.log_exc(response, exc)
+                        self.health_caller.warning(self.service_name, message)
                     time.sleep(1)
                     # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value)
-
 
                 time.sleep(1)
 
@@ -76,25 +83,19 @@ class AssetCreator(LogClass):
             all_run = self.util.get_value(run_config_path, "all_run")
             service_run = self.util.get_value(run_config_path, "asset_creator_run")
 
+            # Pause loop
             counter = 0
-
             while service_run == "Pause":
-                sleep = 15
+                sleep = 10
                 counter += 1
                 time.sleep(sleep)
                 wait_time = sleep * counter
                 entry = self.log_msg(f"{self.service_name} is in pause mode and has been so for ~{wait_time} seconds")
+                print(self.service_name, entry)
                 self.health_caller.warning(self.service_name, entry)
                 service_run = self.util.get_value(run_config_path, "asset_creator_run")                   
                 
             if all_run == "False" or service_run == "False":
-                self.run = False
-                self.track_mongo.close_mdb()
-                self.metadata_mongo.close_mdb()
-
-            self.count -= 1
-
-            if self.count == 0:
                 self.run = False
                 self.track_mongo.close_mdb()
                 self.metadata_mongo.close_mdb()

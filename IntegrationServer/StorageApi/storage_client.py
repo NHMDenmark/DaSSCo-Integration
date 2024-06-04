@@ -27,7 +27,7 @@ class StorageClient():
           for item in data:
                print(item)
 
-     def  create_asset(self, asset_guid, allocation_size = 1):
+     def create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
           data_dict = json.loads(json_data)
@@ -45,12 +45,11 @@ class StorageClient():
                status_code = response["status_code"]
 
                if status_code == 200:                    
-                    return True
+                    return True, None, None
                else:
-                    return False, f"Received {status_code}, while creating asset."
+                    return False, f"Received {status_code}, while creating asset.", None
           except Exception as e:
-               exc = f"Api or wrapper fail: {e}"
-               print(exc)
+                              
                return False, "Api or wrapper fail", e
           
      

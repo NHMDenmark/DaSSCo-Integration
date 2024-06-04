@@ -38,7 +38,7 @@ class EmailSender:
     """
     # TODO needs to be tested
     """
-    def send_error_mail(self, guid = "NO_GUID", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE"):
+    def send_error_mail(self, guid = "NO_GUID", service_name = "NO_NAME", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE"):
         
         subj, message =self.create_error_mail_content(guid, service, status, error_msg)
 
@@ -53,9 +53,9 @@ class EmailSender:
     """
     This requires a mailserver to be setup and configured.
     """
-    def send_error_mail(self, guid = "NO_GUID", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE", timestamp = None, exception = "None"):
+    def send_error_mail(self, guid = "NO_GUID", service_name = "NO_NAME", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE", timestamp = None, exception = "None"):
 
-        mail_subject, msg_content = self.create_error_mail_content(guid, service, status, error_msg, timestamp, exception)
+        mail_subject, msg_content = self.create_error_mail_content(guid, service_name, service, status, error_msg, timestamp, exception)
 
         msg_from = "From: " + self.address_from + "\r\n"
         msg_to = "To: " + self.address_to + "\r\n"
@@ -73,10 +73,10 @@ class EmailSender:
     
         
     # Creates the email content that is being send.     
-    def create_error_mail_content(self, guid = "No guid", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
+    def create_error_mail_content(self, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
 
         add_time = ""
-        mail_subject = f"{status} - {service} - {guid}"
+        mail_subject = f"{status} - {service_name} - {guid}"
         if timestamp is None:
             timestamp = '{:%d %b %Y %H:%M:%S %z}'.format(datetime.datetime.now())
             add_time = "- The timestamp was added by the mail sender."
@@ -88,7 +88,7 @@ GUID: {guid}
 SERVICE: {service}
 STATUS: {status}
 TIMESTAMP: {timestamp} {add_time}   
-ERROR MESSAGE: {error_msg}
+MESSAGE: {error_msg}
 EXCEPTION: {exception} 
                     """
 

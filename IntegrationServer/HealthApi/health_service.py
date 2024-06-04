@@ -42,7 +42,7 @@ class HealthService():
             warning.guid = "No guid"
 
         # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
-        self.inform_slack_mail(msg_parts, warning.guid)
+        self.inform_slack_mail(msg_parts, warning.guid, warning.service)
 
         return True
     
@@ -53,8 +53,10 @@ class HealthService():
         model.timestamp = msg_parts[1]
         model.severity_level = msg_parts[0]
         model.message = msg_parts[3]
-        model.guid = warning.guid
-        model.flag = warning.flag
+        if warning.guid is not None:
+            model.guid = warning.guid
+        if warning.flag is not None:
+            model.flag = warning.flag
         if len(msg_parts) == 5:
             model.exception = msg_parts[4]
         
@@ -66,22 +68,22 @@ class HealthService():
     def update_track_db(self, guid, flag):
         self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
 
-    def inform_slack_mail(self, parts, guid):
+    def inform_slack_mail(self, parts, guid, service_name):
         if len(parts) == 5:
             if guid != "No guid":
-                self.mail.send_error_mail(guid, parts[2], parts[0], parts[3], parts[1], parts[4])
-                self.slack.message_from_integration(guid, parts[2], parts[0])
+                self.mail.send_error_mail(guid, service_name, parts[2], parts[0], parts[3], parts[1], parts[4])
+                self.slack.message_from_integration(guid, service_name, parts[2], parts[0])
             else:
-                self.mail.send_error_mail(service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1], exception=parts[4])      
-                self.slack.message_from_integration(service=parts[2], status=parts[0])
+                self.mail.send_error_mail(service_name=service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1], exception=parts[4])      
+                self.slack.message_from_integration(service_name=service_name, service=parts[2], status=parts[0])
         
         if len(parts) == 4:
             if guid != "No guid":
-                self.mail.send_error_mail(guid, parts[2], parts[0], parts[3], parts[1])
-                self.slack.message_from_integration(guid, parts[2], parts[0])
+                self.mail.send_error_mail(guid, service_name, parts[2], parts[0], parts[3], parts[1])
+                self.slack.message_from_integration(guid, service_name, parts[2], parts[0])
             else:
-                self.mail.send_error_mail(service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])      
-                self.slack.message_from_integration(service=parts[2], status=parts[0])
+                self.mail.send_error_mail(service_name=service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])      
+                self.slack.message_from_integration(service_name=service_name, service=parts[2], status=parts[0])
 
     """
     Splits the message received into: level, timestamp, python file, message, exception
