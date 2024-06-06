@@ -1,11 +1,11 @@
 {
   "Asset creator ARS": "STOPPED",
+  "Asset creator HPC": "STOPPED",
   "Erda sync ARS": "STOPPED",
   "File uploader ARS": "STOPPED",
   "Update metadata ARS": "RUNNING",
   "Validate erda sync ARS": "STOPPED",
   "all_run": "RUNNING",
-  "hpc_asset_creator_run": "True",
   "hpc_clean_up_run": "True",
   "hpc_job_caller_run": "True",
   "hpc_open_share_run": "True",
