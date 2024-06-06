@@ -1,5 +1,6 @@
 {
   "Asset creator ARS": "STOPPED",
+  "Erda sync ARS": "STOPPED",
   "File uploader ARS": "STOPPED",
   "all_run": "RUNNING",
   "hpc_asset_creator_run": "True",
@@ -9,7 +10,6 @@
   "hpc_uploader_run": "True",
   "ndrive_new_files_run": "True",
   "process_files_from_ndrive_run": "True",
-  "sync_erda_run": "True",
   "update_metadata_run": "True",
   "validate_erda_sync_run": "True"
 }
