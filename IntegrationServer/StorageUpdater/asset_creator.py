@@ -5,16 +5,17 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
-from MongoDB import mongo_connection
+from MongoDB import mongo_connection, metadata_repository, track_repository
 from StorageApi import storage_client
-from Enums import validate_enum
+from Enums import validate_enum, status_enum
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
 import utility
 
 
 """
-Responsible creating new metadata assets in ars.
+Responsible creating new metadata assets in ars. Updates track database with assets status.
+Logs warnings and errors from this process, and directs them to the health service. 
 """
 
 class AssetCreator(LogClass):
@@ -22,35 +23,43 @@ class AssetCreator(LogClass):
     def __init__(self):
 
         # setting up logging
-        super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.basename(os.path.abspath(__file__)))
+        super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
         self.service_name = "Asset creator ARS"
-
-        self.track_mongo = mongo_connection.MongoConnection("track")
-        self.metadata_mongo = mongo_connection.MongoConnection("metadata")
+        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+        self.track_mongo = track_repository.TrackRepository()
+        self.metadata_mongo = metadata_repository.MetadataRepository()
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
+        self.status_enum = status_enum.StatusEnum
         self.util = utility.Utility()
-        self.run = True
+        self.run = self.status_enum.RUNNING.value
 
-        self.storage_api = storage_client.StorageClient()
+        self.storage_api = self.create_storage_api()
         
-        if self.storage_api.client is None:
-            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {self.storage_api.status_code}. {self.service_name} needs to be manually restarted.", self.storage_api.exc, self.log_enum.ERROR.value)
-            self.health_caller.warning(self.service_name, entry)
-            self.run = False
-
         self.loop()
+    
+    def create_storage_api(self):
+
+        storage_api = storage_client.StorageClient()
+         
+        if storage_api.client is None:
+            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted.", storage_api.exc, self.log_enum.ERROR.value)
+            self.health_caller.warning(self.service_name, entry)
+            self.run = self.status_enum.STOPPED.value
+            
+        return storage_api
 
     def loop(self):
-
-        while self.run:
+ 
+        while self.run == self.status_enum.RUNNING.value:
             
             asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
 
             if asset is not None:
                 guid = asset["_id"]
                 
+                # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
                 else:
@@ -65,8 +74,10 @@ class AssetCreator(LogClass):
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
                 if created is False:
-                    if status_code <= 399:                    
+                    if status_code <= 299:                    
                         message = self.log_msg(response)
+
+                    # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
                         message = self.log_exc(response, exc, self.log_enum.ERROR.value)
@@ -85,32 +96,30 @@ class AssetCreator(LogClass):
             if asset is None:
                 time.sleep(1)
 
-            # checks if service should keep running - configurable in ConfigFiles/run_config.json
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            all_run = self.util.get_value(run_config_path, "all_run")
-            service_run = self.util.get_value(run_config_path, "asset_creator_run")
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json            
+            all_run = self.util.get_value(self.run_config_path, "all_run")
+            service_run = self.util.get_value(self.run_config_path, self.service_name)
 
             # Pause loop
             counter = 0
-            while service_run == "Pause":
+            while service_run == self.status_enum.PAUSED.value:
                 sleep = 10
                 counter += 1
                 time.sleep(sleep)
                 wait_time = sleep * counter
                 entry = self.log_msg(f"{self.service_name} has been in pause mode for ~{wait_time} seconds")
                 self.health_caller.warning(self.service_name, entry)
-                service_run = self.util.get_value(run_config_path, "asset_creator_run")
-                if service_run != "Pause":
-                    entry = self.log_msg(f"{self.service_name} has changed run status from 'Pause' to {service_run}")                   
+                service_run = self.util.get_value(self.run_config_path, self.service_name)
+                if service_run != self.status_enum.PAUSED.value:
+                    entry = self.log_msg(f"{self.service_name} has changed run status from {self.status_enum.PAUSED.value} to {service_run}")                   
                     self.health_caller.warning(self.service_name, entry)
 
-            if all_run == "False" or service_run == "False":
-                self.run = False
+            if all_run == self.status_enum.STOPPED.value or service_run == self.status_enum.STOPPED.value:
+                self.run = self.status_enum.STOPPED.value
 
         # outside main while loop        
-        self.track_mongo.close_mdb()
-        self.metadata_mongo.close_mdb()
+        self.track_mongo.close_connection()
+        self.metadata_mongo.close_connection()
 
 if __name__ == '__main__':
     AssetCreator()

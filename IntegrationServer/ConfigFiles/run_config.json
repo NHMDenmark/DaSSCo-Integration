@@ -1,7 +1,7 @@
 {
-    "all_run":"True",
+    "all_run":"RUNNING",
     "file_uploader_run":"True",
-    "asset_creator_run":"True",
+    "Asset creator ARS":"STOPPED",
     "sync_erda_run":"True",
     "update_metadata_run":"True",
     "validate_erda_sync_run":"True",
