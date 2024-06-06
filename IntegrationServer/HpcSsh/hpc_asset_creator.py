@@ -37,15 +37,23 @@ class HPCAssetCreator(LogClass):
         self.status_enum = status_enum.StatusEnum
         self.cons = connections.Connections()
 
-        self.cons.create_ssh_connection(self.ssh_config_path)
-        self.con = self.cons.get_connection()
-        
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
-        
-        self.run = self.util.get_value(self.run_config_path, self.service_name)        
 
+        self.con = self.create_ssh_connection()
+
+        self.run = self.util.get_value(self.run_config_path, self.service_name)        
         self.loop()
+
+    def create_ssh_connection(self):
+        self.cons.create_ssh_connection(self.ssh_config_path)
+        # handle when connection wasnt established - calls health service and sets run config to STOPPED
+        if self.cons.exc is not None:
+            entry = self.log_exc(self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
+            self.health_caller.warning(self.service_name, entry)
+            self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+        
+        return self.cons.get_connection()
 
     def loop(self):
 

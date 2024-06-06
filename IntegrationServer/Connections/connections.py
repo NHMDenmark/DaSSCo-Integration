@@ -21,12 +21,16 @@ class Connections:
         load_dotenv()
         self.util = Utility()
         self.connection = None
+        self.msg = None
+        self.exc = None
     """
     Creates a ssh connection and sets a number of attributes for that connection. Retrieves the information for the
-    connection from a _connection_config.json file. 
+    connection from a xxx_connection_config.json file. 
     """
     def create_ssh_connection(self, ssh_file_path):
         config = self.util.read_json(ssh_file_path)
+        self.msg = None
+        self.exc = None
 
         for connection_name, connection_details in config.items():
             con_user = connection_name + "_USER"
@@ -54,9 +58,13 @@ class Connections:
 
             if updated_connection.get("status") == "open":
                 self.connection = connection
+            else:
+                self.msg = connection.msg
+                self.exc = connection.exc
 
     def close_connection(self):
-        self.connection.close()
+        if self.connection is not None:
+            self.connection.close()
 
     def get_connection(self):
         return self.connection

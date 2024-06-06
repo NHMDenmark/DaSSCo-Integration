@@ -20,5 +20,5 @@ def index():
 async def receive_warning(warning: message_model):
     
     handled = service.receive_warning(warning)
-    #print(handled)
+    print(handled)
     return handled
