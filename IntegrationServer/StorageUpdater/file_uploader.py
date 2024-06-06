@@ -48,6 +48,11 @@ class FileUploader(LogClass):
         self.run = self.util.get_value(self.run_config_path, self.service_name)
         self.loop()
 
+    """
+    Creates the storage client.
+    If this fails it sets the service run config to STOPPED and notifies the health service.  
+    Returns the storage client or None. 
+    """
     def create_storage_api(self):
 
         storage_api = storage_client.StorageClient()

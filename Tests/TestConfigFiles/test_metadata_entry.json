@@ -23,9 +23,7 @@
     "date_metadata_uploaded": null,
     "digitiser": "Testy McTest",
     "external_publisher": [],
-    "file_format": [
-      "TIF"
-    ],
+    "file_format": "tif",
     "funding": "TEST",
     "institution": "test-institution",
     "metadata_created_by": "",

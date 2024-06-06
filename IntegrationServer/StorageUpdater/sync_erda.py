@@ -14,6 +14,7 @@ import utility
 
 """
 Responsible syncing assets with erda after their files have been uploaded to their file shares in ARS.
+Logs warnings and errors from this process, and directs them to the health service. 
 """
 
 class SyncErda(LogClass):
@@ -41,6 +42,11 @@ class SyncErda(LogClass):
 
         self.loop()
 
+    """
+    Creates the storage client.
+    If this fails it sets the service run config to STOPPED and notifies the health service.  
+    Returns the storage client or None. 
+    """
     def create_storage_api(self):
 
         storage_api = storage_client.StorageClient()
