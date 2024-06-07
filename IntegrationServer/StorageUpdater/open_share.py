@@ -4,35 +4,35 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-import time
-from MongoDB import metadata_repository, track_repository
+from MongoDB import track_repository, metadata_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum
-from InformationModule.log_class import LogClass
-from HealthUtility import health_caller
+from Enums import status_enum, validate_enum
 import utility
-
+import time
+from HealthUtility import health_caller
+from InformationModule.log_class import LogClass
+from StorageApi import storage_client
 
 """
-Responsible creating new metadata assets in ars. Updates track database with assets status.
-Logs warnings and errors from this process, and directs them to the health service. 
+Description
 """
 
-class AssetCreator(LogClass):
+class OpenShare(LogClass):
 
     def __init__(self):
 
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
-        self.service_name = "Asset creator ARS"
+        self.service_name = "Open file share ARS"
+
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-        self.track_mongo = track_repository.TrackRepository()
-        self.metadata_mongo = metadata_repository.MetadataRepository()
-        self.health_caller = health_caller.HealthCaller()
-        self.validate_enum = validate_enum.ValidateEnum
-        self.status_enum = status_enum.StatusEnum
+        self.mongo_track = track_repository.TrackRepository()
+        self.mongo_metadata = metadata_repository.MetadataRepository()
         self.util = utility.Utility()
+        self.health_caller = health_caller.HealthCaller()
+        self.status_enum = status_enum.StatusEnum
+        
 
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
@@ -58,52 +58,43 @@ class AssetCreator(LogClass):
             
         return storage_api
 
+
     def loop(self):
- 
+
         while self.run == self.status_enum.RUNNING.value:
             
-            asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
-
-            if asset is not None:
-                guid = asset["_id"]
-                
-                # Receives created: bool, response: str, exc: exception, status_code: int
-                if asset["asset_size"] != -1:
-                    created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
-                else:
-                    created, response, exc, status_code = self.storage_api.create_asset(guid)
-
-
-                if created is True:
-                    metadata = self.metadata_mongo.get_entry("_id", guid)
-                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
-                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-                    if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
-                        self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
-
-                if created is False:
-                    if status_code <= 299:                    
-                        message = self.log_msg(response)
-
-                    # TODO handle 300-399
-
-                    if 400 <= status_code <= 499:
-                        message = self.log_exc(response, exc, self.log_enum.ERROR.value)
-                        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
-                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
-                        time.sleep(1)
-                    if 500 <= status_code:
-                        message = self.log_exc(response, exc)
-                        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
-                        self.health_caller.warning(self.service_name, message)
-                        time.sleep(1)
-                    # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value) this responsibility is moved to health module, sets TEMP_ERROR status here 
-
-                time.sleep(1)
-
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.NO.value,
+                                                                          "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
+                                                                            "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
-                time.sleep(1)
+                time.sleep(1)        
+            else: 
+                 
+                guid = asset["_id"]
+                institution = self.mongo_metadata.get_value_for_key(guid, "institution")
+                collection = self.mongo_metadata.get_value_for_key(guid, "collection")
+                asset_size = self.mongo_track.get_value_for_key(guid, "asset_size")
+                
+                proxy_path = self.storage_api.open_share(guid, institution, collection, asset_size)
+                
+                if proxy_path is not False:
 
+                    self.mongo_track.update_entry(guid, "proxy_path", proxy_path)
+                    
+                    # create links for all files in the asset
+                    files = asset["file_list"]
+
+                    for file in files:
+                        if file["deleted"] is not True:
+                            name = file["name"]
+                            link = proxy_path + name
+                            self.mongo_track.update_track_file_list(guid, name, "ars_link", link)
+
+                    
+                    self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
+
+                # TODO handle if proxy path is false
+            
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
             all_run = self.util.get_value(self.run_config_path, "all_run")
             service_run = self.util.get_value(self.run_config_path, self.service_name)
@@ -131,8 +122,9 @@ class AssetCreator(LogClass):
                 self.run = self.status_enum.STOPPED.value
 
         # outside main while loop        
-        self.track_mongo.close_connection()
-        self.metadata_mongo.close_connection()
+        self.mongo_track.close_connection()
+        self.mongo_metadata.close_connection()
+
 
 if __name__ == '__main__':
-    AssetCreator()
+    OpenShare()
