@@ -38,9 +38,9 @@ class EmailSender:
     """
     # TODO needs to be tested
     """
-    def send_error_mail(self, guid = "NO_GUID", service_name = "NO_NAME", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE"):
+    def send_error_mail(self, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
-        subj, message =self.create_error_mail_content(guid, service, status, error_msg)
+        subj, message = self.create_error_mail_content(guid, service_name, service, status, error_msg, timestamp, exception)
 
         subject = f"{subj}\n\n{message}"
         
@@ -53,7 +53,7 @@ class EmailSender:
     """
     This requires a mailserver to be setup and configured.
     """
-    def send_error_mail(self, guid = "NO_GUID", service_name = "NO_NAME", service = "NO_SERVICE", status = "NO_STATUS", error_msg = "NO_MESSAGE", timestamp = None, exception = "None"):
+    def send_error_mail(self, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
 
         mail_subject, msg_content = self.create_error_mail_content(guid, service_name, service, status, error_msg, timestamp, exception)
 
