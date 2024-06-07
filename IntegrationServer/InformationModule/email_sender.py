@@ -37,7 +37,7 @@ class EmailSender:
     This requires sendmail to be installed on the system. Also requires the system to be linux.
     """
     # TODO needs to be tested
-    """
+    
     def send_error_mail(self, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
         subj, message = self.create_error_mail_content(guid, service_name, service, status, error_msg, timestamp, exception)
@@ -49,9 +49,10 @@ class EmailSender:
         # Using subprocess.Popen for more control, including sending input via stdin
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
         process.communicate(input=subject)
-    """
+    
     """
     This requires a mailserver to be setup and configured.
+    """
     """
     def send_error_mail(self, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
 
@@ -70,7 +71,7 @@ class EmailSender:
         server.login(self.mail_server_user, self.mail_server_pass)
         server.sendmail(self.address_from, self.address_to, msg)
         server.quit()
-    
+    """
         
     # Creates the email content that is being send.     
     def create_error_mail_content(self, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
