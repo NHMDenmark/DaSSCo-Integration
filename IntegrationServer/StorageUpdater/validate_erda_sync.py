@@ -77,6 +77,11 @@ class SyncErda(LogClass):
                 entry = self.log_msg(f"{self.service_name} has been in pause mode for ~{wait_time} seconds")
                 self.health_caller.warning(self.service_name, entry)
                 service_run = self.util.get_value(self.run_config_path, self.service_name)
+                
+                all_run = self.util.get_value(self.run_config_path, "all_run")
+                if all_run == self.status_enum.STOPPED.value:
+                    service_run = self.status_enum.STOPPED.value
+                
                 if service_run != self.status_enum.PAUSED.value:
                     entry = self.log_msg(f"{self.service_name} has changed run status from {self.status_enum.PAUSED.value} to {service_run}")                   
                     self.health_caller.warning(self.service_name, entry)
