@@ -27,14 +27,9 @@ class HPCService():
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
-<<<<<<< HEAD
-    def received_derivative(self, metadata):
-        
-=======
     # TODO this is untested - this should be used for new assets that are either derivatives or cropped versions of their parents
     def receive_derivative_metadata(self, metadata):
 
->>>>>>> origin
         try:
             t_parent = None
             t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
@@ -49,15 +44,9 @@ class HPCService():
                 mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
 
                 if mdata is False:
-<<<<<<< HEAD
-                    self.mongo_metadata.delete_entry(metadata.asset_guid)   
-                    return mdata     
-
-=======
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return mdata
                 
->>>>>>> origin
             # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
             est_size = 0
             # tif estimate 400 mb
@@ -70,11 +59,7 @@ class HPCService():
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
-<<<<<<< HEAD
-
-=======
             
->>>>>>> origin
             return mdata
         
         except Exception as e:
@@ -378,23 +363,6 @@ class HPCService():
             return True
         else:
             return False
-<<<<<<< HEAD
-    """
-    def get_file_paths(self, folder_path):
-        file_names = []
-        folder_path = f"/work/data/lars/displayer/page/{folder_path}"
-        for file_name in os.listdir(folder_path):
-
-            # Open the TIFF image
-            #tiff_image = Image.open("example.tif")
-
-            # Convert the image to JPEG format
-            #jpeg_image = tiff_image.convert("RGB")
-            file_names.append(file_name)
-    
-        return file_names
-    """
-=======
     
     # TODO needs testing
     def add_derivative_file(self, file_info):
@@ -444,4 +412,3 @@ class HPCService():
             return True
         else:
             return False
->>>>>>> origin

@@ -42,7 +42,7 @@ class EmailSender:
         
         subj, message = self.create_error_mail_content(guid, service_name, service, status, error_msg, timestamp, exception)
 
-        subject = f"{subj}\n\n{message}"
+        subject = f"Subject: {subj}\n\n{message}"
         
         command = ['sendmail', self.address_to]
 
