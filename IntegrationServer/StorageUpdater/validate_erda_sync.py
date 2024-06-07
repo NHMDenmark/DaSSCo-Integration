@@ -7,24 +7,16 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository
 from StorageApi import storage_client
-<<<<<<< HEAD
-from Enums import validate_enum, erda_status
-=======
 from Enums import validate_enum, erda_status, status_enum
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
->>>>>>> origin
 import utility
 
 """
 Responsible validating files have been synced with erda and updating track data accordingly.
 """
 
-<<<<<<< HEAD
-class ValidateErda:
-=======
-class SyncErda(LogClass):
->>>>>>> origin
+class ValidateErda(LogClass):
 
     def __init__(self):
 
@@ -38,11 +30,6 @@ class SyncErda(LogClass):
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.erda_enum = erda_status.ErdaStatus
-<<<<<<< HEAD
-        self.util = utility.Utility()
-        self.run = True
-        self.count = 4
-=======
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -52,7 +39,6 @@ class SyncErda(LogClass):
         self.storage_api = self.create_storage_api()
         
         self.run = self.util.get_value(self.run_config_path, self.service_name)        
->>>>>>> origin
 
         self.loop()
 
@@ -76,11 +62,6 @@ class SyncErda(LogClass):
 
         while self.run == self.status_enum.RUNNING.value:
             
-<<<<<<< HEAD
-            asset = self.track_mongo.get_entry("erda_sync", self.validate_enum.AWAIT.value)
-            
-            if asset is not None:
-=======
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json
             all_run = self.util.get_value(self.run_config_path, "all_run")
@@ -117,7 +98,6 @@ class SyncErda(LogClass):
                 continue
 
             for asset in assets:
->>>>>>> origin
                 guid = asset["_id"]
                 print(guid)
                 asset_status = self.storage_api.get_asset_status(guid)
@@ -141,15 +121,9 @@ class SyncErda(LogClass):
                     print(f"Validated erda sync for asset: {guid}")
 
                 if asset_status == self.erda_enum.ASSET_RECEIVED.value:
-<<<<<<< HEAD
-                    time.sleep(10)
-                    # TODO figure out if pointing to another asset is needed here
-                    pass
-=======
                     # no action needed here since asset is basically queued to be synced and just waiting for that to happen
                     print(f"Waiting on erda sync for asset: {guid}")
                     pass    
->>>>>>> origin
 
                 if asset_status == self.erda_enum.ERDA_ERROR.value:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
@@ -161,29 +135,11 @@ class SyncErda(LogClass):
                     pass
                 time.sleep(1)
 
-<<<<<<< HEAD
-            if asset is None:
-                time.sleep(10)
-
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-                self.track_mongo.close_mdb()
-
-            #self.count -= 1
-
-            if self.count == 0:
-                self.run = False
-                self.track_mongo.close_mdb()
-=======
             # total delay after one run
             time.sleep(1)
 
         # Outside main while loop
         self.track_mongo.close_connection()
->>>>>>> origin
 
 if __name__ == '__main__':
     ValidateErda()

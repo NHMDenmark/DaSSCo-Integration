@@ -28,21 +28,10 @@ class HPCAssetCreator(LogClass):
         # service name for logging/info purposes
         self.service_name = "Asset creator HPC"
 
-<<<<<<< HEAD
-        self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.hpc_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
-        
-
-        self.run = True
-        self.count = 4
-
-        self.cons = connections.Connections()
-=======
         self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.mongo_track = track_repository.TrackRepository()
->>>>>>> origin
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
@@ -68,14 +57,8 @@ class HPCAssetCreator(LogClass):
 
     def loop(self):
 
-<<<<<<< HEAD
-        while self.run:
-            output = "dead"
-            output = self.con.ssh_command("echo alive")
-=======
         while self.run == status_enum.StatusEnum.RUNNING.value:
->>>>>>> origin
-            
+            """
             if output != "alive":
                 try:
                     self.cons.create_ssh_connection(self.ssh_config_path)
@@ -84,19 +67,14 @@ class HPCAssetCreator(LogClass):
                     print(f"{e} : exception while reconnecting to hpc server")
                     time.sleep(60)
                     continue
-
+            """
             asset = None
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
-<<<<<<< HEAD
-                print("No asset found")
-                time.sleep(10)        
-=======
                 #print("No asset found for creation on HPC")
                 time.sleep(1)        
->>>>>>> origin
             else: 
 
                 guid = asset["_id"]
@@ -115,21 +93,6 @@ class HPCAssetCreator(LogClass):
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
 
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
-<<<<<<< HEAD
-                
-                time.sleep(3)
-
-            #self.count -= 1
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-                self.cons.close_connection()
-            if self.count == 0:
-                self.run = False
-                self.cons.close_connection()
-=======
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(1)
 
@@ -163,7 +126,6 @@ class HPCAssetCreator(LogClass):
         # outside main while loop        
         self.mongo_track.close_connection()
         self.cons.close_connection()
->>>>>>> origin
 
 
 if __name__ == '__main__':
