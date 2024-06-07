@@ -40,11 +40,7 @@ class MetadataAsset(BaseModel):
     payload_type: Optional[str]
     pipeline_name: Optional[str]
     preparation_type: Optional[str]
-<<<<<<< HEAD
-    pushed_to_specify_date: Optional[datetime]
-=======
     pushed_to_specify_date: Optional[str]
->>>>>>> origin
     restricted_access: Optional[List[str]]
     specimen_pid: Optional[str]
     status: Optional[str]
