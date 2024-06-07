@@ -11,17 +11,8 @@ from dotenv import load_dotenv
 
 class StorageClient():
      def __init__(self):
-<<<<<<< HEAD
-          load_dotenv()
-
-          client_id = os.getenv("client_id")
-          client_secret = os.getenv("client_secret")
-          # print(client_id, client_secret)
-          self.client = DaSSCoStorageClient(client_id, client_secret)
-=======
           
           load_dotenv()
->>>>>>> origin
           self.service = storage_service.StorageService()
           client_id = os.getenv("client_id")
           client_secret = os.getenv("client_secret")
@@ -57,11 +48,6 @@ class StorageClient():
                data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
-<<<<<<< HEAD
-
-          print(data_dict)
-=======
->>>>>>> origin
 
           try:
                response = self.client.assets.create(data_dict, allocation_size)
@@ -194,11 +180,6 @@ class StorageClient():
                     return False, 507
 
           except Exception as e:
-<<<<<<< HEAD
-               print(f"Api or wrapper fail: {e}")
-               return False
-=======
                e = f"Api or wrapper fail: {e}"
                print(e)
                return False, e
->>>>>>> origin

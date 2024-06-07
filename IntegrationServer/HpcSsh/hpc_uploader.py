@@ -17,16 +17,10 @@ class HPCUploader(LogClass):
 
     def __init__(self):
 
-<<<<<<< HEAD
-        self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.job_detail_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/job_detail_config.json"
-        self.slurm_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
-=======
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
         self.service_name = "HPC file uploader"
->>>>>>> origin
 
         self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
@@ -58,15 +52,6 @@ class HPCUploader(LogClass):
         
         return self.cons.get_connection()
 
-<<<<<<< HEAD
-        self.mongo_track = mongo_connection.MongoConnection("track")
-        self.mongo_metadata = mongo_connection.MongoConnection("metadata")
-        
-        self.run = True
-        self.count = 4
-        self.loop()
-=======
->>>>>>> origin
 
     def loop(self):
 
@@ -82,16 +67,6 @@ class HPCUploader(LogClass):
             else: 
                  
                 guid = asset["_id"]
-<<<<<<< HEAD
-                #proxy_path = asset["proxy_path"]
-                
-                #pipeline = self.mongo_metadata.get_value_for_key(guid, "pipeline_name")
-                #collection = self.mongo_metadata.get_value_for_key(guid, "collection")
-
-                try:
-                    self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
-                    print(self.upload_file_script, guid)
-=======
                 """
                 These were used in earlier version as arguments for the script called on slurm specifically.
                 proxy_path = asset["proxy_path"]
@@ -101,27 +76,12 @@ class HPCUploader(LogClass):
                 try:
                     self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
 
->>>>>>> origin
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
 
 
                 except Exception as e:
                     pass # TODO handle exception
                 
-<<<<<<< HEAD
-                time.sleep(3)
-            
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-                self.mongo_track.close_mdb()
-                self.mongo_metadata.close_mdb()
-                self.cons.close_connection()
-
-            #self.count -= 1
-=======
             # checks if service should keep running - configurable in ConfigFiles/run_config.json
             all_run = self.util.get_value(self.run_config_path, "all_run")
             service_run = self.util.get_value(self.run_config_path, self.service_name)
@@ -147,7 +107,6 @@ class HPCUploader(LogClass):
 
             if all_run == self.status_enum.STOPPED.value or service_run == self.status_enum.STOPPED.value:
                 self.run = self.status_enum.STOPPED.value
->>>>>>> origin
 
         # outside main while loop        
         self.mongo_track.close_connection()

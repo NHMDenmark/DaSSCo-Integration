@@ -20,14 +20,6 @@ class HPCJobCaller(LogClass):
 
     def __init__(self):
 
-<<<<<<< HEAD
-        self.ssh_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.job_detail_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/job_detail_config.json"
-
-        self.run = True
-        self.count = 2
-
-=======
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
@@ -37,20 +29,13 @@ class HPCJobCaller(LogClass):
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.mongo_track = track_repository.TrackRepository()
->>>>>>> origin
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.cons = connections.Connections()
 
-<<<<<<< HEAD
-        #self.cons = connections.Connections()
-        #self.cons.create_ssh_connection(self.ssh_config_path)
-        #self.con = self.cons.get_connection()
-=======
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
->>>>>>> origin
 
         self.con = self.create_ssh_connection()
 
@@ -75,12 +60,7 @@ class HPCJobCaller(LogClass):
                                                                          "jobs_status": status_enum.StatusEnum.WAITING.value}])
             
             if asset is None:
-<<<<<<< HEAD
-                
-                time.sleep(10)        
-=======
                 time.sleep(1)        
->>>>>>> origin
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
@@ -99,23 +79,6 @@ class HPCJobCaller(LogClass):
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                     print(script_path, name)
-<<<<<<< HEAD
-                    con.ssh_command(f"bash {script_path} {guid}")
-                    
-                time.sleep(3)
-                cons.close_connection()
-
-            # self.count -= 1
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-                #self.cons.close_connection()
-            if self.count == 0:
-                self.run = False
-                #self.cons.close_connection()
-=======
                     self.con.ssh_command(f"bash {script_path} {guid}")
                     time.sleep(1)
 
@@ -148,7 +111,6 @@ class HPCJobCaller(LogClass):
         # outside main while loop        
         self.mongo_track.close_connection()
         self.cons.close_connection()
->>>>>>> origin
 
 
     def get_guid_and_jobs(self, asset):

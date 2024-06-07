@@ -24,11 +24,7 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
-<<<<<<< HEAD
-        self.config_path = f"/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/{self.name}_connection_config.json"
-=======
         self.config_path = f"{project_root}/ConfigFiles/{self.name}_connection_config.json"
->>>>>>> origin
         self.status = ""
         self.is_slurm = ""
         self.new_import_directory_path = ""

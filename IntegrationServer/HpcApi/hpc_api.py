@@ -123,23 +123,6 @@ def get_metadata(asset_guid: str):
     if asset is None:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
-<<<<<<< HEAD
-    return asset   
-"""
-@app.get("/api/display/{folder_name}")
-def get_file_names(folder_name: str):
-    paths = service.get_file_paths(folder_name)
-
-    return paths
-
-@app.get("/api/v1/nifi/{input}")
-def get_nifi_check(input: str):
-    if input == "true":
-        return JSONResponse(content={"input": "input was true"}, status_code=200)
-    else:
-        return JSONResponse(content={"input": "input was not true"}, status_code=200)
-"""
-=======
     return asset
 
 @app.post("/api/v1/derivative_file_uploaded")
@@ -155,4 +138,3 @@ async def file_info(file_info: file_info_model):
 
     if added is False:
         return JSONResponse(content={"error": "asset not found for file info"}, status_code=422)
->>>>>>> origin

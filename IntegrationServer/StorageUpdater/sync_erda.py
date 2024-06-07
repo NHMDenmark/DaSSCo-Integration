@@ -7,13 +7,9 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository
 from StorageApi import storage_client
-<<<<<<< HEAD
-from Enums import validate_enum
-=======
 from Enums import validate_enum, status_enum
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
->>>>>>> origin
 import utility
 
 """
@@ -33,11 +29,6 @@ class SyncErda(LogClass):
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.track_mongo = track_repository.TrackRepository()
         self.validate_enum = validate_enum.ValidateEnum
-<<<<<<< HEAD
-        self.util = utility.Utility()
-        self.run = True
-        self.count = 4
-=======
         self.status_enum = status_enum.StatusEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
@@ -48,7 +39,6 @@ class SyncErda(LogClass):
         self.storage_api = self.create_storage_api()
         
         self.run = self.util.get_value(self.run_config_path, self.service_name)       
->>>>>>> origin
 
         self.loop()
 
@@ -89,21 +79,6 @@ class SyncErda(LogClass):
             if asset is None:
                 time.sleep(10)
 
-<<<<<<< HEAD
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-                self.track_mongo.close_mdb()
-            
-
-            # self.count -= 1
-
-            if self.count == 0:
-                self.run = False
-                self.track_mongo.close_mdb()
-=======
            # checks if service should keep running - configurable in ConfigFiles/run_config.json            
             all_run = self.util.get_value(self.run_config_path, "all_run")
             service_run = self.util.get_value(self.run_config_path, self.service_name)
@@ -133,7 +108,6 @@ class SyncErda(LogClass):
         # Outside main while loop
         self.track_mongo.close_connection()
 
->>>>>>> origin
 
 if __name__ == '__main__':
     SyncErda()
