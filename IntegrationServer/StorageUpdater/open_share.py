@@ -14,7 +14,7 @@ from InformationModule.log_class import LogClass
 from StorageApi import storage_client
 
 """
-Description
+TODO Description
 """
 
 class OpenShare(LogClass):
