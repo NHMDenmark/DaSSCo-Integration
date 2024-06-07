@@ -63,6 +63,8 @@ class FileUploader:
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
+                            if uploaded is False:
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
             # TODO handle fails    
                 time.sleep(3)
 

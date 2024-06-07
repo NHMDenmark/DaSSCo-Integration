@@ -39,8 +39,9 @@ class StorageService():
         #for p in entry["payload_type"]:
         #    self.api_metadata.payload_type.append(p)
         # self.api_metadata.payload_type = entry["payload_type"]
-        self.api_metadata.payload_type = []
-        self.api_metadata.payload_type.append(entry["payload_type"]) 
+        self.api_metadata.payload_type = entry["payload_type"]
+        #self.api_metadata.payload_type = []
+        #self.api_metadata.payload_type.append(entry["payload_type"]) 
         # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides
         self.api_metadata.file_formats = []
         self.api_metadata.file_formats.append(entry["file_format"].upper())

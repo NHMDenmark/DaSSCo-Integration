@@ -37,7 +37,7 @@ class MetadataAsset(BaseModel):
     metadata_updated_by: Optional[str]
     multispecimen: Optional[bool]
     parent_guid: Optional[str]
-    payload_type: Optional[str]
+    payload_type: Optional[List[str]]
     pipeline_name: Optional[str]
     preparation_type: Optional[str]
     pushed_to_specify_date: Optional[datetime]
