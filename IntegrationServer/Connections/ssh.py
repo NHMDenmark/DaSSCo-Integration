@@ -24,7 +24,11 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
+<<<<<<< HEAD
         self.config_path = f"/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/{self.name}_connection_config.json"
+=======
+        self.config_path = f"{project_root}/ConfigFiles/{self.name}_connection_config.json"
+>>>>>>> origin
         self.status = ""
         self.is_slurm = ""
         self.new_import_directory_path = ""
@@ -34,13 +38,18 @@ class SSHConnection:
         self.password = password
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.exc = None
+        self.msg = None
         self.connect()
+        
     """
     Creates the ssh connection based on host, port username and password. Sets up sftp. 
     Updates the status of the connection config file. 
     """
     def connect(self):
         # need if statement, checking status for open already -  get specific value from json
+        self.exc = None
+        self.msg = None
 
         try:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
@@ -50,7 +59,10 @@ class SSHConnection:
             self.sftp = self.get_sftp()
 
         except Exception as e:
+            self.exc = e
+            self.msg = "Failed to setup sftp connection."
             print(f"Connection failed: {e}")
+            
 
     """
     Closes a ssh connection. 
@@ -107,7 +119,7 @@ class SSHConnection:
 
     def get_batch_directory_path(self, remote_folder):
         # Read pipeline configuration data from JSON file
-        pipeline_job_config_data = self.util.read_json("./ConfigFiles/pipeline_job_config.json")
+        pipeline_job_config_data = self.util.read_json(f"{project_root}/ConfigFiles/pipeline_job_config.json")
 
         # Get a list of keys from the pipeline configuration data
         pipeline_list = list(pipeline_job_config_data.keys())

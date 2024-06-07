@@ -14,4 +14,8 @@ nohup python "$root/StorageUpdater/asset_creator.py" > "$root/StorageUpdater/ass
 nohup python "$root/StorageUpdater/file_uploader.py" > "$root/StorageUpdater/file_uploader.out" 2>&1 &
 nohup python "$root/StorageUpdater/sync_erda.py" > "$root/StorageUpdater/sync_erda.out" 2>&1 &
 nohup python "$root/StorageUpdater/update_metadata.py" > "$root/StorageUpdater/update_metadata.out" 2>&1 &
+<<<<<<< HEAD
 nohup python "$root/StorageUpdater/validate_erda_sync.py" > "$root/StorageUpdater/validate_erda.out" 2>&1 &
+=======
+nohup python "$root/StorageUpdater/validate_erda_sync.py" > "$root/StorageUpdater/validate_erda.out" 2>&1 &
+>>>>>>> origin

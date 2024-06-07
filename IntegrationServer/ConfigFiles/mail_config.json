@@ -1,0 +1,20 @@
+{
+    "example":{
+        "server_host": "localhost",
+        "server_port": 587,
+        "sender_address": "example@dassco.dk",
+        "receiver_address": "maintenance@dassco.dk"
+    },
+    "error":{
+        "server_host": "localhost",
+        "server_port": 587,
+        "sender_address": "example@dassco.dk",
+        "receiver_address": "maintenance@dassco.dk"
+    },
+    "test":{
+        "server_host": "smtp.gmail.com",
+        "server_port": 587,
+        "sender_address": "",
+        "receiver_address": ""
+    }
+}

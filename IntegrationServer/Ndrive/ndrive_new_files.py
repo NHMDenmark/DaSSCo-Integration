@@ -37,6 +37,7 @@ class NdriveNewFilesFinder:
 
             time.sleep(10)
 
+<<<<<<< HEAD
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             
             run = self.util.get_value(run_config_path, "run")
@@ -44,6 +45,19 @@ class NdriveNewFilesFinder:
                 self.run = False
 
             #self.count -= 1
+=======
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json
+            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+            
+            all_run = self.util.get_value(run_config_path, "all_run")
+            service_run = self.util.get_value(run_config_path, "ndrive_new_files_run")
+
+            if all_run == "False" or service_run == "False":
+                self.run = False
+                
+
+            self.count -= 1
+>>>>>>> origin
 
             if self.count == 0:
                 self.run = False
@@ -71,7 +85,7 @@ class NdriveNewFilesFinder:
                 for base_name, file_list in file_groups.items():
 
                     # Check if a directory with the same base_name already exists in the Error directory
-                    error_directory_path = os.path.join("IntegrationServer/Files/Error", base_name)
+                    error_directory_path = os.path.join(f"{project_root}/Files/Error", base_name)
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
                         print(f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
                     else:

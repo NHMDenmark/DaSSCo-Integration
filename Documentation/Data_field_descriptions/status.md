@@ -7,16 +7,16 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+The status of the asset. It  
 
 **Value**
 For processing, being processed, working copy, archive, processing halted, for deletion, issue with media, issue with metadata
 
 **Why do we have this field:**  
-Because it tells us something important  
+Because it tells us something important - nope, currently we are not using this for anything. 
 
 **Populated by whom and when:**  
-Note  
+Populated by integration server just before upload if empty.   
 
 **Updated where and when:**  
 Never

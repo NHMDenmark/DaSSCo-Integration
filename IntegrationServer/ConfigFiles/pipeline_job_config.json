@@ -7,7 +7,11 @@
  },
  "PIPEHERB0001": {
    "job_1": "assetLoader",
+<<<<<<< HEAD
    "job_2": "cropping_derivative"
+=======
+   "job_2": "label"
+>>>>>>> origin
  },
  "ti-p1": {
   "job_1": "assetLoader",

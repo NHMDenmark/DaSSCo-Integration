@@ -18,4 +18,8 @@ db.track.updateOne(
 EOF
 
 # Example use: bash assetLoader.sh asset_guid_here
+<<<<<<< HEAD
 # The script sets the first job to be the assetLoader so make sure everything else is set up correctly to use that as job.
+=======
+# The script sets the first job to be the assetLoader so make sure everything else is set up correctly to use that as job.
+>>>>>>> origin

@@ -25,6 +25,7 @@ class JobDriver:
         self.validate = validate_enum.ValidateEnum
         self.file_model = file_model.FileModel()
 
+<<<<<<< HEAD
         self.mongo_config_path = "/work/data/DaSSCo-integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
         # self.mongo_config_data = self.util.read_json(self.mongo_config_path)
         # self.database_name = next(iter(self.mongo_config_data.keys()))
@@ -32,6 +33,12 @@ class JobDriver:
         self.input_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/NewFiles"
         self.in_process_dir = "/work/data/DaSSCo-Integration/IntegrationServer/Files/InProcess"
         self.error_path = "/work/data/DaSSCo-Integration/IntegrationServer/Files/Error"
+=======
+        self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
+        self.input_dir = f"{project_root}/Files/NewFiles"
+        self.in_process_dir = f"{project_root}/Files/InProcess"
+        self.error_path = f"{project_root}/Files/Error"
+>>>>>>> origin
 
         self.mongo_track = mongo_connection.MongoConnection("track")
         self.mongo_metadata = mongo_connection.MongoConnection("metadata")
@@ -53,6 +60,10 @@ class JobDriver:
         for subdirectory in os.listdir(input_dir):
             subdirectory_path = os.path.join(input_dir, subdirectory)
     
+            # Move on from folders that dont necessarilyhave all their files yet.
+            if subdirectory.startswith("wait_"):
+                continue
+
             # Move on from folders that dont necessarilyhave all their files yet.
             if subdirectory.startswith("wait_"):
                 continue
@@ -83,11 +94,19 @@ class JobDriver:
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guid")
+<<<<<<< HEAD
                     image_extension = self.util.get_value(json_file_path, "file_format")
+=======
+                    # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
+>>>>>>> origin
                     #image_extension = []
                     #for format in self.util.get_value(json_file_path, "file_format"):
                     #    format = "." + format
                     #    image_extension.append(format)
+<<<<<<< HEAD
+=======
+                    image_extension = self.util.get_value(json_file_path, "file_format")
+>>>>>>> origin
                     date_value = self.util.get_value(json_file_path, "date_asset_taken")
                     batch_name = ""
 
@@ -106,8 +125,13 @@ class JobDriver:
                     # Add image file checksums(s) and img file size to track entry, calculates total asset size
                     #for extension in image_extension:
                     if True:
+<<<<<<< HEAD
                         extension = image_extension
                         extension = extension.lower()
+=======
+                        # extension = extension.lower()
+                        extension = image_extension
+>>>>>>> origin
                         img_file_name = json_file_name.replace('.json', f".{extension}")
                         img_file_path = os.path.join(subdirectory_path, img_file_name)
 
@@ -167,6 +191,8 @@ class JobDriver:
                         shutil.move(subdirectory_path, error_dir)
                     else:
                         shutil.move(subdirectory_path, new_directory_path)
+
+                    self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
                     
                     self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
                     

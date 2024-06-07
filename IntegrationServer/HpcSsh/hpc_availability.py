@@ -10,15 +10,15 @@ import utility
 import time
 
 """
-Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
+# TODO Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
 """
 
 class HPCAvailability:
 
     def __init__(self):
 
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-        self.slurm_config_path = "IntegrationServer/ConfigFiles/slurm_config.json"
+        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.slurm_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
         self.job_list_path = "job_list.txt"
 
         self.run = True

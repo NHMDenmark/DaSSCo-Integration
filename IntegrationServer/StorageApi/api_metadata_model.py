@@ -23,7 +23,7 @@ class ApiMetadataModel(BaseModel):
     specimens: List[Specimen] = []
     funding: str = ""
     subject: str = ""
-    payload_type: List[str] = []
+    payload_type: str = "" # List[str] = []
     file_formats: List[str] = []
     asset_locked: bool = False
     restricted_access: List[str] = []

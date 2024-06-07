@@ -107,3 +107,38 @@ Path to the folder on the ndrive where we keep the workstation name folders.
 ```bash
   "ndrive_path": "N:/something/that/leads/to/the/path/with/the/workstation/names"
 ```
+
+## mail_config.json
+Mail configuration file. Test is setup using gmail as a host here.
+```bash
+  {
+    "{name}":{
+          "server_host": "localhost",
+          "server_port": 587,
+          "sender_address": "example@dassco.dk",
+          "receiver_address": "maintenance@dassco.dk"
+      },
+      "test":{
+          "server_host": "smtp.gmail.com",
+          "server_port": 587,
+          "sender_address": "",
+          "receiver_address": ""
+      }
+    }
+```
+
+## run_config.json
+Service run configuration file. Sets the state for each service running to a status from the status enum list. RUNNING, STOPPED or PAUSED. 
+Also can set the status for all services (all_run) at once, this can only be set to RUNNING or STOPPED. Basically a on/off button for the entire integration server. 
+Individual services will adhere to their own status as long as the all_run is set to RUNNING.  
+```bash
+{
+  "Asset creator ARS": "STOPPED",
+  "Asset creator HPC": "STOPPED",
+  "Erda sync ARS": "PAUSED",
+  "File uploader ARS": "STOPPED",
+  "Update metadata ARS": "RUNNING",
+  "Validate erda sync ARS": "STOPPED",
+  "all_run": "RUNNING"
+}
+```

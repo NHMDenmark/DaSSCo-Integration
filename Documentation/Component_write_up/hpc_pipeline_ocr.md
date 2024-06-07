@@ -1,4 +1,4 @@
-## HPC_pipeline barcodeReader
+## HPC_pipeline OCR
 
 **Where:**  
 Runs on the HPC cluster.

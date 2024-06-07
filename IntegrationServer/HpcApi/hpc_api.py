@@ -16,6 +16,7 @@ from HpcApi import hpc_service
 from HpcApi.update_model import UpdateAssetModel
 from HpcApi.job_model import JobModel
 from HpcApi.barcode_model import BarcodeModel
+from HpcApi.file_info_model import FileInfoModel
 
 """
 Rest api setup for receiving data from hpc. 
@@ -30,6 +31,8 @@ metadata_model = MetadataAsset
 update_model = UpdateAssetModel
 barcode_model = BarcodeModel
 job_model = JobModel
+file_info_model = FileInfoModel
+
 
 @app.get("/")
 def index():
@@ -120,6 +123,7 @@ def get_metadata(asset_guid: str):
     if asset is None:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
+<<<<<<< HEAD
     return asset   
 """
 @app.get("/api/display/{folder_name}")
@@ -135,3 +139,20 @@ def get_nifi_check(input: str):
     else:
         return JSONResponse(content={"input": "input was not true"}, status_code=200)
 """
+=======
+    return asset
+
+@app.post("/api/v1/derivative_file_uploaded")
+async def file_uploaded(asset_guid: str):
+    uploaded = service.derivative_files_uploaded(asset_guid)
+
+    if uploaded is False:
+        return JSONResponse(content={"error": "asset not found for file uploaded"}, status_code=422)
+    
+@app.post("/api/v1/derivative_file_info")
+async def file_info(file_info: file_info_model):
+    added = service.add_derivative_file(file_info)
+
+    if added is False:
+        return JSONResponse(content={"error": "asset not found for file info"}, status_code=422)
+>>>>>>> origin

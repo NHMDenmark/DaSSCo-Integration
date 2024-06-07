@@ -8,3 +8,5 @@ class StatusEnum(Enum):
     ERROR = "ERROR"
     NONE = "NONE"
     QUEUED = "QUEUED"
+    PAUSED = "PAUSED"
+    STOPPED = "STOPPED"

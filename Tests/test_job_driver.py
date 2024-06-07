@@ -7,15 +7,15 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
 from IntegrationServer.JobList.job_driver import JobDriver
-from IntegrationServer.MongoDB.mongo_connection import MongoConnection
+from IntegrationServer.MongoDB import track_repository, metadata_repository
 
 class TestJobDriver(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
         
-        self.track = MongoConnection("track")
-        self.metadata = MongoConnection("metadata")
+        self.track = track_repository.TrackRepository()
+        self.metadata = metadata_repository.MetadataRepository()
         self.driver = JobDriver()
 
         self.guid = "test_metadata_entry3"
@@ -31,8 +31,8 @@ class TestJobDriver(unittest.TestCase):
         self.track.delete_entry(self.guid)
         self.metadata.delete_entry(self.guid)
 
-        self.track.close_mdb()
-        self.metadata.close_mdb()
+        self.track.close_connection()
+        self.metadata.close_connection()
 
         shutil.move(self.destination_path, self.driver.input_dir)
 

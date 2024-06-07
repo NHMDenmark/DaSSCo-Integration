@@ -104,13 +104,6 @@ class Utility:
 
         return result_keys
 
-    def error_occurred(self, asset_path):
-        pass  # TODO
-        """ 
-        look for READY or INPIPELINE in _jobs change to ERROR
-        Create folder structure /FilesError/"pipeline_name"/ move guid folder here
-        """
-
     def calculate_sha256_checksum(self, file_path):
         sha256_hash = hashlib.sha256()
         with open(file_path, "rb") as file:
@@ -133,3 +126,6 @@ class Utility:
         size_in_bytes = os.path.getsize(file_path)
         size_in_mb = math.ceil(size_in_bytes / (1000 * 1000))
         return size_in_mb
+
+    def verify_path(self, path):
+        return os.path.exists(path)

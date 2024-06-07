@@ -23,9 +23,16 @@ class StorageService():
     def get_metadata_creation_body(self, guid):
         
         self.api_metadata = api_metadata_model.ApiMetadataModel()
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         entry = self.metadata_db.get_entry("_id", guid)
         
+        if entry is None:
+            return None
+
         if entry is None:
             return None
 
@@ -36,6 +43,7 @@ class StorageService():
         self.api_metadata.multi_specimen = entry["multispecimen"]
         self.api_metadata.funding = entry["funding"]
         self.api_metadata.subject = entry["asset_subject"]
+<<<<<<< HEAD
         #for p in entry["payload_type"]:
         #    self.api_metadata.payload_type.append(p)
         # self.api_metadata.payload_type = entry["payload_type"]
@@ -46,6 +54,15 @@ class StorageService():
         self.api_metadata.file_formats = []
         self.api_metadata.file_formats.append(entry["file_format"].upper())
 
+=======
+        
+        #for p in entry["payload_type"]:
+        #    self.api_metadata.payload_type.append(p) 
+        self.api_metadata.payload_type = entry["payload_type"]
+        # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides TODO messy 
+        self.api_metadata.file_formats = []
+        self.api_metadata.file_formats.append(entry["file_format"].upper())
+>>>>>>> origin
         self.api_metadata.restricted_access = entry["restricted_access"] # needs to ensure agreed upon data here
         self.api_metadata.audited = entry["audited"]
         self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
@@ -53,6 +70,10 @@ class StorageService():
         self.api_metadata.workstation = entry["workstation_name"]
         self.api_metadata.digitizer = entry["digitiser"]
         self.api_metadata.tags = entry["tags"]
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin
         self.api_metadata.institution = entry["institution"]
         self.api_metadata.collection = entry["collection"]
         barcode = []
@@ -65,16 +86,28 @@ class StorageService():
                 new_specimen.barcode = b
                 new_specimen.collection = self.api_metadata.collection
                 new_specimen.institution = self.api_metadata.institution
+<<<<<<< HEAD
+=======
+                # TODO need to figure out this exactly, what can and what cant be lists
+>>>>>>> origin
                 new_specimen.preparation_type = entry["preparation_type"]
                 if new_specimen.preparation_type == []:
                     new_specimen.preparation_type = ""
                 else:
                     new_specimen.preparation_type = new_specimen.preparation_type[0]
+<<<<<<< HEAD
 
                 new_specimen.specimen_pid = entry["specimen_pid"]
                 if new_specimen.specimen_pid == []:
                         new_specimen.specimen_pid = ""
 
+=======
+                # TODO again issue with something potentially being a list
+                new_specimen.specimen_pid = entry["specimen_pid"]
+                if new_specimen.specimen_pid == []:
+                        new_specimen.specimen_pid = ""
+
+>>>>>>> origin
                 self.api_metadata.specimens.append(new_specimen)
         
         # This should maybe not be empty. Not sure when or with which specific values we want to populate this.
@@ -91,9 +124,9 @@ class StorageService():
 
     def get_metadata_json_format(self, guid):
         
-        self.get_metadata_creation_body(guid)
+        data = self.get_metadata_creation_body(guid)
         
-        data = self.api_metadata.model_dump_json()
+        data = data.model_dump_json()
 
         return data
     

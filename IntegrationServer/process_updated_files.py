@@ -1,3 +1,9 @@
+import sys
+import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
 from IntegrationServer.JobList import job_driver
 import time
 
@@ -7,7 +13,7 @@ processing.
 """
 
 # TODO needs to decide if a timer or trigger system is needed here.
-
+# Not in use. 
 
 class ProcessUpdatedFiles:
 
@@ -15,7 +21,7 @@ class ProcessUpdatedFiles:
 
         self.jobby = job_driver.JobDriver()
 
-        self.updated_files_path = "./Files/UpdatedFiles/"
+        self.updated_files_path = f"{project_root}/Files/UpdatedFiles/"
         self.run = True
         self.count = 0
 

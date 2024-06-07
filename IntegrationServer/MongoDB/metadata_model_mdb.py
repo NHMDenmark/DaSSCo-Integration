@@ -37,12 +37,21 @@ class MetadataAsset(BaseModel):
     metadata_uploaded_by: Optional[str]
     multispecimen: Optional[bool]
     parent_guid: Optional[str]
+<<<<<<< HEAD
     payload_type: Optional[str]
+=======
+    payload_type: Optional[str] # Optional[List[str]]
+>>>>>>> origin
     pipeline_name: Optional[str]
-    preparation_type: Optional[List[str]]
+    preparation_type: Optional[str] # Optional[List[str]]
     pushed_to_specify_date: Optional[datetime]
+<<<<<<< HEAD
     restricted_access: Optional[List[str]] # or a Optional[List[str]] from the restricted access enum
     specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown 
+=======
+    restricted_access: Optional[bool] # or a Optional[List[str]] from the restricted access enum
+    specimen_pid: Optional[str] # keys being barcodes and the values are currently unknown Optional[List[dict]]
+>>>>>>> origin
     status: Optional[str]
     tags: Optional[Dict[str, str]] # basically a way to add comments
     workstation_name: Optional[str]

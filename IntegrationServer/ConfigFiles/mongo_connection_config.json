@@ -34,5 +34,11 @@
     "port": 27017,
     "data_base": "test",
     "collection_name": "MOS"
+  },
+  "health":{
+    "host": "localhost",
+    "port": 27017,
+    "data_base": "FirstTest",
+    "collection_name": "health"
   }
 }

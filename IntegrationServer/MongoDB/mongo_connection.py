@@ -17,10 +17,7 @@ Class for connecting to and interacting with a MongoDB. Takes the name of the da
 We use this to keep track of jobs and their status for each asset. 
 Should have full CRUD available. 
 """
-
-
 # TODO ensure full crud functionalities have been added.
-# TODO integrate with old system for keeping track of jobs through _jobs.json
 
 class MongoConnection:
 
@@ -29,9 +26,15 @@ class MongoConnection:
         self.name = name
 
         # Needs to use absolute path here for api to work
+<<<<<<< HEAD
         self.slurm_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/slurm_config.json"
 
         self.mongo_config_path = "/work/data/DaSSCo-Integration/IntegrationServer/ConfigFiles/mongo_connection_config.json"
+=======
+        self.slurm_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
+
+        self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
+>>>>>>> origin
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
         self.host = self.config_values.get("host")
@@ -49,10 +52,19 @@ class MongoConnection:
         self.collection = self.mdb[self.collection_name]
         print(f"connected to: {self.name}")
         
+    def get_collection(self):
+        return self.collection
 
     def close_mdb(self):
         self.client.close()
         print(f"closed connection to: {self.name}")
+
+    """
+    TODO Everything below here isnt strictly needed in this file. At some point it should be deleted since all the methods
+    have already been moved to either their respective repositories or to the all_repository.
+    Deleting should not be done without being sure everything else has changed to using the new setup for repositories. This 
+    includes tests.     
+    """
 
     def create_track_entry(self, guid, pipeline):
         """
@@ -270,6 +282,17 @@ class MongoConnection:
         query = {"$and": key_value_pairs}
         entry = self.collection.find_one(query)
         return entry
+    
+    def get_entries_from_multiple_key_pairs(self, key_value_pairs):
+        """
+        Retrieve entries from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]
+
+        :param key_value_pairs: List of dictionaries representing key-value pairs.
+        :return: A list of entries matching the specified pairs. Returns an empty list if nothing matches.
+        """
+        query = {"$and": key_value_pairs}
+        entries = list(self.collection.find(query))
+        return entries
 
     def get_value_for_key(self, id_value, key):
         """
