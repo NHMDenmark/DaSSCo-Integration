@@ -26,6 +26,9 @@ class StorageService():
 
         entry = self.metadata_db.get_entry("_id", guid)
 
+        if entry is None:
+            return None
+
         self.api_metadata.asset_guid = guid
         self.api_metadata.asset_pid = entry["asset_pid"]
         self.api_metadata.parent_guid = entry["parent_guid"]
@@ -38,6 +41,7 @@ class StorageService():
         #    self.api_metadata.payload_type.append(p) 
         self.api_metadata.payload_type = entry["payload_type"]
         # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides TODO messy 
+        self.api_metadata.file_formats = []
         self.api_metadata.file_formats.append(entry["file_format"].upper())
         self.api_metadata.restricted_access = entry["restricted_access"] # needs to ensure agreed upon data here
         self.api_metadata.audited = entry["audited"]

@@ -49,6 +49,10 @@ class JobDriver:
         for subdirectory in os.listdir(input_dir):
             subdirectory_path = os.path.join(input_dir, subdirectory)
 
+            # Move on from folders that dont necessarilyhave all their files yet.
+            if subdirectory.startswith("wait_"):
+                continue
+
             # Check if a directory with the same name exists in the error path
             error_directory_path = os.path.join(error_path, subdirectory)
             if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
@@ -150,8 +154,8 @@ class JobDriver:
                         self.util.update_json(json_file_path, "parent_guid", None)
 
                     # Add new metadata entry to mongoDB
-                    self.mongo_metadata.create_metadata_entry(json_file_path, guid)
-
+                    check = self.mongo_metadata.create_metadata_entry(json_file_path, guid)
+                    print(f"create metadata: {check}")
                     # Move the directory to the 'InProcess' directory or error if it already exists
                     new_directory_path = os.path.join(in_process_dir,
                                                       f"{pipeline_name}/{batch_name}/{subdirectory}")

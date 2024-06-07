@@ -104,9 +104,9 @@ class FileUploader(LogClass):
                             # If we receive a message back saying the crc values for the uploaded file doesnt fit our value then we move the asset to the TEMP_ERROR status, send a mail and slack message
                             # TODO create a service that handles TEMP_ERROR status assets. 
                             if uploaded is False and status == 507:
-                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.TEMP_ERROR.value)
-                                self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.TEMP_ERROR.value, f"File failed to upload correctly due to crc failing to verify. Status: {status}")
-                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.TEMP_ERROR.value)
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
+                                self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.PAUSED.value, f"File failed to upload correctly due to crc failing to verify. Status: {status}")
+                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.PAUSED.value)
 
                             # In case of an unforeseen issue the service will set its run config to False, send a mail and slack message about the error
                             # TODO implement a less decisive way of handling this (maybe)
