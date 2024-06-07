@@ -37,15 +37,6 @@ class NdriveNewFilesFinder:
 
             time.sleep(10)
 
-<<<<<<< HEAD
-            run_config_path = f"{project_root}/ConfigFiles/run_config.json"
-            
-            run = self.util.get_value(run_config_path, "run")
-            if run == "False":
-                self.run = False
-
-            #self.count -= 1
-=======
             # checks if service should keep running - configurable in ConfigFiles/run_config.json
             run_config_path = f"{project_root}/ConfigFiles/run_config.json"
             
@@ -57,7 +48,6 @@ class NdriveNewFilesFinder:
                 
 
             self.count -= 1
->>>>>>> origin
 
             if self.count == 0:
                 self.run = False

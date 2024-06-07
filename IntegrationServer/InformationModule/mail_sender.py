@@ -18,13 +18,13 @@ class MailSender:
     
         mail_receiver = os.getenv("mail_receiver")
 
-        subject = f"Subject: {subject}\n\n{message}"
+        content = f"Subject: {subject}\n\n{message}"
 
         command = ['sendmail', mail_receiver]
 
         # Using subprocess.Popen for more control, including sending input via stdin                
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
-        process.communicate(input=subject)
+        process.communicate(input=content)
 
 if __name__=="__main__":
     

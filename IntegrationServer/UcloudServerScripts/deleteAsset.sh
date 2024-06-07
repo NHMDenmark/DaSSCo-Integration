@@ -13,8 +13,4 @@ db.metadata.deleteOne(
 EOF
 
 # Example use bash deleteAsset.sh asset_guid_here
-<<<<<<< HEAD
 # Deletes an asset from both the metadata and track collections.
-=======
-# Deletes an asset from both the metadata and track collections.
->>>>>>> origin

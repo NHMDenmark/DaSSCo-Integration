@@ -20,8 +20,4 @@ EOF
 
 # Example use: bash assetLoader.sh asset_guid_here job_name_here
 # The script sets the first job to be the desired job so it will be the first called to run by hpc, so make sure everything else is set up correctly to use that as job.
-<<<<<<< HEAD
 # The script will overwrite old job names and will not work with the assetLoader job since that requires hpc_ready to be NO.
-=======
-# The script will overwrite old job names and will not work with the assetLoader job since that requires hpc_ready to be NO.
->>>>>>> origin
