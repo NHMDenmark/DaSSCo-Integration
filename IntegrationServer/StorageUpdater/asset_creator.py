@@ -36,10 +36,13 @@ class AssetCreator(LogClass):
 
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
+        entry = self.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
+        self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.storage_api = self.create_storage_api()
         
         self.run = self.util.get_value(self.run_config_path, self.service_name)
+        
         self.loop()
     
     """
@@ -107,6 +110,14 @@ class AssetCreator(LogClass):
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
             all_run = self.util.get_value(self.run_config_path, "all_run")
             service_run = self.util.get_value(self.run_config_path, self.service_name)
+
+            if all_run != self.run:
+                entry = self.log_msg(f"All run status changed from {self.run} to {all_run}")
+                self.health_caller.run_status_change(self.service_name, self.run, entry)
+
+            if service_run != self.run:
+                entry = self.log_msg(f"{self.service_name} status changed from {self.run} to {service_run}")
+                self.health_caller.run_status_change(self.service_name, self.run, entry)
 
             # Pause loop
             counter = 0

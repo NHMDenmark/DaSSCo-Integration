@@ -27,7 +27,6 @@ class HealthService():
     """
     def receive_warning(self, warning):
 
-
         msg_parts = self.split_message(warning.message)
 
         # create db entry in health db
@@ -84,6 +83,14 @@ class HealthService():
             else:
                 self.mail.send_error_mail(service_name=service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])      
                 self.slack.message_from_integration(service_name=service_name, service=parts[2], status=parts[0])
+    
+    def run_status_change(self, info):
+
+        parts = self.split_message(info.message)
+
+        self.mail.send_error_mail(service_name=info.service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])
+        self.slack.change_run_status_msg(parts[0], info.service_name, info.run_status)
+
 
     """
     Splits the message received into: level, timestamp, python file, message, exception
