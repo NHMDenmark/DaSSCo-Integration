@@ -43,7 +43,7 @@ class NdriveNewFilesFinder:
             all_run = self.util.get_value(run_config_path, "all_run")
             service_run = self.util.get_value(run_config_path, "ndrive_new_files_run")
 
-            if all_run == "False" or service_run == "False":
+            if all_run == "STOPPED" or service_run == "False":
                 self.run = False
                 
 

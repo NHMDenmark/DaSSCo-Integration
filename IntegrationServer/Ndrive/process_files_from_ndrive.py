@@ -45,7 +45,7 @@ class ProcessNewFiles:
             all_run = self.util.get_value(run_config_path, "all_run")
             service_run = self.util.get_value(run_config_path, "process_files_from_ndrive_run")
 
-            if all_run == "False" or service_run == "False":
+            if all_run == "STOPPED" or service_run == "False":
                 self.run = False
 
             self.count -= 1
