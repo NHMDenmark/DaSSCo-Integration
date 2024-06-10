@@ -6,10 +6,10 @@
   "HPC clean up service": "RUNNING",
   "HPC file uploader": "RUNNING",
   "HPC job caller": "RUNNING",
+  "New files finder (Ndrive)": "STOPPED",
   "Open file share ARS": "RUNNING",
+  "Process new files (Ndrive)": "STOPPED",
   "Update metadata ARS": "RUNNING",
   "Validate erda sync ARS": "STOPPED",
-  "all_run": "STOPPED",
-  "ndrive_new_files_run": "True",
-  "process_files_from_ndrive_run": "True"
+  "all_run": "RUNNING"
 }
