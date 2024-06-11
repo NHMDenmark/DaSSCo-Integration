@@ -8,10 +8,8 @@ import time
 from MongoDB import metadata_repository, track_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
-from InformationModule.log_class import LogClass
 from HealthUtility import health_caller, run_utility
 import utility
-
 
 """
 Responsible creating new metadata assets in ars. Updates track database with assets status.
@@ -80,7 +78,6 @@ class AssetCreator():
                 else:
                     created, response, exc, status_code = self.storage_api.create_asset(guid)
 
-
                 if created is True:
                     metadata = self.metadata_mongo.get_entry("_id", guid)
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
@@ -118,8 +115,6 @@ class AssetCreator():
             if self.run == self.validate_enum.PAUSED.value:
                 self.run = self.run_util.pause_loop()
 
-            
-            
         # outside main while loop        
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()

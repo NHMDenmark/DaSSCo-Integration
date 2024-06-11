@@ -31,9 +31,7 @@
     "metadata_uploaded_by": "",
     "multispecimen": false,
     "parent_guid": null,
-    "payload_type": [
-      "image"
-    ],
+    "payload_type": "image",
     "pipeline_name": "test-pipeline",
     "preparation_type": [
       "sheet"
