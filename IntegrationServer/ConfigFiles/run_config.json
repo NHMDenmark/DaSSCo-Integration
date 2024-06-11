@@ -1,11 +1,11 @@
 {
-  "Asset creator ARS": "STOPPED",
+  "Asset creator ARS": "RUNNING",
   "Asset creator HPC": "STOPPED",
   "Erda sync ARS": "STOPPED",
   "File uploader ARS": "STOPPED",
   "HPC clean up service": "STOPPED",
   "HPC file uploader": "STOPPED",
-  "HPC job caller": "STOPPED",
+  "HPC job caller": "RUNNING",
   "New files finder (Ndrive)": "STOPPED",
   "Open file share ARS": "STOPPED",
   "Process new files (Ndrive)": "STOPPED",

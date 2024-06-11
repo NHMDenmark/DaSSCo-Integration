@@ -9,16 +9,14 @@ from Connections import connections
 from Enums import status_enum, validate_enum
 import utility
 import time
-from HealthUtility import health_caller
-from InformationModule.log_class import LogClass
+from HealthUtility import health_caller, run_utility
 
-
-class HPCUploader(LogClass):
+class HPCUploader():
 
     def __init__(self):
 
-        # setting up logging
-        super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
+        self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
+        self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
         self.service_name = "HPC file uploader"
 
@@ -31,22 +29,30 @@ class HPCUploader(LogClass):
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
+        self.validate_enum = validate_enum.ValidateEnum
         self.cons = connections.Connections()
         self.upload_file_script = self.util.get_value(self.slurm_config_path, "upload_file_script")
 
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
 
-        self.con = self.create_ssh_connection()
+        self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
 
-        self.run = self.util.get_value(self.run_config_path, self.service_name)        
+        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
+        self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
+
+        self.con = self.create_ssh_connection()
+        
+        self.run = self.run_util.get_service_run_status()
+        self.run_util.service_run = self.run
+        
         self.loop()
     
     def create_ssh_connection(self):
         self.cons.create_ssh_connection(self.ssh_config_path)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
-            entry = self.log_exc(self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
+            entry = self.run_util.log_exc(self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
         
@@ -81,31 +87,12 @@ class HPCUploader(LogClass):
                 except Exception as e:
                     pass # TODO handle exception
                 
-            # checks if service should keep running - configurable in ConfigFiles/run_config.json
-            all_run = self.util.get_value(self.run_config_path, "all_run")
-            service_run = self.util.get_value(self.run_config_path, self.service_name)
+            # checks if service should keep running - configurable in ConfigFiles/run_config.json            
+            self.run = self.run_util.check_run_changes()
 
             # Pause loop
-            counter = 0
-            while service_run == self.status_enum.PAUSED.value:
-                sleep = 10
-                counter += 1
-                time.sleep(sleep)
-                wait_time = sleep * counter
-                entry = self.log_msg(f"{self.service_name} has been in pause mode for ~{wait_time} seconds")
-                self.health_caller.warning(self.service_name, entry)
-                service_run = self.util.get_value(self.run_config_path, self.service_name)
-                
-                all_run = self.util.get_value(self.run_config_path, "all_run")
-                if all_run == self.status_enum.STOPPED.value:
-                    service_run = self.status_enum.STOPPED.value
-                
-                if service_run != self.status_enum.PAUSED.value:
-                    entry = self.log_msg(f"{self.service_name} has changed run status from {self.status_enum.PAUSED.value} to {service_run}")                   
-                    self.health_caller.warning(self.service_name, entry)
-
-            if all_run == self.status_enum.STOPPED.value or service_run == self.status_enum.STOPPED.value:
-                self.run = self.status_enum.STOPPED.value
+            if self.run == self.validate_enum.PAUSED.value:
+                self.run = self.run_util.pause_loop()
 
         # outside main while loop        
         self.mongo_track.close_connection()
