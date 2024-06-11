@@ -24,10 +24,15 @@ class SlackWebhook:
         if service_name != "No service name":
             run_status = self.util.get_value(self.run_config_path, service_name)
 
-        # Define the content that will be displayed in the slack chat. 
-        payload = {
-            "text": f"{status} - Service: {service_name} - Status: {run_status} - GUID: {guid}"
-        }
+        # Define the content that will be displayed in the slack chat.
+        if guid != "No guid": 
+            payload = {
+                "text": f"{status} - Service: {service_name} - Status: {run_status} - GUID: {guid}"
+            }
+        else:
+            payload = {
+                "text": f"{status} - Service: {service_name} - Status: {run_status}"
+            }
 
         try:
             response = requests.post(
