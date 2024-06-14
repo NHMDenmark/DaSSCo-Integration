@@ -1,8 +1,3 @@
-USE SPELLCHECKING
-
-BE SPECIFIC ABOUT THE PIPELINE BEING HERBARIUM
-
-
 
 # Introduction to PIPEHERB0001
 This document reflects the digitization process from workstation to storage in ARS for NHMD Herbarium pipeline 1.
@@ -13,7 +8,7 @@ This part takes care of uploading locally created assets from workstations to a 
 Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing at least 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
 1. The digitizer starts the IngestionClient on the workstation.
 2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
-3. The digitizer selects the digitization session folder LINK CHELSEA DOCUMENT.
+3. The digitizer selects the digitization session folder [see documentation](N:/SCI-SNM-DigitalCollections/DaSSCo/Workflows and workstations/GUIDES/2 Masters/Herbarium Guides/Herbarium Imaging Guide 2nd edit 20240411.docx).
 4. The digitizer fills in all necessary data regarding the digitization session, fx institution, collection, preparation type, ....
 5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
 6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
@@ -32,8 +27,8 @@ N-Drive is mounted on the intergration server.
 
 1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a config LINK LIST OF WORKSTATIONS file (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
 2. Every asset in a new upload folder is copied to the local storage of the integration server.
-3. The metadata file is kept and the information is added to the Metadata Database LINK.
-4. For every asset a new entry is created in the Track Database. This entry contains a variety of information about processing, some derived from the metadata. A full overview can be found [Track Database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md). EXPLAIN BATCH ID.
+3. The metadata file is kept and the information is added to the ]Metadata Database] (https://github.com/NHMDenmark/DaSSCo-Integration/tree/main/Documentation/Data_field_descriptions).
+4. For every asset a new entry is created in the Track Database. This entry contains a variety of information about processing, some derived from the metadata. A full overview can be found [Track Database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md). Here, each asset is also asigned a batchID saved under [list](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_field_descriptions/batch_list_name.md). This batchID groups images by the workstation they were digitised on and the date they were digitised. This is required for our current MOS system to work. 
 5. Depending on the entry of the metadata field _pipeline_, a job list with a fixed sequence is created in the track database. See [Config files README](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/README.md)
 6. The ARS endpoint [create_asset] is contacted to create an asset on ARS. The [metadata](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/metadata_example.json) is passed onto ARS. Additionally, some required dummy data is filled in (asset_pid). For ARS documentation see [here](https://northtech.atlassian.net/wiki/spaces/DAS/pages/2188902401/Web+API).
 7. If the asset has been created succesfully, the image is uploaded to the respective assets file share. The file share is a temporary storage space where the image is available for acessing, but also deletable.
@@ -80,10 +75,12 @@ _Module: Barcode reader_
 11. Integration server updates the track database with the information it received in the previous step about the asset.
 12. HPC server notifies the integration server that the job has finished and sends the output from the job  [hpc_pipeline_barcode_reader](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_barcode_reader.md) to the integration server as well via [hpc barcode reading finished](Component_write_up/hpc_api_barcode.md). 
 14. Integration server updates the metadata (asset_subject, barcode, multispecimen) and track databases with the information it received in the previous step about the asset.
-15. EXPLAIN MOS MORE: Integration server updates the MOS database if the asset is a MOS.
+15. In case the asset is part of a MOS, the Integration server updates the MOS database. It searches the database for assets already processed that match the batchID and disposable barcode (see **MOS** in glossary). It then links the assets of the MOS by updating the "barcode" metadata field.
 16. Integration server sends ARS the new metadata updates and updates the track database with information that this has happened.
 
 _Module: OCR_ in development
+
+NOTE: This script is not tested yet. This script is not deployed yet.
 
 15. Integration server asks HPC server(script) to start a OCR  job for the asset - [hpc_pipeline_OCR](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_ocr.md)
 16. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
@@ -96,17 +93,17 @@ _Module: OCR_ in development
 
 _Module: Cropping & Derivative_
 
-CHANGE REFINERY AND DOCUMENTATION HERE TO GET METADATA FOR THE ASSET NOW AGAIN, OTHERWISE OCR IS NOT PRESENT IN THE METADATA
+
 23. Integration server asks HPC server(script) to start a cropping and derivative job for the asset - [hpc_pipeline_cropping&derivatives](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives.md)
 24. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
 25. Integration server updates the track database with the information it received in the previous step about the queued asset.
 26. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
 27. Integration server updates the track database with the information it received in the previous step about the asset.
-28. EXPLAIN GOAL OF CROPPING AND WHEN IT FAILS; HOW TO DEAL WITH CROPPING FAILURES AND REPPORT THEM
-29. CORRECT THAT ONLY 1 DERIVATIVE IS CREATED AS OF NOW
-30. MORE INFO ABOUT OUTPUTS (DERIVATIVE & METADATA)
-31. HPC server notifies the integration server that the job has finished and sends the output from the job[hpc_pipeline_cropping&derivatives_nhmd_herbarium](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives_nhmd_herbarium.md) to the integration server as well via [hpc_api_new asset]()
-32. All jobs are done and the integration server updates the track database.
+28. The asset metadata file is requested from the Integration server again and overwrites the old metadata file. This way all prior changes are persisted. 
+32. HPC server notifies the integration server that the job has finished and sends the output from the job[hpc_pipeline_cropping&derivatives_nhmd_herbarium](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_cropping%26derivatives_nhmd_herbarium.md) to the integration server as well via [hpc_api_new asset]()
+33. A copy of the original image is cropped, meaning that unimportant areas are excluded form the image. Unimportant areas are defined as areas neither containing herbarium sheet, specimen, side ruler. This way, we reduce storage space needed. A failure to crop can be that 1) important areas are cropped out or 2) unimportant areas are left in the image. In both cases, no reports are made and the images haveto be inspected manually.
+34. Next, the cropped image's resolution is downsampled. This way, we reduce storage space needed and images can be served on our websites faster. Currently, only a 400 PPI image is created. The derivative metadata is a copy of the original metadat with the field "parent_guid" updated and linking to the original asset guid.
+35. All jobs are done and the integration server updates the track database.
 
 _Module: Derivative upload_
 
@@ -119,7 +116,15 @@ _Module: Derivative upload_
 
 _Clean_up_script_
 
-31. NOT TESTED. Integration server asks HPC server(script) to start the clean up job for the asset - [hpc_pipeline_clean_up]()
+NOTE: This script is not tested yet. This script is not deployed yet.
+
+36. Integration server asks HPC server(script) to start the clean up job for the asset - [hpc_pipeline_clean_up]()
+37. HPC queues the job via [hpc_pipeline_feedbackQueue](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_feedbackQueue.md) and notifies the integration server job_id and asset_guid - [hpc job queued](Component_write_up/hpc_api_queue_job.md)
+38. Integration server updates the track database with the information it received in the previous step about the queued asset.
+39. HPC server notifies the integration server when the queued job has started - [hpc_pipeline_job_started]([Component_write_up/hpc_api_start_job.md](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_job_started.md)).
+40. Integration server updates the track database with the information it received in the previous step about the asset.
+41. The asset is deleted form the HPC
+42. HPC server notifies the integration server that the job has finished.
 
 # Part V: Finalizing asset
 * Closing share
@@ -166,7 +171,10 @@ High performance computing. A general name for the server(s) where we compute ne
 A database located on the integration server. It contains the metadata belonging to an asset. This gets updated when we receive new information about the asset and gets populated when the integration server receives a new asset.
 
 **MOS Database:**  
-Multi object speciment. A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
+A database located on the integration server. It keeps track of and connects MOS assets, including their labels. It gets populated when an asset has been identified as a multi-object specimen.
+
+**MOS:**  
+Multi object speciment. See [explanation](https://github.com/NHMDenmark/DaSSCo-Image-Refinery/blob/main/Documentation/MOS_label_detection.md).
 
 **N-Drive**
 Shared drive administered by KU-IT.
