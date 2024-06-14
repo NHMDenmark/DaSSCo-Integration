@@ -8,7 +8,7 @@ This part takes care of uploading locally created assets from workstations to a 
 Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing at least 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
 1. The digitizer starts the IngestionClient on the workstation.
 2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
-3. The digitizer selects the digitization session folder [see documentation](N:/SCI-SNM-DigitalCollections/DaSSCo/Workflows and workstations/GUIDES/2 Masters/Herbarium Guides/Herbarium Imaging Guide 2nd edit 20240411.docx).
+3. The digitizer selects the digitization session folder [documentation](N:/SCI-SNM-DigitalCollections/DaSSCo/Workflows and workstations/GUIDES/2 Masters/Herbarium Guides/Herbarium Imaging Guide 2nd edit 20240411.docx).
 4. The digitizer fills in all necessary data regarding the digitization session, fx institution, collection, preparation type, ....
 5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
 6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
