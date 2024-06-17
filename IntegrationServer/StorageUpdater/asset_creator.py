@@ -57,7 +57,8 @@ class AssetCreator():
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted.", storage_api.exc, self.run_util.log_enum.ERROR.value)
+            entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
             
@@ -96,6 +97,7 @@ class AssetCreator():
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
                         time.sleep(1)
+                    # TODO handle if status code is 555 - this means we set it during another exception - see storage_client.get_status_code_from_exc()
                     if 500 <= status_code:
                         message = self.run_util.log_exc(response, exc)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)

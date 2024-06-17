@@ -98,5 +98,5 @@ class HealthService():
     """
     def split_message(self, message):
         # parts will consist of: severity level[0], timestamp[1], service[2], message[3], exception[4]
-        parts = message.split("#")
+        parts = message.split("###")
         return parts

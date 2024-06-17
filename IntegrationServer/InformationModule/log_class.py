@@ -29,7 +29,7 @@ class LogClass:
     
     """
     Method for logging a message - would normally only be used for warnings.
-    Returns the entry as a string with info separated by #. 
+    Returns the entry as a string with info separated by ###. 
     """
     def log_msg(self, msg, level = log_enum.LogEnum.WARNING.value):
         
@@ -39,7 +39,7 @@ class LogClass:
 
         # create formatter
         formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-        formatter_entry = logging.Formatter("%(levelname)s#%(asctime)s#%(name)s#%(message)s")
+        formatter_entry = logging.Formatter("%(levelname)s###%(asctime)s###%(name)s###%(message)s")
         
         message_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)
@@ -63,7 +63,7 @@ class LogClass:
 
     """
     Method for logging an exception with potential to add a context message.
-    Returns the entry as a string with info separated by #. 
+    Returns the entry as a string with info separated by ###. 
     """
     def log_exc(self, msg = "No message from dev", exc = None, level = log_enum.LogEnum.WARNING.value):
         
@@ -71,7 +71,7 @@ class LogClass:
         entry_handler = EntryHandler()
 
         formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
-        formatter_entry = logging.Formatter("%(levelname)s#%(asctime)s#%(name)s#%(message)s#%(exc_info)s")
+        formatter_entry = logging.Formatter("%(levelname)s###%(asctime)s###%(name)s###%(message)s###%(exc_info)s")
 
         exception_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)

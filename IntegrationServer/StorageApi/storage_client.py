@@ -20,7 +20,7 @@ class StorageClient():
                self.client = DaSSCoStorageClient(client_id, client_secret)
           except Exception as exc:
                self.client = None
-               self.status_code = self.get_status_code_from_exc(exc)
+               self.status_code, self.note = self.get_status_code_from_exc(exc)
                self.exc = exc
                
 
@@ -55,7 +55,7 @@ class StorageClient():
                     return False, f"Received {status_code}, while creating asset.", None, status_code
           except Exception as exc:
                     
-                    status_code = self.get_status_code_from_exc(exc)
+                    status_code, self.note = self.get_status_code_from_exc(exc)
                     
                     if 400 <= status_code <= 499:
                          return False, "ARS api failed to create asset.", exc, status_code
@@ -68,8 +68,12 @@ class StorageClient():
           exc_str = exc.__str__()
           exc_split = exc_str.split(":")
           status_code = exc_split[0][-3:]
-          status_code = int(status_code)
-          return status_code
+          try:
+               status_code = int(status_code)
+          except Exception as e:
+               status_code = 555
+               note = f"Status code set to {status_code} from exception: {e}"
+          return status_code, note
      
      def sync_erda(self, guid):
           try:
