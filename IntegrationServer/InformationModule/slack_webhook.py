@@ -46,7 +46,7 @@ class SlackWebhook:
                 raise ValueError(f"Request to Slack returned an error {response.status_code}, the response is:\n{response.text}")
         
         except Exception as e:
-            print(f"Slack webhook not working for asset: {guid} With error: {e}")
+            print(f"Slack webhook not working for service: {service_name} asset: {guid} With error: {e}")
     
     def change_run_status_msg(self, severity, service_name, status):
         
@@ -65,7 +65,7 @@ class SlackWebhook:
                 raise ValueError(f"Request to Slack returned an error {response.status_code}, the response is:\n{response.text}")
         
         except Exception as e:
-            print(f"Slack webhook not working. With error: {e}")
+            print(f"Slack webhook not working for service: {service_name}. With error: {e}")
 
     """
     Returns the overall run status for the service name provided.

@@ -14,7 +14,6 @@ ISO 8601:
 YYYY-MM-DDThh:mm:ssZ
 or NULL
 
-
 **Why do we have this field:**  
 Because it tells us something important  
 

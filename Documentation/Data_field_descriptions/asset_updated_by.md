@@ -9,6 +9,9 @@ Metadata
 **Description:**  
 Entity that updated the asset
 
+**Value**
+None
+
 **Why do we have this field:**  
 Because it tells us something important  
 

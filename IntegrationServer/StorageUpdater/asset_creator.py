@@ -53,7 +53,7 @@ class AssetCreator():
     Returns the storage client or None. 
     """
     def create_storage_api(self):
-
+    
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
@@ -77,7 +77,7 @@ class AssetCreator():
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
                 else:
                     created, response, exc, status_code = self.storage_api.create_asset(guid)
-
+ 
                 if created is True:
                     metadata = self.metadata_mongo.get_entry("_id", guid)
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
@@ -87,17 +87,17 @@ class AssetCreator():
 
                 if created is False:
                     if status_code <= 299:                    
-                        message = self.log_msg(response)
+                        message = self.run_util.log_msg(response)
 
                     # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
-                        message = self.log_exc(response, exc, self.run_util.log_enum.ERROR.value)
+                        message = self.run_util.log_exc(response, exc, self.run_util.log_enum.ERROR.value)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
                         time.sleep(1)
                     if 500 <= status_code:
-                        message = self.log_exc(response, exc)
+                        message = self.run_util.log_exc(response, exc)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message)
                         time.sleep(1)

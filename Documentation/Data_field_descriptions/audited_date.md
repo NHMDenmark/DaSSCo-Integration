@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 This is the date the asset was audited. Auditing happens following complete processing of the asset following digitisation.
 
-**Value:**
+**Value**
 ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 
 

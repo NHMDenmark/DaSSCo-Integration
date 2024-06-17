@@ -11,16 +11,21 @@ sys.path.append(project_root)
 def extract_field_info(md_content):
     field_info = {}
     current_key = None
+    value = ""
     for line in md_content.split('\n'):
         if line.startswith('##'):
             current_key = line.strip('##').strip()
             field_info[current_key] = {"Name": current_key}
+            current_key = None
         elif '**' in line:
+            if current_key is not None:
+                field_info[current_key] = {current_key: value}
             parts = [item.strip('*') for item in re.split(r'\*\*', line)]
             current_key = parts[1]
+            value = ""
         elif line != "":
-            value = line
-            field_info[current_key] = {current_key: value}
+            value = value + line
+    field_info[current_key] = {current_key: value}
     return field_info
 
 def read_md_file(file_path):
@@ -49,8 +54,8 @@ def create_data_dict_from_md_directory(directory_path):
     return data_dict
 
 # Edit these two to fit your needs. File name is the name of file created and the directory name is the name of the directory to create the excel from.
-directory_name = "MOS_field_descriptions"
-file_name = 'MOS_info.xlsx'
+directory_name = "Data_field_descriptions"
+file_name = 'metadata_info.xlsx'
 
 directory_path = os.path.join(f"{project_root}/Documentation/", directory_name)
 data_dict = create_data_dict_from_md_directory(directory_path)

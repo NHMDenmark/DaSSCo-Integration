@@ -9,7 +9,8 @@ Metadata
 **Description:**  
 A date and time of when the original raw image was taken
 
-
+**Value**
+None
 
 **Why do we have this field:**  
 Because it tells us something important  
