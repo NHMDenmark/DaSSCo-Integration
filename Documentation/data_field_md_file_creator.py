@@ -5,8 +5,8 @@ This creates .md documents based on the links found in another .md document. Use
 Dont run unless you want to overwrite existing data.
 """
 def create_field_description_file(link, field_name):
-    
-    doc = "MOS"
+    # Change this
+    doc = "Health"
 
     if link[:5] == "Track":
         doc = "Track"
@@ -40,7 +40,8 @@ Never
         f.write(content)
 
 def main():
-    with open('C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/Documentation/MOS_fields.md', 'r') as f:
+    # Change this to the .md document you want to create field documents from. Also create the folder for the documents before running
+    with open('C:/Users/tvs157/Desktop/VSC_projects/DaSSCo-Integration/Documentation/Health_fields.md', 'r') as f:
         lines = f.readlines()
 
     for line in lines:
