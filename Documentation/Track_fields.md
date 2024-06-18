@@ -1,4 +1,4 @@
-| Track Data Field name in json   | Written by          | When          | Saved where        | When       | Relevant into      |
+| Track Data Field name   | Written by          | When          | Saved where        | When       | Relevant into      |
 |--------------------------------|---------------------|---------------|--------------------|------------|--------------------|
 | [_id](Track_field_descriptions/_id.md) | Integration | Receiving metadata | Integration | Receiving metadata |  |
 | [created_timestamp](Track_field_descriptions/created_timestamp.md) | Integration | Receiving metadata | Integration | Receiving metadata |  |

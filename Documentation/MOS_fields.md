@@ -1,4 +1,4 @@
-| MOS Data Field name in json   | Written by          | When          | Saved where        | When       | Relevant into      |
+| MOS Data Field name   | Written by          | When          | Saved where        | When       | Relevant into      |
 |--------------------------------|---------------------|---------------|--------------------|------------|--------------------|
 | [_id](MOS_field_descriptions/_id.md) | Integration server | Entry creation | Integration server MOS db | Received data from hpc script | This is the asset guid |
 | [label](MOS_field_descriptions/label.md) | Barcode reader | Result from pipeline | Integration server MOS db | Received data from hpc script | Is this a label |
