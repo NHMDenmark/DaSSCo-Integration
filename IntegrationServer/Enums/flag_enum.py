@@ -7,7 +7,7 @@ Enums representing flags used for various tracking purposes.
 class FlagEnum(Enum):
     IS_IN_ARS = "is_in_ars"
     HAS_NEW_FILE = "has_new_file"
-    SYNC_ERDA = "sync_erda"
+    ERDA_SYNC = "erda_sync"
     UPDATE_METADATA = "update_metadata"
     HPC_READY = "hpc_ready"
     HAS_OPEN_SHARE = "has_open_share"

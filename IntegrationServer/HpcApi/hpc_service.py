@@ -107,8 +107,7 @@ class HPCService():
             pass
         
         return True
-
-    # TODO make use of QUEUED status 
+ 
     def update_mongo_track(self, guid, job, status):
         # Update MongoDB track with job status
         self.mongo_track.update_track_job_status(guid, job, status)
@@ -125,6 +124,7 @@ class HPCService():
 
         # flags for settign jobs_status
         all_done = all(job["status"] == StatusEnum.DONE.value for job in jobs)
+        any_queueing = any(job["status"] == StatusEnum.QUEUED.value for job in jobs)
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
         any_error = any(job["status"] == StatusEnum.ERROR.value for job in jobs)
@@ -140,7 +140,7 @@ class HPCService():
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.DONE.value)
             return
         
-        if any_running or any_starting:
+        if any_running or any_starting or any_queueing:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RUNNING.value)
             return
 
@@ -268,6 +268,7 @@ class HPCService():
        
 
     # update track database that a job has queued
+    # TODO figure out if this needs to call the update_mongo_track local function 
     def job_queued(self, queue_data):
 
         guid = queue_data.guid
@@ -289,6 +290,7 @@ class HPCService():
         return True
     
     # update track database that a job has started
+    # TODO figure out if this needs to call the update_mongo_track local function
     def job_started(self, started_data):
 
         guid = started_data.guid

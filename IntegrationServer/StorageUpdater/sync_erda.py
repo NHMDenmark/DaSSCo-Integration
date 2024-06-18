@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum
+from Enums import validate_enum, status_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -29,6 +29,7 @@ class SyncErda():
         self.track_mongo = track_repository.TrackRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -68,7 +69,7 @@ class SyncErda():
 
         while self.run == self.status_enum.RUNNING.value:
             
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_new_file" : self.validate_enum.AWAIT.value, "erda_sync": self.validate_enum.NO.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.HAS_NEW_FILE.value : self.validate_enum.AWAIT.value, self.flag_enum.ERDA_SYNC.value: self.validate_enum.NO.value}])
 
             if asset is not None:
                 guid = asset["_id"]
@@ -77,7 +78,7 @@ class SyncErda():
                 
                 # TODO handle if false - api fail
                 if synced is True:
-                    self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)
                     
                 
                 time.sleep(1)

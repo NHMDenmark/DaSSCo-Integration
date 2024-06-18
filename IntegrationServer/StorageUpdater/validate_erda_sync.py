@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository
 from StorageApi import storage_client
-from Enums import validate_enum, erda_status, status_enum
+from Enums import validate_enum, erda_status, status_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -29,6 +29,7 @@ class SyncErda():
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.erda_enum = erda_status.ErdaStatus
+        self.flag_enum = flag_enum.FlagEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -78,7 +79,7 @@ class SyncErda():
             if self.run == self.status_enum.STOPPED.value:
                 continue           
             
-            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{"erda_sync": self.validate_enum.AWAIT.value}])
+            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.flag_enum.ERDA_SYNC.value: self.validate_enum.AWAIT.value}])
 
             if len(assets) == 0:
                 # no assets found that needed validation
@@ -92,16 +93,16 @@ class SyncErda():
                 
                 if asset_status == self.erda_enum.COMPLETED.value:
 
-                    self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.YES.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value)
                     
-                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.NO.value)
 
-                    self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.NO.value)
 
                     self.track_mongo.update_entry(guid, "proxy_path", "")
 
                     for file in asset["file_list"]:
-                        self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
+                        self.track_mongo.update_track_file_list(guid, file["name"], self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value)        
 
                     print(f"Validated erda sync for asset: {guid}")
 
@@ -113,7 +114,7 @@ class SyncErda():
                 if asset_status == self.erda_enum.ERDA_ERROR.value:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
                     # currently resetting sync status to "NO" attempts a new sync 
-                    self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.NO.value)
 
                 if asset_status is False:
                     # TODO handle when something went wrong with api call

@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum
+from Enums import validate_enum, status_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -29,6 +29,7 @@ class UpdateMetadata():
         self.track_mongo = track_repository.TrackRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -68,10 +69,10 @@ class UpdateMetadata():
 
         while self.run == self.status_enum.RUNNING.value:
             
-            asset = self.track_mongo.get_entry("update_metadata", self.validate_enum.YES.value)
-
+            asset = self.track_mongo.get_entry(self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+            
             if asset is not None:
-                if asset["is_in_ars"] == self.validate_enum.YES.value:
+                if asset[self.flag_enum.IS_IN_ARS.value] == self.validate_enum.YES.value:
 
                     # TODO handle if is in ars == NO
 
@@ -80,7 +81,7 @@ class UpdateMetadata():
                     updated = self.storage_api.update_metadata(guid)
 
                     if updated is True:
-                        self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)
+                        self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
                 
                 # TODO handle false better than ignoring it
 
