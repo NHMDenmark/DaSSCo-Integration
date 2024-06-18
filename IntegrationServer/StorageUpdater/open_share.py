@@ -7,6 +7,8 @@ sys.path.append(project_root)
 from MongoDB import track_repository, metadata_repository
 from StorageApi import storage_client
 from Enums import status_enum, validate_enum
+from Enums.status_enum import Status
+from Enums.validate_enum import Validate
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -16,15 +18,15 @@ from StorageApi import storage_client
 TODO Description
 """
 
-class OpenShare():
+class OpenShare(Status, Validate):
 
     def __init__(self):
-
+        super().__init__()
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
         self.service_name = "Open file share ARS"
-
+        
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
@@ -34,12 +36,12 @@ class OpenShare():
         self.validate_enum = validate_enum.ValidateEnum
         
         # set the config file value to RUNNING, mostly for ease of testing
-        self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
+        self.util.update_json(self.run_config_path, self.service_name, self.RUNNING)
 
         self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
-        self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
+        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.RUNNING}")
+        self.health_caller.run_status_change(self.service_name, self.RUNNING, entry)
 
         self.storage_api = self.create_storage_api()
         
@@ -61,7 +63,7 @@ class OpenShare():
             entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
-            self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+            self.run = self.util.update_json(self.run_config_path, self.service_name, self.STOPPED)
             
         return storage_api
 
@@ -69,9 +71,9 @@ class OpenShare():
 
         while self.run == self.status_enum.RUNNING.value:
             
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.NO.value,
-                                                                          "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
-                                                                            "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
+                                                                          "jobs_status": self.WAITING, "is_in_ars": self.YES,
+                                                                            "has_new_file": self.NO, "erda_sync": self.YES}])
             if asset is None:
                 time.sleep(1)        
             else: 
@@ -97,7 +99,7 @@ class OpenShare():
                             self.mongo_track.update_track_file_list(guid, name, "ars_link", link)
 
                     
-                    self.mongo_track.update_entry(guid, "has_open_share", validate_enum.ValidateEnum.YES.value)
+                    self.mongo_track.update_entry(guid, "has_open_share", self.YES)
 
                 # TODO handle if proxy path is false
             
@@ -105,7 +107,7 @@ class OpenShare():
             self.run = self.run_util.check_run_changes()
 
             # Pause loop
-            if self.run == self.validate_enum.PAUSED.value:
+            if self.run == self.PAUSED:
                 self.run = self.run_util.pause_loop()
 
         # outside main while loop        

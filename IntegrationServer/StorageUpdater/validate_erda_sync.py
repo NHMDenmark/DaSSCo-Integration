@@ -28,7 +28,7 @@ class SyncErda():
         self.track_mongo = track_repository.TrackRepository()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
-        self.erda_enum = erda_status.ErdaStatus
+        self.erda_enum = erda_status.ErdaStatusEnum
         self.flag_enum = flag_enum.FlagEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()

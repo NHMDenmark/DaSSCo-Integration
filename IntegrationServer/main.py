@@ -19,7 +19,7 @@ import InformationModule.slack_webhook as slack_webhook
 import subprocess
 import logging
 from HealthUtility import health_caller
-
+from Enums.feedback_enum import Feedback
 """"
 Test area for the different processes. May contain deprecated information.
 """
@@ -75,11 +75,19 @@ def test():
     #h.close_connection()
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))
-    
+class y(Feedback):
+
+    def __init__(self):
+        super().__init__()
+        print(self.OK)
+        print(self.AWAIT)
+        
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
 
     # i = IntegrationServer()
-    test()
+    #test()
+    y()
+    
     

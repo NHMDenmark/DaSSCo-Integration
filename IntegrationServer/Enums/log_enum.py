@@ -9,3 +9,11 @@ class LogEnum(Enum):
     WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
+
+class Log:
+    def __init__(self):
+        self.DEBUG = LogEnum.DEBUG.value
+        self.INFO = LogEnum.INFO.value
+        self.WARNING = LogEnum.WARNING.value
+        self.ERROR = LogEnum.ERROR.value
+        self.CRITICAL = LogEnum.CRITICAL.value
