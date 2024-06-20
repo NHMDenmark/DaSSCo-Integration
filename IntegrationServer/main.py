@@ -5,7 +5,7 @@ import sys
 script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
-from MongoDB import mongo_connection, track_repository, health_repository
+from MongoDB import mongo_connection, track_repository, health_repository, service_model
 import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
@@ -75,19 +75,21 @@ def test():
     #h.close_connection()
     #mongo.create_metadata_entry(relPath, "test_0001")
     #print(os.getenv("password"))
-class y(Feedback):
 
-    def __init__(self):
-        super().__init__()
-        print(self.OK)
-        print(self.AWAIT)
-        
+def show_a(service_model: service_model.ServiceModel):
+    print(service_model["run_status"])
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
 
     # i = IntegrationServer()
     #test()
-    y()
+    a = {"_id": "yo", "run_status": "run"}
+    print(a)
+    show_a(a)
     
+    b = service_model.ServiceModel()
     
+    c = b.model_dump_json()
+     
+    print(c)

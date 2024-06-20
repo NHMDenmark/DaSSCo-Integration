@@ -4,9 +4,9 @@
 | StorageUpdater\asset_creator | - | - | not -1 | - | NO -> YES | -> YES | -> YES | - | - |
 | StorageUpdater\file_uploader | WAITING | - | not -1 | - | - | YES -> AWAIT | YES | -> NO | - |
 | StorageUpdater\sync_erda | - | - | - | - | - | AWAIT | - | NO -> AWAIT | - |
-| StorageUpdater\validate_sync_erda | - | - | - | - | - | -> NO | -> NO | AWAIT -> YES | - |
+|  StorageUpdater\validate_sync_erda | - | - | - | - | - | -> NO | -> NO | AWAIT -> YES | - |
 | StorageUpdater\update_metadata | - | - | - | - | - | - | - | - | YES -> NO |
-| StorageUpdater\open_share | WAITING | - | - | NO | YES | NO | NO -> YES | YES | - |
+| HpcSsh\hpc_open_share | WAITING | - | - | NO | YES | NO | NO -> YES | YES | - |
 | HpcSsh\hpc_asset_creator | WAITING | - | - | NO -> AWAIT | YES | NO | YES | YES | - |
 | HpcSsh\hpc_job_caller | WAITING -> STARTING | - | - | YES | - | - | - | - | - |
 | HpcSsh\hpc_clean_up | DONE | - | - | YES -> NO | YES | - | - | - | - |
@@ -21,3 +21,6 @@
 
 | P | js | fs | a s | ready | ars | n file | open sha | e sync | upd mdata |
 
+empty doesnt concern this service 
+
+status -> change in status
