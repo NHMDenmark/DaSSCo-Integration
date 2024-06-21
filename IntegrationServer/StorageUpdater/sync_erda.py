@@ -25,7 +25,6 @@ class SyncErda():
         # service name for logging/info purposes
         self.service_name = "Erda sync ARS"
 
-        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.validate_enum = validate_enum.ValidateEnum
@@ -37,7 +36,7 @@ class SyncErda():
         # set the service db value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
 
         entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -87,7 +86,7 @@ class SyncErda():
             if asset is None:
                 time.sleep(1)
 
-           # checks if service should keep running - configurable in ConfigFiles/run_config.json            
+           # checks if service should keep running           
             self.run = self.run_util.check_run_changes()
 
             # Pause loop

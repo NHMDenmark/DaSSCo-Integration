@@ -32,7 +32,6 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # service name for logging/info purposes
         self.service_name = "Validate erda sync ARS"
 
-        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         
@@ -75,7 +74,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         while self.run == self.RUNNING:
 
-            # checks if service should keep running - configurable in ConfigFiles/run_config.json            
+            # checks if service should keep running            
             self.run = self.run_util.check_run_changes()
 
             # Pause loop
