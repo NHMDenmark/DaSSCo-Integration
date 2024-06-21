@@ -22,9 +22,6 @@ class SetupServiceScript:
         self.service_names = list(self.service_config.keys())
 
         for name in self.service_names:
-            print(name)
-
-        for name in self.service_names:
             
             created = self.service_repo.create_micro_service_entry(name)
             if created is False:

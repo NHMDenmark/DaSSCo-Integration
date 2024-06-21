@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from MongoDB import track_repository, metadata_repository
+from MongoDB import track_repository, metadata_repository, service_repository
 from StorageApi import storage_client
 from Enums import status_enum, validate_enum
 from Enums.status_enum import Status
@@ -21,7 +21,9 @@ TODO Description
 class OpenShare(Status, Validate):
 
     def __init__(self):
-        super().__init__()
+        Status.__init__(self)
+        Validate.__init__(self)
+        
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
@@ -30,13 +32,14 @@ class OpenShare(Status, Validate):
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
+        self.service_mongo = service_repository.ServiceRepository()
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         
         # set the config file value to RUNNING, mostly for ease of testing
-        self.util.update_json(self.run_config_path, self.service_name, self.RUNNING)
+        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
         self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
 
@@ -63,7 +66,7 @@ class OpenShare(Status, Validate):
             entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
-            self.run = self.util.update_json(self.run_config_path, self.service_name, self.STOPPED)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
             
         return storage_api
 
@@ -113,6 +116,7 @@ class OpenShare(Status, Validate):
         # outside main while loop        
         self.mongo_track.close_connection()
         self.mongo_metadata.close_connection()
+        self.service_mongo.close_connection()
 
 
 if __name__ == '__main__':

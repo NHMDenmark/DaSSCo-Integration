@@ -5,9 +5,12 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
-from MongoDB import track_repository
+from MongoDB import track_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, erda_status, status_enum, flag_enum
+from Enums.status_enum import Status
+from Enums.flag_enum import Flag
+from Enums.validate_enum import Validate
+from Enums.erda_status import ErdaStatus
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -15,9 +18,14 @@ import utility
 Responsible validating files have been synced with erda and updating track data accordingly.
 """
 
-class SyncErda():
+class SyncErda(Status, Flag, ErdaStatus, Validate):
 
     def __init__(self):
+
+        Status.__init__(self)
+        Flag.__init__(self)
+        ErdaStatus.__init__(self)
+        Validate.__init__(self)
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
@@ -26,20 +34,18 @@ class SyncErda():
 
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.track_mongo = track_repository.TrackRepository()
-        self.status_enum = status_enum.StatusEnum
-        self.validate_enum = validate_enum.ValidateEnum
-        self.erda_enum = erda_status.ErdaStatusEnum
-        self.flag_enum = flag_enum.FlagEnum
+        self.service_mongo = service_repository.ServiceRepository()
+        
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
         # set the config file value to RUNNING, mostly for ease of testing
-        self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
+        self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
-        self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
+        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.RUNNING}")
+        self.health_caller.run_status_change(self.service_name, self.RUNNING, entry)
 
         self.storage_api = self.create_storage_api()
         
@@ -59,27 +65,27 @@ class SyncErda():
          
         if storage_api.client is None:
             entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
-                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
+                                           storage_api.exc, self.run_util.ERROR)
             self.health_caller.warning(self.service_name, entry)
-            self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
             
         return storage_api
 
     def loop(self):
 
-        while self.run == self.status_enum.RUNNING.value:
+        while self.run == self.RUNNING:
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
             self.run = self.run_util.check_run_changes()
 
             # Pause loop
-            if self.run == self.validate_enum.PAUSED.value:
+            if self.run == self.PAUSED:
                 self.run = self.run_util.pause_loop()
             
-            if self.run == self.status_enum.STOPPED.value:
+            if self.run == self.STOPPED:
                 continue           
             
-            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.flag_enum.ERDA_SYNC.value: self.validate_enum.AWAIT.value}])
+            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT}])
 
             if len(assets) == 0:
                 # no assets found that needed validation
@@ -91,30 +97,30 @@ class SyncErda():
                 
                 asset_status = self.storage_api.get_asset_status(guid)
                 
-                if asset_status == self.erda_enum.COMPLETED.value:
+                if asset_status == self.COMPLETED:
 
-                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value)
+                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
                     
-                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
 
-                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
 
                     self.track_mongo.update_entry(guid, "proxy_path", "")
 
                     for file in asset["file_list"]:
-                        self.track_mongo.update_track_file_list(guid, file["name"], self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value)        
+                        self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
 
                     print(f"Validated erda sync for asset: {guid}")
 
-                if asset_status == self.erda_enum.ASSET_RECEIVED.value:
+                if asset_status == self.ASSET_RECEIVED:
                     # no action needed here since asset is basically queued to be synced and just waiting for that to happen
                     print(f"Waiting on erda sync for asset: {guid}")
                     pass    
 
-                if asset_status == self.erda_enum.ERDA_ERROR.value:
+                if asset_status == self.ERDA_ERROR:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
                     # currently resetting sync status to "NO" attempts a new sync 
-                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
 
                 if asset_status is False:
                     # TODO handle when something went wrong with api call
@@ -126,6 +132,7 @@ class SyncErda():
 
         # Outside main while loop
         self.track_mongo.close_connection()
+        self.service_mongo.close_connection()
 
 if __name__ == '__main__':
     SyncErda()

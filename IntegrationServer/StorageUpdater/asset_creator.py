@@ -5,7 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
-from MongoDB import metadata_repository, track_repository
+from MongoDB import metadata_repository, track_repository, service_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
 from HealthUtility import health_caller, run_utility
@@ -27,13 +27,14 @@ class AssetCreator():
         self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
         self.track_mongo = track_repository.TrackRepository()
         self.metadata_mongo = metadata_repository.MetadataRepository()
+        self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.util = utility.Utility()
 
-        # set the config file value to RUNNING, mostly for ease of testing
-        self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
+        # set the service db value to RUNNING, mostly for ease of testing
+        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
         self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
 
@@ -60,7 +61,7 @@ class AssetCreator():
             entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
-            self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
             
         return storage_api
 
@@ -120,6 +121,7 @@ class AssetCreator():
         # outside main while loop        
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()
+        self.service_mongo.close_connection()
 
 if __name__ == '__main__':
     AssetCreator()

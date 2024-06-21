@@ -6,27 +6,27 @@ sys.path.append(project_root)
 
 import utility
 import time
-from Enums import status_enum
+from MongoDB import service_repository
+from Enums.status_enum import Status
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 
 """
 Class that helps the micro services with logging and run status updates.
-Takes the service name, run config path, log filename and the logger name as arguments.
+Takes the service name, log filename and the logger name as arguments.
 Example: "Asset creator ARS", "root/ConfigFiles/run_config.json", "asset_creator.py.log", "asset_creator"
 """
-class RunUtility(LogClass):
+class RunUtility(LogClass, Status):
 
-    def __init__(self, service_name, run_config_path, log_filename, logger_name):
+    def __init__(self, service_name, log_filename, logger_name):
 
-        # setting up logging for service
-        super().__init__(log_filename, logger_name)
+        LogClass.__init__(self, log_filename, logger_name)
+        Status.__init__(self)
 
         self.util = utility.Utility()
-        self.status_enum = status_enum.StatusEnum
+        self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
         self.service_name = service_name
-        self.run_config_path = run_config_path
         
         # flag for the all run status
         self.all_run_status = self.get_all_run()
@@ -48,7 +48,7 @@ class RunUtility(LogClass):
         # seconds to pause
         sleep = 10
         self.service_run = self.get_service_run_status()
-        while self.service_run == self.status_enum.PAUSED.value:
+        while self.service_run == self.PAUSED:
                 counter += 1
                 time.sleep(sleep)
                 wait_time = sleep * counter
@@ -86,16 +86,16 @@ class RunUtility(LogClass):
         return self.service_run
 
     """
-    get the all run status from the config file
+    get the all run status from the mongo db
     """
     def get_all_run(self):
-        return self.util.get_value(self.run_config_path, "all_run")
+        return self.service_mongo.get_value_for_key("all_run", "run_status")
     
     """
-    get the specific service run status from the config file
+    get the specific service run status from the mongo db
     """
     def get_run_service(self):
-        return self.util.get_value(self.run_config_path, self.service_name)
+        return self.service_mongo.get_value_for_key(self.service_name, "run_status")
     
     """
     get the overall service run status
@@ -105,10 +105,10 @@ class RunUtility(LogClass):
         all_run = self.get_all_run()
         service_run = self.get_run_service()
 
-        if all_run == self.status_enum.STOPPED.value or service_run == self.status_enum.STOPPED.value:
-            return self.status_enum.STOPPED.value
+        if all_run == self.STOPPED or service_run == self.STOPPED:
+            return self.STOPPED
         
-        if all_run == self.status_enum.PAUSED.value or service_run == self.status_enum.PAUSED.value:
-            return self.status_enum.PAUSED.value
+        if all_run == self.PAUSED or service_run == self.PAUSED:
+            return self.PAUSED
 
-        return self.status_enum.RUNNING.value
+        return self.PAUSED
