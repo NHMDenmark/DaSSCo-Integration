@@ -9,7 +9,7 @@ Health
 **Description:**  
 Written message in the code that gets transferred to the health service through the health api. 
 
-**Value**
+**Value:**  
 Any type of message that will help understanding what is happening.
 
 **Why do we have this field:**  

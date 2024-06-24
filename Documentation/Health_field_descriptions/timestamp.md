@@ -9,7 +9,7 @@ Health
 **Description:**  
 System generated timestamp.  
 
-**Value**
+**Value:**  
 ISO format
 
 **Why do we have this field:**  

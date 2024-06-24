@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 A short description of funding source used to create the asset
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  

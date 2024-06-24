@@ -9,8 +9,8 @@ Health
 **Description:**  
 Optional field since not all entries have this. This will let us know which flag if any was updated due to the error. Assets with changed flags should enter an alternate flow.
 
-**Value**
-Value from the flag_enum list. "is_in_ars"
+**Value:**  
+Value: from the flag_enum list. "is_in_ars"
 
 **Why do we have this field:**  
 Lets us know if the asset had its flag changed due to the error.   

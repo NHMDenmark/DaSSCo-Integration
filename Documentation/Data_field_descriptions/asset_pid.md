@@ -10,7 +10,7 @@ Metadata
 See answer for asset_guid. One possible PID is to construct a URL like pid.dassco.dk/GUID1234555677243. This is then the unique and resolvable identifier that we will use when sharing.
 
  
-**Value**
+**Value:**  
 None
 
 

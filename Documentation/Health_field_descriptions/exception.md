@@ -9,7 +9,7 @@ Health
 **Description:**  
 Optional field since not all entries have this. The exception that caused the warning/error. This is a fully written out exception.  
 
-**Value**
+**Value:**  
 Stacktrace - for technical eyes.
 
 **Why do we have this field:**  

@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 Yada yada  
 
-**Value**
+**Value:**  
 ISO 8601:
 YYYY-MM-DDThh:mm:ssZ
 or NULL

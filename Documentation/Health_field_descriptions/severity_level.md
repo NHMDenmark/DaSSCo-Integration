@@ -9,7 +9,7 @@ Health
 **Description:**  
 Severity level indicator. Based on the logging library levels. We can add more levels if needed. Warnings are telling something isnt as it should be, but service is still going. Errors means something went wrong and we must look at it.  
 
-**Value**
+**Value:**  
 WARNING / ERROR
 
 **Why do we have this field:**  

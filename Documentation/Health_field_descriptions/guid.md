@@ -9,7 +9,7 @@ Health
 **Description:**  
 Optional field since not all entries have this. The guid for the asset the error occured with.   
 
-**Value**
+**Value:**  
 Asset guid
 
 **Why do we have this field:**  

@@ -9,7 +9,7 @@ Basically a multispecimen is a single image (or other type of media) that actual
 **Description:**  
 Yada yada  
 
-**Value**
+**Value:**  
 True or False
 
 **Why do we have this field:**  

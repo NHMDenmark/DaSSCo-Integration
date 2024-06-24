@@ -57,10 +57,10 @@ def create_data_dict_from_md_directory(directory_path):
 directory_name = "Data_field_descriptions"
 file_name = 'metadata_info.xlsx'
 
-directory_path = os.path.join(f"{project_root}/Documentation/", directory_name)
+directory_path = os.path.join(f"{project_root}/", directory_name)
 data_dict = create_data_dict_from_md_directory(directory_path)
 
 df = pd.DataFrame(data_dict)
 
-create_path = os.path.join(f"{project_root}/Documentation/", file_name)
+create_path = os.path.join(f"{project_root}/", file_name)
 df.to_excel(create_path, index=False)

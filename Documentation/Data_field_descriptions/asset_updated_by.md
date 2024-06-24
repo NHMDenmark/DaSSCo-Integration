@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 Entity that updated the asset
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  

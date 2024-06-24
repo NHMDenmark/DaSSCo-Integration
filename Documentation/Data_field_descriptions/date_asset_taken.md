@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 A date and time of when the original raw image was taken
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  

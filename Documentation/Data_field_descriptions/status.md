@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 The status of the asset. It  
 
-**Value**
+**Value:**  
 For processing, being processed, working copy, archive, processing halted, for deletion, issue with media, issue with metadata
 
 **Why do we have this field:**  

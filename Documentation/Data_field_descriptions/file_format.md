@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 The format of the asset
 
-**Value**
+**Value:**  
 tif, jpeg, raf
 
 **Why do we have this field:**  

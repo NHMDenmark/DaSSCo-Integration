@@ -29,11 +29,11 @@ file_name = 'metadata_info.xlsx'
 directory_name = 'TEST_field_descriptions'
 
 # Load the Excel file into a DataFrame
-excel_file = os.path.join(f"{project_root}/Documentation/", file_name)
+excel_file = os.path.join(f"{project_root}/", file_name)
 df = pd.read_excel(excel_file)
 
 # Output directory where Markdown files will be created
-output_directory = os.path.join(f"{project_root}/Documentation/", directory_name)
+output_directory = os.path.join(f"{project_root}/", directory_name)
 os.makedirs(output_directory, exist_ok=True)
 # Create Markdown files from the DataFrame
 create_markdown_from_dataframe(df, output_directory)

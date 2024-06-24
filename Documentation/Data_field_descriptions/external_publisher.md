@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 A list of URLs to external publisher sites or just names of the publishers, to which we are publishing this asset and a user can download the asset from the publisher (a reverse link). This should be searchable to see what is being published where. 
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  

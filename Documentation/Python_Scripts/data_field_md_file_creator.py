@@ -24,7 +24,7 @@ String
 **Description:**  
 Yada yada  
 
-**Value**
+**Value:**
 None
 
 **Why do we have this field:**  
@@ -45,7 +45,7 @@ def main():
     # Change this to the .md document you want to create field documents from. Also create the folder for the documents before running
     md_document = "Health_fields.md"
 
-    with open(f"{project_root}/Documentation/{md_document}", 'r') as f:
+    with open(f"{project_root}/{md_document}", 'r') as f:
         lines = f.readlines()
 
     for line in lines:

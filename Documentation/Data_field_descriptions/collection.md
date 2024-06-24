@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 This is the collection name (a collection of related specimens) within the institution that holds the specimen and should align with Specify collections for synchronisation (also part of specimen registration number for NHMA).
 
-**Value**
+**Value:**  
 FX Vascular plants
 
 **Why do we have this field:**  

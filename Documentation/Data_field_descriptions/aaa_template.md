@@ -7,9 +7,9 @@ String, boolean
 Metadata, track data, mos data, etc  
 
 **Description:**  
-Yada yada  
+Please remember that there are two white spaces after each header. 
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  

@@ -9,7 +9,7 @@ Metadata
 **Description:**  
 Yada yada  
 
-**Value**
+**Value:**  
 None
 
 **Why do we have this field:**  
