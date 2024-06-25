@@ -71,10 +71,10 @@ def test():
     
     #c = health_caller.HealthCaller()
     #c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
-    h = health_repository.HealthRepository()
-    p = h.get_recent_errors("some service", 2000000)
-    print(p[0:7])
-    h.close_connection()
+    #h = health_repository.HealthRepository()
+    #p = h.get_recent_errors("some service", 2000000)
+    #print(p[0:7])
+    #h.close_connection()
     
 
 class x(Feedback, LogClass):

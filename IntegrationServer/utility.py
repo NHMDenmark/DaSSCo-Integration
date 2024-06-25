@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import math
 import json
+import uuid
 import hashlib
 import binascii
 from datetime import datetime
@@ -129,3 +130,10 @@ class Utility:
 
     def verify_path(self, path):
         return os.path.exists(path)
+    
+    """
+    Genrates a random unique id and returns it in string format. 
+    """
+    def new_uuid(self):
+        return uuid.uuid4().hex
+        
