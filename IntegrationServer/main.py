@@ -71,11 +71,11 @@ def test():
     
     #c = health_caller.HealthCaller()
     #c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
-    #h = health_repository.HealthRepository()
-    #h.create_health_entry_from_api({"test":"tap", "triple":"trouble"})
-    #h.close_connection()
-    #mongo.create_metadata_entry(relPath, "test_0001")
-    #print(os.getenv("password"))
+    h = health_repository.HealthRepository()
+    p = h.get_recent_errors("some service", 2000000)
+    print(p[0:7])
+    h.close_connection()
+    
 
 class x(Feedback, LogClass):
     def __init__(self):
@@ -86,6 +86,7 @@ class x(Feedback, LogClass):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
 
+    
     # i = IntegrationServer()
-    #test()
-    x()
+    test()
+    #x()

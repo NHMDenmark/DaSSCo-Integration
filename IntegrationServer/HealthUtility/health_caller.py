@@ -31,7 +31,30 @@ class HealthCaller():
         except Exception as e:
             # TODO create log entry
             print(e)
-    
+
+
+    def error(self, service, message, guid = None, flag = None):
+        
+        url = f"{self.url}/api/error"
+        
+        content = {
+                "guid": guid,
+                "service": service,
+                "flag": flag,
+                "message": message
+                }
+        
+        try:    
+            response = requests.post(url, json=content)
+            
+            if response.status_code != 200:
+                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+
+        except Exception as e:
+            # TODO create log entry
+            print(e)
+
+
     """
     This call will always create and send messages to email and slack. 
     Should be called when a service notices a change in its run status. 

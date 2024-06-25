@@ -25,6 +25,13 @@ async def receive_warning(warning: message_model):
     #print(handled)
     return handled
 
+@health.post("/api/error")
+async def receive_error(error: message_model):
+    
+    handled = service.receive_error(error)
+    #print(handled)
+    return handled
+
 @health.post("/api/run_change_status")
 async def run_status_change(info: run_model):
 

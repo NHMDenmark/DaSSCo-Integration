@@ -14,7 +14,7 @@ from InformationModule.log_class import LogClass
 """
 Class that helps the micro services with logging and run status updates.
 Takes the service name, log filename and the logger name as arguments.
-Example: "Asset creator ARS", "root/ConfigFiles/run_config.json", "asset_creator.py.log", "asset_creator"
+Example: "Asset creator ARS", "asset_creator.py.log", "asset_creator"
 """
 class RunUtility(LogClass, Status):
 
@@ -23,6 +23,7 @@ class RunUtility(LogClass, Status):
         LogClass.__init__(self, log_filename, logger_name)
         Status.__init__(self)
 
+        self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         self.util = utility.Utility()
         self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
@@ -46,7 +47,7 @@ class RunUtility(LogClass, Status):
     def pause_loop(self):
         counter = 0
         # seconds to pause
-        sleep = 10
+        sleep = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "pause_time")
         self.service_run = self.get_service_run_status()
         while self.service_run == self.PAUSED:
                 counter += 1
@@ -75,8 +76,7 @@ class RunUtility(LogClass, Status):
         # checks run service status
         run_service = self.get_run_service()
         if self.run_service != run_service:
-            entry = self.log_msg(f"{self.service_name} status changed from {self.service_run} to {run_service}")
-            self.health_caller.run_status_change(self.service_name, run_service, entry)
+            self.log_status_change(self.service_name, self.service_run, run_service)
         
         # updates run status
         self.all_run_status = self.get_all_run()
@@ -84,6 +84,21 @@ class RunUtility(LogClass, Status):
         self.service_run = self.get_service_run_status()
         
         return self.service_run
+    
+    """
+    logs a status change for all_run and calls the health api
+    """
+    def log_all_run_status_change(self, old_status, new_status):
+            entry = self.log_msg(f"All run status changed from {old_status} to {new_status}")
+            self.health_caller.run_status_change("No name", new_status, entry)
+
+    """
+    logs a status change and calls the health api
+    """
+    def log_status_change(self, service_name, old_status, new_status):
+        entry = self.log_msg(f"{service_name} status changed from {old_status} to {new_status}")
+        self.health_caller.run_status_change(service_name, new_status, entry)
+
 
     """
     get the all run status from the mongo db

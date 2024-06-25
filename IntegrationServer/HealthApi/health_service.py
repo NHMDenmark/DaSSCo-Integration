@@ -21,7 +21,7 @@ class HealthService():
         self.validate_enum = validate_enum.ValidateEnum
 
     """
-    Receives a message from the api with a message and potentially guid that something isnt going as well as it could. 
+    Receives a warning message from the api with a message and potentially guid that something isnt going as well as it could. 
     Handles the message accordingly and sends out information to staff about the status if needed.
     Returns true when it could handle the message correctly, false otherwise.  
     """
@@ -42,6 +42,31 @@ class HealthService():
 
         # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
         self.inform_slack_mail(msg_parts, warning.guid, warning.service)
+
+        return True
+    
+    """
+    Receives a error message from the api with a message and potentially guid that something isnt going as well as it could. 
+    Handles the message accordingly and sends out information to staff about the status if needed.
+    Returns true when it could handle the message correctly, false otherwise.  
+    """
+    def receive_error(self, error):
+
+        msg_parts = self.split_message(error.message)
+
+        # create db entry in health db
+        model_data = self.create_health_model(error, msg_parts)
+        self.health.create_health_entry_from_api(model_data)
+        
+        if error.guid and error.flag is not None:
+            updated = self.update_track_db(error.guid, error.flag)
+            if updated is False:
+                return False
+        else:
+            error.guid = "No guid"
+        
+        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
+        self.inform_slack_mail(msg_parts, error.guid, error.service)
 
         return True
     
