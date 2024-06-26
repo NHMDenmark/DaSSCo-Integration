@@ -25,6 +25,7 @@ class NdriveNewFilesFinder():
         
         # service name for logging/info purposes
         self.service_name = "New files finder (Ndrive)"
+        self.prefix_id= "Nff(N)"
 
         self.util = utility.Utility()
         
@@ -34,12 +35,12 @@ class NdriveNewFilesFinder():
         self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
-        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
        # set the service db value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
         
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.run = self.run_util.get_service_run_status()

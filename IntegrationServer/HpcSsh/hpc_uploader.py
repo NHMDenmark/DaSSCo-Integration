@@ -19,6 +19,7 @@ class HPCUploader():
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
         self.service_name = "HPC file uploader"
+        self.prefix_id = "Hfu"
 
         self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
@@ -36,9 +37,9 @@ class HPCUploader():
         # set the config file value to RUNNING, mostly for ease of testing
         self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.run_config_path, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.run_config_path, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
@@ -52,7 +53,7 @@ class HPCUploader():
         self.cons.create_ssh_connection(self.ssh_config_path)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
-            entry = self.run_util.log_exc(self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
+            entry = self.run_util.log_exc(self.prefix_id, self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
         
