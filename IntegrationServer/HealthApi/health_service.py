@@ -9,10 +9,12 @@ import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 from MongoDB import track_repository, health_repository, health_model
 from Enums import status_enum, validate_enum
+import utility
 
 class HealthService():
 
     def __init__(self):
+        self.util = utility.Utility()
         self.mail = email_sender.EmailSender("test")
         self.slack = slack_webhook.SlackWebhook()
         self.track = track_repository.TrackRepository()
@@ -31,7 +33,11 @@ class HealthService():
 
         # create db entry in health db
         model_data = self.create_health_model(warning, msg_parts)
-        self.health.create_health_entry_from_api(model_data)
+
+        # gets the id for the health database
+        id = self.create_id(msg_parts)
+
+        self.health.create_health_entry_from_api(id, model_data)
         
         if warning.guid and warning.flag is not None:
             updated = self.update_track_db(warning.guid, warning.flag)
@@ -56,7 +62,11 @@ class HealthService():
 
         # create db entry in health db
         model_data = self.create_health_model(error, msg_parts)
-        self.health.create_health_entry_from_api(model_data)
+
+        # gets the id for the health database
+        id = self.create_id(msg_parts)
+
+        self.health.create_health_entry_from_api(id, model_data)
         
         if error.guid and error.flag is not None:
             updated = self.update_track_db(error.guid, error.flag)
@@ -124,4 +134,17 @@ class HealthService():
     def split_message(self, message):
         # parts will consist of: prefix_id[0], severity level[1], timestamp[2], service[3], message[4], exception[5]
         parts = message.split("###")
+        for p in parts:
+            print(p)
         return parts
+    
+    """
+    Creates the id for the health database.
+    Takes a split message as input cleans the timestamp for special characters and spaces.
+    Returns the id created from the prefix_id and the cleaned timestamp.
+    """
+    def create_id(self, msg_parts):
+        prefix_id = msg_parts[0]
+        clean_timestamp = self.util.clean_string(msg_parts[2])
+        id = f"{prefix_id}_{clean_timestamp}"
+        return id

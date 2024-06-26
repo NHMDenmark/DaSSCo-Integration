@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import requests
 import json
 import utility
+from MongoDB import service_repository
 from Enums import status_enum
 from dotenv import load_dotenv
 
@@ -14,7 +15,8 @@ class SlackWebhook:
 
     def __init__(self):
         load_dotenv()
-        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+
+        self.service_mongo = service_repository.ServiceRepository()
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
         # the url to the slack webhook app that we are using. 
@@ -72,8 +74,8 @@ class SlackWebhook:
     """
     def get_run_status(self, service_name):
         
-        all_run = self.util.get_value(self.run_config_path, "all_run")
-        service_run = self.util.get_value(self.run_config_path, service_name)
+        all_run = self.service_mongo.get_value_for_key("all_run", "run_status")
+        service_run = self.service_mongo.get_value_for_key(service_name, "run_status")
 
         if all_run == self.status_enum.STOPPED.value or service_run == self.status_enum.STOPPED.value:
             return self.status_enum.STOPPED.value
@@ -82,3 +84,5 @@ class SlackWebhook:
             return self.status_enum.PAUSED.value
 
         return self.status_enum.RUNNING.value
+    
+    

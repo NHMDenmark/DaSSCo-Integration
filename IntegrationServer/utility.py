@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+import re
 import math
 import json
 import uuid
@@ -136,4 +137,13 @@ class Utility:
     """
     def new_uuid(self):
         return uuid.uuid4().hex
+    
+    def clean_string(self, input_string):
+        """
+        Cleans the input string by removing all non-alphanumeric characters and spaces.
         
+        :param input_string: The string to be cleaned.
+        :return: A cleaned string containing only alphanumeric characters.
+        """
+        cleaned_string = re.sub(r'[^a-zA-Z0-9]', '', input_string)
+        return cleaned_string

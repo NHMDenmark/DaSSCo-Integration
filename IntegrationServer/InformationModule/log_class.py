@@ -40,7 +40,7 @@ class LogClass:
 
         # create formatter
         formatter_msg = logging.Formatter("%(prefix_id)s:%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-        formatter_entry = logging.Formatter("%(prefix_id)s:%(levelname)s###%(asctime)s###%(name)s###%(message)s")
+        formatter_entry = logging.Formatter("%(prefix_id)s###%(levelname)s###%(asctime)s###%(name)s###%(message)s")
         
         message_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)
@@ -76,7 +76,7 @@ class LogClass:
         entry_handler = EntryHandler()
 
         formatter_msg = logging.Formatter("%(prefix_id)s:%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
-        formatter_entry = logging.Formatter("%(prefix_id)s:%(levelname)s###%(asctime)s###%(name)s###%(message)s###%(exc_info)s")
+        formatter_entry = logging.Formatter("%(prefix_id)s###%(levelname)s###%(asctime)s###%(name)s###%(message)s###%(exc_info)s")
 
         exception_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)

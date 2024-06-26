@@ -43,8 +43,8 @@ class HealthRepository(Status):
     def delete_entry(self, id):
         return self.all.delete_entry(id)
     
-    def create_health_entry_from_api(self, data):
-            self.collection.insert_one({**data})
+    def create_health_entry_from_api(self, id, data):
+            self.collection.insert_one({"_id": id, **data})
 
     # TODO logic
     def get_count_errors(self, minutes, service):
