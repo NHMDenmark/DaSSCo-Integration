@@ -3,6 +3,6 @@ from pydantic import BaseModel, Field
 
 class MessageModel(BaseModel):
     guid: Optional[str] = None
-    service: str
+    service_name: str
     flag: Optional[str] = None
     message: str

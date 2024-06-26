@@ -17,7 +17,7 @@ class HealthCaller():
         
         content = {
                 "guid": guid,
-                "service": service,
+                "service_name": service,
                 "flag": flag,
                 "message": message
                 }
@@ -39,7 +39,7 @@ class HealthCaller():
         
         content = {
                 "guid": guid,
-                "service": service,
+                "service_name": service,
                 "flag": flag,
                 "message": message
                 }
