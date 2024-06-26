@@ -68,13 +68,19 @@ class StorageClient():
           exc_str = exc.__str__()
           exc_split = exc_str.split(":")
           status_code = exc_split[0][-3:]
-          try:
-               status_code = int(status_code)
-          except Exception as e:
-               status_code = 555
-               note = f"Status code set to {status_code} from exception: {e}"
-          return status_code, note
-     
+          if status_code is not None:
+               try:
+                    status_code = int(status_code)
+                    note = ""
+               except Exception as e:
+                    status_code = 555
+                    note = f"Status code set to {status_code} from exception: {e}"
+               return status_code, note
+          else:
+               status_code = 566
+               note = f"Status code was not found and was set to {status_code} from exception: {e}"
+               return status_code, note
+
      def sync_erda(self, guid):
           try:
                response = self.client.file_proxy.synchronize_erda(guid)

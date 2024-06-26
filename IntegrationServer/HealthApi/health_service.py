@@ -65,7 +65,7 @@ class HealthService():
         else:
             error.guid = "No guid"
         
-        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
+        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings received within time frames and from various services. Should be moved to health checker
         self.inform_slack_mail(msg_parts, error.guid, error.service)
 
         return True
@@ -74,15 +74,15 @@ class HealthService():
         
         model = health_model.HealthModel()
         model.service = warning.service
-        model.timestamp = msg_parts[1]
-        model.severity_level = msg_parts[0]
-        model.message = msg_parts[3]
+        model.timestamp = msg_parts[2]
+        model.severity_level = msg_parts[1]
+        model.message = msg_parts[4]
         if warning.guid is not None:
             model.guid = warning.guid
         if warning.flag is not None:
             model.flag = warning.flag
-        if len(msg_parts) == 5:
-            model.exception = msg_parts[4]
+        if len(msg_parts) == 6:
+            model.exception = msg_parts[5]
         
         model_data = model.model_dump_json()
         model_data = json.loads(model_data)
@@ -93,28 +93,28 @@ class HealthService():
         self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
 
     def inform_slack_mail(self, parts, guid, service_name):
+        if len(parts) == 6:
+            if guid != "No guid":
+                self.mail.send_error_mail(guid, service_name, parts[3], parts[1], parts[4], parts[2], parts[5])
+                self.slack.message_from_integration(guid, service_name, parts[3], parts[1])
+            else:
+                self.mail.send_error_mail(service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2], exception=parts[5])      
+                self.slack.message_from_integration(service_name=service_name, service=parts[3], status=parts[1])
+        
         if len(parts) == 5:
             if guid != "No guid":
-                self.mail.send_error_mail(guid, service_name, parts[2], parts[0], parts[3], parts[1], parts[4])
-                self.slack.message_from_integration(guid, service_name, parts[2], parts[0])
+                self.mail.send_error_mail(guid, service_name, parts[3], parts[1], parts[4], parts[2])
+                self.slack.message_from_integration(guid, service_name, parts[3], parts[1])
             else:
-                self.mail.send_error_mail(service_name=service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1], exception=parts[4])      
-                self.slack.message_from_integration(service_name=service_name, service=parts[2], status=parts[0])
-        
-        if len(parts) == 4:
-            if guid != "No guid":
-                self.mail.send_error_mail(guid, service_name, parts[2], parts[0], parts[3], parts[1])
-                self.slack.message_from_integration(guid, service_name, parts[2], parts[0])
-            else:
-                self.mail.send_error_mail(service_name=service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])      
-                self.slack.message_from_integration(service_name=service_name, service=parts[2], status=parts[0])
+                self.mail.send_error_mail(service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])      
+                self.slack.message_from_integration(service_name=service_name, service=parts[3], status=parts[1])
     
     def run_status_change(self, info):
 
         parts = self.split_message(info.message)
 
-        self.mail.send_error_mail(service_name=info.service_name, service=parts[2], status=parts[0], error_msg=parts[3], timestamp=parts[1])
-        self.slack.change_run_status_msg(parts[0], info.service_name, info.run_status)
+        self.mail.send_error_mail(service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])
+        self.slack.change_run_status_msg(parts[1], info.service_name, info.run_status)
 
 
     """
@@ -122,6 +122,6 @@ class HealthService():
     Returns a list with the above.
     """
     def split_message(self, message):
-        # parts will consist of: severity level[0], timestamp[1], service[2], message[3], exception[4]
+        # parts will consist of: prefix_id[0], severity level[1], timestamp[2], service[3], message[4], exception[5]
         parts = message.split("###")
         return parts

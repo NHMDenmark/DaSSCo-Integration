@@ -31,6 +31,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
         self.service_name = "Validate erda sync ARS"
+        self.prefix_id = "VesA"
 
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
@@ -41,9 +42,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # set the config file value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.RUNNING}")
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.RUNNING}")
         self.health_caller.run_status_change(self.service_name, self.RUNNING, entry)
 
         self.storage_api = self.create_storage_api()
@@ -63,7 +64,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.ERROR)
             self.health_caller.warning(self.service_name, entry)
             self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)

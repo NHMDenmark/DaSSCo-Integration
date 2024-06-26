@@ -13,12 +13,12 @@ from InformationModule.log_class import LogClass
 
 """
 Class that helps the micro services with logging and run status updates.
-Takes the service name, log filename and the logger name as arguments.
-Example: "Asset creator ARS", "asset_creator.py.log", "asset_creator"
+Takes the prefix_id, service name, log filename and the logger name as arguments.
+Example: "AcA", "Asset creator ARS", "asset_creator.py.log", "asset_creator"
 """
 class RunUtility(LogClass, Status):
 
-    def __init__(self, service_name, log_filename, logger_name):
+    def __init__(self, prefix_id, service_name, log_filename, logger_name):
 
         LogClass.__init__(self, log_filename, logger_name)
         Status.__init__(self)
@@ -28,6 +28,7 @@ class RunUtility(LogClass, Status):
         self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
         self.service_name = service_name
+        self.prefix_id = prefix_id
         
         # flag for the all run status
         self.all_run_status = self.get_all_run()
@@ -54,7 +55,7 @@ class RunUtility(LogClass, Status):
                 time.sleep(sleep)
                 wait_time = sleep * counter
                 # TODO could make a util function for changing seconds into a better time format
-                entry = self.log_msg(f"{self.service_name} has been in pause mode for: {wait_time} seconds")
+                entry = self.log_msg(self.prefix_id, f"{self.service_name} has been in pause mode for: {wait_time} seconds")
                 self.health_caller.warning(self.service_name, entry)
                 
                 self.service_run = self.check_run_changes()
@@ -70,13 +71,13 @@ class RunUtility(LogClass, Status):
         # checks all run status               
         all_run = self.get_all_run()
         if self.all_run_status != all_run:
-            entry = self.log_msg(f"All run status changed from {self.service_run} to {all_run}")
+            entry = self.log_msg("All", f"All run status changed from {self.service_run} to {all_run}")
             self.health_caller.run_status_change(self.service_name, all_run, entry)
 
         # checks run service status
         run_service = self.get_run_service()
         if self.run_service != run_service:
-            self.log_status_change(self.service_name, self.service_run, run_service)
+            self.log_status_change(self.prefix_id, self.service_name, self.service_run, run_service)
         
         # updates run status
         self.all_run_status = self.get_all_run()
@@ -89,14 +90,14 @@ class RunUtility(LogClass, Status):
     logs a status change for all_run and calls the health api
     """
     def log_all_run_status_change(self, old_status, new_status):
-            entry = self.log_msg(f"All run status changed from {old_status} to {new_status}")
+            entry = self.log_msg("All", f"All run status changed from {old_status} to {new_status}")
             self.health_caller.run_status_change("No name", new_status, entry)
 
     """
     logs a status change and calls the health api
     """
     def log_status_change(self, service_name, old_status, new_status):
-        entry = self.log_msg(f"{service_name} status changed from {old_status} to {new_status}")
+        entry = self.log_msg(self.prefix_id, f"{service_name} status changed from {old_status} to {new_status}")
         self.health_caller.run_status_change(service_name, new_status, entry)
 
 

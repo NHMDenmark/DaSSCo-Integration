@@ -28,7 +28,8 @@ class OpenShare(Status, Validate):
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         # service name for logging/info purposes
         self.service_name = "Open file share ARS"
-        
+        self.prefix_id = "OfsA"
+
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
@@ -40,9 +41,9 @@ class OpenShare(Status, Validate):
         # set the config file value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.RUNNING}")
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.RUNNING}")
         self.health_caller.run_status_change(self.service_name, self.RUNNING, entry)
 
         self.storage_api = self.create_storage_api()
@@ -62,7 +63,7 @@ class OpenShare(Status, Validate):
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)

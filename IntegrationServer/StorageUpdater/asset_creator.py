@@ -24,6 +24,7 @@ class AssetCreator():
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         
         self.service_name = "Asset creator ARS"
+        self.prefix_id = "AcA"
         self.track_mongo = track_repository.TrackRepository()
         self.metadata_mongo = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
@@ -35,9 +36,9 @@ class AssetCreator():
         # set the service db value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
-        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
-        entry = self.run_util.log_msg(f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.storage_api = self.create_storage_api()
@@ -57,7 +58,7 @@ class AssetCreator():
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.run_util.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
@@ -93,13 +94,13 @@ class AssetCreator():
                     # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
-                        message = self.run_util.log_exc(response, exc, self.run_util.log_enum.ERROR.value)
+                        message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
                         time.sleep(1)
                     # TODO handle if status code is 555 - this means we set it during another exception - see storage_client.get_status_code_from_exc()
                     if 500 <= status_code:
-                        message = self.run_util.log_exc(response, exc)
+                        message = self.run_util.log_exc(self.prefix_id, response, exc)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message)
                         time.sleep(1)

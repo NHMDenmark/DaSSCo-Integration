@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 import logging
+from logging import Filter
 from Enums import log_enum
 """
 Inject LogClass into places that need to log things. 
@@ -31,18 +32,22 @@ class LogClass:
     Method for logging a message - would normally only be used for warnings.
     Returns the entry as a string with info separated by ###. 
     """
-    def log_msg(self, msg, level = log_enum.LogEnum.WARNING.value):
+    def log_msg(self, prefix_id, msg, level = log_enum.LogEnum.WARNING.value):
         
         #create handler
         message_handler = logging.FileHandler(self.filepath, encoding="utf-8")
         entry_handler = EntryHandler()
 
         # create formatter
-        formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s")
-        formatter_entry = logging.Formatter("%(levelname)s###%(asctime)s###%(name)s###%(message)s")
+        formatter_msg = logging.Formatter("%(prefix_id)s:%(levelname)s:%(asctime)s:%(name)s:%(message)s")
+        formatter_entry = logging.Formatter("%(prefix_id)s:%(levelname)s###%(asctime)s###%(name)s###%(message)s")
         
         message_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)
+
+        # Add the prefix_id filter
+        id_filter = PrefixIdFilter(prefix_id)
+        self.logger.addFilter(id_filter)
 
         self.logger.addHandler(message_handler)
         self.logger.addHandler(entry_handler)
@@ -65,16 +70,20 @@ class LogClass:
     Method for logging an exception with potential to add a context message.
     Returns the entry as a string with info separated by ###. 
     """
-    def log_exc(self, msg = "No message from dev", exc = None, level = log_enum.LogEnum.WARNING.value):
+    def log_exc(self, prefix_id, msg = "No message from dev", exc = None, level = log_enum.LogEnum.WARNING.value):
         
         exception_handler = logging.FileHandler(self.filepath, encoding="utf-8")
         entry_handler = EntryHandler()
 
-        formatter_msg = logging.Formatter("%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
-        formatter_entry = logging.Formatter("%(levelname)s###%(asctime)s###%(name)s###%(message)s###%(exc_info)s")
+        formatter_msg = logging.Formatter("%(prefix_id)s:%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s")
+        formatter_entry = logging.Formatter("%(prefix_id)s:%(levelname)s###%(asctime)s###%(name)s###%(message)s###%(exc_info)s")
 
         exception_handler.setFormatter(formatter_msg)
         entry_handler.setFormatter(formatter_entry)
+
+        # Add the prefix_id filter
+        id_filter = PrefixIdFilter(prefix_id)
+        self.logger.addFilter(id_filter)
 
         self.logger.addHandler(exception_handler)
         self.logger.addHandler(entry_handler)
@@ -102,3 +111,15 @@ class EntryHandler(logging.Handler):
 
     def emit(self, record):
         self.log_entry = self.format(record)
+
+"""
+ Custom filter to add 'id' field to log records
+"""
+class PrefixIdFilter(Filter):
+    def __init__(self, prefix_id):
+        super().__init__()
+        self.prefix_id = prefix_id
+
+    def filter(self, record):
+        record.prefix_id = self.prefix_id
+        return True     
