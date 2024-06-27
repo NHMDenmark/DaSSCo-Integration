@@ -50,11 +50,13 @@ class HealthService():
             warning.guid = "No guid"
 
         # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
-        self.inform_slack_mail(id, msg_parts, warning.guid, warning.service_name)
+        self.inform_mail(id, msg_parts, warning.guid, warning.service_name)
+
+        self.inform_slack(msg_parts, warning.guid, warning.service_name)
 
         return True
     
-    def mail_check_requirements(self):
+    def mail_check_requirements(self, service_name, log_id, severity_level,  ):
         pass
 
     def slack_check_requirements(self):
@@ -88,10 +90,35 @@ class HealthService():
             error.guid = "No guid"
         
         # TODO check if this needs to happen. Create db for this to keep track of the errors warnings received within time frames and from various services. Should be moved to health checker
-        self.inform_slack_mail(id, msg_parts, error.guid, error.service_name)
+        self.inform_mail(id, msg_parts, error.guid, error.service_name)
+
+        self.inform_slack(msg_parts, error.guid, error.service_name)
 
         return True
     
+    """
+    Receives a run status change message from the api with a message that a service has changed its run status. 
+    Handles the message accordingly and sends out information to staff about the status change.
+    Returns true.  
+    """
+    def run_status_change(self, info):
+
+        parts = self.split_message(info.message)
+
+        # gets the id for the health database
+        id = self.create_id(parts)
+
+        model_data = self.change_run_status_create_health_model(info, parts)
+
+        self.health.create_health_entry_from_api(id, model_data)
+
+        self.mail.send_status_change_mail(health_id=id, service_name=info.service_name, run_status=info.run_status, timestamp=parts[2])
+
+        #self.mail.send_error_mail(id, service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])
+        self.slack.change_run_status_msg(parts[1], info.service_name, info.run_status)
+
+        return True
+
     def create_health_model(self, warning, msg_parts):
         
         model = health_model.HealthModel()
@@ -128,37 +155,24 @@ class HealthService():
     def update_track_db(self, guid, flag):
         return self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
 
-    def inform_slack_mail(self, health_id, parts, guid, service_name):
+    def inform_mail(self, health_id, parts, asset_guid, service_name):
         if len(parts) == 6:
-            if guid != "No guid":
-                self.mail.send_error_mail(health_id, guid, service_name, parts[3], parts[1], parts[4], parts[2], parts[5])
-                self.slack.message_from_integration(guid, service_name, parts[3], parts[1])
+            if asset_guid != "No guid":
+                self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2], parts[5])
             else:
                 self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2], exception=parts[5])      
-                self.slack.message_from_integration(service_name=service_name, service=parts[3], status=parts[1])
-        
+                
         if len(parts) == 5:
-            if guid != "No guid":
-                self.mail.send_error_mail(health_id, guid, service_name, parts[3], parts[1], parts[4], parts[2])
-                self.slack.message_from_integration(guid, service_name, parts[3], parts[1])
+            if asset_guid != "No guid":
+                self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2])
             else:
                 self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])      
-                self.slack.message_from_integration(service_name=service_name, service=parts[3], status=parts[1])
-    
-    def run_status_change(self, info):
-
-        parts = self.split_message(info.message)
-
-        # gets the id for the health database
-        id = self.create_id(parts)
-
-        model_data = self.change_run_status_create_health_model(info, parts)
-
-        self.health.create_health_entry_from_api(id, model_data)
-
-        self.mail.send_error_mail(id, service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])
-        self.slack.change_run_status_msg(parts[1], info.service_name, info.run_status)
-
+                
+    def inform_slack(self, parts, asset_guid, service_name):
+        if asset_guid != "No guid":
+            self.slack.message_from_integration(asset_guid, service_name, parts[3], parts[1])
+        else:
+            self.slack.message_from_integration(service_name=service_name, service=parts[3], status=parts[1])
 
     """
     Splits the message received into: prefix_id, level, timestamp, python file, message, exception

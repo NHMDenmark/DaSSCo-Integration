@@ -8,6 +8,7 @@ This requires sendmail to be installed on a linux system.
 See the email_sender.py for a way to use it without those restrictions (needs a mailserver setup instead).
 Sends emails to the address set in the .env file. 
 """
+# This is not in use, it is merged with the email sender. 
 class MailSender:
 
     def __init__(self):
