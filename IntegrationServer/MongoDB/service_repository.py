@@ -40,8 +40,8 @@ class ServiceRepository(Status):
     def close_connection(self):
         self.mongo_micro_service.close_mdb()
 
-    def update_entry(self, name: str, key, value):
-        return self.all.update_entry(name, key, value)
+    def update_entry(self, service_name: str, key, value):
+        return self.all.update_entry(service_name, key, value)
 
     def get_entry(self, key, value):
         return self.all.get_entry(key, value)

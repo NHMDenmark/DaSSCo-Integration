@@ -14,6 +14,9 @@ import utility
 class HealthService():
 
     def __init__(self):
+        
+        self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
+        
         self.util = utility.Utility()
         self.mail = email_sender.EmailSender("test")
         self.slack = slack_webhook.SlackWebhook()
@@ -51,6 +54,15 @@ class HealthService():
 
         return True
     
+    def mail_check_requirements(self):
+        pass
+
+    def slack_check_requirements(self):
+        pass
+    
+    def pause_run_status_check_requirements(self):
+        pass
+
     """
     Receives a error message from the api with a message and potentially guid that something isnt going as well as it could. 
     Handles the message accordingly and sends out information to staff about the status if needed.
@@ -114,7 +126,7 @@ class HealthService():
         return model_data
 
     def update_track_db(self, guid, flag):
-        self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
+        return self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
 
     def inform_slack_mail(self, health_id, parts, guid, service_name):
         if len(parts) == 6:
@@ -149,7 +161,7 @@ class HealthService():
 
 
     """
-    Splits the message received into: level, timestamp, python file, message, exception
+    Splits the message received into: prefix_id, level, timestamp, python file, message, exception
     Returns a list with the above.
     """
     def split_message(self, message):

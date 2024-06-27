@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from MongoDB import track_repository
+from MongoDB import track_repository, service_repository
 from Connections import connections
 from Enums import status_enum, validate_enum
 import utility
@@ -31,18 +31,19 @@ class HPCAssetCreator():
 
         self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
-        self.run_config_path = f"{project_root}/ConfigFiles/run_config.json"
+        
         self.mongo_track = track_repository.TrackRepository()
+        self.service_mongo = service_repository.ServiceRepository()
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.cons = connections.Connections()
 
-        # set the config file value to RUNNING, mostly for ease of testing
-        self.util.update_json(self.run_config_path, self.service_name, self.status_enum.RUNNING.value)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.run_config_path, self.log_filename, self.logger_name)
+        # set the service db value to RUNNING, mostly for ease of testing
+        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
 
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -60,7 +61,7 @@ class HPCAssetCreator():
         if self.cons.exc is not None:
             entry = self.run_util.log_exc(self.prefix_id, self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
-            self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
         
         return self.cons.get_connection()
 
@@ -97,7 +98,7 @@ class HPCAssetCreator():
                 time.sleep(1)
 
 
-            # checks if service should keep running - configurable in ConfigFiles/run_config.json            
+            # checks if service should keep running           
             self.run = self.run_util.check_run_changes()
 
             # Pause loop
