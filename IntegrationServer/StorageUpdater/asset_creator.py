@@ -134,6 +134,8 @@ class AssetCreator():
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()
         self.service_mongo.close_connection()
+        self.run_util.service_mongo.close_connection()
+        self.storage_api.service.metadata_db.close_mdb()
 
 if __name__ == '__main__':
     AssetCreator()

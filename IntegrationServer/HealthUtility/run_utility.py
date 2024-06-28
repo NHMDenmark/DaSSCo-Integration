@@ -77,7 +77,7 @@ class RunUtility(LogClass, Status):
         # checks run service status
         run_service = self.get_run_service()
         if self.run_service != run_service:
-            self.log_status_change(self.prefix_id, self.service_name, self.service_run, run_service)
+            self.log_status_change(self.service_name, self.service_run, run_service)
         
         # updates run status
         self.all_run_status = self.get_all_run()

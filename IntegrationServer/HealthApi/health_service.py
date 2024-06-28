@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import json
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
-from MongoDB import track_repository, health_repository, health_model
+from MongoDB import track_repository, health_repository, health_model, service_repository
 from Enums import status_enum, validate_enum, log_enum
 import utility
 
@@ -22,6 +22,7 @@ class HealthService():
         self.slack = slack_webhook.SlackWebhook()
         self.track = track_repository.TrackRepository()
         self.health = health_repository.HealthRepository()
+        self.service_mongo = service_repository.ServiceRepository()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.log_enum = log_enum.LogEnum
@@ -83,12 +84,20 @@ class HealthService():
         else:
             error.guid = "No guid"
         
-        send_mail = self.mail_check_requirements(error.service_name, msg_parts[1])
+        should_send_mail = self.mail_check_requirements(error.service_name, msg_parts[1])
         
-        if send_mail is True:
+        if should_send_mail is True:
             self.inform_mail(id, msg_parts, error.guid, error.service_name)
 
         self.inform_slack(msg_parts, error.guid, error.service_name)
+
+        should_pause = self.pause_run_status_check_requirements(error.service_name, msg_parts[1])
+
+        if should_pause is True:
+            run_status = self.service_mongo.get_value_for_key(error.service_name, "run_status")
+            
+            if run_status != self.status_enum.STOPPED.value:
+                self.service_mongo.update_entry(error.service_name, "run_status", self.status_enum.PAUSED.value)
 
         return True
     
@@ -116,6 +125,11 @@ class HealthService():
 
         return True
 
+    """
+    Checks if a mail should be sent given the information in the micro service config file.
+    Returns true or false.
+    """
+    # TODO could be used to create a new part to the mail - a number of errors/warning received since the last mail was sent. 
     def mail_check_requirements(self, service_name, severity_level):
         
         mail_wait_time = self.util.get_nested_value(self.micro_service_config_path, service_name, "mail_wait_time")
@@ -132,9 +146,20 @@ class HealthService():
     def slack_check_requirements(self):
         pass
     
-    def pause_run_status_check_requirements(self):
-        pass
+    def pause_run_status_check_requirements(self, service_name, severity_level):
+        
+        if severity_level != self.log_enum.ERROR.value:
+            return False
 
+        error_tolerance = self.util.get_nested_value(self.micro_service_config_path, service_name, "error_tolerance")
+        error_time_frame = self.util.get_nested_value(self.micro_service_config_path, service_name, "error_time_span")
+        
+        log_list = self.health.get_recent_errors(service_name, error_time_frame, severity_level)
+
+        if len(log_list) >= error_tolerance:
+            return True
+
+        return False
 
     def create_health_model(self, warning, msg_parts):
         

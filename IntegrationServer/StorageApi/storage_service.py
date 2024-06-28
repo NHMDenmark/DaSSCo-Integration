@@ -12,7 +12,6 @@ from Enums import restricted_access_nt
 from Enums import asset_status_nt
 from pydantic import BaseModel, Field, Json
 
-# untested
 class StorageService():
 
     def __init__(self):

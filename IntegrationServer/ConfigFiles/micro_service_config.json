@@ -2,79 +2,79 @@
   "Asset creator ARS": {
     "pause_time": 10,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
-    "mail_wait_time": 300
+    "error_time_span": 30,
+    "mail_wait_time": 30
   },
   "Asset creator HPC": {
     "pause_time": 9,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Erda sync ARS": {
     "pause_time": 8,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "File uploader ARS": {
     "pause_time": 7,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC clean up service": {
     "pause_time": 6,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC file uploader": {
     "pause_time": 5,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC job caller": {
     "pause_time": 4,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "New files finder (Ndrive)": {
     "pause_time": 3,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Open file share ARS": {
     "pause_time": 2,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Process new files (Ndrive)": {
     "pause_time": 11,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Update metadata ARS": {
     "pause_time": 12,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Validate erda sync ARS": {
     "pause_time": 13,
     "error_tolerance": 2,
-    "error_time_span_minutes": 3,
+    "error_time_span": 3,
     "mail_wait_time": 30
   },
   "all_run": {
     "pause_time": -1,
     "error_tolerance": -2,
-    "error_time_span_minutes": -3,
+    "error_time_span": -3,
     "mail_wait_time": -4
   }
 }
