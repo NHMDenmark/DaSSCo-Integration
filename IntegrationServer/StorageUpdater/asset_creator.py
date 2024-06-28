@@ -33,18 +33,21 @@ class AssetCreator():
         self.status_enum = status_enum.StatusEnum
         self.util = utility.Utility()
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
-
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
+        # set the service db value to RUNNING, mostly for ease of testing
+        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        # special status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
-        self.storage_api = self.create_storage_api()
-        
+        # get currrent self.run value
         self.run = self.run_util.get_service_run_status()
+        # update service_run value for run_util
         self.run_util.service_run = self.run
+
+        # create the storage api
+        self.storage_api = self.create_storage_api()
         
         self.loop()
     
@@ -58,10 +61,19 @@ class AssetCreator():
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
+            # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
-            self.health_caller.warning(self.service_name, entry)
+            self.health_caller.error(self.service_name, entry)
+            # change run value in db
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            
+            # log the status change + health call 
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+
+            # update run values
+            self.run = self.run_util.get_service_run_status()
+            self.run_util.service_run = self.run           
             
         return storage_api
 

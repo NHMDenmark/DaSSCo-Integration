@@ -127,4 +127,4 @@ class RunUtility(LogClass, Status):
         if all_run == self.PAUSED or service_run == self.PAUSED:
             return self.PAUSED
 
-        return self.PAUSED
+        return self.RUNNING
