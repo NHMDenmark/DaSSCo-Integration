@@ -22,6 +22,9 @@ class HealthRepository(Status):
     def close_connection(self):
         self.mongo_health.close_mdb()
 
+    def check_connection(self):
+        return self.mongo_health.ping_connection()
+
     def update_entry(self, id, key, value):
         return self.all.update_entry(id, key, value)
 

@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from bson import ObjectId
 import utility
-
 from MongoDB import entry_model
+from pymongo.errors import ConnectionFailure
 
 """
 Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
@@ -52,6 +52,14 @@ class MongoConnection:
     def close_mdb(self):
         self.client.close()
         print(f"closed connection to: {self.name}")
+    
+    
+    def ping_connection(self):
+        try:
+            self.client.admin.command("ping")            
+        except ConnectionFailure:
+            return False
+        return True
 
     """
     TODO Everything below here isnt strictly needed in this file. At some point it should be deleted since all the methods

@@ -22,6 +22,7 @@ from HealthUtility import health_caller
 from Enums.feedback_enum import Feedback
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
+from pymongo.errors import InvalidOperation
 """"
 Test area for the different processes. May contain deprecated information.
 """
@@ -87,9 +88,14 @@ class x(Feedback, LogClass):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
 
-    h = health_service.HealthService()
-    a = h.mail_check_requirements("Asset creator ARS", "ERROR")
-    print(a)
+    h = health_repository.HealthRepository()
+    
+    try:
+        a = h.check_connection()
+        print(a)
+    except InvalidOperation:
+        print("fail")
+    h.close_connection()
     # i = IntegrationServer()
     #test()
     #x()

@@ -26,3 +26,11 @@ class HealthChecker:
         if count > 10:
             # TODO change services run status in run_config to Pause
             pass
+
+    """
+    Checks if the database connection is still running.
+    Returns True or False. 
+    """
+    def check_database_connection(self, connection):
+
+        pass
