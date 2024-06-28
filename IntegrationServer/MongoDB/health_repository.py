@@ -56,7 +56,7 @@ class HealthRepository(Status):
     def get_recent_errors(self, service_name, interval, severity_level = "ERROR"):
     
     
-        time_ago = datetime.now() - timedelta(minutes=interval)
+        time_ago = datetime.now() - timedelta(seconds=interval)
         
         # Query to find entries with severity_level "ERROR", specific service name, and time ago
         query = {

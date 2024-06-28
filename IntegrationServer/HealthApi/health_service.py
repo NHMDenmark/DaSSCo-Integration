@@ -8,7 +8,7 @@ import json
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 from MongoDB import track_repository, health_repository, health_model
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, log_enum
 import utility
 
 class HealthService():
@@ -24,6 +24,7 @@ class HealthService():
         self.health = health_repository.HealthRepository()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
+        self.log_enum = log_enum.LogEnum
 
     """
     Receives a warning message from the api with a message and potentially guid that something isnt going as well as it could. 
@@ -49,25 +50,14 @@ class HealthService():
         else:
             warning.guid = "No guid"
 
-        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings recevied within time frames and from various services. Should be moved to health checker
-        self.inform_mail(id, msg_parts, warning.guid, warning.service_name)
+        send_mail = self.mail_check_requirements(warning.service_name, msg_parts[1])
+        
+        if send_mail is True:
+            self.inform_mail(id, msg_parts, warning.guid, warning.service_name)
 
         self.inform_slack(msg_parts, warning.guid, warning.service_name)
 
         return True
-    
-    def mail_check_requirements(self, service_name, health_id, severity_level):
-        
-        pass
-
-
-
-
-    def slack_check_requirements(self):
-        pass
-    
-    def pause_run_status_check_requirements(self):
-        pass
 
     """
     Receives a error message from the api with a message and potentially guid that something isnt going as well as it could. 
@@ -93,8 +83,10 @@ class HealthService():
         else:
             error.guid = "No guid"
         
-        # TODO check if this needs to happen. Create db for this to keep track of the errors warnings received within time frames and from various services. Should be moved to health checker
-        self.inform_mail(id, msg_parts, error.guid, error.service_name)
+        send_mail = self.mail_check_requirements(error.service_name, msg_parts[1])
+        
+        if send_mail is True:
+            self.inform_mail(id, msg_parts, error.guid, error.service_name)
 
         self.inform_slack(msg_parts, error.guid, error.service_name)
 
@@ -123,6 +115,26 @@ class HealthService():
         self.health.update_entry(id, "sent", self.validate_enum.YES.value)
 
         return True
+
+    def mail_check_requirements(self, service_name, severity_level):
+        
+        mail_wait_time = self.util.get_nested_value(self.micro_service_config_path, service_name, "mail_wait_time")
+        
+        # get list of entries in the given timeframe 
+        log_list = self.health.get_recent_errors(service_name, mail_wait_time, severity_level)
+        
+        for log in log_list:
+            if log["sent"] == self.validate_enum.YES.value:
+                return False
+
+        return True
+
+    def slack_check_requirements(self):
+        pass
+    
+    def pause_run_status_check_requirements(self):
+        pass
+
 
     def create_health_model(self, warning, msg_parts):
         
