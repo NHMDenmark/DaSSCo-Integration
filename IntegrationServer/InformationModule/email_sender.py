@@ -35,6 +35,7 @@ class EmailSender:
 
     """
     This requires sendmail to be installed on the system. Also requires the system to be linux.
+    Returns true.
     """
     # TODO needs to be tested
     """
@@ -49,9 +50,12 @@ class EmailSender:
         # Using subprocess.Popen for more control, including sending input via stdin
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
         process.communicate(input=subject)
+        
+        Return True
     """
     """
     This requires sendmail to be installed on the system. Also requires the system to be linux.
+    Returns true.
     """
     """
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
@@ -65,11 +69,14 @@ class EmailSender:
         # Using subprocess.Popen for more control, including sending input via stdin
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
         process.communicate(input=subject)
+
+        Return True
     """
 
 
     """
     This requires a mailserver to be setup and configured.
+    Returns true.
     """
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
 
@@ -89,8 +96,11 @@ class EmailSender:
         server.sendmail(self.address_from, self.address_to, msg)
         server.quit()
 
+        return True
+
     """
     This requires a mailserver to be setup and configured.
+    Returns true.
     """
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
 
@@ -110,6 +120,8 @@ class EmailSender:
         server.sendmail(self.address_from, self.address_to, msg)
         server.quit()
         
+        return True
+
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
 

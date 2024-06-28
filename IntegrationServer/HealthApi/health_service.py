@@ -56,8 +56,12 @@ class HealthService():
 
         return True
     
-    def mail_check_requirements(self, service_name, log_id, severity_level,  ):
+    def mail_check_requirements(self, service_name, health_id, severity_level):
+        
         pass
+
+
+
 
     def slack_check_requirements(self):
         pass
@@ -114,8 +118,9 @@ class HealthService():
 
         self.mail.send_status_change_mail(health_id=id, service_name=info.service_name, run_status=info.run_status, timestamp=parts[2])
 
-        #self.mail.send_error_mail(id, service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])
         self.slack.change_run_status_msg(parts[1], info.service_name, info.run_status)
+
+        self.health.update_entry(id, "sent", self.validate_enum.YES.value)
 
         return True
 
@@ -126,6 +131,7 @@ class HealthService():
         model.timestamp = msg_parts[2]
         model.severity_level = msg_parts[1]
         model.message = msg_parts[4]
+        model.sent = self.validate_enum.NO.value
     
         if warning.guid is not None:
             model.guid = warning.guid
@@ -146,6 +152,7 @@ class HealthService():
         model.timestamp = msg_parts[2]
         model.severity_level = msg_parts[1]
         model.message = msg_parts[4]
+        model.sent = self.validate_enum.NO.value
 
         model_data = model.model_dump_json()
         model_data = json.loads(model_data)
@@ -158,16 +165,19 @@ class HealthService():
     def inform_mail(self, health_id, parts, asset_guid, service_name):
         if len(parts) == 6:
             if asset_guid != "No guid":
-                self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2], parts[5])
+                sent = self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2], parts[5])
             else:
-                self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2], exception=parts[5])      
+                sent = self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2], exception=parts[5])      
                 
         if len(parts) == 5:
             if asset_guid != "No guid":
-                self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2])
+                sent = self.mail.send_error_mail(health_id, asset_guid, service_name, parts[3], parts[1], parts[4], parts[2])
             else:
-                self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])      
-                
+                sent = self.mail.send_error_mail(health_id, service_name=service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2])      
+
+        if sent is True:
+            self.health.update_entry(health_id, "sent", self.validate_enum.YES.value)
+
     def inform_slack(self, parts, asset_guid, service_name):
         if asset_guid != "No guid":
             self.slack.message_from_integration(asset_guid, service_name, parts[3], parts[1])

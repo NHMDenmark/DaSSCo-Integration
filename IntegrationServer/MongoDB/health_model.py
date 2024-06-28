@@ -14,3 +14,4 @@ class HealthModel(BaseModel):
     guid: Optional[str] = None
     exception: Optional[str] = None
     flag: Optional[str] = None
+    sent: Optional[str] = "NO"
