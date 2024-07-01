@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 
 import utility
 from MongoDB import mongo_connection, all_repository
-from MongoDB import entry_model
+from MongoDB import track_model
+from pymongo.errors import InvalidOperation
 
 class TrackRepository:
 
@@ -22,7 +23,17 @@ class TrackRepository:
     def close_connection(self):
         self.mongo_track.close_mdb()
 
-    def update_entry(self, guid, key, value):
+    """
+    Returns true if there is no issue, else returns the exception.
+    """
+    def check_connection(self):
+        try:
+            reply = self.mongo_track.ping_connection()
+        except InvalidOperation as e:
+            return e
+        return reply
+
+    def update_entry(self, guid: str, key, value):
         return self.all.update_entry(guid, key, value)
 
     def get_entry(self, key, value):
@@ -53,7 +64,7 @@ class TrackRepository:
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         """
-        model = entry_model.EntryModel(guid, pipeline)
+        model = track_model.TrackModel(guid, pipeline)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:
@@ -71,7 +82,7 @@ class TrackRepository:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = entry_model.EntryModel(guid, pipeline, derivative=True)
+        model = track_model.TrackModel(guid, pipeline, derivative=True)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:

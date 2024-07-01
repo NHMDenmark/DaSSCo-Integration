@@ -59,8 +59,8 @@ class MongoConnection:
     def ping_connection(self):
         try:
             self.client.admin.command("ping")            
-        except ConnectionFailure:
-            return False
+        except ConnectionFailure as e:
+            return e
         return True
 
     """

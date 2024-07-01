@@ -8,6 +8,7 @@ import utility
 from MongoDB import mongo_connection, all_repository
 from MongoDB.service_model import ModelService
 from Enums.status_enum import Status
+from pymongo.errors import InvalidOperation
 
 class ServiceRepository(Status):
 
@@ -39,6 +40,16 @@ class ServiceRepository(Status):
     
     def close_connection(self):
         self.mongo_micro_service.close_mdb()
+    
+    """
+    Returns true if there is no issue, else returns the exception.
+    """
+    def check_connection(self):
+        try:
+            reply = self.mongo_micro_service.ping_connection()
+        except InvalidOperation as e:
+            return e
+        return reply
 
     def update_entry(self, service_name: str, key, value):
         return self.all.update_entry(service_name, key, value)

@@ -72,10 +72,10 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry)
             # change run value in db
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
             
             # log the status change + health call 
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+            self.run_util.log_status_change(self.service_name, self.run, self.STOPPED)
 
             # update run values
             self.run = self.run_util.get_service_run_status()

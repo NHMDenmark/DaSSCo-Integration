@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import utility
 from MongoDB import mongo_connection, all_repository
+from pymongo.errors import InvalidOperation
 
 class MetadataRepository:
 
@@ -18,7 +19,17 @@ class MetadataRepository:
 
     def close_connection(self):
         self.mongo_metadata.close_mdb()
-
+    
+    """
+    Returns true if there is no issue, else returns the exception.
+    """
+    def check_connection(self):
+        try:
+            reply = self.mongo_metadata.ping_connection()
+        except InvalidOperation as e:
+            return e
+        return reply
+    
     def update_entry(self, guid, key, value):
         return self.all.update_entry(guid, key, value)
 

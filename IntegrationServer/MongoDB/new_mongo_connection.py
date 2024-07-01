@@ -10,7 +10,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 import utility
 
-from MongoDB import entry_model
+from MongoDB import track_model
 
 """
 Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
@@ -56,7 +56,7 @@ class MongoConnection:
         self.client.close()
         print(f"closed connection to: {self.name}")
 
-    # TODO figure out if this is still in use and if so can it be moved
+    # TODO figure out if this is still in use and if so can it be moved to all_repository
     def add_entry_to_list(self, guid, list_name):
         """
                 Adds an assets guid to a list. Used to keep track of which batch assets belong to.

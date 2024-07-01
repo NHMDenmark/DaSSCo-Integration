@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import mongo_connection, all_repository
 from Enums.status_enum import Status
+from pymongo.errors import InvalidOperation
 
 class HealthRepository(Status):
 
@@ -22,9 +23,16 @@ class HealthRepository(Status):
     def close_connection(self):
         self.mongo_health.close_mdb()
 
+    """
+    Returns true if there is no issue, else returns the exception.
+    """
     def check_connection(self):
-        return self.mongo_health.ping_connection()
-
+        try:
+            reply = self.mongo_health.ping_connection()
+        except InvalidOperation as e:
+            return e
+        return reply
+    
     def update_entry(self, id, key, value):
         return self.all.update_entry(id, key, value)
 

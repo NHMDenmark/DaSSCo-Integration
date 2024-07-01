@@ -11,6 +11,7 @@ import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_
 from StorageApi import storage_client
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
+import time
 from bson.json_util import dumps
 from datetime import datetime
 from dotenv import load_dotenv
@@ -85,17 +86,47 @@ class x(Feedback, LogClass):
         LogClass.__init__(self, "yo", "ho")
         print(self.AWAIT)
 
+def im_loopy():
+        x = 3
+        try:
+            while x > 0:
+                print("yo")
+                x -= 1
+                y = 3/x
+                print(y)
+        except Exception as e:
+            print(x, y, e)
+            time.sleep(5)
+            im_loopy()
+
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
-
+    im_loopy()
+    """
     h = health_repository.HealthRepository()
-    
+  
     try:
+        h.close_connection()
         a = h.check_connection()
-        print(a)
-    except InvalidOperation:
-        print("fail")
+        
+        if a is not True:
+            
+            try:
+                h = health_repository.HealthRepository()
+            except Exception as e:
+                print(e)
+            
+            if h.mongo_health.client:
+                
+                a = h.check_connection()
+                
+    except Exception as e:
+        print(e)
     h.close_connection()
+    time.sleep(2)
+    print("done")
+    """
+   # h.close_connection()
     # i = IntegrationServer()
     #test()
     #x()
