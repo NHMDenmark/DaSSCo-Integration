@@ -11,6 +11,11 @@ from MongoDB import track_repository, health_repository, health_model, service_r
 from Enums import status_enum, validate_enum, log_enum
 import utility
 
+"""
+Service class for the health api received calls. 
+Handles updating health entries in the health db. 
+Figures out if mails should be sent or pause mode initiated. 
+"""
 class HealthService():
 
     def __init__(self):
@@ -45,7 +50,7 @@ class HealthService():
         self.health.create_health_entry_from_api(id, model_data)
         
         if warning.guid and warning.flag is not None:
-            updated = self.update_track_db(warning.guid, warning.flag)
+            updated = self.update_asset_flag_track_db(warning.guid, warning.flag)
             if updated is False:
                 return False
         else:
@@ -78,7 +83,7 @@ class HealthService():
         self.health.create_health_entry_from_api(id, model_data)
         
         if error.guid and error.flag is not None:
-            updated = self.update_track_db(error.guid, error.flag)
+            updated = self.update_asset_flag_track_db(error.guid, error.flag)
             if updated is False:
                 return False
         else:
@@ -146,6 +151,12 @@ class HealthService():
     def slack_check_requirements(self):
         pass
     
+    """
+    Checks if a service should enter pause mode. 
+    Currently this can only happen if the severity level of the incident was set to ERROR. 
+    The service gets put into pause mode if there are x errors in the timeframe set in the config file.
+    Returns true when pause mode should happen. False if nothing should change.   
+    """
     def pause_run_status_check_requirements(self, service_name, severity_level):
         
         if severity_level != self.log_enum.ERROR.value:
@@ -161,6 +172,9 @@ class HealthService():
 
         return False
 
+    """
+    Creates the model for received warning and errors.
+    """
     def create_health_model(self, warning, msg_parts):
         
         model = health_model.HealthModel()
@@ -182,6 +196,9 @@ class HealthService():
 
         return model_data
     
+    """
+    Creates the model for a run status change entry. 
+    """
     def change_run_status_create_health_model(self, warning, msg_parts):
         
         model = health_model.HealthModel()
@@ -196,9 +213,17 @@ class HealthService():
 
         return model_data
 
-    def update_track_db(self, guid, flag):
-        return self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
+    """
+    Updates an assets flag in the track db with the status due to the warning/error received - defaults to ERROR.
+    This should take the asset out of the normal flow.
+    """
+    def update_asset_flag_track_db(self, guid, flag, status = validate_enum.ValidateEnum.ERROR.value):
+        return self.track.update_entry(guid, flag, status)
 
+    """
+    Calls the mail sender with the necessary information for sending a mail. 
+    Sets the "sent" value for the health entry to true if the mail was sent. 
+    """
     def inform_mail(self, health_id, parts, asset_guid, service_name):
         if len(parts) == 6:
             if asset_guid != "No guid":
@@ -215,6 +240,9 @@ class HealthService():
         if sent is True:
             self.health.update_entry(health_id, "sent", self.validate_enum.YES.value)
 
+    """
+    Calls the slack message service with the information needed to send a slack message. 
+    """
     def inform_slack(self, parts, asset_guid, service_name):
         if asset_guid != "No guid":
             self.slack.message_from_integration(asset_guid, service_name, parts[3], parts[1])

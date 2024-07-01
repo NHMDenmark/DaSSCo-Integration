@@ -1,3 +1,9 @@
+import sys
+import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(project_root)
+
 from datetime import datetime
 import time
 import utility
@@ -7,13 +13,13 @@ from MongoDB.file_model import FileModel
 """
 Model used when creating a new entry in the track collection. 
 """
-class EntryModel:
+class TrackModel:
 
     def __init__(self, guid, pipeline, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
-        self.pipeline_job_config_path = "IntegrationServer/ConfigFiles/pipeline_job_config.json"
+        self.pipeline_job_config_path = f"{project_root}/ConfigFiles/pipeline_job_config.json"
 
         self._id = guid
         self.created_time = datetime.now() #datetime.utcnow()

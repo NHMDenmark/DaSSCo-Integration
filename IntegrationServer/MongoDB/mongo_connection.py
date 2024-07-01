@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from bson import ObjectId
 import utility
-from MongoDB import entry_model
+from MongoDB import track_model
 from pymongo.errors import ConnectionFailure
 
 """
@@ -53,7 +53,9 @@ class MongoConnection:
         self.client.close()
         print(f"closed connection to: {self.name}")
     
-    
+    """
+    Checks the connection is alive. 
+    """
     def ping_connection(self):
         try:
             self.client.admin.command("ping")            
@@ -75,7 +77,7 @@ class MongoConnection:
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         """
-        model = entry_model.EntryModel(guid, pipeline)
+        model = track_model.EntryModel(guid, pipeline)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:
@@ -93,7 +95,7 @@ class MongoConnection:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = entry_model.EntryModel(guid, pipeline, derivative=True)
+        model = track_model.EntryModel(guid, pipeline, derivative=True)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:

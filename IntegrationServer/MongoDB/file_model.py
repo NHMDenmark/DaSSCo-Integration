@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 
 """
-Model class for the files added to the track entries.
+Model class for the files (belonging to an asset) added to the track entries.
 """
 
 class FileModel(BaseModel):
