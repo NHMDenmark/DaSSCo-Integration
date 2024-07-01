@@ -35,17 +35,26 @@ def read_md_file(file_path):
 
 def create_data_dict_from_md_directory(directory_path):
     data_dict = {}
+    counter = 0
     for filename in os.listdir(directory_path):
         if filename.endswith('.md'):
+            counter += 1
             file_path = os.path.join(directory_path, filename)
             md_content = read_md_file(file_path)
             field_info = extract_field_info(md_content)
             for key, value_dict in field_info.items():
                 for sub_key, sub_value in value_dict.items():
                     data_dict.setdefault(sub_key, []).append(sub_value)
-    
+                    
+                    if len(data_dict[sub_key]) < (counter):
+                        data_dict.setdefault(sub_key, []).pop(0)
+                        for x in range(counter):
+                            data_dict.setdefault(sub_key, []).insert((x), None)
+                        data_dict.setdefault(sub_key, []).insert((counter - 1), sub_value)
+
     # Ensure all lists in data_dict have the same length
     max_length = max(len(lst) for lst in data_dict.values())
+    
     for key, value_list in data_dict.items():
         if len(value_list) < max_length:
             # Fill missing values with a placeholder
@@ -54,8 +63,8 @@ def create_data_dict_from_md_directory(directory_path):
     return data_dict
 
 # Edit these two to fit your needs. File name is the name of file created and the directory name is the name of the directory to create the excel from.
-directory_name = "Data_field_descriptions"
-file_name = 'metadata_info.xlsx'
+directory_name = "Health_field_descriptions"
+file_name = 'health_info.xlsx'
 
 directory_path = os.path.join(f"{project_root}/", directory_name)
 data_dict = create_data_dict_from_md_directory(directory_path)

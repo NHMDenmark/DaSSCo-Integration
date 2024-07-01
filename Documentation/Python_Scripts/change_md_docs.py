@@ -4,6 +4,9 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+"""
+Script for updating all description field .md documents. Say we want to change the name of one of the header fields in them this is the script for it.
+"""
 def process_md_files(folder_path):
     # Get a list of all .md files in the folder
     md_files = [f for f in os.listdir(folder_path) if f.endswith('.md')]

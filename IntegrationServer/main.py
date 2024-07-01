@@ -101,7 +101,10 @@ def im_loopy():
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
-    im_loopy()
+    t = [1, 2, 3, 4]
+    t.pop(2)
+    print(t)
+    #im_loopy()
     """
     h = health_repository.HealthRepository()
   

@@ -21,11 +21,14 @@ def create_markdown_from_dataframe(df, output_directory):
         with open(file_path, 'w') as file:
             file.write(f"## {row['Name']}\n\n")
             for column, value in row.items():
-                if column != 'Name' and not pd.isnull(value):
+                #if column != 'Name' and not pd.isnull(value):
+                if column != 'Name':
+                    if pd.isnull(value):
+                        value = "None"
                     file.write(f"**{column}**  \n{value}\n\n")
 
 # Edit these two to fit the needs, file name is file to read from and directory name is the directory to put the files into.
-file_name = 'metadata_info.xlsx'
+file_name = 'health_info.xlsx'
 directory_name = 'TEST_field_descriptions'
 
 # Load the Excel file into a DataFrame
