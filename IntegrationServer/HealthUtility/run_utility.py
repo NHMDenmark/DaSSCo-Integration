@@ -56,16 +56,17 @@ class RunUtility(LogClass, Status):
                 wait_time = sleep * counter
                 # TODO could make a util function for changing seconds into a better time format
 
-                message = f"{self.service_name} has been in pause mode for: {wait_time} seconds"
+                loop_message = f"{self.service_name} has been in pause mode for: {wait_time} seconds"
                 
+                # TODO could make the numbers configurable in the micro service config file
                 if counter == 5:
-                    self.attempt_unpause()
+                    self.attempt_unpause(counter)
                 elif counter == 23:
                     self.attempt_unpause()
                 elif counter%99 == 0:
                      self.attempt_unpause()
                 else:
-                    entry = self.log_msg(self.prefix_id, message)
+                    entry = self.log_msg(self.prefix_id, loop_message)
                     self.health_caller.warning(self.service_name, entry)
 
 
@@ -76,9 +77,27 @@ class RunUtility(LogClass, Status):
     """
     # TODO desc, logic etc
     """
-    def attempt_unpause(self):
-         pass
+    def attempt_unpause(self, pause_count: int):
 
+        paused = True
+
+        # TODO check which module the service belongs to. Then create specific check for different modules. Add module to service config file?
+        module = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "module")
+
+        
+        if paused is True: 
+            message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} loop counts."
+
+            entry = self.log_msg(self.prefix_id, message)
+            self.health_caller.attempted_unpause(self.service_name, self.PAUSED, pause_count, entry)
+
+
+        if paused is False:
+            self.service_run = self.check_run_changes()
+            message = f"{self.service_name} attempted and succeeded to unpause. This was after {pause_count} loop counts. Status is now {self.service_run}."
+
+            entry = self.log_msg(self.prefix_id, message)
+            self.health_caller.attempted_unpause(self.service_name, self.service_run, pause_count, entry)
 
     """
     Checks if service should keep running - configurable in ConfigFiles/run_config.json

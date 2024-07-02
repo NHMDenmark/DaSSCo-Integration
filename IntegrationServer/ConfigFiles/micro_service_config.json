@@ -1,77 +1,90 @@
 {
   "Asset creator ARS": {
+    "module": "storage updater",
     "pause_time": 10,
     "error_tolerance": 2,
     "error_time_span": 30,
     "mail_wait_time": 30
   },
   "Asset creator HPC": {
+    "module": "ssh hpc",
     "pause_time": 9,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Erda sync ARS": {
+    "module": "storage updater",
     "pause_time": 8,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "File uploader ARS": {
+    "module": "storage updater",
     "pause_time": 7,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC clean up service": {
+    "module": "ssh hpc",
     "pause_time": 6,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC file uploader": {
+    "module": "ssh hpc",
     "pause_time": 5,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "HPC job caller": {
+    "module": "ssh hpc",
     "pause_time": 4,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "New files finder (Ndrive)": {
+    "module": "ndrive",
     "pause_time": 3,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Open file share ARS": {
+    "module": "storage updater",
     "pause_time": 2,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Process new files (Ndrive)": {
+    "module": "ndrive",
     "pause_time": 11,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Update metadata ARS": {
+    "module": "storage updater",
     "pause_time": 12,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "Validate erda sync ARS": {
+    "module": "storage updater",
     "pause_time": 13,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
   },
   "all_run": {
+    "module": "null",
     "pause_time": -1,
     "error_tolerance": -2,
     "error_time_span": -3,
