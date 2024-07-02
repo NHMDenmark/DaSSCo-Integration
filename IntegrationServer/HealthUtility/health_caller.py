@@ -79,5 +79,23 @@ class HealthCaller():
             # TODO create log entry
             print(e)
 
-
+    def attempted_unpause(self, service, run_status, pause_counter, message):
         
+        url = f"{self.url}/api/attempt_unpause"
+        
+        content = {
+                "service_name": service,
+                "run_status": run_status,
+                "pause_counter": pause_counter,
+                "message": message
+                }
+        
+        try:    
+            response = requests.post(url, json=content)
+            
+            if response.status_code != 200:
+                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+
+        except Exception as e:
+            # TODO create log entry
+            print(e)

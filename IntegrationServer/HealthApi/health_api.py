@@ -8,11 +8,19 @@ from fastapi import FastAPI
 from HealthApi import health_service
 from HealthApi.message_model import MessageModel
 from HealthApi.run_status_change_model import RunStatusChangeModel
+from HealthApi.pause_model import PauseModel
+
+"""
+Rest api for receiving warnings/errors and other log worthy incidents. 
+Sends the message to the health service where further handling of the information happens. 
+"""
+# TODO api is only set up for local use. Would want more fletched out endpoint urls if we want it online.
 
 health = FastAPI()
 service = health_service.HealthService()
 message_model = MessageModel
 run_model = RunStatusChangeModel
+pause_model = PauseModel
 
 @health.get("/")
 def index():
@@ -37,4 +45,11 @@ async def run_status_change(info: run_model):
 
     informed = service.run_status_change(info)
     
+    return informed
+
+@health.post("/api/attempt_unpause")
+async def attempted_unpause(info: pause_model):
+
+    informed = service.attempted_unpause(info)
+
     return informed

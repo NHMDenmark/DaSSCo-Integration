@@ -12,7 +12,7 @@ from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 
 """
-Class that helps the micro services with logging and run status updates.
+Class that helps the micro services with logging, pausing and run status updates.
 Takes the prefix_id, service name, log filename and the logger name as arguments.
 Example: "AcA", "Asset creator ARS", "asset_creator.py.log", "asset_creator"
 """
@@ -55,12 +55,30 @@ class RunUtility(LogClass, Status):
                 time.sleep(sleep)
                 wait_time = sleep * counter
                 # TODO could make a util function for changing seconds into a better time format
-                entry = self.log_msg(self.prefix_id, f"{self.service_name} has been in pause mode for: {wait_time} seconds")
-                self.health_caller.warning(self.service_name, entry)
+
+                message = f"{self.service_name} has been in pause mode for: {wait_time} seconds"
                 
+                if counter == 5:
+                    self.attempt_unpause()
+                elif counter == 23:
+                    self.attempt_unpause()
+                elif counter%99 == 0:
+                     self.attempt_unpause()
+                else:
+                    entry = self.log_msg(self.prefix_id, message)
+                    self.health_caller.warning(self.service_name, entry)
+
+
                 self.service_run = self.check_run_changes()
 
         return self.service_run
+    
+    """
+    # TODO desc, logic etc
+    """
+    def attempt_unpause(self):
+         pass
+
 
     """
     Checks if service should keep running - configurable in ConfigFiles/run_config.json

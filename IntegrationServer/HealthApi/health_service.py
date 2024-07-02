@@ -129,6 +129,13 @@ class HealthService():
         self.health.update_entry(id, "sent", self.validate_enum.YES.value)
 
         return True
+    
+    """
+    # TODO logic etc
+    """
+    def attempted_unpause(self, info):
+        
+        return True
 
     """
     Checks if a mail should be sent given the information in the micro service config file.

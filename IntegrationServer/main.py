@@ -101,35 +101,9 @@ def im_loopy():
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
-    t = [1, 2, 3, 4]
-    t.pop(2)
-    print(t)
-    #im_loopy()
-    """
-    h = health_repository.HealthRepository()
-  
-    try:
-        h.close_connection()
-        a = h.check_connection()
-        
-        if a is not True:
-            
-            try:
-                h = health_repository.HealthRepository()
-            except Exception as e:
-                print(e)
-            
-            if h.mongo_health.client:
-                
-                a = h.check_connection()
-                
-    except Exception as e:
-        print(e)
-    h.close_connection()
-    time.sleep(2)
-    print("done")
-    """
-   # h.close_connection()
+    
+    a = 90%100
+    print(a)
     # i = IntegrationServer()
     #test()
     #x()
