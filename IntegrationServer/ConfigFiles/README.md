@@ -32,7 +32,7 @@ Job names followed by a time estimate of running them on HPC cluster and the pat
 }
 ```
 ## pipeline_job_config.json
-List of pipeline names with their associated jobs in order. Each job should be found in the job_detail_config.json file.
+List of pipeline names with their associated jobs in order. Each job should be found in the job_detail_config.json file.  
 The idea is to setup a list of processes(jobs) that fits everything that comes out of a specific digitisation pipeline.
 ```bash
 {
@@ -50,15 +50,14 @@ The idea is to setup a list of processes(jobs) that fits everything that comes o
 ```
 ## slurm_config.json
 max_queued_jobs : Sets the maximum amount of jobs we want to have queued up at the same time.
-parallel_jobs : Sets the maximum number of jobs we want running at the same time.
-max_expected_time : Sets the maximum total expected amount of time in hours we want to have queued up at the same time.
-max_expected_time_in_queue : Sets the timer(hours) for how long we will wait before checking on a job that has been queued but not returned with a DONE status. 
+parallel_jobs : Sets the maximum number of jobs we want running at the same time.  
+max_expected_time : Sets the maximum total expected amount of time in hours we want to have queued up at the same time.  
+max_expected_time_in_queue : Sets the timer(hours) for how long we will wait before checking on a job that has been queued but not returned with a DONE status.  
 job_list_script_path : Path to the job list script that gets data for jobs being processed.
-export_to_path : Path where assets are delivered.
-temporary_persist_path : Path where we put assets that have finished parts of their pipeline but still needs further
-processing.
-initiate_script : Path to the script that will be called when a new asset is ready to start being processed by the HPC.
-clean_up_script : Path to the clean up script for when all jobs are DONE for an asset. Should delete files pertaining to the asset on the HPC. 
+export_to_path : Path where assets are delivered.  
+temporary_persist_path : Path where we put assets that have finished parts of their pipeline but still needs further processing.  
+initiate_script : Path to the script that will be called when a new asset is ready to start being processed by the HPC.  
+clean_up_script : Path to the clean up script for when all jobs are DONE for an asset. Should delete files pertaining to the asset on the HPC.   
 ```bash
 {
   "max_queued_jobs": 6,
@@ -75,9 +74,7 @@ clean_up_script : Path to the clean up script for when all jobs are DONE for an 
 
 ## {name}_connection_config.json
 
-First key is the name of the connection. A connection file must start with the name of the connection. Password and
-username should be stored as environment variables named {connection_name}_PWD and {connection_name}_USER 
-(example: UCLOUD_PWD).
+First key is the name of the connection. A connection file must start with the name of the connection. Password and username should be stored as environment variables named {connection_name}_PWD and {connection_name}_USER (example: UCLOUD_PWD).  
 is_slurm refers to whether the connection connects to the slurm cluster that runs the pipeline jobs. 
 Directory paths defines where files end up or are coming from. 
 ```bash
@@ -127,18 +124,26 @@ Mail configuration file. Test is setup using gmail as a host here.
     }
 ```
 
-## run_config.json
-Service run configuration file. Sets the state for each service running to a status from the status enum list. RUNNING, STOPPED or PAUSED. 
-Also can set the status for all services (all_run) at once, this can only be set to RUNNING or STOPPED. Basically a on/off button for the entire integration server. 
-Individual services will adhere to their own status as long as the all_run is set to RUNNING.  
+## micro_service_config.json
+Service configuration file. Each service has its own block of configuration values.  
+The name is the name the service_name defined in its script. Used to identify the service in logs, mails and between services.  
+Module is the module each service belongs to. It is used for defining steps the service should go through when attempting to handle errors/warnings/pause status.   
+Pause_time is the length in seconds each loop in the pause mode should wait.
+Pause_check_list is a list of numbers that tells the service at which initial pause loops it should attempt to run again.   
+Pause_loop_count is used to define the ongoing attempts to unpause. If set to 100 that means the service will attempt to unpause every 100 loops. This number should be higher than any numbers in the pause_check_list.
+Error_tolerance is the amount of errors we tolerate in within the error_time_span before going into pause mode.   
+Error_time_span is the time in seconds that combines with error_tolerance to give us the max amount of erorrs in a timeframe before a service enters pause mode.  
+Mail_wait_time is the amount of time in seconds that needs to pass before the service will send out a new mail with the same severity level(ERROR, WARNING). This does not block sending out mails that will always be sent such as when a service changes its run status. However it will block mails that would come immediately after such an event. 
 ```bash
 {
-  "Asset creator ARS": "STOPPED",
-  "Asset creator HPC": "STOPPED",
-  "Erda sync ARS": "PAUSED",
-  "File uploader ARS": "STOPPED",
-  "Update metadata ARS": "RUNNING",
-  "Validate erda sync ARS": "STOPPED",
-  "all_run": "RUNNING"
+  "Asset creator ARS": {
+    "module": "storage updater",
+    "pause_time": 5,
+    "pause_check_list": [2, 7],
+    "pause_loop_count": 4,
+    "error_tolerance": 2,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  }
 }
 ```
