@@ -50,16 +50,18 @@ class AssetCreator():
         # create the storage api
         self.storage_api = self.create_storage_api()
         
-        alive_thread = threading.Thread(target = self.alive)
-        alive_thread.start()
+        # create and start the heartbeat thread
+        heartbeat_thread = threading.Thread(target = self.heartbeat)
+        heartbeat_thread.start()
 
         self.loop()
 
     """
-    Thread running the "heartbeat" for the healthservice to check in on.
+    Thread running the "heartbeat" loop for the healthservice to check in on. 
+    Stops if the run_status in the micro service database is set to STOPPED.
     """
     # TODO decide how this will actually be implemented with the 3rd party health service
-    def alive(self):
+    def heartbeat(self):
             while self.run != self.status_enum.STOPPED.value:
                 time.sleep(3)
                 print("im alive")
