@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+import threading
 import time
 from MongoDB import metadata_repository, track_repository, service_repository
 from StorageApi import storage_client
@@ -49,8 +50,21 @@ class AssetCreator():
         # create the storage api
         self.storage_api = self.create_storage_api()
         
+        alive_thread = threading.Thread(target = self.alive)
+        alive_thread.start()
+
         self.loop()
-    
+
+    """
+    Thread running the "heartbeat" for the healthservice to check in on.
+    """
+    # TODO decide how this will actually be implemented with the 3rd party health service
+    def alive(self):
+            while self.run != self.status_enum.STOPPED.value:
+                time.sleep(3)
+                print("im alive")
+                self.run = self.run_util.check_run_changes()
+
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  
@@ -78,6 +92,9 @@ class AssetCreator():
             
         return storage_api
 
+    """
+    Main loop for the service.
+    """
     def loop(self):
         
         while self.run == self.status_enum.RUNNING.value:
@@ -106,7 +123,7 @@ class AssetCreator():
                 if created is False:
                     if status_code <= 299:                    
                         message = self.run_util.log_msg(response)
-
+                        self.health_caller.warning(self.service_name, message)
                     # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
@@ -115,7 +132,7 @@ class AssetCreator():
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
                         time.sleep(1)
                     # TODO handle if status code is 555 - this means we set it during another exception - see storage_client.get_status_code_from_exc()
-                    if 500 <= status_code:
+                    if 500 <= status_code <= 549: # reserved status codes above 550 for other errors that can come from the StorageApi.
                         message = self.run_util.log_exc(self.prefix_id, response, exc)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message)
@@ -141,5 +158,8 @@ class AssetCreator():
         self.run_util.service_mongo.close_connection()
         self.storage_api.service.metadata_db.close_mdb()
 
+
 if __name__ == '__main__':
+    
     AssetCreator()
+    

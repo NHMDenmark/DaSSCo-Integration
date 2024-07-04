@@ -33,6 +33,12 @@ class StorageClient():
           for item in data:
                print(item)
 
+     """
+     Creates the asset with ARS. Takes the guid and the required allocation size for the guid as arguments.
+     Requests the metadata from the storage service and metadata repository. Uses the api wrapper to call the ARS endpoint.
+     Checks the return status and if there its not 200, extracts the status code from the expected exception. If extraction fails it still receives a "status code" (555 or 566).
+     Returns a boolean true/false success/failure, a message that can be added to a log message, any exception, the status code. 
+     """
      def create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)

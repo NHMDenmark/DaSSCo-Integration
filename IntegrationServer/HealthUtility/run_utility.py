@@ -104,7 +104,6 @@ class RunUtility(LogClass, Status):
             self.health_caller.attempted_unpause(self.service_name, self.service_run, pause_count, entry)
 
     """
-    Checks if service should keep running - configurable in ConfigFiles/run_config.json
     Logs and sends a warning message to the health api when run status changes
     Returns the overall run status for the service
     """
@@ -112,14 +111,13 @@ class RunUtility(LogClass, Status):
         # checks all run status               
         all_run = self.get_all_run()
         if self.all_run_status != all_run:
-            entry = self.log_msg("All", f"All run status changed from {self.service_run} to {all_run}")
-            self.health_caller.run_status_change(self.service_name, all_run, entry)
+            self.log_all_run_status_change(self.all_run_status, all_run)
 
         # checks run service status
         run_service = self.get_run_service()
         if self.run_service != run_service:
             self.log_status_change(self.service_name, self.service_run, run_service)
-        
+            
         # updates run status
         self.all_run_status = self.get_all_run()
         self.run_service = self.get_run_service()
