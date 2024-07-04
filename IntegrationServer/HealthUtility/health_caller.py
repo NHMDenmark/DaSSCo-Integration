@@ -99,3 +99,22 @@ class HealthCaller():
         except Exception as e:
             # TODO create log entry
             print(e)
+
+    def unexpected_error(self, service_name, message):
+
+        url = f"{self.url}/api/unexpected_error"
+        
+        content = {
+                "service_name": service_name,
+                "message": message
+                }
+        
+        try:    
+            response = requests.post(url, json=content)
+            
+            if response.status_code != 200:
+                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+
+        except Exception as e:
+            # TODO create log entry
+            print(e)

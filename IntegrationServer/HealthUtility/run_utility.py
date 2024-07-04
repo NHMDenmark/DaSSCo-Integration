@@ -10,6 +10,7 @@ from MongoDB import service_repository
 from Enums.status_enum import Status
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
+from StorageApi import storage_client
 
 """
 Class that helps the micro services with logging, pausing and run status updates.
@@ -49,6 +50,8 @@ class RunUtility(LogClass, Status):
         counter = 0
         # seconds to pause
         sleep = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "pause_time")
+        pause_check_list = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "pause_check_list")
+        pause_loop_count = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "pause_loop_count")
         self.service_run = self.get_service_run_status()
         while self.service_run == self.PAUSED:
                 counter += 1
@@ -58,17 +61,11 @@ class RunUtility(LogClass, Status):
 
                 loop_message = f"{self.service_name} has been in pause mode for: {wait_time} seconds"
                 
-                # TODO could make the numbers configurable in the micro service config file
-                if counter == 5:
+                if counter in pause_check_list or counter % pause_loop_count == 0:
                     self.attempt_unpause(counter)
-                elif counter == 23:
-                    self.attempt_unpause()
-                elif counter%99 == 0:
-                     self.attempt_unpause()
                 else:
                     entry = self.log_msg(self.prefix_id, loop_message)
                     self.health_caller.warning(self.service_name, entry)
-
 
                 self.service_run = self.check_run_changes()
 
@@ -81,16 +78,23 @@ class RunUtility(LogClass, Status):
 
         paused = True
 
-        # TODO check which module the service belongs to. Then create specific check for different modules. Add module to service config file?
+        # get the module the service belongs to, then call the corresponding check for unpause routine
         module = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "module")
 
-        
+        if module == "ssh hpc":
+            paused = True
+
+        if module == "storage updater":
+            paused, extra_msg = self.storage_updater_unpause_routine(self.service_name)
+            
+        if module == "ndrive":
+            paused = True
+            
         if paused is True: 
-            message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} loop counts."
+            message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} loop counts. {extra_msg}"
 
             entry = self.log_msg(self.prefix_id, message)
             self.health_caller.attempted_unpause(self.service_name, self.PAUSED, pause_count, entry)
-
 
         if paused is False:
             self.service_run = self.check_run_changes()
@@ -137,7 +141,6 @@ class RunUtility(LogClass, Status):
         entry = self.log_msg(self.prefix_id, f"{service_name} status changed from {old_status} to {new_status}")
         self.health_caller.run_status_change(service_name, new_status, entry)
 
-
     """
     get the all run status from the mongo db
     """
@@ -165,3 +168,27 @@ class RunUtility(LogClass, Status):
             return self.PAUSED
 
         return self.RUNNING
+    
+    def storage_updater_unpause_routine(self, service_name):
+        
+        stay_paused = True
+
+        try:
+            storage_api = storage_client.StorageClient()
+         
+            if storage_api.client is None:
+                return stay_paused, "Failed to create a new storage client."
+            
+        except Exception as e:
+            entry = self.log_exc(self.prefix_id, f"Error while attempting unpause routine for {service_name}", level=self.ERROR, exc=e)
+            self.health_caller.unexpected_error(service_name, entry)
+            return stay_paused, "Unexpected error while attempting to create a new storage client. This error has also been logged separately."
+
+
+        # TODO more logic
+        try:
+            pass
+        except Exception as e:
+            pass
+
+        return stay_paused

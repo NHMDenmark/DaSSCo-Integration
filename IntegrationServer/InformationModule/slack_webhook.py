@@ -69,6 +69,42 @@ class SlackWebhook:
         except Exception as e:
             print(f"Slack webhook not working for service: {service_name}. With error: {e}")
 
+    def attempted_unpause_msg(self, service_name):
+        # Define the content that will be displayed in the slack chat. 
+        payload = {
+            "text": f"{service_name} - Attempting to unpause self."
+        }
+
+        try:
+            response = requests.post(
+                self.url, 
+                data=json.dumps(payload), 
+                headers={"Content-Type": "application/json"}
+            )            
+            if response.status_code != 200:
+                raise ValueError(f"Request to Slack returned an error {response.status_code}, the response is:\n{response.text}")
+        
+        except Exception as e:
+            print(f"Slack webhook not working for service: {service_name}. With error: {e}")
+
+    def unexpected_error_msg(self, health_id, service_name):
+        # Define the content that will be displayed in the slack chat. 
+        payload = {
+            "text": f"UNEXPECTED ERROR - {service_name} - Health ID: {health_id}"
+        }
+
+        try:
+            response = requests.post(
+                self.url, 
+                data=json.dumps(payload), 
+                headers={"Content-Type": "application/json"}
+            )            
+            if response.status_code != 200:
+                raise ValueError(f"Request to Slack returned an error {response.status_code}, the response is:\n{response.text}")
+        
+        except Exception as e:
+            print(f"Slack webhook not working for service: {service_name}. With error: {e}")
+
     """
     Returns the overall run status for the service name provided.
     """

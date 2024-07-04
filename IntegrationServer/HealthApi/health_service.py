@@ -131,12 +131,47 @@ class HealthService():
         return True
     
     """
-    # TODO logic etc
+    Receives anattempted unpause messsage from the api that a service is trying to exit pause mode. 
+    Handles the message accordingly and sends out information to staff about the status change.
+    Returns true.
     """
     def attempted_unpause(self, info):
         
-        return True
+        parts = self.split_message(info.message)
+        id = self.create_id(parts)
+        model_data = self.create_unexpected_error_health_model(info, parts)
+        self.health.create_health_entry_from_api(id, model_data)
 
+        sent = self.mail.send_error_mail(id, service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2]) 
+
+        if sent:
+            self.health.update_entry(id, "sent", self.validate_enum.YES.value)
+
+        self.slack.attempted_unpause_msg(info.service_name)
+
+        return True
+    
+    """
+    Receives an unexpected error messsage from the api that a service has encountered an unexpected error. 
+    Handles the message accordingly and sends out information to staff about the status change.
+    Returns true.
+    """
+    def unexpected_error(self, info):
+        
+        parts = self.split_message(info.message)
+        id = self.create_id(parts)
+        model_data = self.create_unexpected_error_health_model(info, parts)
+        self.health.create_health_entry_from_api(id, model_data)
+
+        sent = self.mail.send_error_mail(id, service_name=info.service_name, service=parts[3], status=parts[1], error_msg=parts[4], timestamp=parts[2], exception=parts[5]) 
+
+        if sent:
+            self.health.update_entry(id, "sent", self.validate_enum.YES.value)
+
+        self.slack.unexpected_error_msg(id, info.service_name)
+
+        return True
+    
     """
     Checks if a mail should be sent given the information in the micro service config file.
     Returns true or false.
@@ -155,6 +190,9 @@ class HealthService():
 
         return True
 
+    """
+    Not sure we need some kind of check for not spamming our slack channel.
+    """
     def slack_check_requirements(self):
         pass
     
@@ -219,6 +257,26 @@ class HealthService():
         model_data = json.loads(model_data)
 
         return model_data
+    
+    """
+    Creates the model for an unexpected error entry. 
+    """
+    def create_unexpected_error_health_model(self, info, msg_parts):
+
+        model = health_model.HealthModel()
+        model.service = info.service_name
+        model.timestamp = msg_parts[2]
+        model.severity_level = msg_parts[1]
+        model.message = msg_parts[4]
+        model.sent = self.validate_enum.NO.value
+        if len(msg_parts) == 6:
+            model.exception = msg_parts[5]
+
+        model_data = model.model_dump_json()
+        model_data = json.loads(model_data)
+
+        return model_data
+        
 
     """
     Updates an assets flag in the track db with the status due to the warning/error received - defaults to ERROR.

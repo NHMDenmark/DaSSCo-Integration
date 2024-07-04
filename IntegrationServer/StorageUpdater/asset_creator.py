@@ -65,11 +65,12 @@ class AssetCreator():
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry)
-            # change run value in db
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+
+            # change run value in db TODO this should be outcommented when testing pause functionality
+            #self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
             
-            # log the status change + health call 
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+            # log the status change + health call TODO this should be outcommented when testing pause functionality
+            #self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
 
             # update run values
             self.run = self.run_util.get_service_run_status()
@@ -81,6 +82,9 @@ class AssetCreator():
         
         while self.run == self.status_enum.RUNNING.value:
             
+            # TODO remove/outcomment this, inserted for testing pause functionality
+            self.storage_api = self.create_storage_api()
+
             asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
 
             if asset is not None:

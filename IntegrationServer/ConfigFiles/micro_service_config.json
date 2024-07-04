@@ -1,14 +1,18 @@
 {
   "Asset creator ARS": {
     "module": "storage updater",
-    "pause_time": 10,
+    "pause_time": 5,
+    "pause_check_list": [2, 7],
+    "pause_loop_count": 4,
     "error_tolerance": 2,
-    "error_time_span": 30,
-    "mail_wait_time": 30
+    "error_time_span": 10,
+    "mail_wait_time": 20
   },
   "Asset creator HPC": {
     "module": "ssh hpc",
     "pause_time": 9,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 88,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -16,6 +20,8 @@
   "Erda sync ARS": {
     "module": "storage updater",
     "pause_time": 8,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -23,6 +29,8 @@
   "File uploader ARS": {
     "module": "storage updater",
     "pause_time": 7,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -30,6 +38,8 @@
   "HPC clean up service": {
     "module": "ssh hpc",
     "pause_time": 6,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -37,6 +47,8 @@
   "HPC file uploader": {
     "module": "ssh hpc",
     "pause_time": 5,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -44,6 +56,8 @@
   "HPC job caller": {
     "module": "ssh hpc",
     "pause_time": 4,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -51,6 +65,8 @@
   "New files finder (Ndrive)": {
     "module": "ndrive",
     "pause_time": 3,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -58,6 +74,8 @@
   "Open file share ARS": {
     "module": "storage updater",
     "pause_time": 2,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -65,6 +83,8 @@
   "Process new files (Ndrive)": {
     "module": "ndrive",
     "pause_time": 11,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -72,6 +92,8 @@
   "Update metadata ARS": {
     "module": "storage updater",
     "pause_time": 12,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -79,6 +101,8 @@
   "Validate erda sync ARS": {
     "module": "storage updater",
     "pause_time": 13,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
     "mail_wait_time": 30
@@ -86,8 +110,10 @@
   "all_run": {
     "module": "null",
     "pause_time": -1,
-    "error_tolerance": -2,
-    "error_time_span": -3,
-    "mail_wait_time": -4
+    "pause_check_list": [-1],
+    "pause_loop_count": -1,
+    "error_tolerance": -1,
+    "error_time_span": -1,
+    "mail_wait_time": -1
   }
 }
