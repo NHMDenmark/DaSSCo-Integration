@@ -11,6 +11,7 @@ class HealthCaller():
     def __init__(self):
         self.url = "http://localhost:8555"
 
+    # if both guid and flag is added then the health api service will update the flag to ERROR status.
     def warning(self, service, message, guid = None, flag = None):
         
         url = f"{self.url}/api/warning"

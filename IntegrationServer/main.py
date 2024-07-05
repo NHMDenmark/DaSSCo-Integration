@@ -79,7 +79,7 @@ def test():
     #print(p[0:7])
     #h.close_connection()
     
-
+    
 class x(Feedback, LogClass):
     def __init__(self):
         Feedback.__init__(self)
@@ -102,8 +102,8 @@ def im_loopy():
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     
-    a = 90%100
-    print(a)
+    pass
+
     # i = IntegrationServer()
     #test()
     #x()

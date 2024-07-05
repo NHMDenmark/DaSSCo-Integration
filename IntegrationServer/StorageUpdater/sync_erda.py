@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from MongoDB import track_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, erda_status
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -32,6 +32,7 @@ class SyncErda():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.erda_status_enum = erda_status.ErdaStatusEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -79,6 +80,34 @@ class SyncErda():
             
         return storage_api
 
+    # TODO handle this further when api is available again
+    def test_asset_timeout_and_synced(self, guid, asset):
+        
+        # handle if the sync happened after the time out but before the resync
+        asset_status = self.storage_api.get_asset_status(guid)
+                
+        if asset_status == self.erda_status_enum.COMPLETED.value :
+
+            self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value)
+                    
+            self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.NO.value)
+
+            self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.NO.value)
+
+            # remove the temp sync timestamp 
+            self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
+            # remove the temp time out status if it exist                    
+            self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
+
+            self.track_mongo.update_entry(guid, "proxy_path", "")
+
+            for file in asset["file_list"]:
+                self.track_mongo.update_track_file_list(guid, file["name"], self.flag_enum.ERDA_SYNC.value, self.validate_enum.YES.value) 
+
+            return True
+
+        return False
+
     def loop(self):
 
         while self.run == self.status_enum.RUNNING.value:
@@ -88,6 +117,13 @@ class SyncErda():
             if asset is not None:
                 guid = asset["_id"]
                 
+                if "temporary_time_out_sync_erda_attempt" in asset:
+                    asset_time_out_and_synced_anyway = self.test_asset_timeout_and_synced(guid, asset)
+                
+                    if asset_time_out_and_synced_anyway: 
+                        # asset has been synced so no need to continue with it
+                        continue
+
                 synced = self.storage_api.sync_erda(guid)
                 
                 # TODO handle if false - api fail

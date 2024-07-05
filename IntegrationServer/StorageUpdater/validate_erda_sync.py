@@ -104,14 +104,18 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             again = self.track_mongo.get_value_for_key(guid, "temporary_time_out_sync_erda_attempt")
 
             if again is True:
-                # error msg
-                pass
-                            
+                # logs and sends error msg to health api. Service there will set the erda_sync to ERROR                
+                entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
+                self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC)
+
             if again is None:
                 self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
                 self.track_mongo.update_entry(guid, "temporary_time_out_sync_erda_attempt", True)
-                # warning msg
-            
+                
+                # logs and sends a warning message to the health api
+                entry = self.run_util.log_msg(self.prefix_id, "The asset timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
+                self.health_caller.warning(self.service_name, entry, guid)
+
     def loop(self):
 
         while self.run == self.RUNNING:
@@ -166,10 +170,10 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     if timed_out is True:                            
                             self.timeout_handling(guid)
 
-                    # no action needed here since asset is queued to be synced and just waiting for that to happen
-                    print(f"Waiting on erda sync for asset: {guid}")
+                    else:
+                        # no action needed here since asset is queued to be synced and just waiting for that to happen
+                        print(f"Waiting on erda sync for asset: {guid}")
                     
-
                 if asset_status == self.ERDA_ERROR:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
                     # currently resetting sync status to "NO" attempts a new sync 
