@@ -131,3 +131,21 @@ class AllRepository:
         self.collection.update_one({"_id": guid}, {"$set": entry})
 
         return True
+    
+    def delete_field(self, id, field_name):
+        """
+        Delete a specific field from an entry in the MongoDB collection based on its unique identifier.
+
+        :param guid: The unique identifier of the entry.
+        :param field_name: The name of the field to delete.
+        :return: A boolean denoting success or failure.
+        """
+
+        if self.get_entry("_id", id) is None:
+            return False
+
+        query = {"_id": id}
+        update = {"$unset": {field_name: ""}}
+        result = self.collection.update_one(query, update)
+
+        return result.modified_count > 0

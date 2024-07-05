@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
+from datetime import datetime, timedelta
 from MongoDB import track_repository, service_repository
 from StorageApi import storage_client
 from Enums.status_enum import Status
@@ -33,11 +34,15 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.service_name = "Validate erda sync ARS"
         self.prefix_id = "VesA"
 
+        self.service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
+
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
+
+        self.max_sync_erda_attempt_wait_time = self.util.get_nested_value(self.service_config_path, self.service_name, "max_sync_erda_attempt_wait_time")
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -83,6 +88,30 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             
         return storage_api
 
+    def check_timeout(self, guid):
+
+        time_received = self.track_mongo.get_value_for_key(guid, "temporary_erda_sync_time")
+
+        time_allowed = datetime.now() - timedelta(seconds=self.max_sync_erda_attempt_wait_time)
+
+        if time_received < time_allowed:
+
+            return True
+        
+        return False
+
+    def timeout_handling(self, guid):
+            again = self.track_mongo.get_value_for_key(guid, "temporary_time_out_sync_erda_attempt")
+
+            if again is True:
+                # error msg
+                pass
+                            
+            if again is None:
+                self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
+                self.track_mongo.update_entry(guid, "temporary_time_out_sync_erda_attempt", True)
+                # warning msg
+            
     def loop(self):
 
         while self.run == self.RUNNING:
@@ -117,17 +146,29 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
                     self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
 
+                    # remove the temp sync timestamp 
+                    self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
+                    # remove the temp time out status if it exist                    
+                    self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
+
                     self.track_mongo.update_entry(guid, "proxy_path", "")
 
                     for file in asset["file_list"]:
                         self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
-
+                    
                     print(f"Validated erda sync for asset: {guid}")
 
                 if asset_status == self.ASSET_RECEIVED:
-                    # no action needed here since asset is basically queued to be synced and just waiting for that to happen
+                    
+                    # check if asset is timed out and handle if true
+                    timed_out = self.check_timeout(guid)
+
+                    if timed_out is True:                            
+                            self.timeout_handling(guid)
+
+                    # no action needed here since asset is queued to be synced and just waiting for that to happen
                     print(f"Waiting on erda sync for asset: {guid}")
-                    pass    
+                    
 
                 if asset_status == self.ERDA_ERROR:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs

@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
+from datetime import datetime
 from MongoDB import track_repository, service_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum
@@ -93,6 +94,8 @@ class SyncErda():
                 if synced is True:
                     self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)
                     
+                    # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
+                    self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
                 
                 time.sleep(1)
 

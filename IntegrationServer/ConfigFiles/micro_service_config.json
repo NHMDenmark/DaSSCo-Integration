@@ -105,7 +105,8 @@
     "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
-    "mail_wait_time": 30
+    "mail_wait_time": 30,
+    "max_sync_erda_attempt_wait_time": 900
   },
   "all_run": {
     "module": "null",

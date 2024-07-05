@@ -57,6 +57,9 @@ class TrackRepository:
     def append_existing_list(self, guid, list_key, value):
         return self.all.append_existing_list(guid, list_key, value)
     
+    def delete_field(self, id, field_name):
+        return self.all.delete_field(id, field_name)
+    
     def create_track_entry(self, guid, pipeline):
         """
         Create a new track entry in the MongoDB collection.
@@ -204,3 +207,5 @@ class TrackRepository:
         result = self.collection.find({"job_list.job_queued_time": {"$lt": time_ago}})
         
         return result
+
+    

@@ -61,7 +61,8 @@ Pause_check_list is a list of numbers that tells the service at which initial pa
 Pause_loop_count is used to define the ongoing attempts to unpause. If set to 100 that means the service will attempt to unpause every 100 loops. This number should be higher than any numbers in the pause_check_list.
 Error_tolerance is the amount of errors we tolerate in within the error_time_span before going into pause mode.   
 Error_time_span is the time in seconds that combines with error_tolerance to give us the max amount of erorrs in a timeframe before a service enters pause mode.  
-Mail_wait_time is the amount of time in seconds that needs to pass before the service will send out a new mail with the same severity level(ERROR, WARNING). This does not block sending out mails that will always be sent such as when a service changes its run status. However it will block mails that would come immediately after such an event. 
+Mail_wait_time is the amount of time in seconds that needs to pass before the service will send out a new mail with the same severity level(ERROR, WARNING). This does not block sending out mails that will always be sent such as when a service changes its run status. However it will block mails that would come immediately after such an event.  
+Max_sync_erda_attempt_wait_time only matters for the "Validate erda sync ARS service". It sets the time in seconds we allow an asset to have the ASSET_RECEIVED status before we try and sync it again.
 ```bash
 {
   "Asset creator ARS": {
@@ -71,8 +72,9 @@ Mail_wait_time is the amount of time in seconds that needs to pass before the se
     "pause_loop_count": 4,
     "error_tolerance": 2,
     "error_time_span": 10,
-    "mail_wait_time": 20
-  }
+    "mail_wait_time": 20,
+    "max_sync_erda_attempt_wait_time": 900
+  } 
 }
 ```
 
