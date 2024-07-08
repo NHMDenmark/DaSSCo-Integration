@@ -49,8 +49,8 @@ class HealthService():
 
         self.health.create_health_entry_from_api(id, model_data)
         
-        if warning.guid and warning.flag is not None:
-            updated = self.update_asset_flag_track_db(warning.guid, warning.flag)
+        if warning.guid and warning.flag and warning.flag_status is not None:
+            updated = self.update_asset_flag_track_db(warning.guid, warning.flag, warning.flag_status)
             if updated is False:
                 return False
         else:
@@ -82,8 +82,8 @@ class HealthService():
 
         self.health.create_health_entry_from_api(id, model_data)
         
-        if error.guid and error.flag is not None:
-            updated = self.update_asset_flag_track_db(error.guid, error.flag)
+        if error.guid and error.flag and error.flag_status is not None:
+            updated = self.update_asset_flag_track_db(error.guid, error.flag, error.flag_status)
             if updated is False:
                 return False
         else:

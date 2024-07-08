@@ -123,21 +123,22 @@ class AssetCreator():
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
                 if created is False:
-                    if status_code <= 299:                    
-                        message = self.run_util.log_msg(response)
+                    # TODO handle if status code is a negative number - this means we set it during another exception - see storage_client.get_status_code_from_exc()
+                    if 200 <= status_code <= 299:                    
+                        message = self.run_util.log_msg(self.prefix_id, response)
                         self.health_caller.warning(self.service_name, message)
                     # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
                         message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
-                        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
-                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
+                        #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
+                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         time.sleep(1)
-                    # TODO handle if status code is 555 - this means we set it during another exception - see storage_client.get_status_code_from_exc()
-                    if 500 <= status_code <= 549: # reserved status codes above 550 for other errors that can come from the StorageApi.
+                    
+                    if 500 <= status_code <= 599: 
                         message = self.run_util.log_exc(self.prefix_id, response, exc)
-                        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
-                        self.health_caller.warning(self.service_name, message)
+                        #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
+                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
                         time.sleep(1)
                     # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value) this responsibility is moved to health module, sets TEMP_ERROR status here 
 

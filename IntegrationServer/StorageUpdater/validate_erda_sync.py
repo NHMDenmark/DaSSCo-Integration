@@ -106,7 +106,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             if again is True:
                 # logs and sends error msg to health api. Service there will set the erda_sync to ERROR                
                 entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
-                self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC)
+                self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
 
             if again is None:
                 self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
