@@ -12,6 +12,9 @@ from StorageApi import storage_client
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
+import exifread
+from PIL import Image
+from PIL.TiffImagePlugin import ImageFileDirectory_v2
 from bson.json_util import dumps
 from datetime import datetime
 from dotenv import load_dotenv
@@ -99,10 +102,27 @@ def im_loopy():
             time.sleep(5)
             im_loopy()
 
+def exif_data(path_name):
+    f = open(path_name, 'rb')
+
+    # Return Exif tags
+    tags = exifread.process_file(f)
+
+    
+
+    for tag in tags.keys():
+        #if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+        print(tag)
+        #print("Key: %s, value %s" % (tag, tags[tag]))
+
+
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     
-    pass
+    exif_data("C:/Users/tvs157/Desktop/7e8-4-09-0d-00-12-0-001-00-000-040408-00000.tif")
+
+    
+    
 
     # i = IntegrationServer()
     #test()
