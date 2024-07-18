@@ -8,27 +8,27 @@ This part takes care of uploading locally created assets from workstations to a 
 Pre requisite :  A digitization session has been successfully finished by a digitizer. This means that there exists a local folder on a workstation containing at least 2 images for each digitized specimen of this session. These 2 images are a _raw_ image (saved in a proprietary image format such as .raf or .CR3) and a _converted_ image (saved in a standardized format such as .tif)  
 1. The digitizer starts the IngestionClient on the workstation.
 2. The digitizer authenticates themselves with their credentials in the IngestionClient. This is done by contacting [uploadapi_verify endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/uploadapi_verify.md ). If the digitizer is registered, a positive answer will be sent to the IngestionClient.
-3. The digitizer selects the digitization session folder [documentation](N:/SCI-SNM-DigitalCollections/DaSSCo/Workflows and workstations/GUIDES/2 Masters/Herbarium Guides/Herbarium Imaging Guide 2nd edit 20240411.docx).
+3. The digitizer selects the digitization session folder [documentation](N:/SCI-SNM-DigitalCollections/DaSSCo/Workflows and workstations/GUIDES/2 Masters/Herbarium Guides/).
 4. The digitizer fills in all necessary data regarding the digitization session, fx institution, collection, preparation type, ....
 5.  The digitizer triggers the IngestionClient to execute the automated checks and upload sequence.
 6.  First, the IngestionClient checks if every _raw_ image has a corresponding _converted_ image and vice versa.
 7. The IngestionClient creates a _metadata file_ (.json format) that contains all metadata information input by the digitizers, see [example](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/metadata_example.json).
-8. The IngestionClient checks if any images contain no information data ( 0 MB files).
+8. The IngestionClient checks if any images contain no information data (0 MB files).
 9. The IngestionClient reads the time each image was taken.
 10. The IngestionClient creates a GUID for each image from the supplied information and renames all _converted_ images and the _metdata files_ to their GUID.
 11. The IngestionClient sends each _converted_ image, its corresponding _metadata file_, and the image size and image checksum to the [uploadapi_upload endpoint](https://github.com/NHMDenmark/DaSSCo-Integration/edit/main/Documentation/Component_write_up/uploadapi_upload.md). 
 12. If the return message is positive, the _raw_ image, _converted_ image and _metadata file_ are deleted from the workstation.
-13. If any error occured in the preceeding processes, an issue is created in the [github repository](https://github.com/NHMDenmark/DaSSCo-Image-IngestionClient/issues) with workstation information.
+13. If any error occurred in the preceding processes, an issue is created in the [github repository](https://github.com/NHMDenmark/DaSSCo-Image-IngestionClient/issues) with workstation information.
 
 
 # Part II: Ingesting assets to ARS
-This part is repsonsible for uploading assets from the N-Drive to our persistent image and metadata storage, ARS.
+This part is responsible for uploading assets from the N-Drive to our persistent image and metadata storage, ARS (Asset Registry System).
 N-Drive is mounted on the intergration server.
 
-1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a [config file](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/workstations_config.json) (fx only registered and approved workstation folders are checked). Timestamped digitization folder under the respective workstation are considered new uploads if they don't have a _imported_ prefix.
+1. The integration API continuously checks the N-Drive for new uploads. It checks only directory paths that are specified in a [config file](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/workstations_config.json) (fx only registered and approved workstation folders are checked). Timestamped digitization folders under the respective workstations are considered new uploads if they don't have an _imported_ prefix.
 2. Every asset in a new upload folder is copied to the local storage of the integration server.
 3. The metadata file is kept and the information is added to the [Metadata Database] (https://github.com/NHMDenmark/DaSSCo-Integration/tree/main/Documentation/Metadata_field_descriptions).
-4. For every asset a new entry is created in the Track Database. This entry contains a variety of information about processing, some derived from the metadata. A full overview can be found [Track Database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md). Here, each asset is also asigned a batchID saved under [list](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_field_descriptions/batch_list_name.md). This batchID groups images by the workstation they were digitised on and the date they were digitised. This is required for our current MOS system to work. 
+4. For every asset a new entry is created in the Track Database. This entry contains a variety of information about processing, some derived from the metadata. A full overview can be found [Track Database](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_fields.md). Here, each asset is also assigned a batchID saved under [list](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Track_field_descriptions/batch_list_name.md). This batchID groups images by the workstation they were digitised on and the date they were digitised. This is required for our current MOS system to work. 
 5. Depending on the entry of the metadata field _pipeline_, a job list with a fixed sequence is created in the track database. See [Config files README](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/IntegrationServer/ConfigFiles/README.md)
 6. The ARS endpoint [create_asset] is contacted to create an asset on ARS. The [metadata](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/metadata_example.json) is passed onto ARS. Additionally, some required dummy data is filled in (asset_pid). For ARS documentation see [here](https://northtech.atlassian.net/wiki/spaces/DAS/pages/2188902401/Web+API).
 7. If the asset has been created succesfully, the image is uploaded to the respective assets file share. The file share is a temporary storage space where the image is available for acessing, but also deletable.
