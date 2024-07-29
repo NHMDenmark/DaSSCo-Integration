@@ -9,6 +9,7 @@ import json
 import utility
 from MongoDB import service_repository
 from Enums import status_enum
+from Enums import log_enum
 from dotenv import load_dotenv
 
 class SlackWebhook:
@@ -19,6 +20,7 @@ class SlackWebhook:
         self.service_mongo = service_repository.ServiceRepository()
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
+        self.log_enum = log_enum.LogEnum
         # the url to the slack webhook app that we are using. 
         self.url = os.getenv("slack_url")
     
@@ -36,6 +38,11 @@ class SlackWebhook:
         else:
             payload = {
                 "text": f"{status} - Service: {service_name} - Status: {run_status}"
+            }
+
+        if status == self.log_enum.TESTING.value:
+            payload = {
+                    "text": f"{status} - receive message warning/error"
             }
 
         try:
@@ -56,6 +63,10 @@ class SlackWebhook:
         payload = {
             "text": f"{severity} - Service: {service_name} - Status change to: {status}"
         }
+        if status == self.log_enum.TESTING.value:
+            payload = {
+                "text": f"{severity} - change run status test"
+            }
 
         try:
             response = requests.post(
@@ -75,6 +86,11 @@ class SlackWebhook:
             "text": f"{service_name} - Attempting to unpause self."
         }
 
+        if service_name == "Test health api":
+            payload = {
+                "text": f"TESTING - unpause message"
+            }
+
         try:
             response = requests.post(
                 self.url, 
@@ -92,6 +108,11 @@ class SlackWebhook:
         payload = {
             "text": f"UNEXPECTED ERROR - {service_name} - Health ID: {health_id}"
         }
+
+        if service_name == "Test health api":
+            payload = {
+                "text": f"TESTING - unexpected error message"
+            }
 
         try:
             response = requests.post(

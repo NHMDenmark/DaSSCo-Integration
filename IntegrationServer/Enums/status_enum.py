@@ -10,6 +10,7 @@ class StatusEnum(Enum):
     QUEUED = "QUEUED"
     PAUSED = "PAUSED"
     STOPPED = "STOPPED"
+    TESTING = "TESTING"
 
 class Status:
     def __init__(self):
@@ -22,3 +23,4 @@ class Status:
         self.QUEUED = StatusEnum.QUEUED.value
         self.PAUSED = StatusEnum.PAUSED.value
         self.STOPPED = StatusEnum.STOPPED.value
+        self.TESTING = StatusEnum.TESTING.value

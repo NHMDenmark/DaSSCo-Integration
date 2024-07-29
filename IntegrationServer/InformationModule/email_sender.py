@@ -124,6 +124,10 @@ class EmailSender:
 
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
+        
+        if service_name == "Test health api":
+            mail_subject, mail_msg = self.create_test_content("Error/warning message content")
+            return mail_subject, mail_msg
 
         add_time = ""
         mail_subject = f"{status} - {service_name} - {guid}"
@@ -148,6 +152,10 @@ EXCEPTION: {exception}
 
     def create_status_change_mail_content(self, health_id, service_name, run_status, timestamp):
 
+        if service_name == "Test health api":
+            mail_subject, mail_msg = self.create_test_content("Status change mail content")
+            return mail_subject, mail_msg
+
         mail_subject = f"{service_name} status changed to {run_status}"
 
         mail_msg = f"""
@@ -161,4 +169,11 @@ TIMESTAMP: {timestamp}
                     """
         return mail_subject, mail_msg
     
-    
+    def create_test_content(self, subject):
+
+        mail_subject = "UNIT TEST MAIL"
+
+        mail_msg = f"""
+{subject} - everything is fine.
+                    """
+        return mail_subject, mail_msg

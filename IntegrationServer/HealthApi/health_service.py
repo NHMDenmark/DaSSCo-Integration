@@ -41,6 +41,9 @@ class HealthService():
 
         msg_parts = self.split_message(warning.message)
 
+        if msg_parts is False:
+            return False
+
         # create db entry in health db
         model_data = self.create_health_model(warning, msg_parts)
 
@@ -77,8 +80,14 @@ class HealthService():
 
         msg_parts = self.split_message(error.message)
 
+        if msg_parts is False:
+            return False
+
         # create db entry in health db
         model_data = self.create_health_model(error, msg_parts)
+
+        if model_data is False:
+            return False
 
         # gets the id for the health database
         id = self.create_id(msg_parts)
@@ -118,10 +127,16 @@ class HealthService():
 
         parts = self.split_message(info.message)
 
+        if parts is False:
+            return False
+
         # gets the id for the health database
         id = self.create_id(parts)
 
         model_data = self.change_run_status_create_health_model(info, parts)
+
+        if model_data is False:
+            return False
 
         self.health.create_health_entry_from_api(id, model_data)
 
@@ -141,6 +156,10 @@ class HealthService():
     def attempted_unpause(self, info):
         
         parts = self.split_message(info.message)
+
+        if parts is False:
+            return False
+
         id = self.create_id(parts)
         model_data = self.create_unexpected_error_health_model(info, parts)
         self.health.create_health_entry_from_api(id, model_data)
@@ -162,6 +181,10 @@ class HealthService():
     def unexpected_error(self, info):
         
         parts = self.split_message(info.message)
+
+        if parts is False:
+            return False
+
         id = self.create_id(parts)
         model_data = self.create_unexpected_error_health_model(info, parts)
         self.health.create_health_entry_from_api(id, model_data)
@@ -257,6 +280,10 @@ class HealthService():
         model.service = warning.service_name
         model.timestamp = msg_parts[2]
         model.severity_level = msg_parts[1]
+
+        if model.severity_level not in log_enum.LogEnum:
+            return False
+    
         model.message = msg_parts[4]
         model.sent = self.validate_enum.NO.value
 
@@ -329,7 +356,10 @@ class HealthService():
         # parts will consist of: prefix_id[0], severity level[1], timestamp[2], service[3], message[4], exception[5]
         parts = message.split("###")
 
-        return parts
+        if len(parts) == 5 or len(parts) == 6:
+            return parts 
+
+        return False
     
     """
     Creates the id for the health database.
