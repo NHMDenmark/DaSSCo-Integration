@@ -41,7 +41,7 @@ class TrackModel:
         self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
-
+        
 
     def create_joblist(self):
         job_mapping = self.util.get_value(self.pipeline_job_config_path, self.pipeline)

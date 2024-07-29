@@ -79,11 +79,11 @@ class StorageClient():
                     status_code = int(status_code)
                     note = ""
                except Exception as e:
-                    status_code = 555
+                    status_code = -1
                     note = f"Status code set to {status_code} from exception: {e}"
                return status_code, note
           else:
-               status_code = 566
+               status_code = -2
                note = f"Status code was not found and was set to {status_code} from exception: {e}"
                return status_code, note
 

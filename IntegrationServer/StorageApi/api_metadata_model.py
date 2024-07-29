@@ -35,4 +35,4 @@ class ApiMetadataModel(BaseModel):
     workstation: str = ""
     digitizer: str = ""
     tags: Dict[str, str] = {}
-    
+
