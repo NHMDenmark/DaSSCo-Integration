@@ -13,8 +13,9 @@ from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
 import exifread
-from PIL import Image
+from PIL import Image, TiffImagePlugin, TiffTags
 from PIL.TiffImagePlugin import ImageFileDirectory_v2
+from pyexiv2 import Image as ImgMeta
 from bson.json_util import dumps
 from datetime import datetime
 from dotenv import load_dotenv
@@ -112,18 +113,59 @@ def exif_data(path_name):
 
     for tag in tags.keys():
         #if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-        print(tag)
-        #print("Key: %s, value %s" % (tag, tags[tag]))
+        #print(tag)
+        print("Key: %s, value %s" % (tag, tags[tag]))
+
+def modify_exif_data(file_path, new_exif_data):
+    # Open the image file with Pillow
+    with Image.open(file_path) as img:
+        # Convert to single-strip format
+        img = img.convert("RGB")  # Convert to RGB to simplify the process
+
+        # Create a new EXIF data object
+        exif_dict = img.getexif()
+
+        print(img.getexif().bigtiff)
+        
+        for tag, value in exif_dict:
+            print(tag, value)
+        
+        # Update the EXIF data with new values
+        for tag, value in new_exif_data.items():
+            print(tag, value)
+            exif_dict[tag] = value
+
+        # Save the image with the modified EXIF data back to the same file
+        img.save("C:/Users/tvs157/Desktop/first3.tif", tiffinfo=exif_dict)
 
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
-    
-    exif_data("C:/Users/tvs157/Desktop/7e8-4-09-0d-00-12-0-001-00-000-040408-00000.tif")
+    """
+    Image.MAX_IMAGE_PIXELS = None
+    new_exif_data = {
+    270: "New Description",  # Tag 270 is for ImageDescription
+    305: "New Software"      # Tag 305 is for Software
+}
 
-    
-    
+    modify_exif_data("C:/Users/tvs157/Desktop/first.tif", new_exif_data)
 
+    exif_data("C:/Users/tvs157/Desktop/first3.tif")
+    """
+    
+    with ImgMeta("C:/Users/tvs157/Desktop/first2.tif") as img_meta:
+
+        exif = img_meta.read_exif()
+        
+        a = exif.items()
+
+        for key, value in a:
+            print(key, value)
+
+        #img_meta.modify_exif({305: "Lars' studio"})
+
+
+    exif_data("C:/Users/tvs157/Desktop/first2.tif")
     # i = IntegrationServer()
     #test()
     #x()

@@ -6,6 +6,9 @@ sys.path.append(project_root)
 
 import requests
 
+""""
+Calls the health api with various information that should be noted and handled. 
+"""
 class HealthCaller():
 
     def __init__(self):

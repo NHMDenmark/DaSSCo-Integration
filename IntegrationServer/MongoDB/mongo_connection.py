@@ -77,7 +77,7 @@ class MongoConnection:
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         """
-        model = track_model.EntryModel(guid, pipeline)
+        model = track_model.TrackModel(guid, pipeline)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:
@@ -95,7 +95,7 @@ class MongoConnection:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = track_model.EntryModel(guid, pipeline, derivative=True)
+        model = track_model.TrackModel(guid, pipeline, derivative=True)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:

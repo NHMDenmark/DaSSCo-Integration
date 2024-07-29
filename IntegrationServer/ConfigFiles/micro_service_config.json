@@ -116,5 +116,14 @@
     "error_tolerance": -1,
     "error_time_span": -1,
     "mail_wait_time": -1
-  }
+  },
+  "Test health api": {
+      "module": "tests",
+      "pause_time": 5,
+      "pause_check_list": [2, 7],
+      "pause_loop_count": 4,
+      "error_tolerance": 2,
+      "error_time_span": 10,
+      "mail_wait_time": 20
+    }
 }

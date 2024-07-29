@@ -44,6 +44,9 @@ class HealthService():
         # create db entry in health db
         model_data = self.create_health_model(warning, msg_parts)
 
+        if model_data is False:
+            return False
+
         # gets the id for the health database
         id = self.create_id(msg_parts)
 
@@ -226,6 +229,10 @@ class HealthService():
         model.service = warning.service_name
         model.timestamp = msg_parts[2]
         model.severity_level = msg_parts[1]
+
+        if model.severity_level not in log_enum.LogEnum:
+            return False 
+
         model.message = msg_parts[4]
         model.sent = self.validate_enum.NO.value
     

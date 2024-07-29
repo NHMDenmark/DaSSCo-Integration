@@ -9,6 +9,7 @@ class LogEnum(Enum):
     WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
+    TESTING = "TESTING"
 
 class Log:
     def __init__(self):
@@ -17,3 +18,4 @@ class Log:
         self.WARNING = LogEnum.WARNING.value
         self.ERROR = LogEnum.ERROR.value
         self.CRITICAL = LogEnum.CRITICAL.value
+        self.TESTING = LogEnum.TESTING.value
