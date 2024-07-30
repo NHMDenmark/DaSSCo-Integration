@@ -41,13 +41,36 @@ class TestHealthApi(unittest.TestCase):
             "run_status": "bogus",
             "message": "bogus###bogus###bogus###bogus###bogus"
         }
+        self.test_pause_model = {
+            "service_name": self.service_name,
+            "run_status": "TESTING",
+            "pause_counter": -1,
+            "message": "Tha###TESTING###2024-09-28 10:51:57,066###Tests/test_health_api.py###Test message for attempted unpause"
+        }
+        self.test_bogus_pause_model = {
+            "service_name": "bogus",
+            "run_status": "bogus",
+            "pause_counter": -99,
+            "message": "bogus***bogus***bogus###bogus###bogus"
+        }
+        self.test_unexpected_error_model = {
+            "service_name": self.service_name,
+            "message": "Tha###TESTING###2024-10-28 10:51:57,066###Tests/test_health_api.py###Test message for unexpected error###Exception is a test"
+        }
+        self.test_bogus_unexpected_error_model = {
+            "service_name": "bogus",
+            "message": "bogus---bogus***bogus###bogus???bogus"
+        }
+
 
     @classmethod
     def tearDownClass(self):
-        # remove database test entries, the month is the difference between them 2024 06, 07 08 etc
+        # remove database test entries, the month number is the difference between them 2024 06, 07 08 etc
         self.health_repo.delete_entry("Tha_20240628105157066")
         self.health_repo.delete_entry("Tha_20240728105157066")
         self.health_repo.delete_entry("Tha_20240828105157066")
+        self.health_repo.delete_entry("Tha_20240928105157066")
+        self.health_repo.delete_entry("Tha_20241028105157066")
         self.health_repo.close_connection()
     
     def test_receive_warning(self):
@@ -84,10 +107,30 @@ class TestHealthApi(unittest.TestCase):
         response = self.client.post("/api/run_change_status", data= model_json)
         self.assertEqual(response.status_code, 422, f"Should have failed with a status 422 got: {response.status_code}")
 
-        self.test_bogus_change_status["message"] = "Yoho_pirates_ahoy"
+        self.test_bogus_change_status["message"] = "yoho_pirates_ahoy"
 
         model_json = json.dumps(self.test_bogus_change_status)
         response = self.client.post("/api/run_change_status", data= model_json)
+        self.assertEqual(response.status_code, 422, f"Should have failed with a status 422 got: {response.status_code}")
+
+    def test_attempted_unpause(self):
+        
+        model_json = json.dumps(self.test_pause_model)
+        response = self.client.post("/api/attempt_unpause", data= model_json)
+        self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
+        
+        model_json = json.dumps(self.test_bogus_pause_model)
+        response = self.client.post("/api/attempt_unpause", data= model_json)
+        self.assertEqual(response.status_code, 422, f"Should have failed with a status 422 got: {response.status_code}")
+
+    def test_unexpected_error(self):
+
+        model_json = json.dumps(self.test_unexpected_error_model)
+        response = self.client.post("/api/unexpected_error", data= model_json)
+        self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
+        
+        model_json = json.dumps(self.test_bogus_unexpected_error_model)
+        response = self.client.post("/api/unexpected_error", data= model_json)
         self.assertEqual(response.status_code, 422, f"Should have failed with a status 422 got: {response.status_code}")
 
 if __name__ == "__main__":
