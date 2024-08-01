@@ -36,7 +36,7 @@ class StorageClient():
      """
      Creates the asset with ARS. Takes the guid and the required allocation size for the guid as arguments.
      Requests the metadata from the storage service and metadata repository. Uses the api wrapper to call the ARS endpoint.
-     Checks the return status and if there its not 200, extracts the status code from the expected exception. If extraction fails it still receives a "status code" (555 or 566).
+     Checks the return status and if there its not 200, extracts the status code from the expected exception. If extraction fails it still receives a negative "status code".
      Returns a boolean true/false success/failure, a message that can be added to a log message, any exception, the status code. 
      """
      def create_asset(self, asset_guid, allocation_size = 1):
@@ -63,6 +63,10 @@ class StorageClient():
                     
                     status_code, self.note = self.get_status_code_from_exc(exc)
                     
+                    # negative defined status codes
+                    if status_code < 0:
+                         return False, self.note, exc, status_code
+
                     if 400 <= status_code <= 499:
                          return False, "ARS api failed to create asset.", exc, status_code
                     
@@ -84,7 +88,7 @@ class StorageClient():
                return status_code, note
           else:
                status_code = -2
-               note = f"Status code was not found and was set to {status_code} from exception: {e}"
+               note = f"Status code was not found and was set to {status_code}"
                return status_code, note
 
      def sync_erda(self, guid):

@@ -171,7 +171,7 @@ TIMESTAMP: {timestamp}
     
     def create_test_content(self, subject):
 
-        mail_subject = "UNIT TEST MAIL"
+        mail_subject = "UNIT TEST"
 
         mail_msg = f"""
 {subject} - everything is fine.

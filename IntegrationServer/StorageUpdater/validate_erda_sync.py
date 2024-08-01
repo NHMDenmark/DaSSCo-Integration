@@ -120,7 +120,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         while self.run == self.RUNNING:
 
-            # checks if service should keep running            
+            # checks if service should keep running
             self.run = self.run_util.check_run_changes()
 
             # Pause loop

@@ -83,10 +83,10 @@ class AssetCreator():
             self.health_caller.error(self.service_name, entry)
 
             # change run value in db TODO this should be outcommented when testing pause functionality
-            #self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
             
             # log the status change + health call TODO this should be outcommented when testing pause functionality
-            #self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
 
             # update run values
             self.run = self.run_util.get_service_run_status()
@@ -102,7 +102,7 @@ class AssetCreator():
         while self.run == self.status_enum.RUNNING.value:
             
             # TODO remove/outcomment this, inserted for testing pause functionality
-            self.storage_api = self.create_storage_api()
+            #self.storage_api = self.create_storage_api()
 
             asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
 
@@ -123,10 +123,15 @@ class AssetCreator():
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
                 if created is False:
-                    # TODO handle if status code is a negative number - this means we set it during another exception - see storage_client.get_status_code_from_exc()
+                    # handles if status code is a negative number - this means we set it during another exception - see storage_client.get_status_code_from_exc()
+                    if status_code < 0: 
+                        message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
+                        self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+
                     if 200 <= status_code <= 299:                    
                         message = self.run_util.log_msg(self.prefix_id, response)
                         self.health_caller.warning(self.service_name, message)
+                        
                     # TODO handle 300-399
 
                     if 400 <= status_code <= 499:
