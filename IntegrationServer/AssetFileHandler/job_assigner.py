@@ -8,9 +8,8 @@ import utility
 from Enums import status_enum
 
 """ 
-Creates a _jobs.json file and assigns jobs based on pipeline for new files. 
+Looks for the jobs in the job config file based on the pipeline name and creates and returns the list of jobs.  
 """
-
 
 class JobAssigner:
     def __init__(self):
@@ -34,4 +33,4 @@ class JobAssigner:
             return jobs_dict
 
         except Exception as e:
-            print(f"Pipeline name does not match job in config file: {e}")
+            print(f"Pipeline name likely does not match job in config file: {e}")

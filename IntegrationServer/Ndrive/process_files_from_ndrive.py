@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from JobList import job_driver
+from AssetFileHandler import asset_handler
 import time
 import utility
 from MongoDB import service_repository
@@ -31,7 +31,7 @@ class ProcessNewFiles():
         self.service_name = "Process new files (Ndrive)"
         self.prefix_id = "Pnf(N)"
 
-        self.jobby = job_driver.JobDriver()
+        self.asset_handler = asset_handler.AssetHandler()
         self.service_mongo = service_repository.ServiceRepository()
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
@@ -54,7 +54,7 @@ class ProcessNewFiles():
 
         while self.run == self.status_enum.RUNNING.value:
 
-            self.jobby.process_new_directories_from_ndrive()
+            self.asset_handler.process_new_directories()
 
             time.sleep(2)
 

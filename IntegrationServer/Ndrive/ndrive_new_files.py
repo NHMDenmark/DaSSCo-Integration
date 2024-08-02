@@ -90,7 +90,8 @@ class NdriveNewFilesFinder():
                     # Check if a directory with the same base_name already exists in the Error directory
                     error_directory_path = os.path.join(f"{project_root}/Files/Error", base_name)
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
-                        print(f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
+                        entry = self.run_util.log_msg(self.prefix_id, f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
+                        self.health_caller.warning(self.service_name, entry)
                     else:
                         local_folder = os.path.join(local_destination, base_name)
                         os.makedirs(local_folder, exist_ok=True)
@@ -101,23 +102,25 @@ class NdriveNewFilesFinder():
                             remote_path = os.path.join(remote_folder, file)
 
                             shutil.copy(remote_path, local_path)
-
-                print(f"Copy successful from {remote_folder} to {local_destination}.")
-
-                self.rename_batch_directory_after_import(remote_folder)
+                
+                # logs the transaction # TODO logs it as a warning currently which is a bit wrong obv
+                self.run_util.log_msg(self.prefix_id, f"Copy successful from {remote_folder} to {local_destination}.")
+                
+                self.rename_batch_directory(remote_folder)
 
             except Exception as e:
-                print(f"An error occurred: {e}")
+                self.rename_batch_directory(remote_folder, prefix="error_")
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} encountered an unexpected erorr while trying to copy new files from {remote_folder}. Added error_ to the folder name.", exc=e, level=self.status_enum.ERROR.value)
+                self.health_caller.error(self.service_name, entry)
 
     """
-    Renames the batch directory on the direcory the import was done from. Adds the prefix imported_ to the directory.
+    Renames the batch directory on the direcory the import was done from. As default adds the prefix imported_ to the directory.
     """
-
-    def rename_batch_directory_after_import(self, local_path):
+    def rename_batch_directory(self, local_path, prefix = "imported_"):
         batch_name = os.path.basename(local_path)
 
         # Define the new path
-        new_path = os.path.join(os.path.dirname(local_path), f"imported_{batch_name}")
+        new_path = os.path.join(os.path.dirname(local_path), f"{prefix}{batch_name}")
         old_path = os.path.join(os.path.dirname(local_path), batch_name)
 
         # Rename the directory
@@ -141,9 +144,9 @@ class NdriveNewFilesFinder():
                 # Further check for subdirectories
                 subdirectories = os.listdir(f"{remote_folder}/{directory}")
 
-                # Check for subdirectories that do not start with "imported_"
+                # Check for subdirectories that do not start with "imported_" or "error_"
                 for subdirectory in subdirectories:
-                    if not subdirectory.startswith("imported_"):
+                    if not subdirectory.startswith("imported_") and not subdirectory.startswith("error_"):
                         return f"{remote_folder}/{directory}/{subdirectory}"
         # If no matching directory is found
         return None

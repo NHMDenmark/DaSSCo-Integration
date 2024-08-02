@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import shutil
 import utility
-from JobList import job_assigner
+from AssetFileHandler import job_assigner
 from MongoDB import mongo_connection, file_model
 from Enums import status_enum, validate_enum
 import json
@@ -15,7 +15,7 @@ import json
 Responsible for the internal processing of assets. 
 """
 
-class JobDriver:
+class AssetHandler:
 
     def __init__(self):
         self.util = utility.Utility()
@@ -39,7 +39,7 @@ class JobDriver:
     Creates new entries in the mongodb for the asset. 
     """
 
-    def process_new_directories_from_ndrive(self):
+    def process_new_directories(self):
 
         input_dir = self.input_dir
         in_process_dir = self.in_process_dir
@@ -159,7 +159,6 @@ class JobDriver:
                     # Move the directory to the 'InProcess' directory or error if it already exists
                     new_directory_path = os.path.join(in_process_dir,
                                                       f"{pipeline_name}/{batch_name}/{subdirectory}")
-
                     if os.path.exists(new_directory_path):
                         shutil.move(subdirectory_path, error_dir)
                     else:
