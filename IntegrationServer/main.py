@@ -25,9 +25,12 @@ import subprocess
 import logging
 from HealthUtility import health_caller
 from Enums.feedback_enum import Feedback
+from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
 from pymongo.errors import InvalidOperation
+import field_validation
+from validator_collection import checkers, validators
 """"
 Test area for the different processes. May contain deprecated information.
 """
@@ -45,6 +48,7 @@ class IntegrationServer(object):
 
 def test():
     util = utility.Utility()
+    field = field_validation.FieldValidation()
     # jobby = job_driver.JobDriver()
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
@@ -82,8 +86,12 @@ def test():
     #p = h.get_recent_errors("some service", 2000000)
     #print(p[0:7])
     #h.close_connection()
+    #a = util.check_value_in_enum(None, FeedbackEnum)
     
-    
+    a = field.is_acceptable_string("asset-guid-53268-æææ")
+
+    print(a)
+
 class x(Feedback, LogClass):
     def __init__(self):
         Feedback.__init__(self)
@@ -141,6 +149,14 @@ def modify_exif_data(file_path, new_exif_data):
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
+    #test() 2024-04-09T10:00:52+02:00
+    
+    time = ""
+    b = field_validation.FieldValidation().datetime_validator(time)
+    print(b)
+    x = validators.datetime(time, allow_empty=True)
+    y = checkers.is_datetime(x)
+    print(x, y, type(x))
     """
     Image.MAX_IMAGE_PIXELS = None
     new_exif_data = {
@@ -152,7 +168,7 @@ if __name__ == '__main__':
 
     exif_data("C:/Users/tvs157/Desktop/first3.tif")
     """
-    
+    """
     with ImgMeta("C:/Users/tvs157/Desktop/first2.tif") as img_meta:
 
         exif = img_meta.read_exif()
@@ -166,6 +182,7 @@ if __name__ == '__main__':
 
 
     exif_data("C:/Users/tvs157/Desktop/first2.tif")
+    """
     # i = IntegrationServer()
     #test()
     #x()

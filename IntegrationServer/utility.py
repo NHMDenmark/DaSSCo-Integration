@@ -147,3 +147,14 @@ class Utility:
         """
         cleaned_string = re.sub(r'[^a-zA-Z0-9]', '', input_string)
         return cleaned_string
+    
+    """
+    checks if a value exists within the given enum class returns true/false
+    """
+    def check_value_in_enum(self, value, enum_class):
+
+        if value in enum_class:
+            return True
+        
+        return False
+        
