@@ -62,7 +62,7 @@ class HPCUploader(LogClass):
                                                                             "has_new_file": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.NO.value}])
             
             if asset is None:
-                print("No asset found")
+                #print("No asset found")
                 time.sleep(10)        
             else: 
                  

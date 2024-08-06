@@ -48,6 +48,7 @@ class HPCAssetCreator(LogClass):
     def create_ssh_connection(self):
         self.cons.create_ssh_connection(self.ssh_config_path)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
+        print(self.cons.exc)
         if self.cons.exc is not None:
             entry = self.log_exc(self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
@@ -91,7 +92,7 @@ class HPCAssetCreator(LogClass):
                     script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
                     # print(script_path)
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
-
+                    print(f"bash {script_path} {guid} {batch_id} {link}")
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(1)

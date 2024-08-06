@@ -69,7 +69,8 @@ class HealthService():
         self.track.update_entry(guid, flag, self.validate_enum.ERROR.value)
 
     def inform_slack_mail(self, parts, guid, service_name):
-        if len(parts) == 5:
+
+        if len(parts) == 5:            
             if guid != "No guid":
                 self.mail.send_error_mail(guid, service_name, parts[2], parts[0], parts[3], parts[1], parts[4])
                 self.slack.message_from_integration(guid, service_name, parts[2], parts[0])
@@ -91,5 +92,6 @@ class HealthService():
     """
     def split_message(self, message):
         # parts will consist of: severity level[0], timestamp[1], service[2], message[3], exception[4]
-        parts = message.split("#")
+        parts = message.split("###")
+        
         return parts

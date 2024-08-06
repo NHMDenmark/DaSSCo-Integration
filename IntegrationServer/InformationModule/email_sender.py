@@ -22,7 +22,7 @@ class EmailSender:
         self.server_host = self.mail_configs.get("server_host") 
         self.server_port = self.mail_configs.get("server_port")  
         self.address_from = self.mail_configs.get("sender_address")
-        self.address_to = self.mail_configs.get("receiver_address")
+        self.address_to = "" # self.mail_configs.get("receiver_address")
         
         # avoids putting emails used for testing into github, just leave config fields blank and configure fields in dotenv file
         if self.address_from == "":

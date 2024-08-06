@@ -34,9 +34,9 @@ job_model = JobModel
 file_info_model = FileInfoModel
 
 
-@app.get("/")
+@app.get("/yo")
 def index():
-    return "keep out both of you"
+    return "keep out all of you"
 
 @app.get("/api/test")
 def test():
@@ -55,7 +55,7 @@ async def receive_metadata(metadata: metadata_model):
 @app.post("/api/v1/derivative")
 async def receive_derivative_metadata(metadata: metadata_model):
     
-    received = service.received_derivative(metadata)
+    received = service.receive_derivative_metadata(metadata)
 
     if received is False:
         return JSONResponse(content={"error": "derivative fail"}, status_code=422)

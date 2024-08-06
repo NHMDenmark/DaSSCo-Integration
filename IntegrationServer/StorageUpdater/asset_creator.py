@@ -52,7 +52,7 @@ class AssetCreator(LogClass):
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted.", storage_api.exc, self.log_enum.ERROR.value)
+            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}", storage_api.exc, self.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
             
@@ -66,6 +66,7 @@ class AssetCreator(LogClass):
 
             if asset is not None:
                 guid = asset["_id"]
+                print(f"Found asset: {guid}")
                 
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
@@ -102,7 +103,7 @@ class AssetCreator(LogClass):
                 time.sleep(1)
 
             if asset is None:
-                print(f"failed to find assets")
+                #print(f"failed to find assets")
                 time.sleep(10)
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            

@@ -52,7 +52,7 @@ class OpenShare(LogClass):
         storage_api = storage_client.StorageClient()
          
         if storage_api.client is None:
-            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted.", storage_api.exc, self.log_enum.ERROR.value)
+            entry = self.log_exc(f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}", storage_api.exc, self.log_enum.ERROR.value)
             self.health_caller.warning(self.service_name, entry)
             self.run = self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
             
@@ -74,9 +74,9 @@ class OpenShare(LogClass):
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 asset_size = self.mongo_track.get_value_for_key(guid, "asset_size")
-                
+                print(f"Attempt open share for: {guid}")
                 proxy_path = self.storage_api.open_share(guid, institution, collection, asset_size)
-                
+                print(proxy_path)
                 if proxy_path is not False:
 
                     self.mongo_track.update_entry(guid, "proxy_path", proxy_path)
