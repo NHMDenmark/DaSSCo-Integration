@@ -1,4 +1,4 @@
-#specimen, no mso: this asset has one specimen attached 
+#specimen, no mso: this sheet has one specimen attached 
 {    "asset_subject": "specimen",
     "barcode": ["123-456"], 
      "multispecimen": false,
@@ -6,7 +6,7 @@
     "status": "",
 }
 
-#specimen,  mso: this asset has two specimen attached to it
+#specimen,  mso: this sheet has two specimen attached to it
 {    "asset_subject": "specimen",
     "barcode": ["123-456","789-000"],
      "multispecimen": true,
@@ -14,7 +14,7 @@
     "status": "",
 }
 
-#label,  no mso: this asset is a label, it links to the respective specimen via the barcode
+#label,  no mso: this sheet is a label, it links to the respective specimen via the barcode
 {    "asset_subject": "label",
     "barcode": ["123-456"],
      "multispecimen": false,
@@ -22,7 +22,7 @@
     "status": "",
 }
 
-#label,   mso: this asset is a label, it links to the respective specimen(plural) via the barcodes
+#label,   mso: this sheet is a label, it links to the respective specimen(plural) via the barcodes
 {    "asset_subject": "label",
     "barcode": ["123-456","789-000"],
      "multispecimen": false,
