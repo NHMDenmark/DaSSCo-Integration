@@ -2,32 +2,28 @@
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1"], 
      "multispecimen": false,
-    "parent_guid": "", 
-    "status": "",
+
 }
 
 #multispecimen sheet: 2 specimen, no label
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-2"],
      "multispecimen": true,
-    "parent_guid": "", 
-    "status": "",
+
 }
 
 #specimen sheet: 1 specimen, 1 label
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
      "multispecimen": false,
-    "parent_guid": "", 
-    "status": "",
+
 }
 
 #multispecimen sheet: 2 specimen, 1 label
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-2","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
      "multispecimen": true,
-    "parent_guid": "", 
-    "status": "",
+
 }
 
 
@@ -35,8 +31,7 @@
 {    "asset_subject": "label",
     "barcode": ["specimen-barcode-of_specimen_related_by_disposable_barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-2"],
      "multispecimen": false,
-    "parent_guid": "", 
-    "status": "",
+
 }
 
 
