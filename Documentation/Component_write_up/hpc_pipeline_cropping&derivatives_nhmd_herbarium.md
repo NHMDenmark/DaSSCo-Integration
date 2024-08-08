@@ -17,8 +17,11 @@ The cropping algorithm works as follows:
 
 It creates two new guids by increasing the derivative specific numerals.
 Example: 
+
 asset_guid received         7e8-3-0f-0a-1a-0c-0-001-00-000-08e212-00000
+
 asset_guid 400 ppi (TIF)    7e8-3-0f-0a-1a-0c-0-001-00-001-08e212-00000
+
 asset_guid 72 ppi (JPEG)    7e8-3-0f-0a-1a-0c-0-001-00-002-08e212-00000
 
 It then sends two requests to create new assets with the respective guids & metadata.
