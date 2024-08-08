@@ -21,16 +21,14 @@ asset_guid received         7e8-3-0f-0a-1a-0c-0-001-00-000-08e212-00000
 asset_guid 400 ppi (TIF)    7e8-3-0f-0a-1a-0c-0-001-00-001-08e212-00000
 asset_guid 72 ppi (JPEG)    7e8-3-0f-0a-1a-0c-0-001-00-002-08e212-00000
 
-It then sends two requests to create new assets with the respective guids,images & metadata.
+It then sends two requests to create new assets with the respective guids & metadata.
+It saves the derivative image locally. To upload the image, [hpc_pipeline_asset_upload](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_pipeline_asset_upload.md) has to be called with the derivative guid.
 It reports to the [Hpc_api update_asset] endpoint that the job has finished.
+
+NOTE: As of 08-08-2024 we only create the 400 PPI tif image. We have implemented the JPEG derivative creation but have not tested an upload of it to ARS.
 
 **Outputs/Updates:**  
 Sends the following info in the first call to [Hpc_api create new asset]() endpoint:
-- asset_guid 400 ppi (TIF)
-- metadata file
-
-Sends the following info in the second call to [Hpc_api create new asset]() endpoint:
-- asset_guid 72 ppi (JPEG)
 - metadata file
 
 Sends the following info in the third call to [Hpc_api update_asset](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_api_update_asset.md) endpoint:
@@ -40,4 +38,4 @@ Sends the following info in the third call to [Hpc_api update_asset](https://git
 - "data": { }
 
 **Calls:**  
-Calls [Hpc_api create new asset]  twice, followed by [Hpc_api update_asset](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_api_update_asset.md).
+Calls [Hpc_api create new asset]  once, followed by [Hpc_api update_asset](https://github.com/NHMDenmark/DaSSCo-Integration/blob/main/Documentation/Component_write_up/hpc_api_update_asset.md).
