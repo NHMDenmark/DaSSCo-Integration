@@ -1,3 +1,4 @@
+#metadata fields updated from us after barcode reading for different cases
 #specimen sheet: 1 specimen, no label
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1"], 
@@ -34,4 +35,17 @@
 
 }
 
+#metadata fields that should be updated by ARS automatically
+
+{
+    "asset_created_by": "",
+    "asset_updated_by": "",
+    "date_asset_created": null,
+    "date_asset_updated": null,
+    "date_metadata_updated": "",
+    "date_metadata_uploaded": "",
+    "metadata_updated_by": "",
+    "metadata_uploaded_by": "",
+
+}
 
