@@ -9,7 +9,7 @@
     "audited": false,
     "audited_by": "",
     "audited_date": null,
-    "barcode": [],
+    "barcode": ["specimen-barcode-123-456"],
     "collection": "Vascular plants",
     "date_asset_created": null,
     "date_asset_deleted": null,
