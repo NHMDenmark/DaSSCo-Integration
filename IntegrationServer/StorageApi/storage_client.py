@@ -42,12 +42,14 @@ class StorageClient():
                return False
 
           data_dict = json.loads(json_data)
-
+          
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
           if data_dict["payload_type"] == "":
                data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
+
+          print(allocation_size, data_dict)
 
           try:
                response = self.client.assets.create(data_dict, allocation_size)
@@ -60,12 +62,16 @@ class StorageClient():
                     return False, f"Received {status_code}, while creating asset.", None, status_code
           except Exception as exc:
                     
-                    status_code = self.get_status_code_from_exc(exc)
+                    status_code, note = self.get_status_code_from_exc(exc)
                     
                     if 400 <= status_code <= 499:
                          return False, "ARS api failed to create asset.", exc, status_code
                     
                     if 500 <= status_code <= 599:
+
+                         if note is not None:
+                              return False, f"ARS api, keycloak or dassco sdk failure. {note}", exc, status_code
+
                          return False, "ARS api, keycloak or dassco sdk failure", exc, status_code
 
      # helper function that extracts the status code from the exception received from dassco-storage-client 
@@ -141,6 +147,23 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
           
+     def close_share(self, guid, institution = "INSERTED_VALUE", collection = "INSERTED_VALUE", users = ["OCTOPUS"], allocation_mb = 1):
+
+          try:
+               response = self.client.delete_share(self, institution, collection, guid, users, allocation_mb)
+
+               status_code = response["status_code"]
+               if status_code == 200:
+
+                    return True
+               else:
+                    return False
+
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
+
+
      def update_metadata(self, guid, update_user = "OCTOPUS"):
 
           json_data = self.service.get_metadata_json_format(guid)

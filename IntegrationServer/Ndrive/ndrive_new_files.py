@@ -44,6 +44,7 @@ class NdriveNewFilesFinder:
             service_run = self.util.get_value(run_config_path, "ndrive_new_files_run")
 
             if all_run == "STOPPED" or service_run == "False":
+                print("Service stopped")
                 self.run = False
                 
 

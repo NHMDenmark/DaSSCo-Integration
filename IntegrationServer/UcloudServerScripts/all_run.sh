@@ -15,3 +15,4 @@ nohup python "$root/StorageUpdater/sync_erda.py" > "$root/StorageUpdater/sync_er
 nohup python "$root/StorageUpdater/update_metadata.py" > "$root/StorageUpdater/update_metadata.out" 2>&1 &
 nohup python "$root/StorageUpdater/validate_erda_sync.py" > "$root/StorageUpdater/validate_erda.out" 2>&1 &
 nohup python "$root/StorageUpdater/open_share.py" > "$root/StorageUpdater/open_share.out" 2>&1 &
+nohup python "$root/StorageUpdater/close_share.py" > "$root/StorageUpdater/close_share.out" 2>&1 &

@@ -14,7 +14,7 @@ message_model = MessageModel
 
 @health.get("/")
 def index():
-    return "sickeningly"
+    return "sickeningly masterful"
 
 @health.post("/api/warning")
 async def receive_warning(warning: message_model):
