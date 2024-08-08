@@ -1,31 +1,42 @@
-#specimen, no mso: this sheet has one specimen attached 
+#specimen sheet: 1 specimen, no label
 {    "asset_subject": "specimen",
-    "barcode": ["123-456"], 
+    "barcode": ["specimen-barcode-1"], 
      "multispecimen": false,
     "parent_guid": "", 
     "status": "",
 }
 
-#specimen,  mso: this sheet has two specimen attached to it
+#multispecimen sheet: 2 specimen, no label
 {    "asset_subject": "specimen",
-    "barcode": ["123-456","789-000"],
+    "barcode": ["specimen-barcode-1","specimen-barcode-2"],
      "multispecimen": true,
     "parent_guid": "", 
     "status": "",
 }
 
-#label,  no mso: this sheet is a label, it links to the respective specimen via the barcode
-{    "asset_subject": "label",
-    "barcode": ["123-456"],
+#specimen sheet: 1 specimen, 1 label
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
      "multispecimen": false,
     "parent_guid": "", 
     "status": "",
 }
 
-#label,   mso: this sheet is a label, it links to the respective specimen(plural) via the barcodes
+#multispecimen sheet: 2 specimen, 1 label
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1","specimen-barcode-2","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
+     "multispecimen": true,
+    "parent_guid": "", 
+    "status": "",
+}
+
+
+#label sheet: no specimen, 1 label
 {    "asset_subject": "label",
-    "barcode": ["123-456","789-000"],
+    "barcode": ["specimen-barcode-of_specimen_related_by_disposable_barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-2"],
      "multispecimen": false,
     "parent_guid": "", 
     "status": "",
 }
+
+
