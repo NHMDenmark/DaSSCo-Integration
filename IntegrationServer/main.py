@@ -151,12 +151,14 @@ if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
     
+    """
     time = ""
     b = field_validation.FieldValidation().datetime_validator(time)
     print(b)
     x = validators.datetime(time, allow_empty=True)
     y = checkers.is_datetime(x)
     print(x, y, type(x))
+    """
     """
     Image.MAX_IMAGE_PIXELS = None
     new_exif_data = {

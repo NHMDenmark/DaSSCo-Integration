@@ -33,6 +33,6 @@ class ApiMetadataModel(BaseModel):
     collection: str = ""
     pipeline: str = ""
     workstation: str = ""
-    digitizer: str = ""
+    digitiser: str = ""
     tags: Dict[str, str] = {}
 

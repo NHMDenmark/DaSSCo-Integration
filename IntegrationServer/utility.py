@@ -11,6 +11,7 @@ import uuid
 import hashlib
 import binascii
 from datetime import datetime
+
 """
 Class with helper methods that are used throughout the different processes.
 Mostly contains functions that has to do with reading/updating .json files.
@@ -19,7 +20,6 @@ Calculates checksums using sha256 hash.
 class Utility:
     def __init__(self):
         pass
-
     """
     Returns the contents of a json file.
     """
