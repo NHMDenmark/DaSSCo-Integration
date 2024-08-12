@@ -3,7 +3,7 @@
   "Asset creator HPC": "RUNNING",
   "Close file share ARS": "RUNNING",
   "Erda sync ARS": "RUNNING",
-  "File uploader ARS": "RUNNING",
+  "File uploader ARS": "STOPPED",
   "HPC clean up service": "RUNNING",
   "HPC file uploader": "RUNNING",
   "HPC job caller": "RUNNING",
