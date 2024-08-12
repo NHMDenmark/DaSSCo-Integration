@@ -13,7 +13,7 @@ import InformationModule.email_sender as email_sender
 import utility
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
-
+from datetime import datetime, timedelta
 
 
 """
@@ -29,6 +29,8 @@ class FileUploader(LogClass):
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
         self.service_name = "File uploader ARS"
+
+        time.sleep(2)
 
         self.track_mongo = track_repository.TrackRepository()
         self.metadata_mongo = metadata_repository.MetadataRepository()
@@ -68,6 +70,15 @@ class FileUploader(LogClass):
 
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value, "jobs_status" : self.status_enum.WAITING.value}])
 
             if asset is not None:

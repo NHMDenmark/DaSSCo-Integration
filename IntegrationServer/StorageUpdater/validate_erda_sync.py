@@ -11,6 +11,7 @@ from Enums import validate_enum, erda_status, status_enum
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 import utility
+from datetime import datetime, timedelta
 
 """
 Responsible validating files have been synced with erda and updating track data accordingly.
@@ -63,6 +64,14 @@ class ValidateErda(LogClass):
 
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json
             all_run = self.util.get_value(self.run_config_path, "all_run")

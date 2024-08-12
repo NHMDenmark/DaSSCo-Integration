@@ -11,7 +11,7 @@ from Enums import validate_enum, status_enum
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
 import utility
-
+from datetime import datetime, timedelta
 
 """
 Responsible for closing file shares once they hpc has downloaded files from it. 
@@ -62,6 +62,15 @@ class CloseShare(LogClass):
  
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
             time.sleep(1)
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_new_file": self.validate_enum.NO.value, "erda_sync":self.validate_enum.YES.value, "hpc_ready":self.validate_enum.YES.value,
                                                                          "has_open_share":self.validate_enum.YES.value}])
@@ -80,6 +89,7 @@ class CloseShare(LogClass):
 
                 if closed:
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+                    print(f"closed share: {guid}")
             
             if asset is None:
                 #print(f"failed to find assets")

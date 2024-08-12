@@ -7,7 +7,6 @@ from dasscostorageclient import DaSSCoStorageClient
 from StorageApi import storage_service
 from dotenv import load_dotenv
 import json
-from dotenv import load_dotenv
 
 class StorageClient():
      def __init__(self):
@@ -150,9 +149,9 @@ class StorageClient():
      def close_share(self, guid, institution = "INSERTED_VALUE", collection = "INSERTED_VALUE", users = ["OCTOPUS"], allocation_mb = 1):
 
           try:
-               response = self.client.delete_share(self, institution, collection, guid, users, allocation_mb)
+               response = self.client.file_proxy.delete_share(institution, collection, guid, users, allocation_mb)
 
-               status_code = response["status_code"]
+               status_code = response.status_code
                if status_code == 200:
 
                     return True

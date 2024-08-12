@@ -25,8 +25,7 @@ class NdriveNewFilesFinder:
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         
         self.run = True
-        self.count = 2
-
+        
         self.loop()
 
     def loop(self):
@@ -45,12 +44,6 @@ class NdriveNewFilesFinder:
 
             if all_run == "STOPPED" or service_run == "False":
                 print("Service stopped")
-                self.run = False
-                
-
-            self.count -= 1
-
-            if self.count == 0:
                 self.run = False
 
     def copy_from_ndrive_and_update_ndrive_dirs(self, ndrive_path, local_destination):

@@ -11,6 +11,7 @@ from Enums import validate_enum, status_enum
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller
 import utility
+from datetime import datetime, timedelta
 
 """
 Responsible syncing assets with erda after their files have been uploaded to their file shares in ARS.
@@ -62,6 +63,15 @@ class SyncErda(LogClass):
 
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_new_file" : self.validate_enum.AWAIT.value, "erda_sync": self.validate_enum.NO.value}])
 
             if asset is not None:

@@ -12,6 +12,7 @@ import time
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 from StorageApi import storage_client
+from datetime import datetime, timedelta
 
 """
 TODO Description
@@ -63,13 +64,22 @@ class OpenShare(LogClass):
 
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.NO.value, "has_open_share": validate_enum.ValidateEnum.NO.value,
                                                                           "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
-                time.sleep(1)        
+                time.sleep(10)        
             else: 
-                 
+                time.sleep(1)     
                 guid = asset["_id"]
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")

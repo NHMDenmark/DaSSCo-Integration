@@ -27,8 +27,7 @@ class ProcessNewFiles:
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
         
         self.run = True
-        self.count = 3
-
+        
         self.loop()
 
     def loop(self):
@@ -47,11 +46,6 @@ class ProcessNewFiles:
 
             if all_run == "STOPPED" or service_run == "False":
                 print("Service stopped")
-                self.run = False
-
-            self.count -= 1
-
-            if self.count == 0:
                 self.run = False
 
 

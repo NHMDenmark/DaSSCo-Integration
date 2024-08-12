@@ -6,6 +6,9 @@
    "job_4": "spoof"
  },
  "PIPEHERB0001": {
+   "job_1": "assetLoader"
+ },
+ "V2_PIPEHERB0001": {
    "job_1": "assetLoader",
    "job_2": "cropping_derivative"
  },
