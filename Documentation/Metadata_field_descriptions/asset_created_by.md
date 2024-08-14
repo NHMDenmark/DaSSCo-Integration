@@ -13,7 +13,7 @@ An asset is created by a pipeline or sync with Specify. Hence this field will be
 None
 
 **Why do we have this field:**  
-Because it tells us something important  
+It tells where the asset originated from.   
 
 **Populated by whom and when:**  
 Upon event

@@ -1,7 +1,7 @@
 ## "tags"
 
 **Type of field:**  
-String  
+Dictionary containing key strings each with a value string. 
 
 **Part of which document:**  
 Metadata
@@ -14,10 +14,10 @@ A dictionary of dynamic properties
 Fx "ocr": ocr_tex
 
 **Why do we have this field:**  
-Because it tells us something important  
+Gives us flexibility to incorporate new information or make changes without having to overhaul the whole system immediately.  
 
 **Populated by whom and when:**  
-Note  
+Can be populated by anyone at anytime.  
 
 **Updated where and when:**  
-Never
+Anytime and anywhere.

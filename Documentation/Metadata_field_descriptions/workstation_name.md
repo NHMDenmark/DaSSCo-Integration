@@ -13,7 +13,7 @@ This is the name of the workstation used to do the imaging. The name of the work
 8 characters followed by 4 digits
 Fx WORKHERB0001
 **Why do we have this field:**  
-Because it tells us something important  
+Tells us which workstation an asset originated from  
 
 **Populated by whom and when:**  
 Running IngestionClient/pipeline

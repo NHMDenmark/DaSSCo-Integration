@@ -3,6 +3,7 @@
 | [asset_created_by](Metadata_field_descriptions/asset_created_by.md) | ARS | Upon event | ARS | Upon ARS call | |
 | [asset_deleted_by](Metadata_field_descriptions/asset_deleted_by.md) | ARS | Upon event | ARS | Upon ARS call | |
 | [asset_guid](Metadata_field_descriptions/asset_guid.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration call / Upon ARS call |
+| [asset_locked](Metadata_field_descriptions/asset_locked.md) | ARS | TBD | ARS | TBD | Determines if the image files belonging to the asset can be updated. |
 | [asset_pid](Metadata_field_descriptions/asset_pid.md) | TBD | TBD | ARS / Integration | TBD | We have not figured out what this is or how its created yet. |
 | [asset_subject](Metadata_field_descriptions/asset_subject.md) | Pipeline | Running pipeline | ARS / Integration | Upon ARS call / Upon Integration call | |
 | [date_asset_taken](Metadata_field_descriptions/date_asset_taken.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration creation / Upon ARS call |
@@ -36,5 +37,5 @@
 | [restricted_access](Metadata_field_descriptions/restricted_access.md) | TBD | | | | |
 | [specimen_pid](Metadata_field_descriptions/specimen_pid.md) | TBD | TBD | | | |
 | [status](Metadata_field_descriptions/status.md) | TBD | | | | This is our status for the asset, should begin population with ingestion server- or be removed. We dont use this status for anythng as is. |
-| [tags](Metadata_field_descriptions/tags.md) | FREE FOR ALL TBD | | | | |
+| [tags](Metadata_field_descriptions/tags.md) | Anywhere | Anytime | Anywhere | Anytime | Our placeholder field for adding information or changes that have yet to be implemented in both code and documentation. |
 | [workstation_name](Metadata_field_descriptions/workstation_name.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Uponcreation / Upon integration creation / Upon ARS call | |
