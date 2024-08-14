@@ -10,12 +10,14 @@ Metadata
 This is the name of the person who audited the asset. Auditing will be done independently of the digitisation and usually by the technical team leader or a senior digitiser.
 
 **Value:**  
-Presumably the name comes from the Identity Manager?
+Presumably the name comes from the Identity Manager?  
 
 **Why do we have this field:**  
 Because it tells us something important  
 
-TBD
+**Populated by whom and when:**  
+TBD  
 
 **Updated where and when:**  
-Never
+Never  
+

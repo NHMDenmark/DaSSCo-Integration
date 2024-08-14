@@ -8,9 +8,10 @@
 6. [Herb0001 Pipeline](#herb0001_pipelinemd)
 7. [Integration_to_hpc_sequence.md](#integration_to_hpc_sequencemd)
 8. [Components Write Up](#components-write-up)
-9. [Metadata Example](#metadata_examplejson)
+9. [Metadata Example jsons](#Metadata_Example_jsons)
 10. [Python Scripts](#python-scripts)
 11. [Potential XLSX Files](#potential-xlsx-files)
+12. [Confluence documentation](#Confluence-documentation-ARS)
 
 ## Description  
 Field documentation for databases and metadata pertaining to the integration server and ingestion client can be found in this part of the repository. Furthermore it contains auxiliary documentation related to the datafields. It includes a write up document for a pipeline workflow and writeups for each component necessary for the workflow.  
@@ -58,9 +59,9 @@ Generic write up for the pipeline workflow from integration server to hpc. It de
 Contains pipeline component detailed documents.  
 [Components folder](/Documentation/Component_write_up/) 
 
-## metadata_example.json
-This is an example of metadata json file as it looks when the integration server receives it.  
-[Example](/Documentation/metadata_example.json)
+## Metadata_Example_jsons
+This contains examples of metadata json file as they look at various stages.  
+[Example](/Documentation/Metadata_Example_jsons/metadata_example.json)
 
 ## Python Scripts  
 Contains python scripts that are not part of the main functionalities of the integration server. They are meant to supplement, update and help maintain the documentation found in this area. There are scripts for converting changes for fields across multiple documents. They are not meant to be run often and each requires a bit of configuration before being run.
@@ -69,3 +70,7 @@ The scripts should contain enough information to be "easily" modified and run.
 
 ## Potential xlsx files  
 Excel files can be created with one of the python scripts. Github does not support opening or working with excel files so the files has to be downloaded and used locally. It is possible to update the fields through updated excel sheets added to the Documentation folder in github.  
+
+## Confluence-documentation-ARS  
+This contains the documentation from the DaSSCo-asset-service repository. The documentation originally was transferred from the confluence repository used by NorthTech while collaborating with DaSSCo.  
+[Confluence documentation](/Documentation/Confluence-documentation-ARS/)

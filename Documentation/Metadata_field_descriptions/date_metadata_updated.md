@@ -20,3 +20,4 @@ Event based and populated by ARS
 
 **Updated where and when:**  
 After each update to an assets metadata in ARS 
+

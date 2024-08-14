@@ -10,9 +10,7 @@ Metadata
 Tells when an asset was finalised.   
 
 **Value:**  
-ISO 8601:
-YYYY-MM-DDThh:mm:ssZ
-or NULL
+ISO 8601:YYYY-MM-DDThh:mm:ssZor NULL
 
 **Why do we have this field:**  
 Timestamp for when an asset was finalised.  
@@ -22,3 +20,4 @@ Note
 
 **Updated where and when:**  
 Never
+

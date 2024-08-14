@@ -7,7 +7,7 @@ String, boolean
 Metadata, track data, mos data, etc  
 
 **Description:**  
-Please remember that there are two white spaces after each header. 
+Please remember that there are two white spaces after each header. Also all these headers must be present, if you dont have a any input for one just write TBD or None in it. 
 
 **Value:**  
 None
@@ -20,3 +20,4 @@ Note
 
 **Updated where and when:**  
 Never  
+

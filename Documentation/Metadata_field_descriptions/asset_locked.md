@@ -13,10 +13,11 @@ Flags if it is possible to edit / delete the media of this asset. Note that this
 True, False
 
 **Why do we have this field:**  
-TBD
+Because it tells us something important  
 
 **Populated by whom and when:**  
 Set to false when asset is created by ARS.  
 
 **Updated where and when:**  
 Updated in ARS. When has not been decided.  
+

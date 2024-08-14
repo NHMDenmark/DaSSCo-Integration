@@ -7,16 +7,17 @@ String
 Metadata
 
 **Description:**  
-Entity that updated the asset
+Entity that updated the asset  
 
 **Value:**  
-None
+None  
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-TBD
+TBD  
 
 **Updated where and when:**  
-Never
+Never  
+
