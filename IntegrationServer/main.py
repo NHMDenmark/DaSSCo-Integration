@@ -17,7 +17,7 @@ from PIL import Image, TiffImagePlugin, TiffTags
 from PIL.TiffImagePlugin import ImageFileDirectory_v2
 from pyexiv2 import Image as ImgMeta
 from bson.json_util import dumps
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
@@ -151,6 +151,9 @@ if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
     
+    t = datetime.now() - timedelta(hours=1000)
+    print(t)
+
     """
     time = ""
     b = field_validation.FieldValidation().datetime_validator(time)
