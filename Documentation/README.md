@@ -8,10 +8,10 @@
 6. [Herb0001 Pipeline](#herb0001_pipelinemd)
 7. [Integration_to_hpc_sequence.md](#integration_to_hpc_sequencemd)
 8. [Components Write Up](#components-write-up)
-9. [Metadata Example jsons](#Metadata_Example_jsons)
+9. [Metadata Example jsons](#Metadata_example_jsons)
 10. [Python Scripts](#python-scripts)
 11. [Potential XLSX Files](#potential-xlsx-files)
-12. [Confluence documentation](#Confluence-documentation-ARS)
+12. [Confluence documentation](#Confluence_documentation_-_ARS)
 
 ## Description  
 Field documentation for databases and metadata pertaining to the integration server and ingestion client can be found in this part of the repository. Furthermore it contains auxiliary documentation related to the datafields. It includes a write up document for a pipeline workflow and writeups for each component necessary for the workflow.  
@@ -61,7 +61,7 @@ Contains pipeline component detailed documents.
 
 ## Metadata_Example_jsons
 This contains examples of metadata json file as they look at various stages.  
-[Example](/Documentation/Metadata_Example_jsons/metadata_example.json)
+[Example](/Documentation/Metadata_example_jsons/metadata_example.json)
 
 ## Python Scripts  
 Contains python scripts that are not part of the main functionalities of the integration server. They are meant to supplement, update and help maintain the documentation found in this area. There are scripts for converting changes for fields across multiple documents. They are not meant to be run often and each requires a bit of configuration before being run.
@@ -73,4 +73,4 @@ Excel files can be created with one of the python scripts. Github does not suppo
 
 ## Confluence-documentation-ARS  
 This contains the documentation from the DaSSCo-asset-service repository. The documentation originally was transferred from the confluence repository used by NorthTech while collaborating with DaSSCo.  
-[Confluence documentation](/Documentation/Confluence-documentation-ARS/)
+[Confluence documentation](/Documentation/Confluence_documentation_ARS/)
