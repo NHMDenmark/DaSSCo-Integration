@@ -22,7 +22,7 @@ String
 {doc}
 
 **Description:**  
-Yada yada  
+Missing description  
 
 **Value:**
 None
@@ -43,7 +43,7 @@ Never
 
 def main():
     # Change this to the .md document you want to create field documents from. Also create the folder for the documents before running
-    md_document = "Health_fields.md"
+    md_document = "remove_this_part_Health_fields.md"
 
     with open(f"{project_root}/{md_document}", 'r') as f:
         lines = f.readlines()
