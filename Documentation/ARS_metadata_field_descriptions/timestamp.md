@@ -16,8 +16,8 @@ ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 Let us know when an event happened.
 
 **Populated by whom and when:**  
-ARS when an event happens.
+ARS. Populated as part of the event protocol. 
 
 **Updated where and when:**  
-Everytime an event occurs
+When a new event is registered in ARS
 

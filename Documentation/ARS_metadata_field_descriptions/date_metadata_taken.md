@@ -7,7 +7,7 @@ Datetime
 ARS
 
 **Description:**  
-Timestamp for when the metadata was taken
+Time metadata was originally created
 
 **Value:**  
 ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
@@ -16,7 +16,7 @@ ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion server when metadata is created
 
 **Updated where and when:**  
 Never

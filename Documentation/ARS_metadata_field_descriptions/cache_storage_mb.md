@@ -16,8 +16,8 @@ A number in megabytes (mb).
 Because it tells us something important  
 
 **Populated by whom and when:**  
-ARS when queried
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
-Never
+When the assets fileshare changes
 

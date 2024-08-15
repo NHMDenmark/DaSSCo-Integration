@@ -7,7 +7,7 @@ String
 Metadata
 
 **Description:**  
-Missing description  
+What the asset contain, could be images, ct-scans etc
 
 **Value:**  
 None

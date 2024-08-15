@@ -16,8 +16,8 @@ ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS whenever the metadata is updated.
 
 **Updated where and when:**  
-Never
+When a new update is made
 

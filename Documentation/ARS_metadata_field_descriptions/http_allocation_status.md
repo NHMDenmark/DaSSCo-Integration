@@ -7,7 +7,7 @@ String
 ARS
 
 **Description:**  
-Missing description  
+Status for using the a share.
 
 **Value:**  
 String enumeration:  SUCCESS, DISK_FULL, ILLEGAL_STATE, UPSTREAM_ERROR, SHARE_NOT_FOUND, INTERNAL_ERROR
@@ -16,8 +16,8 @@ String enumeration:  SUCCESS, DISK_FULL, ILLEGAL_STATE, UPSTREAM_ERROR, SHARE_NO
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
-Never
+When the assets fileshare changes
 

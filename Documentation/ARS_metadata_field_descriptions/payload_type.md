@@ -7,16 +7,16 @@ String
 ARS
 
 **Description:**  
-Missing description  
+What the asset contain, could be images, ct-scans etc
 
 **Value:**  
-None
+image
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion server. When the metadata is created. 
 
 **Updated where and when:**  
 Never

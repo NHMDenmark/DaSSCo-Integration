@@ -7,7 +7,7 @@ String
 ARS
 
 **Description:**  
-Missing description  
+Name of the pipeline that started the event
 
 **Value:**  
 None
@@ -16,8 +16,8 @@ None
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the event protocol. 
 
 **Updated where and when:**  
-Never
+When a new event is registered in ARS
 

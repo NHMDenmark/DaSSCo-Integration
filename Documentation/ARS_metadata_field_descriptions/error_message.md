@@ -16,7 +16,7 @@ None
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS when an event of any kind that results in a predetermined error occurs. 
 
 **Updated where and when:**  
 Never

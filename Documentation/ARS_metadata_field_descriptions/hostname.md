@@ -7,7 +7,7 @@ String
 ARS
 
 **Description:**  
-Missing description  
+Where the asset files can be posted to. The hostname can be combined with the asset path to form an url where asset files can be posted og downloaded.
 
 **Value:**  
 None
@@ -16,8 +16,8 @@ None
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
-Never
+When the assets fileshare changes
 

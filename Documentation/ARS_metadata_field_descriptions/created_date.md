@@ -16,7 +16,7 @@ ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. When the assets metadata is received in ARS. 
 
 **Updated where and when:**  
 Never

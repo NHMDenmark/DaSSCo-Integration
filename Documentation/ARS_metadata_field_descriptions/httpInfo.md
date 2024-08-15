@@ -7,17 +7,17 @@ Dictionary object
 ARS
 
 **Description:**  
-Missing description  
+This is the object containing the information about file shares and the storage space used. 
 
 **Value:**  
 None
 
 **Why do we have this field:**  
-Because it tells us something important  
+Protocol decision
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
-Never
+When the assets fileshare changes
 

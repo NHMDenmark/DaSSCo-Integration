@@ -7,7 +7,7 @@ String
 ARS
 
 **Description:**  
-The barcode beloning to the specimen 
+Barcode belonging to a specimen. This belongs to the specimens protocol and is part of the specimens object.
 
 **Value:**  
  9 or 10 digits as a string
@@ -16,7 +16,7 @@ The barcode beloning to the specimen
 Lets us identify the specimen and link it with Specify.
 
 **Populated by whom and when:**  
-ARS when it receives the barcode either at creation or when the asset metadata is updated after processing.
+ARS. Populated as part of the specimen protocol when a barcode is given to ARS by either specify or integration server
 
 **Updated where and when:**  
 Never

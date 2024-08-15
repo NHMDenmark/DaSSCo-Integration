@@ -7,17 +7,17 @@ String
 ARS
 
 **Description:**  
-Missing description  
+List of the events that has occurred with the asset.
 
 **Value:**  
-None
+Event objects contains: user, event_pipeline, event_workstation and timestamp
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the event protocol. 
 
 **Updated where and when:**  
-Never
+When a new event is registered in ARS
 

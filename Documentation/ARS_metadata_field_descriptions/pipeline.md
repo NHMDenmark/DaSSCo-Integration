@@ -10,13 +10,13 @@ ARS
 Which pipeline does the asset belong to
 
 **Value:**  
-None
+PIPEHERB8888
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion server. When the metadata is created. 
 
 **Updated where and when:**  
 Never

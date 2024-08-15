@@ -7,7 +7,7 @@ String
 ARS
 
 **Description:**  
-Missing description  
+The path to the asset.
 
 **Value:**  
 None
@@ -16,7 +16,7 @@ None
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
 Never

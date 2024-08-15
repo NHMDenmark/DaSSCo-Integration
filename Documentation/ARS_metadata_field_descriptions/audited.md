@@ -7,17 +7,17 @@ Boolean
 ARS
 
 **Description:**  
-TBD
+This is to mark the record as to having been manually audited. This will occur after complete processing and syncing with Specify.
 
 **Value:**  
 True or False
 
 **Why do we have this field:**  
-TBD
+-
 
 **Populated by whom and when:**  
-TBD
+Ingestion client
 
 **Updated where and when:**  
-TBD
+Integration server. After sync with specify and processing has finished
 

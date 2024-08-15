@@ -16,7 +16,7 @@ Vascular-plants
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion server. When the metadata is created. 
 
 **Updated where and when:**  
 Never

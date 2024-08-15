@@ -16,8 +16,8 @@ Either a person or a service.
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+The user updating the metadata.
 
 **Updated where and when:**  
-Never
+Whenever an update is made
 

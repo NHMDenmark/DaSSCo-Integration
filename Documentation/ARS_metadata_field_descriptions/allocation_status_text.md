@@ -16,8 +16,8 @@ SUCCESS  : A share was successfully created or allocation was successfully chang
 Gives us information about the status of the call made to ARS.
 
 **Populated by whom and when:**  
-ARS when receiving a call that involves the file share. 
+ARS. Populated as part of the httpInfo protocol
 
 **Updated where and when:**  
-Never
+When the assets fileshare changes
 

@@ -7,10 +7,10 @@ String
 ARS
 
 **Description:**  
-Missing description  
+List of users with access in some capacity. The specifics have not been decided yet. 
 
 **Value:**  
-None
+ADMIN, USER this havent been fully decided
 
 **Why do we have this field:**  
 Because it tells us something important  

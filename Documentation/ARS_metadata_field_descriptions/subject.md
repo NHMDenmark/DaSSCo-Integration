@@ -7,17 +7,17 @@ String
 ARS
 
 **Description:**  
-Missing description  
+This is to define what the asset is a representation of
 
 **Value:**  
-None
+Example: folder
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion client when metadata is created
 
 **Updated where and when:**  
-Never
+ARS/Integration server if asset has new media added
 
