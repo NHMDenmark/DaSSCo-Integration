@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "cache_storage_mb"
 
 **Type of field:**  
-String  
+Integer
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The total amount of storage dedicated for “caching” files for external linking and other use.
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+A number in megabytes (mb).
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+ARS when queried
 
 **Updated where and when:**  
 Never

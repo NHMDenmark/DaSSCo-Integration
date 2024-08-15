@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "total_storage_mb"
 
 **Type of field:**  
-String  
+Integer
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The total storage of the server where the FileProxy is deployed.
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+A number in megabytes (mb).
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

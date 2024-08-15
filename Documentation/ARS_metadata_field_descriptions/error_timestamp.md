@@ -1,13 +1,13 @@
-## "date_asset_deleted"
+## "error_timestamp"
 
 **Type of field:**  
-String  
+Datetime
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+If an error occured when did it happen
 
 **Value:**  
 ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
@@ -16,7 +16,7 @@ ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "writeAccess"
 
 **Type of field:**  
-String  
+Boolean 
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
 Missing description  
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+True or False
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

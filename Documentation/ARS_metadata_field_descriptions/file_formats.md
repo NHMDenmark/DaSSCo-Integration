@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "file_formats"
 
 **Type of field:**  
-String  
+List of enums
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+List of file formats the files belonging to an asset has.
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+TIF, JPEG etc
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

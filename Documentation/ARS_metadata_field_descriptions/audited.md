@@ -1,23 +1,23 @@
-## "date_asset_deleted"
+## "audited"
 
 **Type of field:**  
-String  
+Boolean
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+TBD
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+True or False
 
 **Why do we have this field:**  
-Because it tells us something important  
+TBD
 
 **Populated by whom and when:**  
-Event based
+TBD
 
 **Updated where and when:**  
-Never
+TBD
 

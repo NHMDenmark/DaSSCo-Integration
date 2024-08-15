@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "parent_guid"
 
 **Type of field:**  
-String  
+String  or null
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+If the asset is derived from a parent asset then this will be true. 
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+None
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

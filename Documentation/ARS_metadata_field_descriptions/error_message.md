@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "error_message"
 
 **Type of field:**  
 String  
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The error we received while working with the asset, for example: “Connection Reset, while uploading to ERDA”, only sent if  an error occurred
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+None
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

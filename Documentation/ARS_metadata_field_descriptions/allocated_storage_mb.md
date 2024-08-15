@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "allocated_storage_mb"
 
 **Type of field:**  
-String  
+Integer
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The amount of storage allocated on the server to the new asset
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+A number in megabytes (mb).
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

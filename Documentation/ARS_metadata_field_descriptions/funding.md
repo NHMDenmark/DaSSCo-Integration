@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "funding"
 
 **Type of field:**  
 String  
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+Who funded the digitisation of the asset. 
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+DaSSCo
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never

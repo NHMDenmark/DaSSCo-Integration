@@ -1,23 +1,23 @@
-## "date_asset_deleted"
+## "timestamp"
 
 **Type of field:**  
-String  
+Datetime
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The timestamp of the event happening. Example event could be update metadata in ARS. 
 
 **Value:**  
 ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 
 **Why do we have this field:**  
-Because it tells us something important  
+Let us know when an event happened.
 
 **Populated by whom and when:**  
-Event based
+ARS when an event happens.
 
 **Updated where and when:**  
-Never
+Everytime an event occurs
 

@@ -1,22 +1,22 @@
-## "date_asset_deleted"
+## "collection"
 
 **Type of field:**  
 String  
 
 **Part of which document:**  
-Metadata
+ARS
 
 **Description:**  
-Missing description  
+The collection the asset came from
 
 **Value:**  
-ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
+Vascular-plants
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Event based
+Note  
 
 **Updated where and when:**  
 Never
