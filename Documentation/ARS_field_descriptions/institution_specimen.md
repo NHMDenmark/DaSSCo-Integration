@@ -1,4 +1,4 @@
-## "institution"
+## "institution_specimen"
 
 **Type of field:**  
 String  

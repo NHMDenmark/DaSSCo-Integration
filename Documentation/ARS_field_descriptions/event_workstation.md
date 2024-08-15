@@ -1,4 +1,4 @@
-## "workstation"
+## "event_workstation"
 
 **Type of field:**  
 String  

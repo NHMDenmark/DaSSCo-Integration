@@ -1,4 +1,4 @@
-## "pipeline"
+## "event_pipeline"
 
 **Type of field:**  
 String  

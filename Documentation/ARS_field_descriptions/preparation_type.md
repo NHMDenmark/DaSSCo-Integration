@@ -1,4 +1,4 @@
-## "specimens"
+## "preparation_type"
 
 **Type of field:**  
 String  

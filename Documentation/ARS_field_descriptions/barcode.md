@@ -1,4 +1,4 @@
-## "specimens"
+## "barcode"
 
 **Type of field:**  
 String  
