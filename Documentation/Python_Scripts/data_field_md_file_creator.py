@@ -11,7 +11,7 @@ Dont run unless you want to overwrite existing data.
 """
 def create_field_description_file(link, field_name):
     # Change this
-    doc = "Health"
+    doc = "ARS"
 
     content = f"""## "{field_name}"
 
@@ -36,14 +36,14 @@ Note
 **Updated where and when:**  
 Never
 """
-    file_name = os.path.join(f"{project_root}/Documentation/", link)
+    file_name = os.path.join(f"{project_root}/", link)
     with open(file_name, 'w') as f:
         print(file_name)
         f.write(content)
 
 def main():
     # Change this to the .md document you want to create field documents from. Also create the folder for the documents before running
-    md_document = "remove_this_part_Health_fields.md"
+    md_document = "ARS_fields.md"
 
     with open(f"{project_root}/{md_document}", 'r') as f:
         lines = f.readlines()
