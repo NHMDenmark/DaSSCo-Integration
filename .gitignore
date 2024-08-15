@@ -18,3 +18,4 @@ Files/Error/**
 Files/NewFiles/**
 Files/InProcess/**
 Files/UpdatedFiles/**
+!Documentation/**/*.json

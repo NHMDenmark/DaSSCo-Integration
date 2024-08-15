@@ -1,0 +1,49 @@
+{"metadata_after_barcode_reader": {
+
+"#specimen sheet: 1 specimen, no label":
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1"], 
+     "multispecimen": false
+},
+
+"#multispecimen sheet: 2 specimen, no label":
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1","specimen-barcode-2"],
+     "multispecimen": true
+
+},
+"#specimen sheet: 1 specimen, 1 label":
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
+     "multispecimen": false
+
+},
+"#multispecimen sheet: 2 specimen, 1 label":
+{    "asset_subject": "specimen",
+    "barcode": ["specimen-barcode-1","specimen-barcode-2","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
+     "multispecimen": true
+
+},
+
+
+"#label sheet: no specimen, 1 label":
+{    "asset_subject": "label",
+    "barcode": ["specimen-barcode-of_specimen_related_by_disposable_barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-2"],
+     "multispecimen": false
+
+},
+
+"#metadata fields that should be updated by ARS automatically":
+{
+    "asset_created_by": "",
+    "asset_updated_by": "",
+    "date_asset_created": null,
+    "date_asset_updated": null,
+    "date_metadata_updated": "",
+    "date_metadata_uploaded": "",
+    "metadata_updated_by": "",
+    "metadata_uploaded_by": ""
+
+}
+}
+}

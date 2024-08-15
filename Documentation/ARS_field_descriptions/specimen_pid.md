@@ -1,4 +1,4 @@
-## "specimens"
+## "specimen_pid"
 
 **Type of field:**  
 String  

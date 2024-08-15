@@ -63,8 +63,8 @@ def create_data_dict_from_md_directory(directory_path):
     return data_dict
 
 # Edit these two to fit your needs. File name is the name of file created and the directory name is the name of the directory to create the excel from.
-directory_name = "Metadata_field_descriptions"
-file_name = 'metadata_info_14_08_24.xlsx'
+directory_name = "ARS_field_descriptions"
+file_name = 'ars_TEMPLATE.xlsx'
 
 directory_path = os.path.join(f"{project_root}/", directory_name)
 data_dict = create_data_dict_from_md_directory(directory_path)
