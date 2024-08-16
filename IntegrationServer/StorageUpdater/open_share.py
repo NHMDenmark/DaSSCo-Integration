@@ -82,7 +82,7 @@ class OpenShare(LogClass):
             if asset is None:
                 time.sleep(10)        
             else: 
-                time.sleep(1)     
+                time.sleep(7)     
                 guid = asset["_id"]
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")

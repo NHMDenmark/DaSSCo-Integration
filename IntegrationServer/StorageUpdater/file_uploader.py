@@ -113,12 +113,14 @@ class FileUploader(LogClass):
                             uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
+                                print(f"uploaded: {guid} {file_path}")
                                 self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
                             
                             # If we receive a message back saying the crc values for the uploaded file doesnt fit our value then we move the asset to the TEMP_ERROR status, send a mail and slack message
                             # TODO create a service that handles TEMP_ERROR status assets. 
                             if uploaded is False and status == 507:
+                                print(f"failed to upload file for {guid} with status {status}")
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
                                 self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.PAUSED.value, f"File failed to upload correctly due to crc failing to verify. Status: {status}")
                                 self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.PAUSED.value)
@@ -127,6 +129,7 @@ class FileUploader(LogClass):
                             # TODO implement a less decisive way of handling this (maybe)
                             # TODO implement a test run after setting "run" to false
                             if uploaded is False and status != 507:
+                                print(f"failed to upload file for {guid} with status {status}")
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
                                 self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.ERROR.value, status)
                                 self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.ERROR.value)

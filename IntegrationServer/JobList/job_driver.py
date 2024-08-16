@@ -54,10 +54,6 @@ class JobDriver:
             if subdirectory.startswith("wait_"):
                 continue
 
-            # Move on from folders that dont necessarilyhave all their files yet.
-            if subdirectory.startswith("wait_"):
-                continue
-
             # Check if a directory with the same name exists in the error path
             error_directory_path = os.path.join(error_path, subdirectory)
             if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
@@ -160,7 +156,7 @@ class JobDriver:
 
                     # Add new metadata entry to mongoDB
                     check = self.mongo_metadata.create_metadata_entry(json_file_path, guid)
-                    print(f"create metadata: {check}")
+                    print(f"create metadata: {guid}: {check}")
                     # Move the directory to the 'InProcess' directory or error if it already exists
                     new_directory_path = os.path.join(in_process_dir,
                                                       f"{pipeline_name}/{batch_name}/{subdirectory}")

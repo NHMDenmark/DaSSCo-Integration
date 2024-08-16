@@ -108,15 +108,21 @@ class ValidateErda(LogClass):
 
             if len(assets) == 0:
                 # no assets found that needed validation
-                time.sleep(1)
+                print("no assets found")
+                time.sleep(10)
                 continue
+            
+            print("checking assets:")
+            for asset in assets:                
+                print(asset["_id"])
 
             for asset in assets:
                 guid = asset["_id"]
-                print(guid)
+                
                 asset_status = self.storage_api.get_asset_status(guid)
                 # This if statement is a hack to deal with api being broken- only use for testing!!!
                 if asset_status is True:
+                    print(f"{guid} status was {asset_status} and changed to COMPLETED")
                     asset_status = "COMPLETED"
 
                 if asset_status == self.erda_enum.COMPLETED.value:
@@ -132,16 +138,17 @@ class ValidateErda(LogClass):
                     for file in asset["file_list"]:
                         self.track_mongo.update_track_file_list(guid, file["name"], "erda_sync", self.validate_enum.YES.value)        
 
-                    print(f"Validated erda sync for asset: {guid}")
+                    print(f"Validated erda sync for: {guid}")
 
                 if asset_status == self.erda_enum.ASSET_RECEIVED.value:
                     # no action needed here since asset is basically queued to be synced and just waiting for that to happen
-                    print(f"Waiting on erda sync for asset: {guid}")
+                    print(f"Waiting on erda sync for: {guid}")
                     pass    
 
                 if asset_status == self.erda_enum.ERDA_ERROR.value:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
-                    # currently resetting sync status to "NO" attempts a new sync 
+                    # currently resetting sync status to "NO" attempts a new sync
+                    print(f"erda error for: {guid}")
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
 
                 if asset_status is False:

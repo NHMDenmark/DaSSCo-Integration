@@ -22,6 +22,8 @@ class SyncErda(LogClass):
 
     def __init__(self):
 
+        time.sleep(2)
+
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
@@ -85,12 +87,16 @@ class SyncErda(LogClass):
                 
                 # TODO handle if false - api fail
                 if synced is True:
+                    print(f"synced: {guid}")
                     self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.AWAIT.value)
-                    
+                
+                if synced is False:
+                    print(f"failed to sync: {guid}")
                 
                 time.sleep(3)
 
             if asset is None:
+                print("found no assets")
                 time.sleep(10)
 
            # checks if service should keep running - configurable in ConfigFiles/run_config.json            

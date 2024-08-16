@@ -70,6 +70,7 @@ class AssetCreator(LogClass):
             time_difference = current_time - self.auth_timestamp
             
             if time_difference > timedelta(minutes=4):
+                self.storage_api.service.metadata_db.close_mdb()
                 print(f"creating new storage client, after {time_difference}")
                 self.storage_api = self.create_storage_api()
             if self.storage_api is None:
@@ -79,7 +80,6 @@ class AssetCreator(LogClass):
 
             if asset is not None:
                 guid = asset["_id"]
-                print(f"Found asset: {guid}")
                 
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
@@ -92,6 +92,7 @@ class AssetCreator(LogClass):
                     metadata = self.metadata_mongo.get_entry("_id", guid)
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
+                    print(f"Created: {guid}")
                     if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
@@ -100,7 +101,11 @@ class AssetCreator(LogClass):
                         message = self.log_msg(response)
 
                     # TODO handle 300-399
-
+                    if status_code > 299 and status_code != 504:
+                        print(f"{guid} failed to create and got status {status_code}")
+                    if status_code == 504:
+                        print(f"{guid} got time out status: {status_code} Check if asset was created.")
+                    
                     if 400 <= status_code <= 499:
                         message = self.log_exc(response, exc, self.log_enum.ERROR.value)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
@@ -119,7 +124,7 @@ class AssetCreator(LogClass):
                 time.sleep(1)
 
             if asset is None:
-                #print(f"failed to find assets")
+                print(f"no assets")
                 time.sleep(10)
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
@@ -149,7 +154,8 @@ class AssetCreator(LogClass):
                 self.run = self.status_enum.STOPPED.value
                 
 
-        # outside main while loop        
+        # outside main while loop
+        self.storage_api.service.metadata_db.close_mdb()        
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()
         print("service stopped")

@@ -1,16 +1,16 @@
 {
-  "Asset creator ARS": "RUNNING",
+  "Asset creator ARS": "STOPPED",
   "Asset creator HPC": "RUNNING",
   "Close file share ARS": "RUNNING",
   "Erda sync ARS": "RUNNING",
-  "File uploader ARS": "STOPPED",
+  "File uploader ARS": "RUNNING",
   "HPC clean up service": "RUNNING",
   "HPC file uploader": "RUNNING",
   "HPC job caller": "RUNNING",
   "Open file share ARS": "RUNNING",
   "Update metadata ARS": "RUNNING",
   "Validate erda sync ARS": "RUNNING",
-  "all_run": "STOPPED",
+  "all_run": "RUNNING",
   "ndrive_new_files_run": "True",
   "process_files_from_ndrive_run": "True"
 }

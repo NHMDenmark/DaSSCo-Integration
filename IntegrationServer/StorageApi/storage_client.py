@@ -48,7 +48,7 @@ class StorageClient():
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
 
-          print(allocation_size, data_dict)
+          #print(allocation_size, data_dict)
 
           try:
                response = self.client.assets.create(data_dict, allocation_size)
@@ -191,8 +191,6 @@ class StorageClient():
                return False
      
      def upload_file(self, guid, institution, collection, filepath, file_size_mb):
-          
-          print(guid, institution, collection, filepath, file_size_mb)
 
           try:
                response = self.client.file_proxy.upload(filepath, institution, collection, guid, file_size_mb)

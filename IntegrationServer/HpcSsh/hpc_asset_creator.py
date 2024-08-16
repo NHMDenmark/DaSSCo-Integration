@@ -23,6 +23,8 @@ class HPCAssetCreator(LogClass):
 
     def __init__(self):
         
+        time.sleep(3)
+
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes

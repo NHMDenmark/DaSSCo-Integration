@@ -81,7 +81,7 @@ class CloseShare(LogClass):
 
             if asset is not None:
                 guid = asset["_id"]
-                print(f"Found asset: {guid}")
+                #print(f"Found asset: {guid}")
 
                 try:
                     closed = self.storage_api.close_share(guid)
