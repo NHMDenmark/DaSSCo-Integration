@@ -22,7 +22,7 @@ class ServiceRepository(Status):
         
     def create_micro_service_entry(self, name):
         """
-        Create a new mos entry in the MongoDB collection.
+        Create a new service entry in the MongoDB collection.
         :param name: The unique identifier of the entry.
         
         :return: A boolean denoting success or failure.

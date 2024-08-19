@@ -7,9 +7,10 @@ sys.path.append(project_root)
 import utility
 import json
 from HpcApi.file_model import FileModel
-from MongoDB import mongo_connection
+from MongoDB import track_repository, metadata_repository, mos_repository
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
+from Enums.asset_type_enum import AssetTypeEnum
 
 class HPCService():
 
@@ -17,9 +18,9 @@ class HPCService():
         self.util = utility.Utility()
         self.status = StatusEnum
         self.validate = ValidateEnum
-        self.mongo_track = mongo_connection.MongoConnection("track")
-        self.mongo_metadata = mongo_connection.MongoConnection("metadata")
-        self.mongo_mos = mongo_connection.MongoConnection("MOS")
+        self.mongo_track = track_repository.TrackRepository()
+        self.mongo_metadata = metadata_repository.MetadataRepository()
+        self.mongo_mos = mos_repository.MOSRepository()
 
     # This is not in use. Writing directly to the db is easier/better. s 
     def persist_new_metadata(self, new_metadata):
@@ -182,7 +183,11 @@ class HPCService():
         for key, value in dictionary.items():
             self.util.update_json(metadata_file_path, key, value)
 
-    # TODO tests - updates barcode fields and MOS database if necessary, every asset will have this job performed (barcode reading and mos) 
+    """ 
+    Updates barcode fields, MOS database if necessary and check if its a device target(which removes all further jobs).
+    Every asset will have this job performed (barcode reading and mos)
+    """ 
+    #TODO tests 
     def insert_barcode(self, barcode_data):
 
         guid = barcode_data.guid
@@ -204,6 +209,16 @@ class HPCService():
             return False
         
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
+
+        # Checks the job finished correctly. Gets the asset type from the enum list (returns false if still unknown) and updates it.
+        # Handles asset types that dont need further processing by removing "waiting" jobs
+        # TODO needs testing
+        if status == self.status.DONE:
+            enum_type = self.get_enum_asset_type(asset_subject)
+            if enum_type == AssetTypeEnum.UNKNOWN.value:
+                return False
+            self.mongo_track.update_asset_type(guid, enum_type)
+
 
         self.update_mongo_metadata(guid, metadata_update)
         self.update_mongo_track(guid, job_name, status)
@@ -406,3 +421,14 @@ class HPCService():
             return True
         else:
             return False
+        
+    def get_enum_asset_type(self, asset_subject):
+
+        if asset_subject == "device target":
+            return AssetTypeEnum.DEVICE_TARGET.value
+        elif asset_subject == "specimen":
+            return AssetTypeEnum.SPECIMEN.value
+        elif asset_subject == "label":
+            return AssetTypeEnum.LABEL.value
+        else:
+            return AssetTypeEnum.UNKNOWN.value

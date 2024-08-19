@@ -10,6 +10,7 @@ import utility
 from MongoDB import mongo_connection, all_repository
 from MongoDB import track_model
 from pymongo.errors import InvalidOperation
+from Enums.asset_type_enum import AssetTypeEnum
 
 class TrackRepository:
 
@@ -146,6 +147,23 @@ class TrackRepository:
         self.collection.update_one(query, update_data)
 
         return True
+
+    # TODO needs testing
+    def update_asset_type(self, guid, type):
+        self.update_entry(guid, "asset_type", type)
+
+        if type == AssetTypeEnum.DEVICE_TARGET.value:
+            # Fetch the current entry using the guid to access its job list
+            entry = self.get_entry(guid)
+        
+            # Filter out the jobs with status "WAITING"
+            updated_job_list = [job for job in entry["job_list"] if job["status"] != "WAITING"]
+        
+            # Update the entry with the filtered job list
+            self.update_entry(guid, "job_list", updated_job_list)
+        
+        return True
+
 
     def update_track_file_list(self, guid, file, key, value):
         """

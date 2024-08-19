@@ -27,6 +27,7 @@
 | [files_status](Track_field_descriptions/files_status.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call / Upon ARS call |  |
 | [asset_size](Track_field_descriptions/asset_size.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call / Upon ARS call |  |
 | [proxy_path](Track_field_descriptions/proxy_path.md) | Integration | Receiving metadata | Integration | Upon ARS call open share |  |
+| [asset_type](Track_field_descriptions/asset_type.md) | Integration | Receiving metadata | Integration | Upon ARS call | Asset type enum |
 | [hpc_ready](Track_field_descriptions/hpc_ready.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call |  |
 | [is_in_ars](Track_field_descriptions/is_in_ars.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon ARS call |  |
 | [has_new_file](Track_field_descriptions/has_new_file.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call |  |

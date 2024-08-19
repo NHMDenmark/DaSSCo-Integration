@@ -7,7 +7,7 @@ sys.path.append(project_root)
 from datetime import datetime
 import time
 import utility
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, asset_type_enum
 from MongoDB.file_model import FileModel
 
 """
@@ -35,6 +35,7 @@ class TrackModel:
         self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1
         self.proxy_path = ""
+        self.asset_type = asset_type_enum.AssetTypeEnum.UNKNOWN.value
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
         self.is_in_ars = validate_enum.ValidateEnum.AWAIT.value
         self.has_new_file = validate_enum.ValidateEnum.NO.value
@@ -74,6 +75,7 @@ class TrackModel:
             "files_status": self.files_status,
             "asset_size": self.asset_size,
             "proxy_path": self.proxy_path,
+            "asset_type": self.asset_type,
             "hpc_ready": self.hpc_ready,
             "is_in_ars": self.is_in_ars,
             "has_new_file": self.has_new_file,
