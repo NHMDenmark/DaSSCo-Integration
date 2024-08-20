@@ -11,6 +11,7 @@ from Enums.status_enum import Status
 from Enums.validate_enum import Validate
 import utility
 import time
+from datetime import datetime, timedelta
 from HealthUtility import health_caller, run_utility
 from StorageApi import storage_client
 
@@ -29,7 +30,7 @@ class OpenShare(Status, Validate):
         # service name for logging/info purposes
         self.service_name = "Open file share ARS"
         self.prefix_id = "OfsA"
-
+        self.auth_timestamp = None
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
@@ -64,7 +65,9 @@ class OpenShare(Status, Validate):
     def create_storage_api(self):
     
         storage_api = storage_client.StorageClient()
-         
+        
+        self.auth_timestamp = datetime.now()
+
         if storage_api.client is None:
             # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
@@ -86,6 +89,15 @@ class OpenShare(Status, Validate):
 
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
                                                                           "jobs_status": self.WAITING, "is_in_ars": self.YES,
                                                                             "has_new_file": self.NO, "erda_sync": self.YES}])

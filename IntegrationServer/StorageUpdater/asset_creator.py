@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import threading
 import time
+from datetime import datetime, timedelta
 from MongoDB import metadata_repository, track_repository, service_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
@@ -26,6 +27,7 @@ class AssetCreator():
         
         self.service_name = "Asset creator ARS"
         self.prefix_id = "AcA"
+        self.auth_timestamp = None
         self.track_mongo = track_repository.TrackRepository()
         self.metadata_mongo = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
@@ -75,7 +77,9 @@ class AssetCreator():
     def create_storage_api(self):
     
         storage_api = storage_client.StorageClient()
-         
+        
+        self.auth_timestamp = datetime.now()
+
         if storage_api.client is None:
             # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
@@ -101,6 +105,16 @@ class AssetCreator():
         
         while self.run == self.status_enum.RUNNING.value:
             
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
+
             # TODO remove/outcomment this, inserted for testing pause functionality
             #self.storage_api = self.create_storage_api()
 
@@ -150,7 +164,7 @@ class AssetCreator():
                 time.sleep(1)
 
             if asset is None:
-                time.sleep(1)
+                time.sleep(10)
 
             # checks if service should keep running           
             self.run = self.run_util.check_run_changes()

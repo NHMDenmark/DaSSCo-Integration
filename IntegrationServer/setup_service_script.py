@@ -31,6 +31,9 @@ class SetupServiceScript:
                     print(f"Failed to find {name}, in mongo db.")
                 else:
                     print(f"{name} has already been created in the mongo db.")
+            else:
+                print(f"{name} was created successfully.")
+
 
         self.service_repo.close_connection()
 

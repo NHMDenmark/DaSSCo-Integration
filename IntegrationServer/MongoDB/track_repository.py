@@ -150,6 +150,14 @@ class TrackRepository:
 
     # TODO needs testing
     def update_asset_type(self, guid, type):
+        """
+        Update the asset type of an entry in the database and, if the new type is 'DEVICE_TARGET',
+        remove any jobs with a status of 'WAITING' from the job list.
+
+        :param guid: The unique identifier of the entry to be updated.
+        :param type: The new asset type to be set.
+        :return: A boolean indicating the success of the operation.
+    """
         self.update_entry(guid, "asset_type", type)
 
         if type == AssetTypeEnum.DEVICE_TARGET.value:

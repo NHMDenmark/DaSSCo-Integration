@@ -68,14 +68,18 @@ class HPCCleanUp():
         while self.run == status_enum.StatusEnum.RUNNING.value:
             
             asset = None
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value,
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 print("No asset found")
-                time.sleep(1)        
+                time.sleep(10)        
             else: 
                 guid = asset["_id"]
-                script_path = self.hpc_config_path["clean_up_script"]
+                try:
+                    script_path = self.hpc_config_path["clean_up_script"]
+                except Exception as e:
+                    time.sleep(60)
+                    continue
 
                 self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
 

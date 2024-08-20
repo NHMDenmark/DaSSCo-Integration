@@ -33,7 +33,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # service name for logging/info purposes
         self.service_name = "Validate erda sync ARS"
         self.prefix_id = "VesA"
-
+        self.auth_timestamp = None
         self.service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
 
         self.track_mongo = track_repository.TrackRepository()
@@ -70,7 +70,8 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     def create_storage_api(self):
     
         storage_api = storage_client.StorageClient()
-         
+        self.auth_timestamp = datetime.now()
+
         if storage_api.client is None:
             # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
@@ -119,6 +120,15 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     def loop(self):
 
         while self.run == self.RUNNING:
+
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            if time_difference > timedelta(minutes=4):
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
 
             # checks if service should keep running
             self.run = self.run_util.check_run_changes()
