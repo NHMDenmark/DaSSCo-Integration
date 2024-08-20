@@ -179,7 +179,7 @@ class AssetCreator():
         self.service_mongo.close_connection()
         self.run_util.service_mongo.close_connection()
         self.storage_api.service.metadata_db.close_mdb()
-
+        print("service stopped")
 
 if __name__ == '__main__':
     
