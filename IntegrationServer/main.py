@@ -53,7 +53,7 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    # mongo = mongo_connection.MongoConnection("track")
+    mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
@@ -88,9 +88,9 @@ def test():
     #h.close_connection()
     #a = util.check_value_in_enum(None, FeedbackEnum)
     
-    a = field.is_acceptable_string("asset-guid-53268-æææ")
+    #a = field.is_acceptable_string("asset-guid-53268-æææ")
 
-    print(a)
+    #print(a)
 
 class x(Feedback, LogClass):
     def __init__(self):
@@ -150,9 +150,11 @@ def modify_exif_data(file_path, new_exif_data):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
-    
-    t = datetime.now() - timedelta(hours=1000)
-    print(t)
+    test()
+    #t = datetime.now() - timedelta(hours=1000)
+    #print(t)
+
+
 
     """
     time = ""

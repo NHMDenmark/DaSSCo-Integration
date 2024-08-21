@@ -54,7 +54,7 @@ class NdriveNewFilesFinder():
 
             time.sleep(1)
 
-           # checks if service should keep running           
+            #checks if service should keep running           
             self.run = self.run_util.check_run_changes()
 
             # Pause loop

@@ -89,6 +89,7 @@ class CloseShare(LogClass):
             time_difference = current_time - self.auth_timestamp
             
             if time_difference > timedelta(minutes=4):
+                self.storage_api.service.metadata_db.close_mdb()
                 print(f"creating new storage client, after {time_difference}")
                 self.storage_api = self.create_storage_api()
             if self.storage_api is None:
@@ -127,6 +128,9 @@ class CloseShare(LogClass):
 
         # outside main while loop        
         self.track_mongo.close_connection()
+        self.service_mongo.close_connection()
+        self.run_util.service_mongo.close_connection()
+        self.storage_api.service.metadata_db.close_mdb()
         print("service stopped")
 
 if __name__ == '__main__':

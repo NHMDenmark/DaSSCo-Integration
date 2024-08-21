@@ -118,6 +118,7 @@ class SyncErda():
             time_difference = current_time - self.auth_timestamp
             
             if time_difference > timedelta(minutes=4):
+                self.storage_api.service.metadata_db.close_mdb()
                 print(f"creating new storage client, after {time_difference}")
                 self.storage_api = self.create_storage_api()
             if self.storage_api is None:

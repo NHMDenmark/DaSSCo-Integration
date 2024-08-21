@@ -25,6 +25,7 @@ class AssetHandler:
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
+        self.ndrive_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config", "ndrive_path")
         self.input_dir = f"{project_root}/Files/NewFiles"
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"
@@ -163,6 +164,12 @@ class AssetHandler:
                         shutil.move(subdirectory_path, error_dir)
                     else:
                         shutil.move(subdirectory_path, new_directory_path)
+
+                    self.mongo_track.update_entry(guid, "temporary_files_ndrive", self.validate.YES.value)
+                    self.mongo_track.update_entry(guid, "temporary_path_ndrive", f"{self.ndrive_path}/{workstation_name}/imported_{batch_name}")
+                    
+                    self.mongo_track.update_entry(guid, "temporary_files_local", self.validate.YES.value)
+                    self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)
 
                     self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
                     
