@@ -4,15 +4,13 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-import shutil
 import time
 import utility
 from MongoDB import service_repository, track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
-from AssetFileHandler import asset_handler
 
-
+# TODO untested
 class DeleteFilesNdrive():
 
     def __init__(self):
@@ -20,13 +18,12 @@ class DeleteFilesNdrive():
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         
         # service name for logging/info purposes
-        self.service_name = "Delete finles (Ndrive)"
+        self.service_name = "Delete files (Ndrive)"
         self.prefix_id= "Df(N)"
 
         self.util = utility.Utility()
         
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
-        self.in_process_path = f"{project_root}/Files/InProcess"
         self.service_mongo = service_repository.ServiceRepository()
         self.track_mongo = track_repository.TrackRepository()
         self.health_caller = health_caller.HealthCaller()
@@ -103,6 +100,8 @@ class DeleteFilesNdrive():
 
         # out of main loop
         self.service_mongo.close_connection()
+        self.track_mongo.close_connection()
+        print("Service closed down")
 
 
 if __name__ == '__main__':
