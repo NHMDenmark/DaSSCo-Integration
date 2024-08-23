@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.JobList import job_driver
+from AssetFileHandler import asset_handler
 import time
 
 """
@@ -19,7 +19,7 @@ class ProcessUpdatedFiles:
 
     def __init__(self):
 
-        self.jobby = job_driver.JobDriver()
+        self.jobby = asset_handler.JobDriver()
 
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles/"
         self.run = True
