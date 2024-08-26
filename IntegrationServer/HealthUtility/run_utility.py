@@ -89,6 +89,9 @@ class RunUtility(LogClass, Status):
             
         if module == "ndrive":
             paused = True
+
+        if module == "asset file handler":
+            paused = True
             
         if paused is True: 
             message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} loop counts. {extra_msg}"
