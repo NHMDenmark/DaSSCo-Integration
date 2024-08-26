@@ -54,6 +54,6 @@ def process_md_files(folder_path, output_file_path):
             output_file.write("| " + " | ".join(row) + " |\n")
 
 if __name__ == "__main__":
-    folder_path = f"{project_root}/Health_field_descriptions"  # Replace with your folder path
-    output_file_path = f"{project_root}/Health_overview.md"  # Replace with your desired output file path
+    folder_path = f"{project_root}/Track_field_descriptions"  # Replace with your folder path
+    output_file_path = f"{project_root}/Track_overview.md"  # Replace with your desired output file path
     process_md_files(folder_path, output_file_path)
