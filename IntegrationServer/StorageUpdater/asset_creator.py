@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import metadata_repository, track_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum
+from Enums import validate_enum, status_enum, erda_status
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -34,6 +34,7 @@ class AssetCreator():
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.erda_status_enum = erda_status.ErdaStatusEnum
         self.util = utility.Utility()
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -147,7 +148,10 @@ class AssetCreator():
                         message = self.run_util.log_msg(self.prefix_id, response)
                         self.health_caller.warning(self.service_name, message)
                         
-                    # TODO handle 300-399
+                    # TODO handle 300-399?
+
+                    if status_code > 299 and status_code != 504:
+                        print(f"{guid} failed to create and got status {status_code}")
 
                     if 400 <= status_code <= 499:
                         message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
@@ -155,12 +159,41 @@ class AssetCreator():
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         time.sleep(1)
                     
-                    if 500 <= status_code <= 599: 
+                    if 500 <= status_code <= 502 or 505 <= status_code <= 599: 
                         message = self.run_util.log_exc(self.prefix_id, response, exc)
                         #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
                         time.sleep(1)
-                    # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value) this responsibility is moved to health module, sets TEMP_ERROR status here 
+                    if status_code == 503:
+                        message = self.run_util.log_msg(self.prefix_id, response)
+                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.PAUSED.value)
+                        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.NO.value)
+
+                    # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down.
+                    if status_code == 504:
+                        print(f"{guid} got time out status: {status_code} Checking if asset was created.")
+
+                        try:
+                            exists = self.storage_api.get_asset_status(guid)
+
+                            if exists == False:                                
+                                message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Status: {status_code}. {response}")
+                                self.health_caller.warning(self.service_name, message, guid)
+
+                            if exists == self.erda_status_enum.ASSET_RECEIVED.value:
+                                metadata = self.metadata_mongo.get_entry("_id", guid)
+                                self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
+                                self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
+                                if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
+                                    self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
+                                
+                                message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
+                                self.health_caller.warning(self.service_name, message, guid)
+
+                        except Exception as e:
+                            message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
+                            self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+
 
                 time.sleep(1)
 
