@@ -16,7 +16,9 @@ from HealthUtility import health_caller, run_utility
 import utility
 
 """
-Responsible validating files have been synced with erda and updating track data accordingly.
+Responsible validating files have been synced with erda and updating track data accordingly. 
+Does this by finding assets with flags set to erda_sync: WAITING and has_open_share: YES
+Then calls the ARS get asset status and checks if the asset has been synced. 
 """
 
 class SyncErda(Status, Flag, ErdaStatus, Validate):
@@ -114,18 +116,27 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             if self.run == self.STOPPED:
                 continue           
             
-            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT}])
+            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT, self.HAS_OPEN_SHARE: self.YES}])
 
             if len(assets) == 0:
                 # no assets found that needed validation
-                time.sleep(15)
+                time.sleep(20)
                 continue
-
+            
+            print(f"checking {len(assets)} assets:")
             for asset in assets:
                 guid = asset["_id"]
                 
-                asset_status, asset_share_size = self.storage_api.get_asset_sharesize_and_status(guid)
+                # bool(True if status 200, False otherwise), status code from api(set to -1 if the call failed completely), 
+                # asset status(COMPLETED, ASSET_RECEIVED, ERDA_ERROR), asset share size(should be none/null for a success), note(any description if one is needed from the api call)
+                attempted, status_code, asset_status, asset_share_size, note = self.storage_api.get_asset_sharesize_and_status(guid)
                 
+                if attempted is False:
+                    # logs and sends a error message to the health api
+                    entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set erda_sync to ERROR. {note}")
+                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                    continue
+
                 # success scenario for an asset
                 if asset_status == self.COMPLETED and asset_share_size is None:
 
@@ -168,13 +179,11 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     # currently resetting sync status to "NO" attempts a new sync 
                     self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
 
-                if asset_status is False:
-                    # TODO handle when something went wrong with api call
-                    pass
-                time.sleep(1)
+                # wait time between calling ARS for asset status
+                time.sleep(2)
 
             # total delay after one run
-            time.sleep(1)
+            time.sleep(10)
 
         # Outside main while loop
         self.track_mongo.close_connection()
