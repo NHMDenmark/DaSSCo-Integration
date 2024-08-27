@@ -47,10 +47,10 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
         # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
         # special status change, logging and contact health api
-        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
-        self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
+        entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.RUNNING}")
+        self.health_caller.run_status_change(self.service_name, self.RUNNING, entry)
 
         # get currrent self.run value
         self.run = self.run_util.get_service_run_status()
@@ -89,6 +89,97 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             
         return storage_api
 
+    def loop(self):
+
+        while self.run == self.RUNNING:
+
+            current_time = datetime.now()
+            time_difference = current_time - self.auth_timestamp
+            
+            # renew authentication with keycloak
+            if time_difference > timedelta(minutes=4):
+                self.storage_api.service.metadata_db.close_mdb()
+                print(f"creating new storage client, after {time_difference}")
+                self.storage_api = self.create_storage_api()
+            if self.storage_api is None:
+                continue
+
+            # checks if service should keep running
+            self.run = self.run_util.check_run_changes()
+
+            # Pause loop
+            if self.run == self.PAUSED:
+                self.run = self.run_util.pause_loop()
+            
+            if self.run == self.STOPPED:
+                continue           
+            
+            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT}])
+
+            if len(assets) == 0:
+                # no assets found that needed validation
+                time.sleep(15)
+                continue
+
+            for asset in assets:
+                guid = asset["_id"]
+                
+                asset_status, asset_share_size = self.storage_api.get_asset_sharesize_and_status(guid)
+                
+                # success scenario for an asset
+                if asset_status == self.COMPLETED and asset_share_size is None:
+
+                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
+                    
+                    self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
+
+                    self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
+
+                    # remove the temp sync timestamp 
+                    self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
+                    # remove the temp time out status if it exist                    
+                    self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
+
+                    self.track_mongo.update_entry(guid, "proxy_path", "")
+
+                    for file in asset["file_list"]:
+                        self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
+                    
+                    print(f"Validated erda sync for asset: {guid}")
+
+                # check the case of a COMPLETED sync happens without the fileshare being closed, will set a lot of AWAIT status
+                # TODO handle what happens if this triggers, for now it just puts the asset in a corner
+                if asset_status == self.COMPLETED and asset_share_size is not None:
+                    self.completed_sync_share_still_open(self, guid, asset)
+
+                # asset is still waiting to be synced
+                if asset_status == self.ASSET_RECEIVED:
+                    # check if asset is timed out and handle if true
+                    timed_out = self.check_timeout(guid)
+
+                    if timed_out is True:                            
+                            self.timeout_handling(guid)
+                    else:
+                        # no action needed here since asset is queued to be synced and just waiting for that to happen
+                        print(f"Waiting on erda sync for asset: {guid}")
+                    
+                if asset_status == self.ERDA_ERROR:
+                    # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
+                    # currently resetting sync status to "NO" attempts a new sync 
+                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
+
+                if asset_status is False:
+                    # TODO handle when something went wrong with api call
+                    pass
+                time.sleep(1)
+
+            # total delay after one run
+            time.sleep(1)
+
+        # Outside main while loop
+        self.track_mongo.close_connection()
+        self.service_mongo.close_connection()
+
     def check_timeout(self, guid):
 
         time_received = self.track_mongo.get_value_for_key(guid, "temporary_erda_sync_time")
@@ -117,90 +208,26 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 entry = self.run_util.log_msg(self.prefix_id, "The asset timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
                 self.health_caller.warning(self.service_name, entry, guid)
 
-    def loop(self):
-
-        while self.run == self.RUNNING:
-
-            current_time = datetime.now()
-            time_difference = current_time - self.auth_timestamp
-            
-            if time_difference > timedelta(minutes=4):
-                self.storage_api.service.metadata_db.close_mdb()
-                print(f"creating new storage client, after {time_difference}")
-                self.storage_api = self.create_storage_api()
-            if self.storage_api is None:
-                continue
-
-            # checks if service should keep running
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.PAUSED:
-                self.run = self.run_util.pause_loop()
-            
-            if self.run == self.STOPPED:
-                continue           
-            
-            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT}])
-
-            if len(assets) == 0:
-                # no assets found that needed validation
-                time.sleep(1)
-                continue
-
-            for asset in assets:
-                guid = asset["_id"]
-                
-                asset_status = self.storage_api.get_asset_status(guid)
-                
-                if asset_status == self.COMPLETED:
-
-                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
+    def completed_sync_share_still_open(self, guid, asset):
+        self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.AWAIT)
                     
-                    self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
+        self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.AWAIT)
 
-                    self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
+        self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.AWAIT)
 
-                    # remove the temp sync timestamp 
-                    self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
-                    # remove the temp time out status if it exist                    
-                    self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
+        # remove the temp sync timestamp 
+        self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
+        # remove the temp time out status if it exist                    
+        self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
 
-                    self.track_mongo.update_entry(guid, "proxy_path", "")
+        for file in asset["file_list"]:
+             self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.AWAIT)
+        
+        # logs and sends a warning message to the health api
+        entry = self.run_util.log_msg(self.prefix_id, "The asset was synced but the fileshare was not closed. This is a bug we have encountered before during testing. Erda_sync, has_open_share and has_new_file are all set to AWAIT. Check that asset is in erda")
+        self.health_caller.warning(self.service_name, entry, guid)
+        # TODO handle how to get back on track
 
-                    for file in asset["file_list"]:
-                        self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
-                    
-                    print(f"Validated erda sync for asset: {guid}")
-
-                if asset_status == self.ASSET_RECEIVED:
-                    
-                    # check if asset is timed out and handle if true
-                    timed_out = self.check_timeout(guid)
-
-                    if timed_out is True:                            
-                            self.timeout_handling(guid)
-
-                    else:
-                        # no action needed here since asset is queued to be synced and just waiting for that to happen
-                        print(f"Waiting on erda sync for asset: {guid}")
-                    
-                if asset_status == self.ERDA_ERROR:
-                    # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
-                    # currently resetting sync status to "NO" attempts a new sync 
-                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
-
-                if asset_status is False:
-                    # TODO handle when something went wrong with api call
-                    pass
-                time.sleep(1)
-
-            # total delay after one run
-            time.sleep(1)
-
-        # Outside main while loop
-        self.track_mongo.close_connection()
-        self.service_mongo.close_connection()
 
 if __name__ == '__main__':
     SyncErda()
