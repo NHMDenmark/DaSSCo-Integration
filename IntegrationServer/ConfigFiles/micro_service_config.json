@@ -1,4 +1,13 @@
 {
+  "Asset error status handler": {
+    "module": "health utility",
+    "pause_time": 5,
+    "pause_check_list": [2, 7],
+    "pause_loop_count": 4,
+    "error_tolerance": 2,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
   "Asset creator ARS": {
     "module": "storage updater",
     "pause_time": 5,

@@ -7,6 +7,7 @@ class ValidateEnum(Enum):
     NO = "NO"
     PAUSED = "PAUSED"
     ERROR = "ERROR"
+    CRITICAL_ERROR = "CRITICAL_ERROR"
 
 class Validate:
     def __init__(self):
@@ -16,3 +17,4 @@ class Validate:
         self.NO = ValidateEnum.NO.value
         self.PAUSED = ValidateEnum.PAUSED.value
         self.ERROR = ValidateEnum.ERROR.value
+        self.CRITICAL_ERROR = ValidateEnum.CRITICAL_ERROR.value

@@ -60,7 +60,7 @@ class TrackRepository:
     
     def delete_field(self, id, field_name):
         return self.all.delete_field(id, field_name)
-    
+
     def create_track_entry(self, guid, pipeline):
         """
         Create a new track entry in the MongoDB collection.
@@ -78,6 +78,31 @@ class TrackRepository:
         else:
             return False
     
+    def error_get_entry(self):
+
+        """
+        Retrieve an entry from the MongoDB collection a field value indicates an error.
+
+        :return: A entry or none if no errors.
+        """
+        
+        error_query = {
+            "$or": [
+                {"jobs_status": {"$eq": "ERROR"}},
+                {"files_status": {"$eq": "ERROR"}},
+                {"has_open_share": {"$eq": "ERROR"}},
+                {"is_in_ars": {"$eq": "ERROR"}},
+                {"erda_sync": {"$eq": "ERROR"}},
+                {"has_new_file": {"$eq": "ERROR"}},
+                {"hpc_ready": {"$eq": "ERROR"}},
+                {"update_metadata": {"$eq": "ERROR"}}
+            ]
+        }
+        
+        entry = self.collection.find_one(error_query)
+        return entry
+
+
     def create_derivative_track_entry(self, guid, pipeline):
         """
         Create a new track entry in the MongoDB collection for a derivative.

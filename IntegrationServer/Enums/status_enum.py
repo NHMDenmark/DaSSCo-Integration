@@ -11,6 +11,7 @@ class StatusEnum(Enum):
     PAUSED = "PAUSED"
     STOPPED = "STOPPED"
     TESTING = "TESTING"
+    CRITICAL_ERROR = "CRITICAL_ERROR"
 
 class Status:
     def __init__(self):
@@ -24,3 +25,4 @@ class Status:
         self.PAUSED = StatusEnum.PAUSED.value
         self.STOPPED = StatusEnum.STOPPED.value
         self.TESTING = StatusEnum.TESTING.value
+        self.CRITICAL_ERROR = StatusEnum.CRITICAL_ERROR.value
