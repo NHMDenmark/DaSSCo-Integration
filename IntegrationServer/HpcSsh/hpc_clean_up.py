@@ -80,9 +80,7 @@ class HPCCleanUp():
                 except Exception as e:
                     time.sleep(60)
                     continue
-
-                self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
-
+            
                 self.con.ssh_command(f"bash {script_path} {guid}")
 
                 time.sleep(1)

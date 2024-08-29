@@ -8,6 +8,6 @@
   "export_to_path": "/work/dassco_23_request/ldam/received",
   "temporary_persist_path": "/work/dassco_23_request/ldam/waiting",
   "initiate_script": "/work/dassco_23_request/testPIPEHERB0001/scripts/DaSSCo-Image-Refinery/src/dasscorefinery/assetLoader.sh",
-  "clean_up_script": "path/to/script",
-  "upload_file_script": "path/to/script"
+  "clean_up_script": "/work/dassco_23_request/testPIPEHERB0001/scripts/DaSSCo-Image-Refinery/src/dasscorefinery/assetDeleter.sh",
+  "upload_file_script": "/work/dassco_23_request/testPIPEHERB0001/scripts/DaSSCo-Image-Refinery/src/dasscorefinery/assetUploader.sh"
 }

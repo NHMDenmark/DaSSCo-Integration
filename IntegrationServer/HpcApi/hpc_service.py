@@ -358,7 +358,7 @@ class HPCService():
         else:
             return False
     
-    # TODO needs testing
+    # TODO needs testing, works for ucloud version
     def derivative_files_uploaded(self, asset_guid):
 
         track_data = self.mongo_track.get_entry("_id", asset_guid)
@@ -421,7 +421,17 @@ class HPCService():
             return True
         else:
             return False
-        
+    
+    def clean_up(self, guid):
+
+        asset = self.mongo_track.get_entry("_id", guid)
+
+        if asset is not None:
+            self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
+            return True
+        else:
+            return False
+
     def get_enum_asset_type(self, asset_subject):
 
         if asset_subject == "device target":
