@@ -11,15 +11,16 @@
 | HpcSsh\hpc_open_share | WAITING | - | - | NO | YES | NO | NO -> YES | YES | - | - | - | - |
 | HpcSsh\hpc_asset_creator | WAITING | - | - | NO -> AWAIT | YES | NO | YES | YES | - | - | - | - |
 | HpcSsh\hpc_job_caller | WAITING -> STARTING | - | - | YES | - | - | - | - | - | not DEVICE_TARGET | - | - |
-| HpcSsh\hpc_clean_up | DONE | - | - | YES -> NO | YES | - | - | - | - | - | - | - |
+| HpcSsh\hpc_clean_up | DONE | - | - | YES | YES | - | - | YES | - | - | - | - |
 | HpcSsh\hpc_uploader | DONE | - | - | NO | YES | YES -> UPLOADING | YES | NO | - | - | - | - |
 | HpcApi\hpc_api barcode | -> relevant status | - | - | - | - | - | - | - | -> YES | UNKNOWN -> type status | - | - |
-| HpcApi\hpc_api derivative | -> DONE | -> NONE | -> parent size + estimate size | -> NO | -> AWAIT -> NO | -> NO | -> NO | -> NO | -> NO | - | - | - |
+| HpcApi\hpc_api derivative | -> DONE | -> NONE | -> parent size + estimate size | -> YES | -> AWAIT -> NO | -> NO | -> NO | -> NO | -> NO | - | - | - |
 | HpcApi\hpc_api update_asset | -> relevant status | - | - | - | - | - | - | - | -> YES | - | - | - |
 | HpcApi\hpc_api queue_job | -> QUEUED | - | - | - | - | - | - | - | - | - | - | - |
 | HpcApi\hpc_api start_job | -> RUNNING| - | - | - | - | - | - | - | - | - | - | - |
 | HpcApi\hpc_api asset_ready | - | - | - | -> YES | - | - | - | - | - | - | - | - |
 | HpcApi\hpc_api derivative_files_uploaded | - | - | - | - | - | -> AWAIT | - | - | - | - | - | - |
+| HpcApi\hpc_api asset_clean_up | - | - | - | -> NO | - | - | - | - | - | - | - | - |
 
 | P | js | fs | a s | ready | ars | n file | open sha | e sync | upd mdata | asset type |
 

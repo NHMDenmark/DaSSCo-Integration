@@ -59,7 +59,8 @@ class HPCService():
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
-            
+            self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
+
             return mdata
         
         except Exception as e:
