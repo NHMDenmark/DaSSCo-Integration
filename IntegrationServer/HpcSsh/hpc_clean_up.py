@@ -67,9 +67,7 @@ class HPCCleanUp(LogClass):
             else: 
                 guid = asset["_id"]
                 script_path = self.hpc_config_path["clean_up_script"]
-
-                self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
-
+                print(f"bash {script_path} {guid}")                
                 self.con.ssh_command(f"bash {script_path} {guid}")
 
                 time.sleep(1)

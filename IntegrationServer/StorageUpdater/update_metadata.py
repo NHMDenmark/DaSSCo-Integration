@@ -21,7 +21,7 @@ Logs warnings and errors from this process, and directs them to the health servi
 class UpdateMetadata(LogClass):
 
     def __init__(self):
-
+        time.sleep(4)
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
@@ -84,8 +84,8 @@ class UpdateMetadata(LogClass):
                     # TODO handle if is in ars == NO
 
                     guid = asset["_id"]
-                    storage_api = storage_client.StorageClient()
-                    updated = storage_api.update_metadata(guid)
+                    
+                    updated = self.storage_api.update_metadata(guid)
 
                     if updated is True:
                         self.track_mongo.update_entry(guid, "update_metadata", self.validate_enum.NO.value)

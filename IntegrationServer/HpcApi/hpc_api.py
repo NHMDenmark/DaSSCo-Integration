@@ -111,6 +111,7 @@ def get_httplink(asset_guid: str):
 @app.post("/api/v1/derivative_uploaded")
 async def derivative_files_uploaded(asset_guid: str):
 
+    print(f"derivative uploaded call: {asset_guid}")
     uploaded = service.derivative_files_uploaded(asset_guid)
 
     if uploaded is False:
@@ -138,3 +139,10 @@ async def file_info(file_info: file_info_model):
 
     if added is False:
         return JSONResponse(content={"error": "asset not found for file info"}, status_code=422)
+
+@app.post("/api/v1/assset_clean_up")
+async def file_uploaded(asset_guid: str):
+    cleaned = service.clean_up(asset_guid)
+
+    if cleaned is False:
+        return JSONResponse(content={"error": "asset not found for cleaning"}, status_code=422)

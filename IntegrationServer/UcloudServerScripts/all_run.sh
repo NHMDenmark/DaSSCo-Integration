@@ -8,6 +8,7 @@ nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/job_caller.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_uploader.py" > "$root/HpcSsh/uploader.out" 2>&1 &
+nohup python "$root/HpcSsh/hpc_clean_up.py" > "$root/HpcSsh/hpc_clean_up.out" 2>&1 &
 
 nohup python "$root/StorageUpdater/asset_creator.py" > "$root/StorageUpdater/asset_creator.out" 2>&1 &
 nohup python "$root/StorageUpdater/file_uploader.py" > "$root/StorageUpdater/file_uploader.out" 2>&1 &

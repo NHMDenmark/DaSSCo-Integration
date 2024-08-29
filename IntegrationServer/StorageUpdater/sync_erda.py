@@ -82,8 +82,8 @@ class SyncErda(LogClass):
 
             if asset is not None:
                 guid = asset["_id"]
-                storage_api = storage_client.StorageClient()
-                synced = storage_api.sync_erda(guid)
+                
+                synced = self.storage_api.sync_erda(guid)
                 
                 # TODO handle if false - api fail
                 if synced is True:

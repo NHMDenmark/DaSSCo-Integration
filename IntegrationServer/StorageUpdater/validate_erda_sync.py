@@ -20,7 +20,7 @@ Responsible validating files have been synced with erda and updating track data 
 class ValidateErda(LogClass):
 
     def __init__(self):
-
+        time.sleep(6)
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
@@ -109,10 +109,10 @@ class ValidateErda(LogClass):
             if len(assets) == 0:
                 # no assets found that needed validation
                 print("no assets found")
-                time.sleep(10)
+                time.sleep(20)
                 continue
             
-            print("checking assets:")
+            print(f"checking {len(assets)} assets:")
             for asset in assets:                
                 print(asset["_id"])
 

@@ -4,7 +4,7 @@
     "is_slurm": "true",
     "password": "put/in/environment/variable",
     "port": "22",
-    "status": "closed",
+    "status": "open",
     "username": "put/in/environment/variable"
   }
 }

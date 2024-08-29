@@ -21,7 +21,7 @@ Logs warnings and errors from this process, and directs them to the health servi
 class AssetCreator(LogClass):
 
     def __init__(self):
-
+        time.sleep(5)
         # setting up logging
         super().__init__(filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.relpath(os.path.abspath(__file__), start=project_root))
         # service name for logging/info purposes
@@ -93,7 +93,7 @@ class AssetCreator(LogClass):
                     self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
                     print(f"Created: {guid}")
-                    if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
+                    if asset["asset_size"] != -1:
                         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
                 if created is False:
@@ -103,8 +103,6 @@ class AssetCreator(LogClass):
                     # TODO handle 300-399
                     if status_code > 299 and status_code != 504:
                         print(f"{guid} failed to create and got status {status_code}")
-                    if status_code == 504:
-                        print(f"{guid} got time out status: {status_code} Check if asset was created.")
                     
                     if 400 <= status_code <= 499:
                         message = self.log_exc(response, exc, self.log_enum.ERROR.value)
@@ -112,13 +110,15 @@ class AssetCreator(LogClass):
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars")
                         time.sleep(1)
 
-                    if 500 <= status_code:
+                    if 500 <= status_code <= 502:
                         message = self.log_exc(response, exc)
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid)
                         time.sleep(1)
                     if status_code == 503:
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.NO.value)
+                    if status_code == 504:
+                        print(f"{guid} got time out status: {status_code} Check if asset was created.")
                     # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.ERROR.value) this responsibility is moved to health module, sets TEMP_ERROR status here 
 
                 time.sleep(1)

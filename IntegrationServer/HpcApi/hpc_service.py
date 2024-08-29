@@ -30,11 +30,15 @@ class HPCService():
     # TODO this is untested - this should be used for new assets that are either derivatives or cropped versions of their parents
     def receive_derivative_metadata(self, metadata):
 
+        print("parent:", metadata.parent_guid)
+
         try:
             t_parent = None
             t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
+            
 
             if t_parent is None:
+                print("failed to find parent guid")
                 return False
 
             mdata = True
@@ -51,15 +55,16 @@ class HPCService():
             est_size = 0
             # tif estimate 400 mb
             if metadata.file_format == "tif":
-                est_size = 450
+                est_size = 400
             # jpg estimate 10mb
             if metadata.file_format == "jpeg":
-                est_size = 30
+                est_size = 20
             
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
-            
+            self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
+
             return mdata
         
         except Exception as e:
@@ -201,7 +206,7 @@ class HPCService():
         MOS = barcode_data.MOS
         label = barcode_data.label
         disposable = barcode_data.disposable
-        #print("received data", guid, job_name, status, barcode_list, asset_subject, MSO, MOS, label, disposable)
+        print("received data", guid, job_name, status, barcode_list, asset_subject, MSO, MOS, label, disposable)
         if None in [guid, job_name, status, MSO, MOS, label]:
             return False
 
@@ -211,7 +216,7 @@ class HPCService():
             return False
         
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
-
+        
         self.update_mongo_metadata(guid, metadata_update)
         self.update_mongo_track(guid, job_name, status)
 
@@ -282,7 +287,7 @@ class HPCService():
         job_id = queue_data.job_id
         job_name = queue_data.job_name
         job_queued_time = queue_data.timestamp
-
+        print("queued", guid, job_id, job_name, job_queued_time)
         if guid is None:
             return False
         else:
@@ -302,7 +307,7 @@ class HPCService():
         guid = started_data.guid
         job_name = started_data.job_name
         job_start_time = started_data.timestamp
-
+        print("started", guid, job_name, job_start_time)
         if guid is None:
             return False
         else:
@@ -409,6 +414,16 @@ class HPCService():
 
             self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
+            return True
+        else:
+            return False
+
+    def clean_up(self, guid):
+
+        asset = self.mongo_track.get_entry("_id", guid)
+
+        if asset is not None:
+            self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
             return True
         else:
             return False

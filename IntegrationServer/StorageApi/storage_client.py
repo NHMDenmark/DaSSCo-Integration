@@ -7,6 +7,7 @@ from dasscostorageclient import DaSSCoStorageClient
 from StorageApi import storage_service
 from dotenv import load_dotenv
 import json
+from datetime import datetime
 
 class StorageClient():
      def __init__(self):
@@ -51,8 +52,9 @@ class StorageClient():
           #print(allocation_size, data_dict)
 
           try:
+               print("attempt", datetime.now())
                response = self.client.assets.create(data_dict, allocation_size)
-
+               print("response", datetime.now())
                status_code = response["status_code"]
           
                if status_code == 200:                    
@@ -75,6 +77,7 @@ class StorageClient():
 
      # helper function that extracts the status code from the exception received from dassco-storage-client 
      def get_status_code_from_exc(self, exc):
+          #print(exc)
           exc_str = exc.__str__()
           exc_split = exc_str.split(":")
           status_code = exc_split[0][-3:]
@@ -84,6 +87,7 @@ class StorageClient():
           except Exception as e:
                status_code = 555
                note = f"Status code set to {status_code} from exception: {e}"
+               #print(note)
           return status_code, note
      
      def sync_erda(self, guid):
@@ -175,7 +179,7 @@ class StorageClient():
                data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
-
+          print(f"{guid} {data_dict["restricted_access"]}")
           try:
                response = self.client.assets.update(guid, data_dict)
 
