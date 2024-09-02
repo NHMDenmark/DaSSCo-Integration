@@ -15,7 +15,7 @@ The cropping algorithm works as follows:
 3. These two bounding boxes are combined to a new bounding box by using the maximum and minimum coordinates in the 4 directions (positive x, negative x, positive y, negative y), ensuring that the image is never cropped below the side ruler dimension, but in case more extreme outliers are found, the image is cropped to include those.
 
 
-It saves the cropped image locally. It is save din the same batch folder under the name _guid__cropped.tif.
+It saves the cropped image locally. It is save din the same batch folder under the name _guid_ _cropped.tif.
 
 It reports to the [Hpc_api update_asset] endpoint that the job has finished.
 
