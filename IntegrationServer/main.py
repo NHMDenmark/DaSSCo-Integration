@@ -89,7 +89,6 @@ def test():
     #a = util.check_value_in_enum(None, FeedbackEnum)
     
     #a = field.is_acceptable_string("asset-guid-53268-æææ")
-
     #print(a)
 
 class x(Feedback, LogClass):

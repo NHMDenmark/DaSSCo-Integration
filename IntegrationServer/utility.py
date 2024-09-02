@@ -157,4 +157,32 @@ class Utility:
             return True
         
         return False
+    
+    def convert_json_to_utf8(self, input_data):
+        # Function to decode a string
+        def decode_string(s):
+            try:
+                # First, decode the string using 'latin1' to get the correct bytes
+                bytes_str = s.encode('latin1')
+                # Then decode it to 'utf-8'
+                return bytes_str.decode('utf-8')
+            except UnicodeEncodeError:
+                return s
+
+        # Recursive function to handle all elements in the JSON structure
+        def decode_json(data):
+            if isinstance(data, str):
+                return decode_string(data)
+            elif isinstance(data, dict):
+                return {key: decode_json(value) for key, value in data.items()}
+            elif isinstance(data, list):
+                return [decode_json(item) for item in data]
+            else:
+                return data
+
+        # Decode the entire JSON structure
+        output_data = decode_json(input_data)
+
+        return output_data
+
         
