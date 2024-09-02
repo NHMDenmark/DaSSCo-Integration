@@ -76,7 +76,7 @@ class HPCCleanUp():
             else: 
                 guid = asset["_id"]
                 try:
-                    script_path = self.hpc_config_path["clean_up_script"]
+                    script_path = self.util.get_value(self.hpc_config_path, "clean_up_script")
                 except Exception as e:
                     time.sleep(60)
                     continue
