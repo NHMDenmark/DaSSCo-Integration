@@ -1,13 +1,13 @@
 #!/bin/bash
 
-root="/work/data/DaSSCo-Integration/IntegrationServer"
+root="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
 
 nohup python "$root/Ndrive/ndrive_new_files.py" > "$root/Ndrive/ndrive_new_files.out" 2>&1 &
 nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process_files_from_ndrive.out" 2>&1 &
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/job_caller.out" 2>&1 &
-nohup python "$root/HpcSsh/hpc_open_share.py" > "$root/HpcSsh/open_share.out" 2>&1 &
+#nohup python "$root/HpcSsh/hpc_open_share.py" > "$root/HpcSsh/open_share.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_uploader.py" > "$root/HpcSsh/uploader.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_clean_up.py" > "$root/HpcSsh/hpc_clean_up.out" 2>&1 &
 

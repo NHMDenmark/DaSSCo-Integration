@@ -12,10 +12,9 @@ from StorageApi import storage_client
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
-import exifread
-from PIL import Image, TiffImagePlugin, TiffTags
-from PIL.TiffImagePlugin import ImageFileDirectory_v2
-from pyexiv2 import Image as ImgMeta
+#from PIL import Image, TiffImagePlugin, TiffTags
+#from PIL.TiffImagePlugin import ImageFileDirectory_v2
+#from pyexiv2 import Image as ImgMeta
 from bson.json_util import dumps
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -29,8 +28,8 @@ from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
 from pymongo.errors import InvalidOperation
-import field_validation
-from validator_collection import checkers, validators
+#import field_validation
+#from validator_collection import checkers, validators
 """"
 Test area for the different processes. May contain deprecated information.
 """
@@ -48,7 +47,7 @@ class IntegrationServer(object):
 
 def test():
     util = utility.Utility()
-    field = field_validation.FieldValidation()
+    #field = field_validation.FieldValidation()
     # jobby = job_driver.JobDriver()
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
@@ -149,9 +148,9 @@ def modify_exif_data(file_path, new_exif_data):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
-    test()
+    #test()
     #t = datetime.now() - timedelta(hours=1000)
-    #print(t)
+    print("t")
 
 
 

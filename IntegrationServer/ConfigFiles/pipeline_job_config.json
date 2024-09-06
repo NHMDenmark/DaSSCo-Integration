@@ -7,7 +7,9 @@
  },
  "PIPEHERB0001": {
    "job_1": "assetLoader",
-   "job_2": "label"
+   "job_2": "barcode",
+   "job_3": "cropping",
+   "job_4": "derivative"
  },
  "ti-p1": {
   "job_1": "test",

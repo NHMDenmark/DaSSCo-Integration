@@ -25,7 +25,7 @@ class AssetHandler:
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
-        self.ndrive_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config", "ndrive_path")
+        self.ndrive_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.input_dir = f"{project_root}/Files/NewFiles"
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"

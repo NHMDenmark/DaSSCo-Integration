@@ -2,49 +2,49 @@
   "metadata": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "Metadata"
   },
   "track": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "track"
   },
   "batch": {
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "batch_list"
   },
   "slurm":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "slurm_list"
   },
   "availability":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "slurm_availability"
   },
   "MOS":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "MOS"
   },
   "health":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "health"
   },
   "micro_service":{
     "host": "localhost",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection_name": "micro_service"
   }
 }

@@ -37,8 +37,7 @@ class EmailSender:
     This requires sendmail to be installed on the system. Also requires the system to be linux.
     Returns true.
     """
-    # TODO needs to be tested
-    """
+        
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
         subj, message = self.create_error_mail_content(health_id, guid, service_name, service, status, error_msg, timestamp, exception)
@@ -51,13 +50,13 @@ class EmailSender:
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
         process.communicate(input=subject)
         
-        Return True
-    """
+        return True
+    
     """
     This requires sendmail to be installed on the system. Also requires the system to be linux.
     Returns true.
     """
-    """
+    
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
         
         subj, message = self.create_status_change_mail_content(health_id, service_name, run_status, timestamp)
@@ -70,14 +69,14 @@ class EmailSender:
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
         process.communicate(input=subject)
 
-        Return True
-    """
+        return True
+    
 
-
     """
-    This requires a mailserver to be setup and configured.
-    Returns true.
-    """
+    
+    #This requires a mailserver to be setup and configured.
+    #Returns true.
+    
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
 
         mail_subject, msg_content = self.create_error_mail_content(health_id, guid, service_name, service, status, error_msg, timestamp, exception)
@@ -98,10 +97,10 @@ class EmailSender:
 
         return True
 
-    """
-    This requires a mailserver to be setup and configured.
-    Returns true.
-    """
+    
+    #This requires a mailserver to be setup and configured.
+    #Returns true.
+    
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
 
         mail_subject, msg_content = self.create_status_change_mail_content(health_id, service_name, run_status, timestamp)
@@ -121,7 +120,7 @@ class EmailSender:
         server.quit()
         
         return True
-
+    """
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
         
