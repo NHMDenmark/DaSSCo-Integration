@@ -150,7 +150,8 @@ if __name__ == '__main__':
     #test() 2024-04-09T10:00:52+02:00
     #test()
     #t = datetime.now() - timedelta(hours=1000)
-    print("t")
+    load_dotenv()
+    print(os.environ.get("UCLOUD_USER"))
 
 
 

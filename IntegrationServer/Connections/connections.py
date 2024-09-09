@@ -34,16 +34,16 @@ class Connections:
 
         for connection_name, connection_details in config.items():
             con_user = connection_name + "_USER"
-            con_user.upper()
+            con_user = con_user.upper()
             con_pwd = connection_name + "_PWD"
-            con_pwd.upper()
-
+            con_pwd = con_pwd.upper()
+            
             username = os.getenv(con_user)
             password = os.getenv(con_pwd)
 
             if username == None:
                 username = os.environ.get(con_user)
-
+            print("attempt: ", username, connection_name)
             connection = SSHConnection(
                 connection_name,
                 connection_details['host'],
