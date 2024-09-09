@@ -7,7 +7,7 @@ String
 Metadata
 
 **Description:**  
-The status of the asset. It  
+The status of the asset. It is not for the services use but for human eyes to quickly give an overview.  
 
 **Value:**  
 For processing, being processed, working copy, archive, processing halted, for deletion, issue with media, issue with metadata
@@ -20,3 +20,4 @@ Populated by integration server just before upload if empty.
 
 **Updated where and when:**  
 Never
+
