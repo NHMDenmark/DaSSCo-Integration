@@ -126,10 +126,9 @@ class StorageClient():
           try:
                response = self.client.assets.get_status(guid)
 
-               status = response["data"].status
-               
+               status = response["data"].status               
                status_code = response["status_code"]
-               share_size = response["share_allocation_mb"]
+               share_size = response["data"].share_allocation_mb
 
                if status_code == 200:
                     status = response["data"].status

@@ -6,7 +6,7 @@ import shutil
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from AssetFileHandler.asset_handler import JobDriver
+from AssetFileHandler.asset_handler import AssetHandler
 from IntegrationServer.MongoDB import track_repository, metadata_repository
 
 class TestJobDriver(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestJobDriver(unittest.TestCase):
         
         self.track = track_repository.TrackRepository()
         self.metadata = metadata_repository.MetadataRepository()
-        self.driver = JobDriver()
+        self.driver = AssetHandler()
 
         self.guid = "test_metadata_entry3"
 
@@ -33,8 +33,10 @@ class TestJobDriver(unittest.TestCase):
 
         self.track.close_connection()
         self.metadata.close_connection()
-
-        shutil.move(self.destination_path, self.driver.input_dir)
+        try:
+            shutil.move(self.destination_path, self.driver.input_dir)
+        except:
+            pass
 
     def setUp(self):
         pass
@@ -42,9 +44,9 @@ class TestJobDriver(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_process_new_directories_from_ndrive(self):
+    def test_process_new_directories(self):
 
-        self.driver.process_new_directories_from_ndrive()
+        self.driver.process_new_directories()
 
         track_entry = self.track.get_entry("_id", self.guid)
 

@@ -192,4 +192,4 @@ class RunUtility(LogClass, Status):
         except Exception as e:
             pass
 
-        return stay_paused
+        return stay_paused, ""

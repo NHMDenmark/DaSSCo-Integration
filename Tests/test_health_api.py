@@ -8,13 +8,21 @@ import unittest
 from fastapi.testclient import TestClient
 from IntegrationServer.HealthApi.health_api import health
 from IntegrationServer.MongoDB.health_repository import HealthRepository
+from IntegrationServer.MongoDB.track_repository import TrackRepository
+from IntegrationServer.utility import Utility
 
 # Testing this will create emails and slack messages also.
 class TestHealthApi(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.health_repo = HealthRepository()
+        self.track_repo = TrackRepository()
+        self.util = Utility()
+
+        test_track_entry = self.util.read_json(f"{project_root}/Tests/TestConfigFiles/test_track_entry.json")
         
+        self.track_repo.collection.insert_one(test_track_entry)
+
         self.client = TestClient(health)
         self.service_name = "Test health api"
         self.test_message_model = {
@@ -71,6 +79,8 @@ class TestHealthApi(unittest.TestCase):
         self.health_repo.delete_entry("Tha_20240828105157066")
         self.health_repo.delete_entry("Tha_20240928105157066")
         self.health_repo.delete_entry("Tha_20241028105157066")
+        self.track_repo.delete_entry("test_0001")
+        self.track_repo.close_connection()
         self.health_repo.close_connection()
     
     def test_receive_warning(self):
@@ -78,6 +88,7 @@ class TestHealthApi(unittest.TestCase):
         self.test_message_model["message"] = "Tha###TESTING###2024-06-28 10:51:57,066###Tests/test_health_api.py###Testing receive warning"
 
         model_json = json.dumps(self.test_message_model)
+        print(model_json)
         response = self.client.post("/api/warning", data= model_json)
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
         

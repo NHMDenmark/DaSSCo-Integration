@@ -51,7 +51,7 @@ class SSHConnection:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
 
-            #self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
+            self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
             self.sftp = self.get_sftp()
 
         except Exception as e:

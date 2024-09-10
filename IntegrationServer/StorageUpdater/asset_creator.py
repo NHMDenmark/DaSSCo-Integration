@@ -66,10 +66,17 @@ class AssetCreator():
     # TODO decide how this will actually be implemented with the 3rd party health service
     def heartbeat(self):
             while self.run != self.status_enum.STOPPED.value:
-                time.sleep(3)
-                print("im alive")
-                self.run = self.run_util.check_run_changes()
-
+                time.sleep(10)
+                try:
+                    self.run = self.run_util.check_run_changes()
+                    if self.run == self.status_enum.STOPPED.value:
+                        print("im dead")
+                    elif self.run == self.status_enum.PAUSED.value:
+                        print("im asleep")
+                    else:
+                        print("im alive")
+                except:
+                    print("im dead")
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  

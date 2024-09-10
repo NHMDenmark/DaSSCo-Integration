@@ -41,7 +41,7 @@ class EmailSender:
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
         subj, message = self.create_error_mail_content(health_id, guid, service_name, service, status, error_msg, timestamp, exception)
-
+        
         subject = f"{subj}\n\n{message}"
         
         command = ['sendmail', self.address_to]

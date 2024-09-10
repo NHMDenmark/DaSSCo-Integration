@@ -77,6 +77,9 @@ class TrackRepository:
             return True
         else:
             return False
+        
+    def create_test_entry(self, test_entry):
+        self.collection.insert_one(test_entry)
     
     def error_get_entry(self):
 

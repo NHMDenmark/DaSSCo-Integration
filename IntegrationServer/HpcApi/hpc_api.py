@@ -33,7 +33,7 @@ file_info_model = FileInfoModel
 
 @app.get("/dev/yo")
 def index():
-    return "keep out"
+    return "keep out all"
 
 """
 Deprecated since we use the derivative endpoint instead.

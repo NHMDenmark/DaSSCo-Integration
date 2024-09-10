@@ -27,7 +27,7 @@ from Enums.feedback_enum import Feedback
 from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
-from pymongo.errors import InvalidOperation
+#from pymongo.errors import InvalidOperation
 #import field_validation
 #from validator_collection import checkers, validators
 """"
@@ -71,7 +71,7 @@ def test():
     #entry_dict = json.loads(dumps(entry))
 
     #email = email_sender.EmailSender("test")
-    #email.send_error_mail("abc", "upload_file", "CRITICAL", "Everything is breaking down, call the police.")
+    #email.send_error_mail("abc", service_name="Test health api")
     #sl = slack_webhook.SlackWebhook()
     #sl.message_from_integration("Lars", "MIGHTY WARRIOR", "GET WELL")
     #util.write_full_json(relPath, entry)
@@ -148,10 +148,10 @@ def modify_exif_data(file_path, new_exif_data):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
-    #test()
+    test()
     #t = datetime.now() - timedelta(hours=1000)
-    load_dotenv()
-    print(os.environ.get("UCLOUD_USER"))
+    #load_dotenv()
+    #print(os.environ.get("UCLOUD_USER"))
 
 
 

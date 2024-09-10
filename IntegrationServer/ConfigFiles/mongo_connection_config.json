@@ -3,7 +3,7 @@
     "host": "localhost",
     "port": 27017,
     "data_base": "dev_db",
-    "collection_name": "Metadata"
+    "collection_name": "metadata"
   },
   "track": {
     "host": "localhost",

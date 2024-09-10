@@ -93,7 +93,7 @@ class NdriveNewFilesFinder():
                         entry = self.run_util.log_msg(self.prefix_id, f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
                         self.health_caller.warning(self.service_name, entry)
                     else:
-                        local_folder = os.path.join(local_destination, base_name)
+                        local_folder = os.path.join(local_destination, f"wait_{base_name}")
                         os.makedirs(local_folder, exist_ok=True)
 
                         # Copy the files
@@ -102,21 +102,26 @@ class NdriveNewFilesFinder():
                             remote_path = os.path.join(remote_folder, file)
 
                             shutil.copy(remote_path, local_path)
-                
+
+                        self.rename_new_files_folder(local_folder)
+
                 # logs the transaction # TODO logs it as a warning currently which is a bit wrong obv
                 self.run_util.log_msg(self.prefix_id, f"Copy successful from {remote_folder} to {local_destination}.")
                 
-                self.rename_batch_directory(remote_folder)
+                self.rename_batch_directory_after_import(remote_folder)
 
             except Exception as e:
                 self.rename_batch_directory(remote_folder, prefix="error_")
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} encountered an unexpected erorr while trying to copy new files from {remote_folder}. Added error_ to the folder name.", exc=e, level=self.status_enum.ERROR.value)
                 self.health_caller.error(self.service_name, entry)
+        
+        else:
+            time.sleep(10)
 
     """
     Renames the batch directory on the direcory the import was done from. As default adds the prefix imported_ to the directory.
     """
-    def rename_batch_directory(self, local_path, prefix = "imported_"):
+    def rename_batch_directory_after_import(self, local_path, prefix = "imported_"):
         batch_name = os.path.basename(local_path)
 
         # Define the new path
@@ -125,6 +130,15 @@ class NdriveNewFilesFinder():
 
         # Rename the directory
         os.rename(old_path, new_path)
+
+    def rename_new_files_folder(self, path):
+        batch_name = os.path.basename(path)
+
+        # Define the new path
+        new_path = os.path.join(os.path.dirname(path), batch_name[5:])
+
+        # Rename the directory
+        os.rename(path, new_path)
 
     """
     Find a unimported batch directory directory path based on the keys found in the workstation config file.
