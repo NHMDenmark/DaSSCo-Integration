@@ -14,11 +14,12 @@ class LogTest(LogClass):
         self.log_msg("jubii")
         self.log_exc("boo", caught_exception)
 Output for an exception would look like this for the main.py.log: WARNING:2024-05-30 12:08:11,778:main.py:boo:Exception output
+Note added prefix for the beginning of the log. "ACA:WARNING:2024-05-30 12:08:11,778:main.py:boo:Exception output
 Default level is set to warning, make use of the LogEnum to change it to ERROR.
 We only accept WARNING or ERROR for logs.
 The log file will be named after the specific .py file that logged the event.
 """
-# TODO test that this works as intended - there could be some issues with which file is registered as the logger.
+
 # TODO implement INFO level logging - and other levels if needed
 class LogClass:
     def __init__(self, filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.basename(os.path.abspath(__file__))):

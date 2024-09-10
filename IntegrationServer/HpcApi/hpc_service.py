@@ -11,18 +11,30 @@ from MongoDB import track_repository, metadata_repository, mos_repository
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
+from HealthUtility import run_utility, health_caller
 
 class HPCService():
 
     def __init__(self):
+
+        self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
+        self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+
+        # service name for logging/info purposes
+        self.service_name = "Hpc api Service"
+        self.prefix_id= "HpcaS"
+
         self.util = utility.Utility()
         self.status = StatusEnum
         self.validate = ValidateEnum
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_mos = mos_repository.MOSRepository()
+        
+        self.health_caller = health_caller.HealthCaller()
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
-    # This is not in use. Writing directly to the db is easier/better. s 
+    # This is not in use. Writing directly to the db is easier/better. 
     def persist_new_metadata(self, new_metadata):
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
@@ -131,6 +143,7 @@ class HPCService():
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
         any_error = any(job["status"] == StatusEnum.ERROR.value for job in jobs)
         any_waiting = any(job["status"] == StatusEnum.WAITING.value for job in jobs)
+        any_retry = any(job["status"] == StatusEnum.RETRY.value for job in jobs)
         
         # checks the flags in a sensible order to determine what the overall jobs_status should be
         if any_error:
@@ -145,10 +158,15 @@ class HPCService():
         if any_running or any_starting or any_queueing:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RUNNING.value)
             return
+        
+        if any_retry:
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.RETRY.value)
+            return
 
         if any_waiting:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.WAITING.value)
             return
+
 
     def update_jobs_json(self, guid, job, status):
         # Extract pipeline name and batch date from MongoDB metadata
@@ -219,7 +237,6 @@ class HPCService():
             if enum_type == AssetTypeEnum.UNKNOWN.value:
                 return False
             self.mongo_track.update_asset_type(guid, enum_type)
-
 
         self.update_mongo_metadata(guid, metadata_update)
         self.update_mongo_track(guid, job_name, status)
@@ -307,7 +324,7 @@ class HPCService():
     
     # update track database that a job has started
     # TODO figure out if this needs to call the update_mongo_track local function
-    def job_started(self, started_data):
+    def  job_started(self, started_data):
 
         guid = started_data.guid
         job_name = started_data.job_name
@@ -325,6 +342,56 @@ class HPCService():
 
         return True
     
+    # TODO add logging
+    def job_failed(self, failed_data):
+
+        try:
+            guid = failed_data.guid
+            job_name = failed_data.job_name
+            job_id = failed_data.job_id
+            timestamp = failed_data.timestamp
+            fail_status = failed_data.fail_status
+            hpc_message = failed_data.hpc_message
+            hpc_exception = failed_data.hpc_exception
+        except:
+            return False
+
+        try:
+            asset = self.mongo_track.get_entry("_id", guid)
+            if asset is None:
+                return False
+            if fail_status is None:
+                return False
+        except:
+            return False
+        
+        try:
+            # timeouts 
+            if fail_status == self.status.RETRY.value:
+                # TODO handle - maybe set temp retry status
+                pass
+
+            # hpc error, unknown fails, file failures        
+            if fail_status == self.status.ERROR.value:
+                msg = self.run_util.log_msg(self.prefix_id, f"HPC server job failure for {guid} with job id {job_id} at {timestamp}. {hpc_message} {hpc_exception}")
+                self.health_caller.error(self.service_name, msg, guid)
+                self.update_mongo_track(guid, job_name, self.status.ERROR.value)
+                
+            # hpc queue busy
+            if fail_status == self.status.PAUSED.value:
+                # TODO handle 
+                pass
+
+        except Exception as e:
+            
+            msg = self.run_util.log_exc(self.prefix_id, f"Encountered an exception while handling {guid} job failure.", e, self.status.ERROR.value)
+            self.health_caller.unexpected_error(self.service_name, msg)
+
+            self.update_mongo_track(guid, job_name, self.status.ERROR.value)
+            return False
+        
+        return True
+
     # this is currently 8/5/24 not in use, but it could be useful for other hpc setups to be able to get the fileshare link
     def get_httplink(self, asset_guid):
         # TODO handle multiple files for one asset

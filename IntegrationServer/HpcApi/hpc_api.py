@@ -16,6 +16,7 @@ from HpcApi.update_model import UpdateAssetModel
 from HpcApi.job_model import JobModel
 from HpcApi.barcode_model import BarcodeModel
 from HpcApi.file_info_model import FileInfoModel
+from HpcApi.fail_job_model import FailJobModel
 
 """
 Rest api setup for receiving data from hpc. 
@@ -28,6 +29,7 @@ metadata_model = MetadataAsset
 update_model = UpdateAssetModel
 barcode_model = BarcodeModel
 job_model = JobModel
+fail_job_model = FailJobModel
 file_info_model = FileInfoModel
 
 
@@ -82,6 +84,13 @@ async def start_job(start_data: job_model):
     if started is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
 
+@app.post("/dev/api/v1/failed_job")
+async def failed_job(fail_data: fail_job_model):
+    failed = service.job_failed(fail_data)
+
+    if failed is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+
 @app.post("/dev/api/v1/asset_ready")
 async def asset_ready(asset_guid: str):
     updated = service.asset_ready(asset_guid)
@@ -121,6 +130,7 @@ async def file_info(file_info: file_info_model):
     if added is False:
         return JSONResponse(content={"error": "asset not found for file info"}, status_code=422)
 
+# confirmation endpoint for asset having been cleaned up on hpc
 @app.post("/dev/api/v1/asset_clean_up")
 async def file_uploaded(asset_guid: str):
     cleaned = service.clean_up(asset_guid)
