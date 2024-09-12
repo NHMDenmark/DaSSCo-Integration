@@ -21,3 +21,12 @@ Running IngestionClient/pipeline
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+This does not exist in ARS. 
+

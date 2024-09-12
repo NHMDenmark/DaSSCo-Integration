@@ -21,3 +21,12 @@ Upon event
 **Updated where and when:**  
 Never  
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+The same as the asset created by. 
+

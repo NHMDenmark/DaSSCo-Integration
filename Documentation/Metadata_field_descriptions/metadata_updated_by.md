@@ -21,3 +21,12 @@ Note
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+user in the event protocol
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+We can only keep one value here despite the asset potentially having its metadata updated multiple times. 
+

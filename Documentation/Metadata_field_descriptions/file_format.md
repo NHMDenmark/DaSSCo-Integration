@@ -21,3 +21,12 @@ Running IngestionClient/pipeline
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+file_formats
+
+**Maps to in Specify:**  
+File Format
+
+**Issues:**  
+Name mapping issue. We are using a single value in lower case. ARS is using a list of values all in upper case that must come from a enum list. Specify is using a single value I think. What happens if assets can have thumbnails (jpegs) added to them?
+

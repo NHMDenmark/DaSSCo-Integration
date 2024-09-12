@@ -21,3 +21,12 @@ TBD
 **Updated where and when:**  
 Never  
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+This field is I think never used. It does not exist in ARS. Not sure what updating the asset (not metadata means).
+

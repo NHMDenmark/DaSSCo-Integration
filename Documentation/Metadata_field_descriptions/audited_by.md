@@ -21,3 +21,12 @@ TBD
 **Updated where and when:**  
 Never  
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Does not exist in ARS. Maybe is part of the event protocol.
+

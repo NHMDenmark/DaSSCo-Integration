@@ -21,3 +21,12 @@ Running IngestionClient/pipeline
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+digitiser
+
+**Maps to in Specify:**  
+Copyright(?)
+
+**Issues:**  
+Cannot be updated in ARS. Should there be another field for the person who uploaded the asset. 
+

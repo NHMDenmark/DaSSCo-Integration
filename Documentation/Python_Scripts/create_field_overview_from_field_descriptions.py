@@ -54,6 +54,6 @@ def process_md_files(folder_path, output_file_path):
             output_file.write("| " + " | ".join(row) + " |\n")
 
 if __name__ == "__main__":
-    folder_path = f"{project_root}/ARS_metadata_field_descriptions/"  # Replace with your folder path
-    output_file_path = f"{project_root}/test_overview_15_08_24.md"  # Replace with your desired output file path
+    folder_path = f"{project_root}/M_field_descriptions/"  # Replace with your folder path
+    output_file_path = f"{project_root}/test_overview_12_09_24.md"  # Replace with your desired output file path
     process_md_files(folder_path, output_file_path)
