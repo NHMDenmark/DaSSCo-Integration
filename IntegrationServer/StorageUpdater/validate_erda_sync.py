@@ -131,32 +131,20 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 # asset status(COMPLETED, ASSET_RECEIVED, ERDA_ERROR), asset share size(should be none/null for a success), note(any description if one is needed from the api call)
                 attempted, status_code, asset_status, asset_share_size, note = self.storage_api.get_asset_sharesize_and_status(guid)
                 
+                # main area for errors
                 if attempted is False:
-                    # logs and sends a error message to the health api
-                    entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set erda_sync to ERROR. {note}")
-                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
-                    continue
+                    if status_code == 1000:
+                        continue
+                    # other cases
+                    else:
+                        # logs and sends a error message to the health api
+                        entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set erda_sync to ERROR. {note}")
+                        self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                        continue
 
                 # success scenario for an asset
                 if asset_status == self.COMPLETED and asset_share_size is None:
-
-                    self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
-                    
-                    self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
-
-                    self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
-
-                    # remove the temp sync timestamp 
-                    self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
-                    # remove the temp time out status if it exist                    
-                    self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
-
-                    self.track_mongo.update_entry(guid, "proxy_path", "")
-
-                    for file in asset["file_list"]:
-                        self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
-                    
-                    print(f"Validated erda sync for asset: {guid}")
+                    self.asset_validated(guid, asset)
 
                 # check the case of a COMPLETED sync happens without the fileshare being closed, will set a lot of AWAIT status
                 # TODO handle what happens if this triggers, for now it just puts the asset in a corner
@@ -188,6 +176,25 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # Outside main while loop
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
+
+    def asset_validated(self, guid, asset):
+        self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
+                    
+        self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
+
+        self.track_mongo.update_entry(guid, self.HAS_NEW_FILE, self.NO)
+
+        # remove the temp sync timestamp 
+        self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
+        # remove the temp time out status if it exist                    
+        self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
+
+        self.track_mongo.update_entry(guid, "proxy_path", "")
+
+        for file in asset["file_list"]:
+            self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
+                    
+        print(f"Validated erda sync for asset: {guid}")
 
     def check_timeout(self, guid):
 
@@ -236,7 +243,6 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         entry = self.run_util.log_msg(self.prefix_id, "The asset was synced but the fileshare was not closed. This is a bug we have encountered before during testing. Erda_sync, has_open_share and has_new_file are all set to AWAIT. Check that asset is in erda")
         self.health_caller.warning(self.service_name, entry, guid)
         # TODO handle how to get back on track
-
 
 if __name__ == '__main__':
     SyncErda()

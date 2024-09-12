@@ -135,20 +135,41 @@ class SyncErda():
                     if asset_time_out_and_synced_anyway: 
                         # asset has been synced so no need to continue with it
                         continue
-
-                synced = self.storage_api.sync_erda(guid)
                 
-                # TODO handle if false - api fail
+                # api call
+                synced, status_code, note = self.storage_api.sync_erda(guid)
+                
+                # success scenario - update track database
                 if synced is True:
-                    self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)
-                    
-                    # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
-                    self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
+                    self.success_sync(guid)
                 
+                # handle api fails
+                if synced is False:
+                    # handle specific cases
+                    # found wrong type of data as status code from exception, likely not the asset that caused the -1 or -2 
+                    if status_code == -1:
+                        time.sleep(1)
+                        
+                    # could not find any data as status code from exception # TODO can maybe handle -1 and -2 in one check - create functions for these, can probably be generic for all storage updater classes.
+                    elif status_code == -2:
+                        time.sleep(1)
+                        
+                    elif status_code == 400:
+                        # if call returns true then asset was synced anyway see integration repo issue 112
+                        check = self.handle_status_400(guid, asset, note)
+                        if check is True:
+                            self.success_sync(guid)
+                        
+                    # other fails
+                    else:
+                        entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status {status_code} failed for {guid}. {note}", self.status_enum.ERROR.value)
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+                        time.sleep(1)
+
                 time.sleep(1)
 
             if asset is None:
-                time.sleep(1)
+                time.sleep(10)
 
            # checks if service should keep running           
             self.run = self.run_util.check_run_changes()
@@ -161,6 +182,33 @@ class SyncErda():
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
 
+    # success scenario
+    def success_sync(self, guid):
+        self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)                    
+        # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
+        self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
+
+    # handles status 400, checks if the asset has actually been synced despite the 400 status. Returns True if asset has synced, false otherwise
+    def handle_status_400(self, guid, asset, note):
+
+        status_from_ARS = self.storage_api.get_asset_status(guid)
+
+        if status_from_ARS is False:
+            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+            return False
+
+        if status_from_ARS in [self.erda_status_enum.METADATA_RECEIVED.value, self.erda_status_enum.ERDA_ERROR.value]:
+            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+            return False
+
+        if status_from_ARS in [self.erda_status_enum.ASSET_RECEIVED.value, self.erda_status_enum.COMPLETED.value]:
+            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 for {guid} still succeeded. Asset has ARS erda status {status_from_ARS}. This is a known issue, see github issue 112 in integration project board. {note}")
+            self.health_caller.warning(self.service_name, entry, guid)
+            return True
+
+        return False
 
 if __name__ == '__main__':
     SyncErda()

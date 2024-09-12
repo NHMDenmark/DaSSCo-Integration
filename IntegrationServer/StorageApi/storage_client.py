@@ -95,13 +95,18 @@ class StorageClient():
           try:
                response = self.client.file_proxy.synchronize_erda(guid)
 
-               if response.status_code == 204:
-                    return True
+               status_code = response.staus_code
+
+               if status_code == 204:
+                    return True, status_code, None 
                else:
-                    return False
+                    return False, status_code, None
           except Exception as e:
+
+               status_code, note = self.get_status_code_from_exc(e)
+
                print(f"Api or wrapper fail: {e}")
-               return False
+               return False, status_code, note
 
      def get_asset_status(self, guid):
           try:
