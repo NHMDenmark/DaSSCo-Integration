@@ -193,12 +193,7 @@ class SyncErda():
 
         status_from_ARS = self.storage_api.get_asset_status(guid)
 
-        if status_from_ARS is False:
-            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)
-            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
-            return False
-
-        if status_from_ARS in [self.erda_status_enum.METADATA_RECEIVED.value, self.erda_status_enum.ERDA_ERROR.value]:
+        if status_from_ARS is False or status_from_ARS in [self.erda_status_enum.METADATA_RECEIVED.value, self.erda_status_enum.ERDA_ERROR.value]:
             entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
             return False

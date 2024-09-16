@@ -147,8 +147,7 @@ class FileUploader():
                             if uploaded is False and status != 507:
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
                                 self.email_sender.send_error_mail(guid, "ars file uploader", self.validate_enum.ERROR.value, status)
-                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.ERROR.value)
-                                self.util.update_json(self.run_config_path, self.service_name, self.status_enum.STOPPED.value)
+                                self.slack_webhook.message_from_integration(guid, "ars file uploader", self.validate_enum.ERROR.value)                                
     
                         time.sleep(1)
 

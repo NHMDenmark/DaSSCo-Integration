@@ -42,31 +42,35 @@ class HPCService():
     # TODO this is untested - this should be used for new assets that are either derivatives or cropped versions of their parents
     def receive_derivative_metadata(self, metadata):
 
+        print("parent:", metadata.parent_guid)
+
         try:
             t_parent = None
             t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
 
             if t_parent is None:
+                print("failed to find parent guid")
                 return False
 
             mdata = True
-            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata)
-
+            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
+            print("created metadata for derivative")
             if mdata is True:
+                print(metadata.asset_guid, metadata.pipeline_name)
                 mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
-
+                print(f"track data data for derivative {mdata}")
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return mdata
-                
+            
             # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
             est_size = 0
             # tif estimate 400 mb
             if metadata.file_format == "tif":
-                est_size = 450
+                est_size = 400
             # jpg estimate 10mb
             if metadata.file_format == "jpeg":
-                est_size = 30
+                est_size = 20
             
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          

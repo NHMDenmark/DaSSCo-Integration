@@ -8,6 +8,15 @@
     "error_time_span": 10,
     "mail_wait_time": 20
   },
+  "Throttle service": {
+    "module": "health utility",
+    "pause_time": 99,
+    "pause_check_list": [99, 99],
+    "pause_loop_count": 99,
+    "error_tolerance": 99,
+    "error_time_span": 99,
+    "mail_wait_time": 99
+  },
   "Asset creator ARS": {
     "module": "storage updater",
     "pause_time": 5,

@@ -76,9 +76,11 @@ class MetadataRepository:
 
     # TODO missing unit test
     def create_metadata_entry_from_api(self, guid, data):
-
+        
         if self.get_entry("_id", guid) is None:
-
+            
             self.collection.insert_one({"_id": guid, **data})
+            return True
         else:
+            print("returning false")
             return False

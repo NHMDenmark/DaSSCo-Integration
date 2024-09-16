@@ -137,14 +137,13 @@ class AssetCreator():
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
                 else:
                     created, response, exc, status_code = self.storage_api.create_asset(guid)
- 
-                if created is True:
-                    metadata = self.metadata_mongo.get_entry("_id", guid)
-                    self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
-                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-                    if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
-                        self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
+                # success scenario for creating the asset in ARS
+                if created is True:
+                    self.success_asset_created(guid, asset)
+
+
+                # fail scenarios
                 if created is False:
                     # handles if status code is a negative number - this means we set it during another exception - see storage_client.get_status_code_from_exc()
                     if status_code < 0: 
@@ -179,21 +178,19 @@ class AssetCreator():
                     # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down.
                     if status_code == 504:
                         print(f"{guid} got time out status: {status_code} Checking if asset was created.")
-
                         try:
                             exists = self.storage_api.get_asset_status(guid)
 
+                            # TODO might want to add some kind of pausing if too many timeouts happe
+                            # logs the timeout failure, does not update the asset flags -> asset will be retried
                             if exists == False:                                
                                 message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Status: {status_code}. {response}")
                                 self.health_caller.warning(self.service_name, message, guid)
 
-                            if exists == self.erda_status_enum.ASSET_RECEIVED.value:
-                                metadata = self.metadata_mongo.get_entry("_id", guid)
-                                self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
-                                self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-                                if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
-                                    self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
-                                
+                            if exists == self.erda_status_enum.METADATA_RECEIVED.value:
+                                # success anyway
+                                self.success_asset_created(guid, asset)
+                                # log the time out
                                 message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
                                 self.health_caller.warning(self.service_name, message, guid)
 
@@ -221,6 +218,14 @@ class AssetCreator():
         self.run_util.service_mongo.close_connection()
         self.storage_api.service.metadata_db.close_mdb()
         print("service stopped")
+
+    def success_asset_created(self, guid, asset):
+        metadata = self.metadata_mongo.get_entry("_id", guid)
+        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
+        self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
+        if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
+            self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
+
 
 if __name__ == '__main__':
     

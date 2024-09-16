@@ -116,9 +116,10 @@ class TrackRepository:
         """
         model = track_model.TrackModel(guid, pipeline, derivative=True)
         entry_data = model.get_entry_data()
-
+        print(pipeline)
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
+            print(guid)
             self.collection.insert_one(entry_data)
             return True
         else:
