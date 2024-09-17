@@ -223,7 +223,7 @@ class AssetCreator():
         metadata = self.metadata_mongo.get_entry("_id", guid)
         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
         self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
-        if asset["asset_size"] != -1 and metadata["parent_guid"] == "":
+        if asset["asset_size"] != -1:
             self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
 
