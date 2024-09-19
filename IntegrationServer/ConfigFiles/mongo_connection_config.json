@@ -46,5 +46,11 @@
     "port": 27017,
     "data_base": "dev_db",
     "collection_name": "micro_service"
+  },
+  "throttle":{
+    "host": "localhost",
+    "port": 27017,
+    "data_base": "dev_db",
+    "collection_name": "throttle"
   }
 }

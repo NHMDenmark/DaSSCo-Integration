@@ -117,7 +117,8 @@ def get_metadata(asset_guid: str):
 
     return asset
 
-@app.post("/dev/api/v1/derivative_file_uploaded")
+# formerly known as derivative_file_uploaded - slurm calls
+@app.post("/dev/api/v1/derivative_uploaded")
 async def file_uploaded(asset_guid: str):
     uploaded = service.derivative_files_uploaded(asset_guid)
 

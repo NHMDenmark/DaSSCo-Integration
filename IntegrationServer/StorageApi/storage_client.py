@@ -126,6 +126,20 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
      
+     def get_full_asset_status(self, guid):
+          try:
+               response = self.client.assets.get_status(guid)
+               
+               status_code = response["status_code"]
+
+               if status_code == 200:
+                    return response
+               else:
+                    return False
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
+
      # validate sync, returns bool, status code, asset status, share size, and a note detailing event
      def get_asset_sharesize_and_status(self, guid):
           try:

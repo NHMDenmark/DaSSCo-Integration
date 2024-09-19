@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum, erda_status
 from HealthUtility import health_caller, run_utility
@@ -26,8 +26,10 @@ class SyncErda():
         # service name for logging/info purposes
         self.service_name = "Erda sync ARS"
         self.prefix_id = "EsA"
+        self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.auth_timestamp = None
         self.track_mongo = track_repository.TrackRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
@@ -35,6 +37,9 @@ class SyncErda():
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
+
+        self.max_sync_asset_count = self.util.get_value(self.throttle_config_path, "max_sync_asset_count")
+
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -122,6 +127,15 @@ class SyncErda():
                 print(f"creating new storage client, after {time_difference}")
                 self.storage_api = self.create_storage_api()
             if self.storage_api is None:
+                self.end_of_loop_checks()
+                continue
+            
+            # check throttle
+            sync_count = self.throttle_mongo.get_value("max_sync_asset_count", "value")
+            if sync_count >= self.max_sync_asset_count:
+                # TODO implement better throttle than sleep
+                time.sleep(20)
+                self.end_of_loop_checks()
                 continue
 
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.HAS_NEW_FILE.value : self.validate_enum.AWAIT.value, self.flag_enum.ERDA_SYNC.value: self.validate_enum.NO.value}])
@@ -134,6 +148,7 @@ class SyncErda():
                 
                     if asset_time_out_and_synced_anyway: 
                         # asset has been synced so no need to continue with it
+                        self.end_of_loop_checks()
                         continue
                 
                 # api call
@@ -171,27 +186,41 @@ class SyncErda():
             if asset is None:
                 time.sleep(10)
 
-           # checks if service should keep running           
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.validate_enum.PAUSED.value:
-                self.run = self.run_util.pause_loop()
+            # perform end of loop checks for pause and run status
+            self.end_of_loop_checks()
         
         # Outside main while loop
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
+
+    # end of loop checks
+    def end_of_loop_checks():
+        # checks if service should keep running           
+        self.run = self.run_util.check_run_changes()
+
+        # Pause loop
+        if self.run == self.validate_enum.PAUSED.value:
+            self.run = self.run_util.pause_loop()
 
     # success scenario
     def success_sync(self, guid):
         self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)                    
         # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
         self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
+        self.throttle_mongo.add_one_to_count("max_sync_asset_count", "value")
 
     # handles status 400, checks if the asset has actually been synced despite the 400 status. Returns True if asset has synced, false otherwise
     def handle_status_400(self, guid, asset, note):
 
-        status_from_ARS = self.storage_api.get_asset_status(guid)
+        response_get_asset_status = self.storage_api.get_full_asset_status(guid)
+
+        status_from_ARS = response_get_asset_status["data"].status
+        share_allocation_size = response_get_asset_status["data"].share_allocation_mb
+
+        if share_allocation_size is None and status_from_ARS == self.erda_status_enum.ASSET_RECEIVED.value:
+            # TODO handle this - check if open share works?
+            pass
+
 
         if status_from_ARS is False or status_from_ARS in [self.erda_status_enum.METADATA_RECEIVED.value, self.erda_status_enum.ERDA_ERROR.value]:
             entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)

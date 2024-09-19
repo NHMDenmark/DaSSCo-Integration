@@ -4,15 +4,17 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from MongoDB import service_repository
+from MongoDB import service_repository, throttle_repository
 import utility
 
 """
-This script is part of the integration server configuration. Should be run independently before any other scripts or as part of a shell script. 
+This script is part of the integration server configuration. Should be run independently before any other scripts or as part of a shell script.
+Install the mongo database before running this script.  
 Creates the micro services in the database for controlling their run status. 
 Micro services added to the /ConfigFiles/micro_service_config.json will be created.
+Insert documents based on the throttle config file /ConfigFiles/throttle_config.json to the throttle database. 
 """
-class SetupServiceScript:
+class SetupServices:
 
     def __init__(self):
         self.service_repo = service_repository.ServiceRepository()
@@ -37,10 +39,30 @@ class SetupServiceScript:
 
         self.service_repo.close_connection()
 
+class SetupThrottleService:
+
+    def __init__(self):
+        self.throttle_repo = throttle_repository.ThrottleRepository()
+        self.util = utility.Utility()
+        self.throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
+        self.throttle_config = self.util.read_json(self.throttle_config_path)
+        self.throttle_configs = list(self.throttle_config.keys())
+
+        try:
+            for config in self.throttle_configs:
+                if self.throttle_repo.get_entry("_id", config) is None:
+                    self.throttle_repo.insert_default_value(config)
+                    print(f"Inserted document: _id: {config}, value: 0 - in throttle database")
+        except Exception as e:
+            print("Failed to insert throttle documents to throttle database.", e)
+
+        self.throttle_repo.close_connection()
+
 if __name__ == "__main__":
         
     try:
-        SetupServiceScript()
+        SetupServices()
+        SetupThrottleService()
     except Exception as e:
         print(f"An error occurred: {e}")
     
