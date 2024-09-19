@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums.status_enum import Status
 from Enums.flag_enum import Flag
@@ -40,7 +40,8 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
-        
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
+
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -176,8 +177,13 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # Outside main while loop
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
 
+    # success scenario
     def asset_validated(self, guid, asset):
+        
+        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+
         self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
                     
         self.track_mongo.update_entry(guid, self.HAS_OPEN_SHARE, self.NO)
@@ -193,7 +199,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         for file in asset["file_list"]:
             self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
-                    
+        
         print(f"Validated erda sync for asset: {guid}")
 
     def check_timeout(self, guid):

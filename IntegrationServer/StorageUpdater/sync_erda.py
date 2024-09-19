@@ -70,6 +70,14 @@ class SyncErda():
         
         self.auth_timestamp = datetime.now()
 
+        # TODO experimental ignoring status 504 and 502, and retry after 5 min
+        if storage_api.status_code == 504 or storage_api.status_code == 502:
+            entry = self.run_util.log_msg(self.prefix_id, f"Failed to create storage client for {self.service_name}, it will wait 5 min and retry. Received status: {storage_api.status_code}. {storage_api.note}",
+                                          self.run_util.log_enum.WARNING.value)
+            self.health_caller.warning(self.service_name, entry)
+            time.sleep(300)
+            return storage_api
+
         if storage_api.client is None:
             # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
@@ -134,7 +142,7 @@ class SyncErda():
             sync_count = self.throttle_mongo.get_value("max_sync_asset_count", "value")
             if sync_count >= self.max_sync_asset_count:
                 # TODO implement better throttle than sleep
-                time.sleep(20)
+                time.sleep(5)
                 self.end_of_loop_checks()
                 continue
 
@@ -192,6 +200,7 @@ class SyncErda():
         # Outside main while loop
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
 
     # end of loop checks
     def end_of_loop_checks():
