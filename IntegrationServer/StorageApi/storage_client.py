@@ -250,3 +250,22 @@ class StorageClient():
                e = f"Api or wrapper fail: {e}"
                print(e)
                return False, e
+          
+     # returns true if file info sync status is SYNCHRONIZED, otherwise return False
+     def check_file_info_for_asset(self, guid):
+          try:
+               response = self.client.file_proxy.list_file_info(guid)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    data = response.json()
+                    if all(item['syncStatus'] == "SYNCHRONIZED" for item in data):
+                         return True
+               
+               return False
+
+          except Exception as e:
+               e = f"Api or wrapper fail: {e}"
+               print(e)
+               return False

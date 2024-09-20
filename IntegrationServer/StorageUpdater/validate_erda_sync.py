@@ -158,7 +158,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     timed_out = self.check_timeout(guid)
 
                     if timed_out is True:                            
-                            self.timeout_handling(guid)
+                            self.timeout_handling(guid, asset)
                     else:
                         # no action needed here since asset is queued to be synced and just waiting for that to happen
                         print(f"Waiting on erda sync for asset: {guid}")
@@ -214,18 +214,34 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         
         return False
 
-    def timeout_handling(self, guid):
+    def timeout_handling(self, guid, asset):
             again = self.track_mongo.get_value_for_key(guid, "temporary_time_out_sync_erda_attempt")
 
             if again is True:
-                # logs and sends error msg to health api. Service there will set the erda_sync to ERROR                
-                entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
-                self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                # logs and sends error msg to health api. Service there will set the erda_sync to ERROR
+                info = None
+                try:
+                    info = self.storage_api.check_file_info_for_asset(guid)
+                except Exception as e:
+                    entry = self.run_util.log_exc(self.prefix_id, f"{guid} encountered a bug while determining status after multiple erda sync validation timeouts.", e, self.ERROR)
+                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR) 
+                    self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+
+                if info is False or info is None:
+                    entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
+                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                    self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                # asset was synced despite the timeout status - note asset does not have and will not get the asset COMPLETED status in ARS
+                if info is True:
+                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} got stuck with ASSET_RECEIVED status despite being succesfully synced with erda -
+                                                   note asset does not have and will not get the asset COMPLETED status in ARS. This was discovered after multiple validation timeouts.")
+                    self.health_caller.warning(self.service_name, entry, guid)
+                    self.asset_validated(guid, asset)
 
             if again is None:
                 self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
                 self.track_mongo.update_entry(guid, "temporary_time_out_sync_erda_attempt", True)
-                
+                self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
                 # logs and sends a warning message to the health api
                 entry = self.run_util.log_msg(self.prefix_id, "The asset timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
                 self.health_caller.warning(self.service_name, entry, guid)
