@@ -232,9 +232,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
                     self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
                 # asset was synced despite the timeout status - note asset does not have and will not get the asset COMPLETED status in ARS
+                # TODO this part is a bad hack since the status never gets set to asset completed in ars
                 if info is True:
-                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} got stuck with ASSET_RECEIVED status despite being succesfully synced with erda -
-                                                   note asset does not have and will not get the asset COMPLETED status in ARS. This was discovered after multiple validation timeouts.")
+                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} got stuck with ASSET_RECEIVED status despite being succesfully synced with erda - note asset does not have and will not get the asset COMPLETED status in ARS. This was discovered after multiple validation timeouts.")
                     self.health_caller.warning(self.service_name, entry, guid)
                     self.asset_validated(guid, asset)
 

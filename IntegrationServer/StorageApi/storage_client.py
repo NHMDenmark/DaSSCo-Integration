@@ -95,7 +95,7 @@ class StorageClient():
           try:
                response = self.client.file_proxy.synchronize_erda(guid)
 
-               status_code = response.staus_code
+               status_code = response.status_code
 
                if status_code == 204:
                     return True, status_code, None 

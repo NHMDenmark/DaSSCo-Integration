@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from datetime import datetime, timedelta
 import utility
-from MongoDB import service_repository, health_repository
+from MongoDB import service_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
@@ -25,21 +25,30 @@ class ThrottleService():
         self.service_name = "Throttle service"
         self.prefix_id= "Ths"
 
+        
+        self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
+
         self.util = utility.Utility()
         self.service_mongo = service_repository.ServiceRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.Validate
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        
+        # sets default values
+        self.max_total = 10
+        self.total_size = 100000
+        self.sync_max = 5
+        # sets config values
+        self.set_max_values()
 
         # set the service db value to RUNNING, mostly for ease of testing
         self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
         
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
-
-        
 
         self.run = self.run_util.get_service_run_status()
         self.loop()
@@ -48,7 +57,17 @@ class ThrottleService():
 
         while self.run == self.status_enum.RUNNING.value:
             # check if number of in flight assets > max number of assets -> react
+
+
             pass
+    
+    def set_max_values(self):
+        try:
+            self.max_total = self.util.get_value(self.throttle_config_path, "max_assets_in_flight")
+            self.total_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
+            self.sync_max = self.util.get_value(self.throttle_config_path, "max_asset_sync_count")
+        except Exception as e:
+            print(f"Continuing with default or old values. {e}")
 
 if __name__ == "__main__":
     ThrottleService()
