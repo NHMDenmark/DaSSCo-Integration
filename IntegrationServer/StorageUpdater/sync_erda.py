@@ -183,7 +183,12 @@ class SyncErda():
                         check = self.handle_status_400(guid, asset, note)
                         if check is True:
                             self.success_sync(guid)
-                        
+                    
+                    elif status_code == 504:
+                        check = self.handle_status_504(guid, note)
+                        if check is True:
+                            self.success_sync(guid)
+
                     # other fails
                     else:
                         entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status {status_code} failed for {guid}. {note}", self.status_enum.ERROR.value)
@@ -243,6 +248,31 @@ class SyncErda():
             return True
 
         return False
+    
+
+    def handle_status_504(self, guid, note):
+        
+        try:
+            status_from_ars = self.storage_api.get_asset_status(guid)
+
+            # TODO might want to add some kind of pausing if too many timeouts happe
+            # logs the timeout failure, does not update the asset flags -> asset will be retried
+            if status_from_ars == False:                                
+                message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without syncing {guid}. Status: 504. {note}")
+                self.health_caller.warning(self.service_name, message, guid)
+
+            if status_from_ars in [self.erda_status_enum.COMPLETED.value, self.erda_status_enum.ASSET_RECEIVED.value]:                
+                # log the time out
+                message = self.run_util.log_msg(self.prefix_id, f"{guid} sync request was a success despite receiving status 504 from ARS. Asset has {status_from_ars} as status from ARS.")
+                self.health_caller.warning(self.service_name, message, guid)
+                return True
+
+        except Exception as e:
+            message = self.run_util.log_exc(self.prefix_id, f"While handling status 504 from sync asset for {guid} another error occurred. {note}", e, self.run_util.log_enum.ERROR.value)                            
+            self.health_caller.error(self.service_name, message, guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.ERROR.value)
+           
+        return False
+
 
 if __name__ == '__main__':
     SyncErda()
