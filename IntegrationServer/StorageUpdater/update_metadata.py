@@ -106,6 +106,7 @@ class UpdateMetadata():
                     updated = self.storage_api.update_metadata(guid)
 
                     if updated is True:
+                        print(f"{guid} was updated by Octopus")
                         self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
                 
                 # TODO handle false better than ignoring it

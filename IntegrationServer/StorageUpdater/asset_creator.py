@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import threading
 import time
 from datetime import datetime, timedelta
-from MongoDB import metadata_repository, track_repository, service_repository
+from MongoDB import metadata_repository, track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, erda_status
 from HealthUtility import health_caller, run_utility
@@ -28,14 +28,18 @@ class AssetCreator():
         self.service_name = "Asset creator ARS"
         self.prefix_id = "AcA"
         self.auth_timestamp = None
+        self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.track_mongo = track_repository.TrackRepository()
         self.metadata_mongo = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.util = utility.Utility()
+
+        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -123,6 +127,13 @@ class AssetCreator():
             if self.storage_api is None:
                 continue
 
+            # check throttle
+            total_size = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
+            if total_size >= self.max_total_asset_size:
+                # TODO implement better throttle than sleep
+                time.sleep(5)
+                self.end_of_loop_checks()
+                continue
 
             # TODO remove/outcomment this, inserted for testing pause functionality
             #self.storage_api = self.create_storage_api()
@@ -132,6 +143,7 @@ class AssetCreator():
             if asset is not None:
                 guid = asset["_id"]
                 
+                
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
@@ -140,6 +152,7 @@ class AssetCreator():
 
                 # success scenario for creating the asset in ARS
                 if created is True:
+                    self.handle_throttle(asset)
                     self.success_asset_created(guid, asset)
 
 
@@ -153,6 +166,7 @@ class AssetCreator():
                     if 200 <= status_code <= 299:                    
                         message = self.run_util.log_msg(self.prefix_id, response)
                         self.health_caller.warning(self.service_name, message)
+                        # TODO check if asset exists in ARS, add to throttle value
                         
                     # TODO handle 300-399?
 
@@ -190,6 +204,7 @@ class AssetCreator():
                             if exists == self.erda_status_enum.METADATA_RECEIVED.value:
                                 # success anyway
                                 self.success_asset_created(guid, asset)
+                                self.handle_throttle(asset)
                                 # log the time out
                                 message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
                                 self.health_caller.warning(self.service_name, message, guid)
@@ -204,17 +219,13 @@ class AssetCreator():
             if asset is None:
                 time.sleep(10)
 
-            # checks if service should keep running           
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.validate_enum.PAUSED.value:
-                self.run = self.run_util.pause_loop()
+            self.end_of_loop_checks()
 
         # outside main while loop        
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
         self.run_util.service_mongo.close_connection()
         self.storage_api.service.metadata_db.close_mdb()
         print("service stopped")
@@ -226,6 +237,17 @@ class AssetCreator():
         if asset["asset_size"] != -1:
             self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
+    def handle_throttle(self, asset):
+        self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+
+    # end of loop checks
+    def end_of_loop_checks(self):
+        # checks if service should keep running           
+        self.run = self.run_util.check_run_changes()
+
+        # Pause loop
+        if self.run == self.validate_enum.PAUSED.value:
+            self.run = self.run_util.pause_loop()
 
 if __name__ == '__main__':
     
