@@ -59,7 +59,8 @@ class HealthService():
             updated = self.update_asset_flag_track_db(warning.guid, warning.flag, warning.flag_status)
             if updated is False:
                 return False
-        else:
+            
+        if warning.guid is None:
             warning.guid = "No guid"
 
         send_mail = self.mail_check_requirements(warning.service_name, msg_parts[1])
@@ -98,7 +99,8 @@ class HealthService():
             updated = self.update_asset_flag_track_db(error.guid, error.flag, error.flag_status)
             if updated is False:
                 return False
-        else:
+            
+        if error.guid is None:
             error.guid = "No guid"
         
         should_send_mail = self.mail_check_requirements(error.service_name, msg_parts[1])

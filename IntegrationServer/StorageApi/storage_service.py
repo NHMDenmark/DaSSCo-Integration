@@ -66,8 +66,7 @@ class StorageService():
                 new_specimen.preparation_type = entry["preparation_type"]
                 if new_specimen.preparation_type == []:
                     new_specimen.preparation_type = ""
-                else:
-                    new_specimen.preparation_type = new_specimen.preparation_type[0]
+                    
                 # TODO again issue with something potentially being a list
                 new_specimen.specimen_pid = entry["specimen_pid"]
                 if new_specimen.specimen_pid == []:

@@ -8,6 +8,10 @@ from StorageApi import storage_service
 import json
 from dotenv import load_dotenv
 
+"""
+Uses the Dassco storage api repository as library to create the storage client and call the fileproxy and asset registry service apis.
+Please note that the ARS and the fileproxy calls returns slightly different types of responses. See the github repo for details on what the responses look like.
+"""
 class StorageClient():
      def __init__(self):
           
@@ -22,7 +26,6 @@ class StorageClient():
                self.client = None
                self.status_code, self.note = self.get_status_code_from_exc(exc)
                self.exc = exc
-               
 
      def test(self):
           
@@ -50,12 +53,15 @@ class StorageClient():
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
 
+          print(allocation_size, data_dict)
+
           try:
                response = self.client.assets.create(data_dict, allocation_size)
 
                status_code = response["status_code"]
-          
+
                if status_code == 200:                    
+                    print(response["data"])
                     return True, None, None, status_code
                else:
                     return False, f"Received {status_code}, while creating asset.", None, status_code

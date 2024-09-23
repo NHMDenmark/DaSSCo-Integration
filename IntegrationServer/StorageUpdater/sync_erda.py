@@ -243,7 +243,7 @@ class SyncErda():
             return False
 
         if status_from_ARS in [self.erda_status_enum.ASSET_RECEIVED.value, self.erda_status_enum.COMPLETED.value]:
-            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 for {guid} still succeeded. Asset has ARS erda status {status_from_ARS}. This is a known issue, see github issue 112 in integration project board. {note}")
+            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 for {guid} still succeeded. Asset has ARS erda status {status_from_ARS}. {note}")
             self.health_caller.warning(self.service_name, entry, guid)
             return True
 
