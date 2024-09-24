@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from MongoDB import track_repository, metadata_repository, service_repository
+from MongoDB import track_repository, metadata_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import status_enum, validate_enum
 from Enums.status_enum import Status
@@ -30,15 +30,19 @@ class OpenShare(Status, Validate):
         # service name for logging/info purposes
         self.service_name = "Open file share ARS"
         self.prefix_id = "OfsA"
+        self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.auth_timestamp = None
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         
+        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
+
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
         # set the service db value to RUNNING, mostly for ease of testing
@@ -97,6 +101,15 @@ class OpenShare(Status, Validate):
                 print(f"creating new storage client, after {time_difference}")
                 self.storage_api = self.create_storage_api()
             if self.storage_api is None:
+                self.end_of_loop_checks()
+                continue
+            
+            # check throttle
+            total_size = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
+            if total_size >= self.max_total_asset_size:
+                # TODO implement better throttle than sleep
+                time.sleep(5)
+                self.end_of_loop_checks()
                 continue
 
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
@@ -126,23 +139,29 @@ class OpenShare(Status, Validate):
                             link = proxy_path + name
                             self.mongo_track.update_track_file_list(guid, name, "ars_link", link)
 
-                    
+                    self.update_throttle(asset)
                     self.mongo_track.update_entry(guid, "has_open_share", self.YES)
 
                 # TODO handle if proxy path is false
             
-            # checks if service should keep running          
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.PAUSED:
-                self.run = self.run_util.pause_loop()
+            self.end_of_loop_checks()
 
         # outside main while loop        
         self.mongo_track.close_connection()
         self.mongo_metadata.close_connection()
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
 
+    def end_of_loop_checks(self):
+        # checks if service should keep running          
+        self.run = self.run_util.check_run_changes()
+
+        # Pause loop
+        if self.run == self.PAUSED:
+            self.run = self.run_util.pause_loop()
+
+    def update_throttle(self, asset):
+        self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
 
 if __name__ == '__main__':
     OpenShare()

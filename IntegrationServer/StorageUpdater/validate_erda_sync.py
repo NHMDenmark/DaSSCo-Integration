@@ -41,7 +41,6 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
-
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -138,10 +137,10 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         continue
                     # other cases
                     else:
-                        # logs and sends a error message to the health api
+                        # logs and sends a error message to the health api, subtracts from throttle count and moves on
                         entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set erda_sync to ERROR. {note}")
                         self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
-                        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                        self.update_throttle_count()
                         continue
 
                 # check the case of a COMPLETED sync happens without the fileshare being closed
@@ -157,7 +156,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         # logs and sends a error message to the health api
                             entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {second_status_code}. Will set erda_sync to ERROR. {second_note}")
                             self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
-                            self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                            self.update_throttle_count()
                             continue
                     if second_asset_status == self.COMPLETED and second_asset_share_size is None:
                         self.completed_sync_share_still_open(guid, asset)
@@ -181,6 +180,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
                     # currently resetting sync status to "NO" attempts a new sync 
                     self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
+                    self.update_throttle_count()
 
                 # wait time between calling ARS for asset status
                 time.sleep(2)
@@ -196,7 +196,8 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     # success scenario
     def asset_validated(self, guid, asset):
         
-        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+        self.update_throttle_count()
+        self.update_throttle_size(asset)
 
         self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
                     
@@ -239,12 +240,13 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 except Exception as e:
                     entry = self.run_util.log_exc(self.prefix_id, f"{guid} encountered a bug while determining status after multiple erda sync validation timeouts.", e, self.ERROR)
                     self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR) 
-                    self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                    self.update_throttle_count()
 
                 if info is False or info is None:
                     entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
                     self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
-                    self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                    self.update_throttle_count()
+                    
                 # asset was synced despite the timeout status - note asset does not have and will not get the asset COMPLETED status in ARS
                 # TODO this part is a bad hack since the status never gets set to asset completed in ars
                 if info is True:
@@ -262,7 +264,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
     def completed_sync_share_still_open(self, guid, asset):
 
-        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+        self.update_throttle_count()
         
         self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.ERDA_ERROR)
         
@@ -277,7 +279,14 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # logs and sends a warning message to the health api
         entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. This is a bug we have encountered before during testing. Erda_sync is set to ERROR. Check that asset is in erda")
         self.health_caller.warning(self.service_name, entry, guid)
-        # TODO handle how to get back on track
+        # TODO handle how to get back on track, note the throttle has not been updated here
+
+    def update_throttle_size(self, asset):
+        self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+    
+    def update_throttle_count(self):
+        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+
 
 if __name__ == '__main__':
     SyncErda()

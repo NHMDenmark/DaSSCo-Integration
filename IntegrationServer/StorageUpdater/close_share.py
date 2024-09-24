@@ -5,7 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum
 from InformationModule.log_class import LogClass
@@ -28,10 +28,12 @@ class CloseShare(LogClass):
         # service name for logging/info purposes
         self.service_name = "Close file share ARS"
         self.prefix_id = "CfsA"
+        #self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.auth_timestamp = None
         self.track_mongo = track_repository.TrackRepository()
         self.health_caller = health_caller.HealthCaller()
         self.service_mongo = service_repository.ServiceRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.util = utility.Utility()
@@ -111,27 +113,35 @@ class CloseShare(LogClass):
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.ERROR.value)
                     closed = False
 
-                if closed:
+                if closed is True:
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+                    self.update_throttle(asset)
                     print(f"closed share: {guid}")
             
             if asset is None:
                 #print(f"failed to find assets")
                 time.sleep(10)
 
-            # checks if service should keep running           
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.validate_enum.PAUSED.value:
-                self.run = self.run_util.pause_loop()
+            self.end_of_loop_checks()
 
         # outside main while loop        
         self.track_mongo.close_connection()
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
         self.run_util.service_mongo.close_connection()
         self.storage_api.service.metadata_db.close_mdb()
         print("service stopped")
+
+    def end_of_loop_checks(self):
+        # checks if service should keep running           
+        self.run = self.run_util.check_run_changes()
+
+        # Pause loop
+        if self.run == self.validate_enum.PAUSED.value:
+            self.run = self.run_util.pause_loop()
+
+    def update_throttle(self, asset):
+        self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
 
 if __name__ == '__main__':
     CloseShare()
