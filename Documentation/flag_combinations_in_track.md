@@ -18,7 +18,7 @@
 | HpcApi\hpc_api start_job | -> RUNNING| - | - | - | - | - | - | - | - |
 | HpcApi\hpc_api asset_ready | - | - | - | -> YES | - | - | - | - | - |
 | HpcApi\hpc_api derivative_files_uploaded | - | - | - | - | - | -> AWAIT | - | - | - |
-| HpcApi\hpc_api cleaned_up | - | - | - | -> NO | - | - | - | - | - |
+| HpcApi\hpc_api asset_clean_up | - | - | - | -> NO | - | - | - | - | - |
 
 | P | js | fs | a s | ready | ars | n file | open sha | e sync | upd mdata |
 
