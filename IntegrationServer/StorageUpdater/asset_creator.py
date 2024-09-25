@@ -216,35 +216,6 @@ class AssetCreator():
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  
-    Returns the storage client or None. 
-    """
-    def create_storage_api(self):
-    
-        storage_api = storage_client.StorageClient()
-        
-        self.auth_timestamp = datetime.now()
-
-        if storage_api.client is None:
-            # log the failure to create the storage api
-            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
-                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
-            self.health_caller.error(self.service_name, entry)
-
-            # change run value in db TODO this should be outcommented when testing pause functionality
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
-            
-            # log the status change + health call TODO this should be outcommented when testing pause functionality
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
-
-            # update run values
-            self.run = self.run_util.get_service_run_status()
-            self.run_util.service_run = self.run           
-            
-        return storage_api
-
-    """
-    Creates the storage client.
-    If this fails it sets the service run config to STOPPED and notifies the health service.  
     Returns the storage client or None.
     """
     def create_storage_api(self):

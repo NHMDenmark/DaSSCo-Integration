@@ -67,42 +67,66 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  
-    Returns the storage client or None. 
+    Returns the storage client or None.
     """
     def create_storage_api(self):
     
         storage_api = storage_client.StorageClient()
+        
         self.auth_timestamp = datetime.now()
 
-        if storage_api.client is None:
+        # handle initial fails
+        if storage_api.client is None and self.run != self.status_enum.STOPPED.value:
             # log the failure to create the storage api
-            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will retry in 1 minute. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry)
-            # change run value in db
-            self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
+
+            # change run value in db 
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
             
             # log the status change + health call 
-            self.run_util.log_status_change(self.service_name, self.run, self.STOPPED)
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
 
             # update run values
             self.run = self.run_util.get_service_run_status()
-            self.run_util.service_run = self.run           
+            self.run_util.service_run = self.run
+
+            return storage_api           
+        
+        # handle retry success
+        if storage_api.client is not None and self.run == self.status_enum.STOPPED.value:            
             
+            entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} created storage client after retrying.")
+            self.health_caller.warning(self.service_name, entry)
+
+            # change run value in db 
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+            
+            # log the status change + health call
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.RUNNING.value)
+
+            # update run values
+            self.run = self.run_util.get_service_run_status()
+            self.run_util.service_run = self.run
+
+            return storage_api
+
+        # handles retry fail
+        if storage_api.client is None and self.run == self.status_enum.STOPPED.value:
+            entry = self.run_util.log_exc(self.prefix_id, f"Retry failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will shut down and need to be restarted manually. {storage_api.note}",
+                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry)
+            return storage_api
+        
         return storage_api
 
     def loop(self):
 
         while self.run == self.RUNNING:
 
-            current_time = datetime.now()
-            time_difference = current_time - self.auth_timestamp
-            
-            # renew authentication with keycloak
-            if time_difference > timedelta(minutes=4):
-                self.storage_api.service.metadata_db.close_mdb()
-                print(f"creating new storage client, after {time_difference}")
-                self.storage_api = self.create_storage_api()
+            # check if new keycloak auth is needed, creates the storage client
+            self.authorization_check()
             if self.storage_api is None:
                 continue
 
@@ -287,6 +311,19 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     def update_throttle_count(self):
         self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
 
+    # check if new keycloak auth is needed, makes call to create the storage client
+    def authorization_check(self):
+        current_time = datetime.now()
+        time_difference = current_time - self.auth_timestamp
+            
+        if time_difference > timedelta(minutes=4):
+            self.storage_api.service.metadata_db.close_mdb()
+            print(f"creating new storage client, after {time_difference}")
+            self.storage_api = self.create_storage_api()
+        if self.storage_api is None:
+            time.sleep(60)
+            print("Waited 60 seconds before retrying to create the storage client after failing once")                
+            self.storage_api = self.create_storage_api()
 
 if __name__ == '__main__':
     SyncErda()
