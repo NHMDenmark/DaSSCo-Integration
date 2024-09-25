@@ -259,7 +259,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 self.track_mongo.update_entry(guid, "temporary_time_out_sync_erda_attempt", True)
                 self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
                 # logs and sends a warning message to the health api
-                entry = self.run_util.log_msg(self.prefix_id, "The asset timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
+                entry = self.run_util.log_msg(self.prefix_id, f"{guid} timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
                 self.health_caller.warning(self.service_name, entry, guid)
 
     def completed_sync_share_still_open(self, guid, asset):

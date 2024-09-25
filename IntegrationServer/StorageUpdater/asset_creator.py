@@ -17,7 +17,6 @@ import utility
 Responsible creating new metadata assets in ars. Updates track database with assets status.
 Logs warnings and errors from this process, and directs them to the health service. 
 """
-
 class AssetCreator():
 
     def __init__(self):
@@ -64,85 +63,32 @@ class AssetCreator():
         self.loop()
 
     """
-    Thread running the "heartbeat" loop for the healthservice to check in on. 
-    Stops if the run_status in the micro service database is set to STOPPED.
-    """
-    # TODO decide how this will actually be implemented with the 3rd party health service
-    def heartbeat(self):
-            while self.run != self.status_enum.STOPPED.value:
-                time.sleep(10)
-                try:
-                    self.run = self.run_util.check_run_changes()
-                    if self.run == self.status_enum.STOPPED.value:
-                        print("im dead")
-                    elif self.run == self.status_enum.PAUSED.value:
-                        print("im asleep")
-                    else:
-                        print("im alive")
-                except:
-                    print("im dead")
-    """
-    Creates the storage client.
-    If this fails it sets the service run config to STOPPED and notifies the health service.  
-    Returns the storage client or None. 
-    """
-    def create_storage_api(self):
-    
-        storage_api = storage_client.StorageClient()
-        
-        self.auth_timestamp = datetime.now()
-
-        if storage_api.client is None:
-            # log the failure to create the storage api
-            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
-                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
-            self.health_caller.error(self.service_name, entry)
-
-            # change run value in db TODO this should be outcommented when testing pause functionality
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
-            
-            # log the status change + health call TODO this should be outcommented when testing pause functionality
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
-
-            # update run values
-            self.run = self.run_util.get_service_run_status()
-            self.run_util.service_run = self.run           
-            
-        return storage_api
-
-    """
     Main loop for the service.
     """
     def loop(self):
         
         while self.run == self.status_enum.RUNNING.value:
             
-            current_time = datetime.now()
-            time_difference = current_time - self.auth_timestamp
-            
-            if time_difference > timedelta(minutes=4):
-                self.storage_api.service.metadata_db.close_mdb()
-                print(f"creating new storage client, after {time_difference}")
-                self.storage_api = self.create_storage_api()
+            # check if new keycloak auth is needed, creates the storage client
+            self.authorization_check()
             if self.storage_api is None:
                 continue
 
             # check throttle
-            total_size = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
+            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
             if total_size >= self.max_total_asset_size:
                 # TODO implement better throttle than sleep
                 time.sleep(5)
                 self.end_of_loop_checks()
                 continue
-
+            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
             # TODO remove/outcomment this, inserted for testing pause functionality
             #self.storage_api = self.create_storage_api()
 
             asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
 
             if asset is not None:
-                guid = asset["_id"]
-                
+                guid = asset["_id"]                
                 
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
@@ -213,7 +159,6 @@ class AssetCreator():
                             message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
                             self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
 
-
                 time.sleep(1)
 
             if asset is None:
@@ -249,7 +194,125 @@ class AssetCreator():
         if self.run == self.validate_enum.PAUSED.value:
             self.run = self.run_util.pause_loop()
 
+    """
+    Thread running the "heartbeat" loop for the healthservice to check in on. 
+    Stops if the run_status in the micro service database is set to STOPPED.
+    """
+    # TODO decide how this will actually be implemented with the 3rd party health service
+    def heartbeat(self):
+            while self.run != self.status_enum.STOPPED.value:
+                time.sleep(10)
+                try:
+                    self.run = self.run_util.check_run_changes()
+                    if self.run == self.status_enum.STOPPED.value:
+                        print("im dead")
+                    elif self.run == self.status_enum.PAUSED.value:
+                        print("im asleep")
+                    else:
+                        print("im alive")
+                except:
+                    print("im dead")
+                    
+    """
+    Creates the storage client.
+    If this fails it sets the service run config to STOPPED and notifies the health service.  
+    Returns the storage client or None. 
+    """
+    def create_storage_api(self):
+    
+        storage_api = storage_client.StorageClient()
+        
+        self.auth_timestamp = datetime.now()
+
+        if storage_api.client is None:
+            # log the failure to create the storage api
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client. {self.service_name} failed to run. Received status: {storage_api.status_code}. {self.service_name} needs to be manually restarted. {storage_api.note}",
+                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry)
+
+            # change run value in db TODO this should be outcommented when testing pause functionality
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            
+            # log the status change + health call TODO this should be outcommented when testing pause functionality
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+
+            # update run values
+            self.run = self.run_util.get_service_run_status()
+            self.run_util.service_run = self.run           
+            
+        return storage_api
+
+    """
+    Creates the storage client.
+    If this fails it sets the service run config to STOPPED and notifies the health service.  
+    Returns the storage client or None.
+    """
+    def create_storage_api(self):
+    
+        storage_api = storage_client.StorageClient()
+        
+        self.auth_timestamp = datetime.now()
+
+        # handle initial fails
+        if storage_api.client is None and self.run != self.status_enum.STOPPED.value:
+            # log the failure to create the storage api
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will retry in 1 minute. {storage_api.note}",
+                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry)
+
+            # change run value in db 
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            
+            # log the status change + health call 
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+
+            # update run values
+            self.run = self.run_util.get_service_run_status()
+            self.run_util.service_run = self.run
+
+            return storage_api           
+        
+        # handle retry success
+        if storage_api.client is not None and self.run == self.status_enum.STOPPED.value:            
+            
+            entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} created storage client after retrying.")
+            self.health_caller.warning(self.service_name, entry)
+
+            # change run value in db 
+            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+            
+            # log the status change + health call
+            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.RUNNING.value)
+
+            # update run values
+            self.run = self.run_util.get_service_run_status()
+            self.run_util.service_run = self.run
+
+            return storage_api
+
+        # handles retry fail
+        if storage_api.client is None and self.run == self.status_enum.STOPPED.value:
+            entry = self.run_util.log_exc(self.prefix_id, f"Retry failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will shut down and need to be restarted manually. {storage_api.note}",
+                                           storage_api.exc, self.run_util.log_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry)
+            return storage_api
+        
+        return storage_api
+
+    # check if new keycloak auth is needed, makes call to create the storage client
+    def authorization_check(self):
+        current_time = datetime.now()
+        time_difference = current_time - self.auth_timestamp
+            
+        if time_difference > timedelta(minutes=4):
+            self.storage_api.service.metadata_db.close_mdb()
+            print(f"creating new storage client, after {time_difference}")
+            self.storage_api = self.create_storage_api()
+        if self.storage_api is None:
+            time.sleep(60)
+            print("Waited 60 seconds before retrying to create the storage client after failing once")                
+            self.storage_api = self.create_storage_api()
+
 if __name__ == '__main__':
     
     AssetCreator()
-    

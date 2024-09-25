@@ -83,6 +83,8 @@ class HPCCleanUp():
             
                 self.con.ssh_command(f"bash {script_path} {guid}")
 
+                self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
+
                 time.sleep(1)
 
             # checks if service should keep running           

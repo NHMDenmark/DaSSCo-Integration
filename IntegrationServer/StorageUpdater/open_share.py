@@ -105,12 +105,14 @@ class OpenShare(Status, Validate):
                 continue
             
             # check throttle
-            total_size = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
+            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
             if total_size >= self.max_total_asset_size:
                 # TODO implement better throttle than sleep
                 time.sleep(5)
                 self.end_of_loop_checks()
                 continue
+            
+            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
 
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
                                                                           "jobs_status": self.WAITING, "is_in_ars": self.YES,
