@@ -76,17 +76,17 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.auth_timestamp = datetime.now()
 
         # handle initial fails
-        if storage_api.client is None and self.run != self.status_enum.STOPPED.value:
+        if storage_api.client is None and self.run != self.STOPPED:
             # log the failure to create the storage api
             entry = self.run_util.log_exc(self.prefix_id, f"Failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will retry in 1 minute. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry)
 
             # change run value in db 
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
             
             # log the status change + health call 
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.STOPPED.value)
+            self.run_util.log_status_change(self.service_name, self.run, self.STOPPED)
 
             # update run values
             self.run = self.run_util.get_service_run_status()
@@ -95,16 +95,16 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             return storage_api           
         
         # handle retry success
-        if storage_api.client is not None and self.run == self.status_enum.STOPPED.value:            
+        if storage_api.client is not None and self.run == self.STOPPED:            
             
             entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} created storage client after retrying.")
             self.health_caller.warning(self.service_name, entry)
 
             # change run value in db 
-            self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+            self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
             
             # log the status change + health call
-            self.run_util.log_status_change(self.service_name, self.run, self.status_enum.RUNNING.value)
+            self.run_util.log_status_change(self.service_name, self.run, self.RUNNING)
 
             # update run values
             self.run = self.run_util.get_service_run_status()
@@ -113,7 +113,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             return storage_api
 
         # handles retry fail
-        if storage_api.client is None and self.run == self.status_enum.STOPPED.value:
+        if storage_api.client is None and self.run == self.STOPPED:
             entry = self.run_util.log_exc(self.prefix_id, f"Retry failed to create storage client for {self.service_name}. Received status: {storage_api.status_code}. {self.service_name} will shut down and need to be restarted manually. {storage_api.note}",
                                            storage_api.exc, self.run_util.log_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry)
