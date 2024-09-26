@@ -320,7 +320,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             self.storage_api.service.metadata_db.close_mdb()
             print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
-        if self.storage_api is None:
+        if self.storage_api.client is None:
             time.sleep(60)
             print("Waited 60 seconds before retrying to create the storage client after failing once")                
             self.storage_api = self.create_storage_api()
