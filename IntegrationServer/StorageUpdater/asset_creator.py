@@ -59,10 +59,17 @@ class AssetCreator():
         self.storage_api = self.create_storage_api()
         
         # create and start the heartbeat thread
+        self.beat = self.status_enum.RUNNING.value
         heartbeat_thread = threading.Thread(target = self.heartbeat)
         heartbeat_thread.start()
 
-        self.loop()
+        try:
+            self.loop()
+        except Exception as e:
+            self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)
+            self.beat = self.status_enum.STOPPED.value        
+            self.close_all_connections()
+            print("service crashed", e)
 
     """
     Main loop for the service.
@@ -175,13 +182,9 @@ class AssetCreator():
 
             self.end_of_loop_checks()
 
-        # outside main while loop        
-        self.track_mongo.close_connection()
-        self.metadata_mongo.close_connection()
-        self.service_mongo.close_connection()
-        self.throttle_mongo.close_connection()
-        self.run_util.service_mongo.close_connection()
-        self.storage_api.service.metadata_db.close_mdb()
+        # outside main while loop
+        self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)        
+        self.close_all_connections()
         print("service stopped")
 
     def success_asset_created(self, guid, asset):
@@ -211,6 +214,17 @@ class AssetCreator():
         if self.run == self.validate_enum.PAUSED.value:
             self.run = self.run_util.pause_loop()
     
+    def close_all_connections(self):
+        try:
+            self.track_mongo.close_connection()
+            self.metadata_mongo.close_connection()
+            self.service_mongo.close_connection()
+            self.throttle_mongo.close_connection()
+            self.run_util.service_mongo.close_connection()
+            self.storage_api.service.metadata_db.close_mdb()
+        except:
+            pass
+
     """
     Checks the throttle and sends back bools for new asset and derivative that tells if they can be used. Also sends back the total amount in the system.     
     """
@@ -239,23 +253,30 @@ class AssetCreator():
 
     """
     Thread running the "heartbeat" loop for the healthservice to check in on. 
-    Stops if the run_status in the micro service database is set to STOPPED.
     """
     # TODO decide how this will actually be implemented with the 3rd party health service
     def heartbeat(self):
-            while self.run != self.status_enum.STOPPED.value:
-                time.sleep(10)
+            self.service_mongo.update_entry(self.service_name, "heartbeat", self.beat)
+            entry = self.run_util.log_msg(self.prefix_id, f"Heartbeat service is initialising for {self.service_name}")
+            self.health_caller.warning(self.service_name, entry)
+
+            while self.beat != self.status_enum.STOPPED.value:
+                time.sleep(20)
                 try:
-                    self.run = self.run_util.check_run_changes()
-                    if self.run == self.status_enum.STOPPED.value:
-                        print("im dead")
-                    elif self.run == self.status_enum.PAUSED.value:
-                        print("im asleep")
-                    else:
-                        print("im alive")
-                except:
-                    print("im dead")
+                    self.beat = self.service_mongo.get_value_for_key(self.service_name, "heartbeat")
                     
+                    if self.beat == self.status_enum.RUNNING.value:
+                        print("im alive")
+                    if self.beat == self.status_enum.STOPPED.value:
+                        print("im dead")
+                except:
+                    self.beat = self.status_enum.STOPPED.value
+                    print("im dead")
+            try:
+                self.service_mongo.update_entry(self.service_name, "heartbeat", self.beat)                
+            except:
+                pass
+
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  
