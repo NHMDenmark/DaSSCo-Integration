@@ -100,25 +100,17 @@ class HPCService():
         # Update MongoDB track - call is to a local function in hpcservice
         self.update_mongo_track(guid, job, update_status)
 
-        """
-        Not using this anymore.
-        # Update jobs JSON file unless its a test guid
-        try:
-            self.update_jobs_json(guid, job, update_status)
-        except FileNotFoundError as e:
-            pass
-        """
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
-
-            self.update_mongo_metadata(guid, data_dict)
             
+            if data_dict is not None or data_dict != {}:
+                self.update_mongo_metadata(guid, data_dict)
+                self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+
             try:
                 self.update_metadata_json(guid, data_dict)
             except FileNotFoundError as e:
                 pass
-            
-            self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
 
         if update_status == self.status.ERROR.value:
             # TODO handle error

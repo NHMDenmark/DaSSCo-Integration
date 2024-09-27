@@ -39,6 +39,8 @@ class AssetCreator():
         self.util = utility.Utility()
 
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
+        self.max_new_asset_size = self.util.get_value(self.throttle_config_path, "total_max_new_asset_size_mb")
+        self.max_derivative_size = self.util.get_value(self.throttle_config_path, "total_max_derivative_size_mb")
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -75,17 +77,25 @@ class AssetCreator():
                 continue
 
             # check throttle
-            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
+            new_asset, derivative_asset, total_size = self.check_throttle()
+            
             if total_size >= self.max_total_asset_size:
                 # TODO implement better throttle than sleep
                 time.sleep(5)
                 self.end_of_loop_checks()
                 continue
-            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
-            # TODO remove/outcomment this, inserted for testing pause functionality
-            #self.storage_api = self.create_storage_api()
 
-            asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)
+            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
+
+            # TODO this is dangerous. Using the jobs status to logically assume its a derivative. Maybe track needs a new field
+            if new_asset is False:
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value}])
+            # TODO this is dangerous. Using the jobs status to logically assume its a new asset. Maybe track needs a new field
+            if derivative_asset is False:
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.WAITING.value}])
+
+            if new_asset and derivative_asset:
+                asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)                
 
             if asset is not None:
                 guid = asset["_id"]                
@@ -100,7 +110,6 @@ class AssetCreator():
                 if created is True:
                     self.handle_throttle(asset)
                     self.success_asset_created(guid, asset)
-
 
                 # fail scenarios
                 if created is False:
@@ -183,7 +192,15 @@ class AssetCreator():
             self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
     def handle_throttle(self, asset):
+        
+        is_derivative = self.is_asset_derivative(asset["_id"])
+        
         self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+
+        if is_derivative is False:
+            self.throttle_mongo.add_to_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])
+        else:
+            self.throttle_mongo.add_to_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
 
     # end of loop checks
     def end_of_loop_checks(self):
@@ -193,6 +210,32 @@ class AssetCreator():
         # Pause loop
         if self.run == self.validate_enum.PAUSED.value:
             self.run = self.run_util.pause_loop()
+    
+    """
+    Checks the throttle and sends back bools for new asset and derivative that tells if they can be used. Also sends back the total amount in the system.     
+    """
+    def check_throttle(self):
+        
+            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
+            new_asset_size = self.throttle_mongo.get_value_for_key("total_new_asset_size_mb", "value")
+            derivative_asset_size = self.throttle_mongo.get_value_for_key("total_derivative_asset_size_mb", "value")
+            
+            new_asset = True
+            derivative_asset = True
+            if new_asset_size >= self.max_new_asset_size:
+                new_asset = False
+            if derivative_asset_size >= self.max_derivative_size:
+                derivative_asset = False
+            
+            return new_asset, derivative_asset, total_size
+    
+    #check if an asset is a derivative by checking if it has a parent
+    def is_asset_derivative(self, guid):
+        value = self.metadata_mongo.get_value_for_key(guid, "parent_guid")
+        if value is None or value == "":
+            return False
+        else:
+            return True
 
     """
     Thread running the "heartbeat" loop for the healthservice to check in on. 

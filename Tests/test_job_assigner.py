@@ -7,7 +7,6 @@ sys.path.append(project_root)
 
 from IntegrationServer.AssetFileHandler.job_assigner import JobAssigner
 
-
 class TestJobAssigner(unittest.TestCase):
     
     def setUp(self):
@@ -31,7 +30,6 @@ class TestJobAssigner(unittest.TestCase):
         self.assertEqual(first_job_dict.get("1"), "testy", "First job was not 'testy'")
 
         self.assertEqual(second_job_dict.get("tasty"), "WAITING", "Second job with name 'tasty' failed to have the status 'WAITING'")
-
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
-from MongoDB import track_repository, service_repository, throttle_repository
+from MongoDB import track_repository, service_repository, throttle_repository, metadata_repository
 from StorageApi import storage_client
 from Enums.status_enum import Status
 from Enums.flag_enum import Flag
@@ -44,6 +44,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
+        self.metadata_mongo = metadata_repository.MetadataRepository()
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -153,7 +154,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             print(f"checking {len(assets)} assets:")
             for asset in assets:
                 guid = asset["_id"]
-                
+
                 # bool(True if status 200, False otherwise), status code from api(set to -1 if the call failed completely), 
                 # asset status(COMPLETED, ASSET_RECEIVED, ERDA_ERROR), asset share size(should be none/null for a success), note(any description if one is needed from the api call)
                 attempted, status_code, asset_status, asset_share_size, note = self.storage_api.get_asset_sharesize_and_status(guid)
@@ -224,7 +225,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
     def asset_validated(self, guid, asset):
         
         self.update_throttle_count()
-        self.update_throttle_size(asset)
+        self.update_throttle_size(asset, guid)
 
         self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.YES)
                     
@@ -308,8 +309,16 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.health_caller.warning(self.service_name, entry, guid)
         # TODO handle how to get back on track, note the throttle has not been updated here
 
-    def update_throttle_size(self, asset):
+    def update_throttle_size(self, asset, guid):
+        
+        is_derivative = self.is_asset_derivative(guid)
+
         self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+
+        if is_derivative:
+            self.throttle_mongo.subtract_from_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
+        else:
+            self.throttle_mongo.subtract_from_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])        
     
     def update_throttle_count(self):
         self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
@@ -327,6 +336,15 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             time.sleep(60)
             print("Waited 60 seconds before retrying to create the storage client after failing once")                
             self.storage_api = self.create_storage_api()
+
+    #check if an asset is a derivative by checking if it has a parent
+    def is_asset_derivative(self, guid):
+        value = self.metadata_mongo.get_value_for_key(guid, "parent_guid")
+        if value is None or value == "":
+            return False
+        else:
+            return True
+
 
 if __name__ == '__main__':
     SyncErda()

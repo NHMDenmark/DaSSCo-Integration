@@ -27,10 +27,10 @@ class SetupServices:
             
             created = self.service_repo.create_micro_service_entry(name)
             if created is False:
-                print(f"Failed to create service {name}, in mongo micro service collection.")
+                # print(f"Failed to create service {name}, in mongo micro service collection.")
                 exist = self.service_repo.get_entry("_id", name)
                 if exist is None:
-                    print(f"Failed to find {name}, in mongo db.")
+                    print(f"Failed to find {name}, in mongo db. Failed to create.")
                 else:
                     print(f"{name} has already been created in the mongo db.")
             else:
