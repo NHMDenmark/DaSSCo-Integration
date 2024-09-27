@@ -12,6 +12,7 @@ from Enums.status_enum import Status
 from Enums.flag_enum import Flag
 from Enums.validate_enum import Validate
 from Enums.erda_status import ErdaStatus
+from Enums import validate_enum, status_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -37,7 +38,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.prefix_id = "VesA"
         self.auth_timestamp = None
         self.service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
-
+        self.status_enum = status_enum.StatusEnum
+        self.validate_enum = validate_enum.ValidateEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
