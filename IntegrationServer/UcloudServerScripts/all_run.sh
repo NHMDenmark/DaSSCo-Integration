@@ -4,6 +4,9 @@ root="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
 
 nohup python "$root/Ndrive/ndrive_new_files.py" > "$root/Ndrive/ndrive_new_files.out" 2>&1 &
 nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process_files_from_ndrive.out" 2>&1 &
+nohup python "$root/Ndrive/delete_files_ndrive.py" > "$root/Ndrive/delete_files_ndrive.out" 2>&1 &
+
+nohup python "$root/AssetFileHandler/delete_local_files.py" > "$root/AssetFileHandler/delete_local_files.out" 2>&1 &
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/job_caller.out" 2>&1 &
