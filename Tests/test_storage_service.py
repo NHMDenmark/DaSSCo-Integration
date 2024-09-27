@@ -20,7 +20,8 @@ class TestStorageService(unittest.TestCase):
         
         self.guid = "test_mongo"
 
-        self.metadata.create_metadata_entry("Tests/TestConfigFiles/test_metadata_entry2.json", self.guid)
+        self.metadata.create_metadata_entry(f"{project_root}/Tests/TestConfigFiles/test_metadata_entry2.json", self.guid)
+        
 
     @classmethod
     def tearDownClass(self):

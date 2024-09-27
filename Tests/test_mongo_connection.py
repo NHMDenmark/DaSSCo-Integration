@@ -76,7 +76,7 @@ class TestMongoConnection(unittest.TestCase):
 
     def test_create_metadata_entry(self):
 
-        path = "Tests/TestConfigFiles/test_metadata_entry2.json"
+        path = f"{project_root}/Tests/TestConfigFiles/test_metadata_entry2.json"
 
         created = self.metadata.create_metadata_entry(path, self.guid)
 

@@ -12,7 +12,7 @@ class TestJobAssigner(unittest.TestCase):
     
     def setUp(self):
         self.job = JobAssigner()
-        self.job.pipeline_job_config_path = "Tests/TestConfigFiles/test_pipeline_job_config.json"
+        self.job.pipeline_job_config_path = f"{project_root}/Tests/TestConfigFiles/test_pipeline_job_config.json"
         self.first_pipeline_name = "FIRST"
         self.second_pipeline_name = "SECOND"
 
