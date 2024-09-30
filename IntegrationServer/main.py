@@ -148,13 +148,16 @@ def modify_exif_data(file_path, new_exif_data):
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
-    test()
+    #test()
     #t = datetime.now() - timedelta(hours=1000)
     #load_dotenv()
     #print(os.environ.get("UCLOUD_USER"))
 
-
-
+    throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
+    print(throttle_config_path)
+    
+    max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
+    print(max_total_asset_size)
     """
     time = ""
     b = field_validation.FieldValidation().datetime_validator(time)

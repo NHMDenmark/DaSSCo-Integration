@@ -75,17 +75,22 @@ class HPCJobCaller():
                 
                 for job in jobs:
                     
-                    name = job["name"]
+                    try:
+                        name = job["name"]
 
-                    job_details = self.util.get_value(self.job_detail_path, name)
-                    script_path = job_details["script"]
+                        job_details = self.util.get_value(self.job_detail_path, name)
+                        script_path = job_details["script"]
 
-                    self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.STARTING.value)
-                    self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
+                        self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.STARTING.value)
+                        self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
-                    print(script_path, name)
-                    self.con.ssh_command(f"bash {script_path} {guid}")
-                    time.sleep(1)
+                        print(script_path, name)
+                        self.con.ssh_command(f"bash {script_path} {guid}")
+                        time.sleep(1)
+                    except Exception as e:
+                        # TODO handle better this will potentially loop the same issue over and over
+                        continue
+
 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
             self.run = self.run_util.check_run_changes()

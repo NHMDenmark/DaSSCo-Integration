@@ -231,8 +231,8 @@ class AssetCreator():
     def check_throttle(self):
         
             total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
-            new_asset_size = self.throttle_mongo.get_value_for_key("total_new_asset_size_mb", "value")
-            derivative_asset_size = self.throttle_mongo.get_value_for_key("total_derivative_asset_size_mb", "value")
+            new_asset_size = self.throttle_mongo.get_value_for_key("total_max_new_asset_size_mb", "value")
+            derivative_asset_size = self.throttle_mongo.get_value_for_key("total_max_derivative_size_mb", "value")
             
             new_asset = True
             derivative_asset = True
