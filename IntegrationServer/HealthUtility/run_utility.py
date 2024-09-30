@@ -77,6 +77,7 @@ class RunUtility(LogClass, Status):
     def attempt_unpause(self, pause_count: int):
 
         paused = True
+        extra_msg = ""
 
         # get the module the service belongs to, then call the corresponding check for unpause routine
         module = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "module")
@@ -94,14 +95,14 @@ class RunUtility(LogClass, Status):
             paused = True
             
         if paused is True: 
-            message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} loop counts. {extra_msg}"
+            message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} pause loops. {extra_msg}"
 
             entry = self.log_msg(self.prefix_id, message)
             self.health_caller.attempted_unpause(self.service_name, self.PAUSED, pause_count, entry)
 
         if paused is False:
             self.service_run = self.check_run_changes()
-            message = f"{self.service_name} attempted and succeeded to unpause. This was after {pause_count} loop counts. Status is now {self.service_run}."
+            message = f"{self.service_name} unpaused. This was after {pause_count} pause loops. Status is now {self.service_run}."
 
             entry = self.log_msg(self.prefix_id, message)
             self.health_caller.attempted_unpause(self.service_name, self.service_run, pause_count, entry)
