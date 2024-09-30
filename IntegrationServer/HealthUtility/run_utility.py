@@ -133,7 +133,7 @@ class RunUtility(LogClass, Status):
     """
     def log_all_run_status_change(self, old_status, new_status):
             entry = self.log_msg("All", f"All run status changed from {old_status} to {new_status}")
-            self.health_caller.run_status_change("No name", new_status, entry)
+            self.health_caller.run_status_change(self.service_name, new_status, entry)
 
     """
     logs a status change and calls the health api
