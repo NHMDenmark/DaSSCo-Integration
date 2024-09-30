@@ -33,7 +33,10 @@ class SlurmTransfer:
         self.cons.create_ssh_connection(self.ssh_config_path)
         self.con = self.cons.get_connection()
 
-        self.loop()
+        try:
+            self.loop()
+        except Exception as e:
+            print("service crashed", e)
     
     def loop(self):
         

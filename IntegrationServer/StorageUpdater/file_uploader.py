@@ -55,7 +55,10 @@ class FileUploader():
         # create the storage api
         self.storage_api = self.create_storage_api()
         
-        self.loop()
+        try:
+            self.loop()
+        except Exception as e:
+            print("service crashed", e)
 
     """
     Creates the storage client.

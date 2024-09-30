@@ -48,7 +48,10 @@ class ProcessNewFiles():
 
         self.run = self.run_util.get_service_run_status()
 
-        self.loop()
+        try:
+            self.loop()
+        except Exception as e:
+            print("service crashed", e)
 
     def loop(self):
 

@@ -44,7 +44,11 @@ class NdriveNewFilesFinder():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.run = self.run_util.get_service_run_status()
-        self.loop()
+        
+        try:
+            self.loop()
+        except Exception as e:
+            print("service crashed", e)
 
     def loop(self):
 

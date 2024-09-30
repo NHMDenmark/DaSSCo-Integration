@@ -48,7 +48,10 @@ class HPCUploader():
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
         
-        self.loop()
+        try:
+            self.loop()
+        except Exception as e:
+            print("service crashed", e)
     
     def create_ssh_connection(self):
         self.cons.create_ssh_connection(self.ssh_config_path)
