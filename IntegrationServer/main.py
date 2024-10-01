@@ -153,11 +153,16 @@ if __name__ == '__main__':
     #load_dotenv()
     #print(os.environ.get("UCLOUD_USER"))
 
-    throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
-    print(throttle_config_path)
+    #throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
+    #print(throttle_config_path)
     
-    max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
-    print(max_total_asset_size)
+    #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
+    #print(max_total_asset_size)
+
+    mongo = track_repository.TrackRepository()
+    a = mongo.get_job_info("dev-ucloud-262", "barcode")
+    print(a)
+    mongo.close_connection()
     """
     time = ""
     b = field_validation.FieldValidation().datetime_validator(time)

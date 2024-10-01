@@ -119,6 +119,18 @@ class HPCService():
         return True
  
     def update_mongo_track(self, guid, job, status):
+        
+        # check if the job has already received an update about the job that changed its status to DONE, ERROR or RETRY already
+        current_job_info = self.mongo_track.get_job_info(guid, job)
+        if current_job_info is not None:
+            current_job_status = current_job_info["status"]
+        else:
+            # TODO handle if current job info is none (some sort of error), just returning for now
+            return            
+        if current_job_status in [StatusEnum.DONE.value, StatusEnum.ERROR.value, StatusEnum.RETRY.value]:
+            # returns here to not overwrite the job status
+            return
+
         # Update MongoDB track with job status
         self.mongo_track.update_track_job_status(guid, job, status)
 
@@ -215,6 +227,8 @@ class HPCService():
         label = barcode_data.label
         disposable = barcode_data.disposable
 
+        print("from barcode:", guid, job_name, status, asset_subject)
+
         if None in [guid, job_name, status, MSO, MOS, label]:
             return False
 
@@ -236,7 +250,6 @@ class HPCService():
 
         self.update_mongo_metadata(guid, metadata_update)
         self.update_mongo_track(guid, job_name, status)
-
 
         # check if asset is part of a mos
         if MOS:

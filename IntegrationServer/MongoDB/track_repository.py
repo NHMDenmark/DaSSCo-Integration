@@ -263,4 +263,17 @@ class TrackRepository:
         
         return result
 
-    
+
+    def get_job_info(self, guid, job_name):
+        """
+                Finds a job based the asset and the name of the job.
+                :returns the job info or none
+        """        
+        result = self.collection.find_one({ "_id": guid, "job_list.name": job_name },{ "job_list.$": 1 })
+        
+        # get the actual job info from the resulting dictionary
+        if result and "job_list" in result:
+            result = result["job_list"][0]
+            return result
+        
+        return None
