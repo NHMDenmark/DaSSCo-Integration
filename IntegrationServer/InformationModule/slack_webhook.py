@@ -33,11 +33,11 @@ class SlackWebhook:
         # Define the content that will be displayed in the slack chat.
         if guid != "No guid": 
             payload = {
-                "text": f"{status} - Service: {service_name} - Status: {run_status} - GUID: {guid}"
+                "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}` - `GUID: {guid}`"
             }
         else:
             payload = {
-                "text": f"{status} - Service: {service_name} - Status: {run_status}"
+                "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}`"
             }
 
         if status == self.log_enum.TESTING.value:
@@ -61,7 +61,7 @@ class SlackWebhook:
         
         # Define the content that will be displayed in the slack chat. 
         payload = {
-            "text": f"{severity} - Service: {service_name} - Status change to: {status}"
+            "text": f"{severity} - `Service: {service_name}` - `Status change to: {status}`"
         }
         if status == self.log_enum.TESTING.value:
             payload = {
@@ -106,7 +106,7 @@ class SlackWebhook:
     def unexpected_error_msg(self, health_id, service_name):
         # Define the content that will be displayed in the slack chat. 
         payload = {
-            "text": f"UNEXPECTED ERROR - {service_name} - Health ID: {health_id}"
+            "text": f"UNEXPECTED ERROR - `{service_name}` - `Health ID: {health_id}`"
         }
 
         if service_name == "Test health api":

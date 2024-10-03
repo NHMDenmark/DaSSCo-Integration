@@ -80,9 +80,9 @@ class DeleteFilesNdrive():
                             self.track_mongo.delete_field(guid, "temporary_path_ndrive")
                             self.track_mongo.delete_field(guid, "temporary_files_ndrive")                        
                         else:
-                            print(f"No matching files found for {guid}. Temporary_files_ndrive set to ERROR")
+                            print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
                             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
-                            entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. No matching files found for {guid}. Temporary_files_ndrive set to ERROR.", self.run_util.log_enum.ERROR.value)
+                            entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
                             self.health_caller.error(self.service_name, entry, guid)
                         
                         # delete empty directories
@@ -92,7 +92,7 @@ class DeleteFilesNdrive():
 
                     else:                        
                         self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
-                        entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. This directory was not found. Setting temporary_files_ndrive to ERROR.", self.run_util.log_enum.ERROR.value)
+                        entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. This directory was not found. Setting temporary_files_ndrive to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
                         self.health_caller.error(self.service_name, entry, guid)
                         print(f"{ndrive_path} is not a directory.")
                         time.sleep(10)

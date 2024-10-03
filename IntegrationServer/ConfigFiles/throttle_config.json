@@ -1,7 +1,7 @@
 {   
-    "max_assets_in_flight": 5,
+    "max_assets_in_flight": 30,
     "max_sync_asset_count": 15,
-    "total_max_asset_size_mb": 25000,
-    "total_max_new_asset_size_mb": 15000,
-    "total_max_derivative_size_mb": 15000
+    "total_max_asset_size_mb": 23000,
+    "total_max_new_asset_size_mb": 11000,
+    "total_max_derivative_size_mb": 20000
 }
