@@ -161,6 +161,11 @@ class SyncErda():
 
         response_get_asset_status = self.storage_api.get_full_asset_status(guid)
 
+        if response_get_asset_status is False:
+            entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call to get asset status, after receiving status 400 for sync call, failed for {guid}. Erda sync status set to ERROR. {note}", self.status_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+            return False
+
         status_from_ARS = response_get_asset_status["data"].status
         share_allocation_size = response_get_asset_status["data"].share_allocation_mb
 
@@ -187,7 +192,7 @@ class SyncErda():
         try:
             status_from_ars = self.storage_api.get_asset_status(guid)
 
-            # TODO might want to add some kind of pausing if too many timeouts happe
+            # TODO might want to add some kind of pausing if too many timeouts happe    
             # logs the timeout failure, does not update the asset flags -> asset will be retried
             if status_from_ars == False:                                
                 message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without syncing {guid}. Status: 504. {note}")
@@ -202,7 +207,8 @@ class SyncErda():
         except Exception as e:
             message = self.run_util.log_exc(self.prefix_id, f"While handling status 504 from sync asset for {guid} another error occurred. {note}", e, self.run_util.log_enum.ERROR.value)                            
             self.health_caller.error(self.service_name, message, guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.ERROR.value)
-           
+            return False
+
         return False
 
     # check if new keycloak auth is needed, makes call to create the storage client
