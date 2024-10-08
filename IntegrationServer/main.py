@@ -160,7 +160,9 @@ if __name__ == '__main__':
     #print(max_total_asset_size)
 
     mongo = track_repository.TrackRepository()
-    a = mongo.get_job_info("dev-ucloud-262", "barcode")
+    
+    mongo.update_track_job_list("dev-ucloud-400", "attempt_1", "name", f"assetLoader")
+    a = mongo.get_job_from_key_value("dev-ucloud-400", "name", "assetLoader")
     print(a)
     mongo.close_connection()
     """

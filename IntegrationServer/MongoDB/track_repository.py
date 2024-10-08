@@ -230,7 +230,36 @@ class TrackRepository:
         self.collection.update_one(query, update_data)
 
         return True
-     
+    
+    def update_track_job_list(self, guid, job, key, value):
+        """
+            Update an existing entry for a job in the track MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param job: The job name to be updated.
+            :param key: The key (field) to be updated or created.
+            :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
+        """
+
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the file_list
+        job_exists = any(d['name'] == job for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
+
+        query = {"_id": guid, "job_list.name": job}
+        job_entry = f"job_list.$.{key}"
+        update_data = {"$set": {job_entry: value}}
+
+        self.collection.update_one(query, update_data)
+
+        return True
+
     # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
     # TODO missing unit test
     def find_running_jobs_older_than(self):
@@ -270,6 +299,23 @@ class TrackRepository:
                 :returns the job info or none
         """        
         result = self.collection.find_one({ "_id": guid, "job_list.name": job_name },{ "job_list.$": 1 })
+        
+        # get the actual job info from the resulting dictionary
+        if result and "job_list" in result:
+            result = result["job_list"][0]
+            return result
+        
+        return None
+    
+    def get_job_from_key_value(self, guid, key, value):
+        """
+                Finds a job based on the asset and a key value pair of the job.
+                :returns the job info or none
+        """
+
+        job_key = f"job_list.{key}"
+
+        result = self.collection.find_one({ "_id": guid, job_key: value },{ "job_list.$": 1 })
         
         # get the actual job info from the resulting dictionary
         if result and "job_list" in result:

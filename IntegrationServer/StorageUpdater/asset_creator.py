@@ -188,7 +188,7 @@ class AssetCreator():
         print("service stopped")
 
     def success_asset_created(self, guid, asset):
-        metadata = self.metadata_mongo.get_entry("_id", guid)
+        # metadata = self.metadata_mongo.get_entry("_id", guid)
         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.YES.value)
         self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
         if asset["asset_size"] != -1:
