@@ -151,18 +151,19 @@ class FieldValidation:
             # Check if the string is valid UTF-8
             input.encode('utf-8')
 
-            # Regular expression to match alphanumerical characters and - _ : / \ # ! . ( ) % & $ including space
-            pattern = r'^[\w\-_:\/\\#!.\(\)%&$ ]*$'
-            
-            # Check if the input matches the pattern
-            if re.fullmatch(pattern, input):
-                return True
-            else:
-                return False
         except UnicodeEncodeError:
             # If encoding fails, it's not a valid UTF-8 string 
             return False
-        
+
+        # Regular expression to match alphanumerical characters and - _ : / \ # ! . ( ) % & $ including space
+        pattern = r'^[\w\-_:\/\\#!.\(\)%&$ ]*$'
+            
+        # Check if the input matches the pattern
+        if re.fullmatch(pattern, input):
+            return True
+        else:
+            return False
+
     """
     url check, urls we receive must conform to the specifications in here
     return a bool telling the truth

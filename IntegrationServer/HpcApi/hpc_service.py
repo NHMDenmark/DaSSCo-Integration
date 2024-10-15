@@ -241,8 +241,7 @@ class HPCService():
 
         # Checks the job finished correctly. Gets the asset type from the enum list (returns false if still unknown) and updates it.
         # Handles asset types that dont need further processing by removing "waiting" jobs
-        # TODO needs testing
-        if status == self.status.DONE:
+        if status == self.status.DONE.value:
             enum_type = self.get_enum_asset_type(asset_subject)
             if enum_type == AssetTypeEnum.UNKNOWN.value:
                 return False

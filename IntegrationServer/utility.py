@@ -185,4 +185,10 @@ class Utility:
 
         return output_data
 
-        
+    def convert_string_to_datetime(self, time):
+
+        try:
+            date_time = time   
+            return date_time
+        except Exception as e:
+            return False
