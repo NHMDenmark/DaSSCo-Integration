@@ -1,4 +1,4 @@
-| Process | "jobs_status" | "files_status" | "asset_size" | "hpc_ready" | "is_in_ars" | "has_new_file" | "has_open_share" | "erda_sync" | Update_metadata" |
+| Process | "jobs_status" | "files_status" | "asset_size" | "hpc_ready" | "is_in_ars" | "has_new_file" | "has_open_share" | "erda_sync" | update_metadata" |
 |-------------|--------|----|----|----|---|----|----|-----------|------|
 | Ndrive\process_new_files_from_ndrive | -> WAITING | -> NONE | -> file size | -> NO | -> AWAIT -> NO | -> YES | -> NO | -> NO | -> NO |
 | StorageUpdater\asset_creator | - | - | not -1 | - | NO -> YES | -> YES | -> YES | - | - |
@@ -24,4 +24,4 @@
 
 empty doesnt concern this service 
 
-status -> change in status
+required status -> change in status
