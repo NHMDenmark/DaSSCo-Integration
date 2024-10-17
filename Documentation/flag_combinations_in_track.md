@@ -8,7 +8,7 @@
 | StorageUpdater\update_metadata | - | - | - | - | - | - | - | - | YES -> NO |
 | HpcSsh\hpc_open_share | WAITING | - | - | NO | YES | NO | NO -> YES | YES | - |
 | HpcSsh\hpc_asset_creator | WAITING | - | - | NO -> AWAIT | YES | NO | YES | YES | - |
-| HpcSsh\hpc_job_caller | WAITING -> STARTING | - | - | YES | - | - | - | - | - |
+| HpcSsh\hpc_job_caller | WAITING -> STARTING | - | - | YES | YES | - | - | - | NO |
 | HpcSsh\hpc_clean_up | DONE | - | - | YES -> AWAIT | YES | - | - | YES | - |
 | HpcSsh\hpc_uploader | DONE | - | - | NO | YES | YES -> UPLOADING | YES | NO | - |
 | HpcApi\hpc_api barcode | -> relevant status | - | - | - | - | - | - | - | -> YES |
