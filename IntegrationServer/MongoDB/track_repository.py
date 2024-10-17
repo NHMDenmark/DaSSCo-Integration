@@ -59,7 +59,7 @@ class TrackRepository:
         return self.all.append_existing_list(guid, list_key, value)
     
     def delete_field(self, id, field_name):
-        return self.all.delete_field(id, field_name)
+        return self.all.delete_field(id, field_name)    
 
     def create_track_entry(self, guid, pipeline):
         """
@@ -106,7 +106,7 @@ class TrackRepository:
         return entry
 
 
-    def create_derivative_track_entry(self, guid, pipeline):
+    def create_derivative_track_entry(self, guid, pipeline, asset_type=AssetTypeEnum.UNKNOWN.value):
         """
         Create a new track entry in the MongoDB collection for a derivative.
 
@@ -114,7 +114,7 @@ class TrackRepository:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = track_model.TrackModel(guid, pipeline, derivative=True)
+        model = track_model.TrackModel(guid, pipeline, asset_type, derivative=True)
         entry_data = model.get_entry_data()
         print(pipeline)
         if self.get_entry("_id", guid) is None:

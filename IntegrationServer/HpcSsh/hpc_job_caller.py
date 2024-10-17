@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from Connections import connections
 from MongoDB import track_repository, service_repository
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -32,6 +32,7 @@ class HPCJobCaller():
         self.service_mongo = service_repository.ServiceRepository()
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
+        self.flag_enum = flag_enum.FlagEnum
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.cons = connections.Connections()
@@ -68,8 +69,8 @@ class HPCJobCaller():
 
         while self.run == status_enum.StatusEnum.RUNNING.value:
             
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, 
-                                                                         "jobs_status": status_enum.StatusEnum.WAITING.value}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{self.flag_enum.HPC_READY.value: self.validate_enum.YES.value, self.flag_enum.IS_IN_ARS.value: self.validate_enum.YES.value, 
+                                                                         self.flag_enum.JOBS_STATUS.value: self.status_enum.WAITING.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.NO.value}])
             
             if asset is None:
                 time.sleep(1)        

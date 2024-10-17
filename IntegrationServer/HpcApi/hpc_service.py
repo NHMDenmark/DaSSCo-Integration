@@ -27,6 +27,7 @@ class HPCService():
         self.util = utility.Utility()
         self.status = StatusEnum
         self.validate = ValidateEnum
+        self.asset_type = AssetTypeEnum
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_mos = mos_repository.MOSRepository()
@@ -39,7 +40,6 @@ class HPCService():
         metadata_json = new_metadata.__dict__
         self.util.write_full_json(f"{project_root}/Files/NewFiles/Derivatives/{new_metadata.asset_guid}.json", metadata_json)
     
-    # TODO this is untested - this should be used for new assets that are either derivatives or cropped versions of their parents
     def receive_derivative_metadata(self, metadata):
 
         print("parent:", metadata.parent_guid)
@@ -52,12 +52,15 @@ class HPCService():
                 print("failed to find parent guid")
                 return False
 
+            asset_type = t_parent["asset_type"]
+            print(asset_type)
+
             mdata = True
             mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
             print("created metadata for derivative")
             if mdata is True:
                 print(metadata.asset_guid, metadata.pipeline_name)
-                mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name)
+                mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
                 print(f"track data data for derivative {mdata}")
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
@@ -74,8 +77,8 @@ class HPCService():
             
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
-            self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
             self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
+            self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
 
             return mdata
         
@@ -243,6 +246,7 @@ class HPCService():
         # Handles asset types that dont need further processing by removing "waiting" jobs
         if status == self.status.DONE.value:
             enum_type = self.get_enum_asset_type(asset_subject)
+            print(f"Enum type/asset type: {enum_type}")
             if enum_type == AssetTypeEnum.UNKNOWN.value:
                 return False
             self.mongo_track.update_asset_type(guid, enum_type)
@@ -445,7 +449,7 @@ class HPCService():
         else:
             return False
     
-    # TODO needs testing, works for ucloud version
+    
     def derivative_files_uploaded(self, asset_guid):
 
         track_data = self.mongo_track.get_entry("_id", asset_guid)
@@ -453,7 +457,7 @@ class HPCService():
         if track_data is not None:
             
             self.mongo_track.update_entry(asset_guid, "has_new_file", self.validate.AWAIT.value)
-
+            self.update_mongo_track(asset_guid, "uploader", "DONE")
             # TODO find total asset size, add files to file list, probably want to receive file list from slurm here including their size
 
             return True
@@ -515,6 +519,7 @@ class HPCService():
 
         if asset is not None:
             self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
+            self.update_mongo_track(guid, "clean_up", "DONE")
             return True
         else:
             return False
@@ -522,10 +527,10 @@ class HPCService():
     def get_enum_asset_type(self, asset_subject):
 
         if asset_subject == "device target":
-            return AssetTypeEnum.DEVICE_TARGET.value
+            return self.asset_type.DEVICE_TARGET.value
         elif asset_subject == "specimen":
-            return AssetTypeEnum.SPECIMEN.value
+            return self.asset_type.SPECIMEN.value
         elif asset_subject == "label":
-            return AssetTypeEnum.LABEL.value
+            return self.asset_type.LABEL.value
         else:
-            return AssetTypeEnum.UNKNOWN.value
+            return self.asset_type.UNKNOWN.value

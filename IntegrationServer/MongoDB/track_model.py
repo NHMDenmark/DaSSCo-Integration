@@ -15,7 +15,7 @@ Model used when creating a new entry in the track collection.
 """
 class TrackModel:
 
-    def __init__(self, guid, pipeline, derivative=False):
+    def __init__(self, guid, pipeline, asset_type=asset_type_enum.AssetTypeEnum.UNKNOWN.value, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
@@ -30,12 +30,12 @@ class TrackModel:
             self.job_list = self.create_joblist()
         self.jobs_status = status_enum.StatusEnum.WAITING.value
         if derivative is True:
-            self.jobs_status = status_enum.StatusEnum.DONE.value
+            self.jobs_status = status_enum.StatusEnum.DONE.value     
         self.file_list = []
         self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1
         self.proxy_path = ""
-        self.asset_type = asset_type_enum.AssetTypeEnum.UNKNOWN.value
+        self.asset_type = asset_type
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
         self.is_in_ars = validate_enum.ValidateEnum.AWAIT.value
         self.has_new_file = validate_enum.ValidateEnum.NO.value

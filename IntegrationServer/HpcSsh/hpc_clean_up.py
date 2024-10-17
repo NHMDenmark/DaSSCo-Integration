@@ -83,7 +83,20 @@ class HPCCleanUp():
                 except Exception as e:
                     time.sleep(60)
                     continue
-            
+                
+                priority = len(asset["job_list"])
+                job = {
+                    "name": "clean_up",
+                    "status": status_enum.StatusEnum.STARTING.value,
+                    "priority": (priority + 1),
+                    "job_queued_time": None,
+                    "job_start_time": None,
+                    "hpc_job_id": -9,
+                    }
+                    
+                self.mongo_track.append_existing_list(guid, "job_list", job)
+                self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
+
                 self.con.ssh_command(f"bash {script_path} {guid}")
 
                 self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)

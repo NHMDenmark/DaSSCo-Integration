@@ -84,12 +84,25 @@ class HPCUploader():
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 """
                 try:
-                    self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
-
+                    priority = len(asset["job_list"])
+                    job = {
+                        "name": "uploader",
+                        "status": status_enum.StatusEnum.STARTING.value,
+                        "priority": (priority + 1),
+                        "job_queued_time": None,
+                        "job_start_time": None,
+                        "hpc_job_id": -9,
+                        }
+                    
+                    self.mongo_track.append_existing_list(guid, "job_list", job)
+                    self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
-
+                    self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
+                    
 
                 except Exception as e:
+                    
+                    self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.ERROR.value)
                     pass # TODO handle exception
                 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            
