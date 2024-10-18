@@ -70,7 +70,8 @@ class HPCJobRetryHandler():
 
             # check if the job is set to retry for the 3rd time. If so set jobs status and job status as ERROR
             first_job_try = self.track_mongo.get_job_info(guid, f"attempt_1_{job_name}")
-            
+            second_job_try = None
+
             if first_job_try is not None:
                 second_job_try = self.track_mongo.get_job_info(guid, f"attempt_2_{job_name}")
             
@@ -100,6 +101,20 @@ class HPCJobRetryHandler():
             self.track_mongo.append_existing_list(guid, "job_list", job)
 
             self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.WAITING.value)
+
+            # set additional flags depending on which job we are dealing with
+            if job["name"] == "assetLoader":
+                self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.NO.value)
+
+            if job["name"] == "clean_up":
+                self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.YES.value)
+
+            if job["name"] == "uploader":
+                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
+
+            # Notification of event
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} will reattempt {job_name} after HPC sent RETRY status back.")
+            self.health_caller.warning(self.service_name, entry, guid)
 
             self.end_of_loop_checks()
         

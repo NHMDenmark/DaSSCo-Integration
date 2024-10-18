@@ -381,18 +381,21 @@ class HPCService():
             note = ""
             # timeouts 
             if fail_status == self.status.RETRY.value:
-
+                
+                """
                 job_info = self.mongo_track.get_job_info(guid, job_name)
 
+                
                 # check if the job failed with a retry status more than once. If it did change the status to error. 
-                if job_info["retry"]:
+                if "retry" in job_info:
                     fail_status = self.status.ERROR.value
                     note = f"The job, {job_name}, failed after retrying once."                    
                 else:
-                    msg = self.run_util.log_msg(self.prefix_id, f"HPC server job {job_name} failed for {guid} with job id {job_id} at {timestamp}. Job status will be set to RETRY for this failure. {hpc_message} {hpc_exception}")
-                    self.health_caller.warning(self.service_name, msg, guid)
-                    self.mongo_track.update_track_job_list(guid, job_name, "retry", True)
-                    self.update_mongo_track(guid, job_name, self.status.RETRY.value)
+                """
+                msg = self.run_util.log_msg(self.prefix_id, f"HPC server job {job_name} failed for {guid} with job id {job_id} at {timestamp}. Job status will be set to RETRY for this failure. {hpc_message} {hpc_exception}")
+                self.health_caller.warning(self.service_name, msg, guid)
+                #self.mongo_track.update_track_job_list(guid, job_name, "retry", True)
+                self.update_mongo_track(guid, job_name, self.status.RETRY.value)
 
             # hpc error, unknown fails, file failures        
             if fail_status == self.status.ERROR.value:
