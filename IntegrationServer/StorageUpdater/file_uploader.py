@@ -191,6 +191,7 @@ class FileUploader():
         self.track_mongo.close_connection()
         self.metadata_mongo.close_connection()
         self.service_mongo.close_connection()
+        print("Service stopped")
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):

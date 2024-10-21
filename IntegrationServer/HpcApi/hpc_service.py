@@ -24,6 +24,9 @@ class HPCService():
         self.service_name = "Hpc api Service"
         self.prefix_id= "HpcaS"
 
+        self.tif_est = 400
+        self.jpeg_est = 20
+
         self.util = utility.Utility()
         self.status = StatusEnum
         self.validate = ValidateEnum
@@ -61,7 +64,7 @@ class HPCService():
             if mdata is True:
                 print(metadata.asset_guid, metadata.pipeline_name)
                 mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
-                print(f"track data data for derivative {mdata}")
+                print(f"track data for derivative {mdata}")
                 if mdata is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return mdata
@@ -70,10 +73,10 @@ class HPCService():
             est_size = 0
             # tif estimate 400 mb
             if metadata.file_format == "tif":
-                est_size = 400
+                est_size = self.tif_est
             # jpg estimate 10mb
             if metadata.file_format == "jpeg":
-                est_size = 20
+                est_size = self.jpeg_est
             
                 
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
@@ -148,7 +151,7 @@ class HPCService():
         jobs = entry["job_list"]
 
         # flags for settign jobs_status
-        all_done = all(job["status"] == StatusEnum.DONE.value for job in jobs)
+        all_done = all(job["status"] in [StatusEnum.DONE.value, StatusEnum.FAILED.value] for job in jobs)
         any_queueing = any(job["status"] == StatusEnum.QUEUED.value for job in jobs)
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
@@ -332,6 +335,7 @@ class HPCService():
         self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
 
+        print(f"{job_name} queued for {guid}")
         return True
     
     # update track database that a job has started
@@ -352,6 +356,7 @@ class HPCService():
         self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
+        print(f"{job_name} started for {guid}")
         return True
     
     # TODO add logging
@@ -500,15 +505,16 @@ class HPCService():
             file_size_est = 0
             type = self.mongo_metadata.get_value_for_key(guid, "file_format")
             if type == "tif":
-                file_size_est = 450
+                file_size_est = self.tif_est
             if type == "jpeg":
-                file_size_est = 30
+                file_size_est = self.jpeg_est
                        
             # add new file size to total asset size, check that parent has some kind of file added
             if track_data["asset_size"] > 0:
                 self.mongo_track.update_entry(guid, "asset_size", (track_data["asset_size"] + file_size - file_size_est))
             else:
-                self.mongo_track.update_entry(guid, "asset_size", track_data["asset_size"])
+                self.mongo_track.update_entry(guid, "asset_size", file_size)
+                # TODO this is if the parent guid didnt show as having a size somehow, need some kind of error handling
 
             self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
