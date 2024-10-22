@@ -24,6 +24,7 @@ class HPCService():
         self.service_name = "Hpc api Service"
         self.prefix_id= "HpcaS"
 
+        # estimates in mb
         self.tif_est = 400
         self.jpeg_est = 20
 
@@ -58,16 +59,16 @@ class HPCService():
             asset_type = t_parent["asset_type"]
             print(asset_type)
 
-            mdata = True
-            mdata = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
+            metadata_flag = True
+            metadata_flag = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
             print("created metadata for derivative")
-            if mdata is True:
+            if metadata_flag is True:
                 print(metadata.asset_guid, metadata.pipeline_name)
-                mdata = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
-                print(f"track data for derivative {mdata}")
-                if mdata is False:
+                metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
+                print(f"track data for derivative {metadata_flag}")
+                if metadata_flag is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
-                    return mdata
+                    return metadata_flag
             
             # add a slightly too large buffer to the total asset size - this gets around having to change the allocation size of the asset in ARS
             est_size = 0
@@ -83,7 +84,7 @@ class HPCService():
             self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
 
-            return mdata
+            return metadata_flag
         
         except Exception as e:
             return False
@@ -104,7 +105,7 @@ class HPCService():
                 return False
 
         # Update MongoDB track - call is to a local function in hpcservice
-        self.update_mongo_track(guid, job, update_status)
+        self.jobs_status_update(guid, job, update_status)
 
         # If status is 'DONE', update MongoDB metadata and metadata JSON file unless its a test guid
         if update_status == self.status.DONE.value:
@@ -123,8 +124,9 @@ class HPCService():
             pass
         
         return True
- 
-    def update_mongo_track(self, guid, job, status):
+    
+    # updates the jobs_status field of the asset in the track database
+    def jobs_status_update(self, guid, job, status):
         
         # check if the job has already received an update about the job that changed its status to DONE, ERROR or RETRY already
         current_job_info = self.mongo_track.get_job_info(guid, job)
@@ -255,7 +257,7 @@ class HPCService():
             self.mongo_track.update_asset_type(guid, enum_type)
 
         self.update_mongo_metadata(guid, metadata_update)
-        self.update_mongo_track(guid, job_name, status)
+        self.jobs_status_update(guid, job_name, status)
 
         # check if asset is part of a mos
         if MOS:
@@ -316,7 +318,7 @@ class HPCService():
        
 
     # update track database that a job has queued
-    # TODO figure out if this needs to call the update_mongo_track local function 
+    # TODO figure out if this needs to call the jobs_status_update local function 
     def job_queued(self, queue_data):
 
         guid = queue_data.guid
@@ -330,8 +332,13 @@ class HPCService():
             asset = self.mongo_track.get_entry("_id", guid)
             if asset is None:
                 return False
+        
+        # do not overwrite DONE or other status that says the job finished - this can happen if the script that calls queued reaches its end later than the actual job finishing
+        job_info = self.mongo_track.get_job_info(guid, job_name)
 
-        self.mongo_track.update_track_job_status(guid, job_name, self.status.QUEUED.value)
+        if job_info["status"] not in [self.status.ERROR.value, self.status.DONE.value, self.status.RETRY.value, self.status.RUNNING.value, self.status.FAILED.value]:
+            self.mongo_track.update_track_job_status(guid, job_name, self.status.QUEUED.value)
+        
         self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
 
@@ -339,7 +346,7 @@ class HPCService():
         return True
     
     # update track database that a job has started
-    # TODO figure out if this needs to call the update_mongo_track local function
+    # TODO figure out if this needs to call the jobs_status_update local function
     def  job_started(self, started_data):
 
         guid = started_data.guid
@@ -352,14 +359,20 @@ class HPCService():
             asset = self.mongo_track.get_entry("_id", guid)
             if asset is None:
                 return False
+        
+        # do not overwrite DONE or other status that says the job finished - this can happen if the script that calls started reaches its end later than the actual job finishing
+        # (may not be relevant for started with current 22-10-24 hpc scripts)
+        job_info = self.mongo_track.get_job_info(guid, job_name)
 
-        self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
+        if job_info["status"] not in [self.status.ERROR.value, self.status.DONE.value, self.status.RETRY.value, self.status.FAILED.value]:
+            self.mongo_track.update_track_job_status(guid, job_name, self.status.RUNNING.value)
+
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
         print(f"{job_name} started for {guid}")
         return True
     
-    # TODO add logging
+    # handles when hpc jobs return failure status of vairous kinds
     def job_failed(self, failed_data):
 
         try:
@@ -382,31 +395,21 @@ class HPCService():
         except:
             return False
         
+        # handle failure status
         try:
             note = ""
             # timeouts 
-            if fail_status == self.status.RETRY.value:
-                
-                """
-                job_info = self.mongo_track.get_job_info(guid, job_name)
-
-                
-                # check if the job failed with a retry status more than once. If it did change the status to error. 
-                if "retry" in job_info:
-                    fail_status = self.status.ERROR.value
-                    note = f"The job, {job_name}, failed after retrying once."                    
-                else:
-                """
+            if fail_status == self.status.RETRY.value:                
                 msg = self.run_util.log_msg(self.prefix_id, f"HPC server job {job_name} failed for {guid} with job id {job_id} at {timestamp}. Job status will be set to RETRY for this failure. {hpc_message} {hpc_exception}")
                 self.health_caller.warning(self.service_name, msg, guid)
                 #self.mongo_track.update_track_job_list(guid, job_name, "retry", True)
-                self.update_mongo_track(guid, job_name, self.status.RETRY.value)
+                self.jobs_status_update(guid, job_name, self.status.RETRY.value)
 
             # hpc error, unknown fails, file failures        
             if fail_status == self.status.ERROR.value:
                 msg = self.run_util.log_msg(self.prefix_id, f"HPC server job {job_name} failed for {guid} with job id {job_id} at {timestamp}. Job status will be set to ERROR. {note} {hpc_message} {hpc_exception}")
                 self.health_caller.error(self.service_name, msg, guid)
-                self.update_mongo_track(guid, job_name, self.status.ERROR.value)
+                self.jobs_status_update(guid, job_name, self.status.ERROR.value)
                 
             # hpc queue busy
             if fail_status == self.status.PAUSED.value:
@@ -418,7 +421,7 @@ class HPCService():
             msg = self.run_util.log_exc(self.prefix_id, f"Encountered an exception while handling {guid} job failure.", e, self.status.ERROR.value)
             self.health_caller.unexpected_error(self.service_name, msg)
 
-            self.update_mongo_track(guid, job_name, self.status.ERROR.value)
+            self.jobs_status_update(guid, job_name, self.status.ERROR.value)
             return False
         
         return True
@@ -457,7 +460,7 @@ class HPCService():
         else:
             return False
     
-    
+    # successfully upload of derivatives from hpc to ARS
     def derivative_files_uploaded(self, asset_guid):
 
         track_data = self.mongo_track.get_entry("_id", asset_guid)
@@ -465,14 +468,13 @@ class HPCService():
         if track_data is not None:
             
             self.mongo_track.update_entry(asset_guid, "has_new_file", self.validate.AWAIT.value)
-            self.update_mongo_track(asset_guid, "uploader", "DONE")
-            # TODO find total asset size, add files to file list, probably want to receive file list from slurm here including their size
+            self.jobs_status_update(asset_guid, "uploader", "DONE")
 
             return True
         else:
             return False
     
-    # TODO needs testing
+    # add derivative file info to the track database
     def add_derivative_file(self, file_info):
 
         guid = file_info.guid
@@ -483,7 +485,6 @@ class HPCService():
 
         track_data = self.mongo_track.get_entry("_id", guid)
         
-
         if track_data is not None:
 
             file_model = FileModel()
@@ -522,13 +523,14 @@ class HPCService():
         else:
             return False
     
+    # successfull clean up/deletion of the assets from the hpc server
     def clean_up(self, guid):
 
         asset = self.mongo_track.get_entry("_id", guid)
 
         if asset is not None:
             self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
-            self.update_mongo_track(guid, "clean_up", "DONE")
+            self.jobs_status_update(guid, "clean_up", "DONE")
             return True
         else:
             return False
