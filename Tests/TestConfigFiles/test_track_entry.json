@@ -37,6 +37,22 @@
       "name": "label",
       "priority": 3,
       "status": "WAITING"
+    },
+    {
+      "hpc_job_id": -1,
+      "job_queued_time": null,
+      "job_start_time": null,
+      "name": "clean_up",
+      "priority": 4,
+      "status": "WAITING"
+    },
+    {
+      "hpc_job_id": -1,
+      "job_queued_time": null,
+      "job_start_time": null,
+      "name": "uploader",
+      "priority": 5,
+      "status": "WAITING"
     }
   ],
   "jobs_status": "WAITING",
