@@ -35,7 +35,7 @@ class TestHPCApi(unittest.TestCase):
         self.metadata_repo.delete_entry("test_0001")
         self.metadata_repo.close_connection()
 
-    def test_get_metadata(self):
+    def test_metadata_asset(self):
         test_guid = "test_0001"
         response = self.client.get("/dev/api/v1/metadata_asset", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
@@ -52,7 +52,30 @@ class TestHPCApi(unittest.TestCase):
         # can come later
         pass
     """
-    
+
+    def test_failed_job(self):
+        test_model = {
+        "guid": "test_0001",
+        "job_name": "label",
+        "job_id": "444",
+        "timestamp": "1222-12-12T12:12:12.111+00:00",
+        "fail_status": "RETRY",
+        "hpc_message": "No message",
+        "hpc_exception": "Exceptional"
+        }
+
+        model_json = json.dumps(test_model)
+        response = self.client.post("/dev/api/v1/failed_job", data= model_json)
+        self.assertEqual(response.status_code, 200, f"Expected 200 failed with a status {response.status_code}")
+
+        job = self.track_repo.get_job_info("test_0001", "label")
+        self.assertEqual(job["status"], "RETRY", f"Exepcted job status to be RETRY got {job["status"]}")
+
+        test_model["guid"] = "bogus"
+        model_json = json.dumps(test_model)
+        response = self.client.post("/dev/api/v1/failed_job", data= model_json)
+        self.assertEqual(response.status_code, 422, f"Expected 422 failed with a status {response.status_code}")
+
     def test_get_httplink(self):
         test_guid = "test_0001"
         response = self.client.get("/dev/api/v1/httplink", params = {"asset_guid": test_guid})
@@ -108,8 +131,14 @@ class TestHPCApi(unittest.TestCase):
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
     def test_derivative_uploaded(self):
-        pass
-    
+        test_guid = "bogus"
+        response = self.client.post("/dev/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
+        self.assertEqual(response.status_code, 422, f"Expected status 422, got {response.status_code}")
+
+        test_guid = "test_0001"
+        response = self.client.post("/dev/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
+        self.assertEqual(response.status_code, 200, f"Expected status 200, got {response.status_code}")
+
     def test_asset_clean_up(self):
         test_guid = "bogus"
         response = self.client.post("/dev/api/v1/asset_clean_up", params = {"asset_guid": test_guid})

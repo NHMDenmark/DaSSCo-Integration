@@ -144,6 +144,19 @@ def modify_exif_data(file_path, new_exif_data):
         # Save the image with the modified EXIF data back to the same file
         img.save("C:/Users/tvs157/Desktop/first3.tif", tiffinfo=exif_dict)
 
+def test_mail():
+    subject = "TEST"
+    message = "testing"
+    # Specify the sender in the From header
+    email_headers = f"From: yod\nTo: spoof@dk\nSubject: {subject}\n\n"
+    # The complete email content with headers and message
+    email_content = f"{email_headers}{message}"
+
+    # Using subprocess.Popen for sending the email
+    command = ['sendmail', "spoof@dk"]
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
+    # Send the email content via the process
+    process.communicate(input=email_content)
 
 if __name__ == '__main__':
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
@@ -159,12 +172,15 @@ if __name__ == '__main__':
     #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
     #print(max_total_asset_size)
 
+    test_mail()
+    """
     mongo = track_repository.TrackRepository()
     
     mongo.update_track_job_list("dev-ucloud-400", "attempt_1", "name", f"assetLoader")
     a = mongo.get_job_from_key_value("dev-ucloud-400", "name", "assetLoader")
     print(a)
     mongo.close_connection()
+    """
     """
     time = ""
     b = field_validation.FieldValidation().datetime_validator(time)
@@ -202,3 +218,7 @@ if __name__ == '__main__':
     # i = IntegrationServer()
     #test()
     #x()
+    
+
+        
+    
