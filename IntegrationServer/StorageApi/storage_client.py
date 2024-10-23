@@ -81,21 +81,26 @@ class StorageClient():
 
      # helper function that extracts the status code from the exception received from dassco-storage-client 
      def get_status_code_from_exc(self, exc):
+
           exc_str = exc.__str__()
           exc_split = exc_str.split(":")
-          status_code = exc_split[0][-3:]
-          if status_code is not None:
+          status_code = exc_split[0][-3:] if len(exc_split[0]) >= 3 else None
+          
+          # This will handle None or empty string
+          if status_code:  
                try:
-                    status_code = int(status_code)
+                    status_code = int(status_code) 
                     note = ""
                except Exception as e:
-                    status_code = -1
+                    # Set default error code on failure
+                    status_code = -1  
                     note = f"Status code set to {status_code} from exception: {e}"
-               return status_code, note
           else:
-               status_code = -2
+               # Handle missing status code
+               status_code = -2  
                note = f"Status code was not found and was set to {status_code}"
-               return status_code, note
+     
+          return status_code, note
 
      def sync_erda(self, guid):
           try:
