@@ -87,6 +87,6 @@ async def create_health_entry(info: message_model):
     created = service.create_health_entry(info)
 
     if created is False:
-        return JSONResponse(content={"error": "failed to create entry for health db"}, status_code=422)
+        return JSONResponse(content={"error": "failed to create entry for health db."}, status_code=422)
     
     return created
