@@ -42,7 +42,7 @@ class RunUtility(LogClass, Status):
     """
     Loop for services that have their status set to paused. 
     Keeps track of how long the pause lasts. 
-    Pause time could be moved to a config file so it could be different for different services.
+    Pause times are in a config file so it could be different for different services.
     Logs the pause warning and sends a message to the health api. 
     Returns the overall status of the service when it stops being in pause mode. 
     """
@@ -65,7 +65,7 @@ class RunUtility(LogClass, Status):
                     self.attempt_unpause(counter)
                 else:
                     entry = self.log_msg(self.prefix_id, loop_message)
-                    self.health_caller.warning(self.service_name, entry)
+                    self.health_caller.create_health_entry(self.service_name, entry)
 
                 self.service_run = self.check_run_changes()
 

@@ -124,3 +124,23 @@ class HealthCaller():
         except Exception as e:
             # TODO create log entry
             print(e)
+
+    # For calls that does not want to send emails or slack messages, but still wants to persist the warning (exa: some near duplicate entries when status change or status confirms)
+    def create_health_entry(self, service_name, message):
+
+        url = f"{self.url}/api/create_health_entry"
+
+        content = {
+                "service_name": service_name,
+                "message": message
+                }
+        
+        try:    
+            response = requests.post(url, json=content)
+            
+            if response.status_code != 200:
+                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+
+        except Exception as e:
+            # TODO create log entry
+            print(e)

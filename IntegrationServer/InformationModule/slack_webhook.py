@@ -31,18 +31,32 @@ class SlackWebhook:
             run_status = self.get_run_status(service_name)
 
         # Define the content that will be displayed in the slack chat.
-        if guid != "No guid": 
-            payload = {
-                "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}` - `GUID: {guid}`"
-            }
+        if guid != "No guid":
+
+            # differentiate text size for ERROR status vs other status
+            if status == self.status_enum.ERROR.value: 
+                payload = {
+                    "text": f"{status} - `Service: {service_name}` - `Status: {run_status}` - `GUID: {guid}`"
+                }
+            else:
+                payload = {
+                    "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}` - `GUID: {guid}`"
+                }
+
         else:
-            payload = {
-                "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}`"
-            }
+            
+            if status == self.status_enum.ERROR.value: 
+                payload = {
+                    "text": f"{status} - `Service: {service_name}` - `Status: {run_status}`"
+                }
+            else:
+                payload = {
+                    "text": f"`{status}` - `Service: {service_name}` - `Status: {run_status}`"
+                }
 
         if status == self.log_enum.TESTING.value:
             payload = {
-                    "text": f"{status} - receive message warning/error"
+                    "text": f"`{status}` - `receive message warning/error`"
             }
 
         try:
@@ -60,12 +74,18 @@ class SlackWebhook:
     def change_run_status_msg(self, severity, service_name, status):
         
         # Define the content that will be displayed in the slack chat. 
-        payload = {
+        if severity == self.status_enum.ERROR.value:
+            payload = {
             "text": f"{severity} - `Service: {service_name}` - `Status change to: {status}`"
         }
+        else:
+            payload = {
+            "text": f"`{severity}` - `Service: {service_name}` - `Status change to: {status}`"
+        }
+
         if status == self.log_enum.TESTING.value:
             payload = {
-                "text": f"{severity} - change run status test"
+                "text": f"`{severity}` - `change run status test`"
             }
 
         try:
@@ -83,12 +103,12 @@ class SlackWebhook:
     def attempted_unpause_msg(self, service_name):
         # Define the content that will be displayed in the slack chat. 
         payload = {
-            "text": f"{service_name} - Attempting to unpause self."
+            "text": f"`{service_name}` - `Attempting to unpause self.`"
         }
 
         if service_name == "Test health api":
             payload = {
-                "text": f"TESTING - unpause message"
+                "text": f"`TESTING` - `unpause message`"
             }
 
         try:
@@ -111,7 +131,7 @@ class SlackWebhook:
 
         if service_name == "Test health api":
             payload = {
-                "text": f"TESTING - unexpected error message"
+                "text": f"`TESTING` - `unexpected error message`"
             }
 
         try:

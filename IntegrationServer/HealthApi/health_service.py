@@ -200,6 +200,27 @@ class HealthService():
 
         return True
     
+    # This does not send mail or slack messages ever, it only adds the log information to the database
+    def create_health_entry(self, info):
+
+        parts = self.split_message(info.message)
+        
+        if parts is False:
+            return False
+
+        # create db entry in health db
+        model_data = self.create_health_model(info, parts)
+
+        if model_data is False:
+            return False
+
+        # gets the id for the health database
+        id = self.create_id(parts)
+
+        self.health.create_health_entry_from_api(id, model_data)
+
+        return True
+
     """
     Checks if a mail should be sent given the information in the micro service config file.
     Returns true or false.
