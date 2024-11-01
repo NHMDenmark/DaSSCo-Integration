@@ -22,6 +22,7 @@ import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 import subprocess
 import logging
+from Connections import connections
 from HealthUtility import health_caller
 from Enums.feedback_enum import Feedback
 from Enums.feedback_enum import FeedbackEnum
@@ -40,9 +41,11 @@ class IntegrationServer(object):
 
         self.new_files_path = "IntegrationServer/Files/NewFiles/"
         self.updated_files_path = "IntegrationServer/Files/UpdatedFiles/"
-        self.ssh_config_path = "IntegrationServer/ConfigFiles/ssh_connections_config.json"
+        self.ssh_config_path = f"{project_root}/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
 
-        self.cons.create_ssh_connections(self.ssh_config_path)
+        cons = connections.Connections()
+        cons.create_ssh_connection(self.ssh_config_path)
+        cons.close_connection()
         load_dotenv()
 
 def test():
@@ -52,7 +55,7 @@ def test():
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
     # smb = smb_connecter.SmbConnecter()
-    mongo = mongo_connection.MongoConnection("track")
+    # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
     # new_files = process_files_from_ndrive.ProcessNewFiles()
@@ -75,9 +78,9 @@ def test():
     #sl = slack_webhook.SlackWebhook()
     #sl.message_from_integration("Lars", "MIGHTY WARRIOR", "GET WELL")
     #util.write_full_json(relPath, entry)
-    #track = track_repository.TrackRepository()
+    track = track_repository.TrackRepository()
     #track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
-    #print(track.get_entry("_id", "7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000"))
+    print(track.get_entry("_id", "dev-ucloud-865"))
     
     #c = health_caller.HealthCaller()
     #c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
@@ -172,7 +175,7 @@ if __name__ == '__main__':
     #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
     #print(max_total_asset_size)
 
-    test_mail()
+    #test_mail()
     """
     mongo = track_repository.TrackRepository()
     
@@ -215,8 +218,8 @@ if __name__ == '__main__':
 
     exif_data("C:/Users/tvs157/Desktop/first2.tif")
     """
-    # i = IntegrationServer()
-    #test()
+    #i = IntegrationServer()
+    test()
     #x()
     
 

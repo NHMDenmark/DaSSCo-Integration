@@ -23,10 +23,10 @@ class HealthCaller():
     
     def get_fileproxy_health(self):
         try:    
-            response = requests.post(self.fileproxy_url, json=content)
+            response = requests.post(self.fileproxy_url)
             
             if response.status_code != 200:
-                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+                pass 
 
         except Exception as e:
             # TODO create log entry

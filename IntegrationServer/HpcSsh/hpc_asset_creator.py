@@ -95,7 +95,7 @@ class HPCAssetCreator():
                     script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
 
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
-
+                    print(f"bash {script_path} {guid} {batch_id} {link}")
                     self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(1)

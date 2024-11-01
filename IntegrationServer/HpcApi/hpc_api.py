@@ -35,7 +35,7 @@ file_info_model = FileInfoModel
 
 @app.get("/dev/yo")
 def index():
-    return "keep out all"
+    return "keep out all devils"
 
 """
 Deprecated since we use the derivative endpoint instead.
@@ -52,7 +52,7 @@ async def receive_derivative_metadata(metadata: metadata_model):
     received = service.receive_derivative_metadata(metadata)
 
     if received is False:
-        return JSONResponse(content={"error": "derivative fail"}, status_code=422)
+        return JSONResponse(content={"error": "derivative fail."}, status_code=422)
 
 
 @app.post("/dev/api/v1/update_asset")
@@ -104,7 +104,7 @@ def get_httplink(asset_guid: str):
     link = service.get_httplink(asset_guid)
 
     if link is None:
-        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+        return JSONResponse(content={"error": "asset not found."}, status_code=422)
 
     return {"link": link}
 

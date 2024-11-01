@@ -32,6 +32,7 @@ class Connections:
         self.msg = None
         self.exc = None
 
+
         for connection_name, connection_details in config.items():
             con_user = connection_name + "_USER"
             con_user = con_user.upper()
