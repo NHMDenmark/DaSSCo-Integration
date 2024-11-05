@@ -148,7 +148,9 @@ class AssetCreator():
                         time.sleep(1)
                     if status_code == 503:
                         message = self.run_util.log_msg(self.prefix_id, response)
-                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.PAUSED.value)
+                        # changes status to PAUSED for is_in_ars
+                        self.health_caller.warning(self.service_name, f"{guid} got status: {status_code} - {message}", guid, "is_in_ars", self.validate_enum.PAUSED.value)
+                        # changes status to NO for is_in_ars
                         self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.NO.value)
 
                     # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down.

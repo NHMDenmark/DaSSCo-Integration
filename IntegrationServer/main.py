@@ -151,12 +151,12 @@ def test_mail():
     subject = "TEST"
     message = "testing"
     # Specify the sender in the From header
-    email_headers = f"From: yod\nTo: spoof@dk\nSubject: {subject}\n\n"
+    email_headers = f"From: yod\nTo: bogus@snm.ku.dk\nSubject: {subject}\n\n"
     # The complete email content with headers and message
     email_content = f"{email_headers}{message}"
 
     # Using subprocess.Popen for sending the email
-    command = ['sendmail', "spoof@dk"]
+    command = ['sendmail', "bogus@snm.ku.dk"]
     process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
     # Send the email content via the process
     process.communicate(input=email_content)
@@ -174,7 +174,9 @@ if __name__ == '__main__':
     
     #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
     #print(max_total_asset_size)
+    e = email_sender.EmailSender("test")
 
+    e.send_status_change_mail("h", "Test health api", "bogus", None)
     #test_mail()
     """
     mongo = track_repository.TrackRepository()
@@ -219,7 +221,7 @@ if __name__ == '__main__':
     exif_data("C:/Users/tvs157/Desktop/first2.tif")
     """
     #i = IntegrationServer()
-    test()
+    #test()
     #x()
     
 

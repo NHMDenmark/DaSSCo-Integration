@@ -38,6 +38,7 @@ echo "Installing and setting up nginx"
 
 apt-get install -y nginx
 
+# this assumes the server running the nginx proxy has the job name added to the nginx default  
 echo "server {
         listen 80;
 
@@ -90,5 +91,5 @@ echo "Exited the venv"
 
 echo "Server setup complete! Check the log file at $LOGFILE for details."
 echo "Change the ip addres in the nginx proxy to this servers ip (ifconfig)"
-echo "Add the ssh key to the slurm authorised keys"
+echo "Add the ssh key to slurm authorised keys"
 echo "Start the integration server services"

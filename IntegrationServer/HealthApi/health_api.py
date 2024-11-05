@@ -46,7 +46,7 @@ async def receive_error(error: message_model):
     handled = service.receive_error(error)
 
     if handled is False:
-        return JSONResponse(content={"error": "failed to handle error"}, status_code=422)
+        return JSONResponse(content={"error": "failed to handle error."}, status_code=422)
 
     #print(handled)
     return handled

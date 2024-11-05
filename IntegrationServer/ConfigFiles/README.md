@@ -1,16 +1,19 @@
 # Table of Contents
-1. [job_detail_config.json](#job_detail_config.json)
-2. [mail_config.json](#email_config.json)
-3. [micro_service_config.json](#micro_service_config.json)
-4. [mongo_connection_config.json](#mongo_connection_config.json)
+1. [job_detail_config.json](#job_detail_configjson)
+2. [mail_config.json](#mail_configjson)
+3. [micro_service_config.json](#micro_service_configjson)
+4. [mongo_connection_config.json](#mongo_connection_configjson)
 5. [ndrive_path_config.json](#ndrive_path_configjson)
-6. [pipeline_job_configjson](#pipeline_job_configjson)
-7. [slurm_configjson](#slurm_configjson)
-8. [name_connection_configjson](#name_connection_configjson)
-9. [workstations_configjson](#workstations_configjson)
+6. [pipeline_job_config.json](#pipeline_job_configjson)
+7. [slurm_config.json](#slurm_configjson)
+8. [name_connection_config.json](#name_connection_configjson)
+9. [workstations_config.json](#workstations_configjson)
+10. [throttle_config.json](#throttle_configjson)
 
 ## job_detail_config.json
 Job names followed by a time estimate of running them on HPC cluster and the path to the script that needs to be called to run the job on the HPC cluster.
+
+Note: the time_est has not been implemented with slurm scripts.
 
 ```bash
 {
@@ -34,7 +37,7 @@ Job names followed by a time estimate of running them on HPC cluster and the pat
 ```
 
 ## mail_config.json
-Mail configuration file. Test is setup using gmail as a host here.
+Mail configuration file. Test is setup using gmail as a host here. If we are using a linux setup for runnign the integration server then there is no need to configure this.
 ```bash
   {
     "{name}":{
@@ -79,19 +82,20 @@ Max_sync_erda_attempt_wait_time only matters for the "Validate erda sync ARS ser
 ```
 
 ## mongo_connection_config.json
-Overall connection structure for a mongodb instance. Port can be changed also but 27017 is standard for a MongoDB.
+Overall connection structure for a mongodb instance. Port can be changed but 27017 is standard for a MongoDB. Host will likely be "localhost" but can be set as a remote host. The data_base can be the same for all the collections we need. Collections (the name tag and the collection) that should be available are: metadata, track, MOS, batch, health, throttle and micro_service.
 
 ```bash
-    "{name}": {
+    "{name}":
+    {
     "host": "{hostname}",
     "port": 27017,
-    "data_base": "FirstTest",
+    "data_base": "dev_db",
     "collection": "CollectionTestName"
-  }
+    }
 ```
 
 ## ndrive_path_config.json
-Path to the folder on the ndrive where we keep the workstation name folders.
+Path to the folder on the ndrive where we keep the workstation name folders. Or any other folder from which the integration server should find new assets. 
 ```bash
   "ndrive_path": "N:/something/that/leads/to/the/path/with/the/workstation/names"
 ```
@@ -123,7 +127,10 @@ job_list_script_path : Path to the job list script that gets data for jobs being
 export_to_path : Path where assets are delivered.  
 temporary_persist_path : Path where we put assets that have finished parts of their pipeline but still needs further processing.  
 initiate_script : Path to the script that will be called when a new asset is ready to start being processed by the HPC.  
-clean_up_script : Path to the clean up script for when all jobs are DONE for an asset. Should delete files pertaining to the asset on the HPC.   
+clean_up_script : Path to the clean up script for when all jobs are DONE for an asset. Should delete files pertaining to the asset on the HPC.
+
+Note: aside from the paths none of these configurations are in use currently.
+
 ```bash
 {
   "max_queued_jobs": 6,
@@ -163,4 +170,19 @@ List of workstations names. Used for recognising which folders on the ndrive to 
     "WORKHERB0003": "",
     "WORKPIOF0001": ""
 }
+```
+
+## throttle_config.json
+Throttle configuration. Sets the max values allowed before the system pauses. The first two are a set number of assets allowed. The last 3 is the max amount of space we allow the assets to use in ARS.
+
+Note: max_assets_in_flight is not implemented in the code.
+
+```bash
+  {
+    "max_assets_in_flight": 30,
+    "max_sync_asset_count": 30,
+    "total_max_asset_size_mb": 45000,
+    "total_max_new_asset_size_mb": 20000,
+    "total_max_derivative_size_mb": 30000
+  }
 ```

@@ -90,7 +90,7 @@ async def failed_job(fail_data: fail_job_model):
     failed = service.job_failed(fail_data)
 
     if failed is False:
-        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+        return JSONResponse(content={"error": "asset not found."}, status_code=422)
 
 @app.post("/dev/api/v1/asset_ready")
 async def asset_ready(asset_guid: str):
