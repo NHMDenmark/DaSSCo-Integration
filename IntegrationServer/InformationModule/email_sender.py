@@ -23,8 +23,8 @@ class EmailSender:
         self.server_port = self.mail_configs.get("server_port")  
         self.address_from = self.mail_configs.get("sender_address")
         self.address_to = self.mail_configs.get("receiver_address")
-        # choose the name of the sender
-        self.sender_name = "OCTOPUS"
+        # choose the name of the sender OCTOPUS, STARFISH
+        self.sender_name = "STARFISH"
         
         # avoids putting emails used for testing into github, just leave config fields blank and configure fields in dotenv file
         if self.address_from == "":
@@ -68,13 +68,18 @@ class EmailSender:
         
         subj, message = self.create_status_change_mail_content(health_id, service_name, run_status, timestamp)
 
-        subject = f"{subj}\n\n{message}"
+        message = f"{subj}\n\n{message}"
+        
+        email_headers = f"From: {self.sender_name}\nTo: {self.address_to}\nSubject: {subj}\n\n"
+        
+        # The complete email content with headers and message
+        email_content = f"{email_headers}{message}"
         
         command = ['sendmail', self.address_to]
 
         # Using subprocess.Popen for more control, including sending input via stdin
         process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
-        process.communicate(input=subject)
+        process.communicate(input=email_content)
 
         return True
     
