@@ -200,7 +200,7 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
      
-     def close_share(self, guid, institution = "INSERTED_VALUE", collection = "INSERTED_VALUE", users = ["OCTOPUS"], allocation_mb = 1):
+     def close_share(self, guid, institution = "INSERTED_VALUE", collection = "INSERTED_VALUE", users = ["STARFISH"], allocation_mb = 1):
 
           try:
                response = self.client.file_proxy.delete_share(institution, collection, guid, users, allocation_mb)
@@ -216,7 +216,7 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False
 
-     def update_metadata(self, guid, update_user = "OCTOPUS"):
+     def update_metadata(self, guid, update_user = "STARFISH"):
 
           json_data = self.service.get_metadata_json_format(guid)
           data_dict = json.loads(json_data)
