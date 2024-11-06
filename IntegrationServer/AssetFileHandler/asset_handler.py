@@ -80,6 +80,15 @@ class AssetHandler:
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guid")
+
+                    # TODO have this resolved
+                    # hacking with the institution check since NHMA is using the PIPEPIOF0001 pipeline which belongs to NHMD
+                    institution = self.util.get_value(json_file_path, "institution")
+
+                    if institution == "NHMA":
+                        pipeline_name = "PIPEPIOF0002"
+                        self.util.update_json(json_file_path, "pipeline_name", pipeline_name)
+
                     # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
                     #image_extension = []
                     #for format in self.util.get_value(json_file_path, "file_format"):

@@ -115,7 +115,7 @@ class NdriveNewFilesFinder():
                 self.rename_batch_directory_after_import(remote_folder)
 
             except Exception as e:
-                self.rename_batch_directory(remote_folder, prefix="error_")
+                self.rename_batch_directory_after_import(remote_folder, prefix="error_")
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} encountered an unexpected erorr while trying to copy new files from {remote_folder}. Added error_ to the folder name.", exc=e, level=self.status_enum.ERROR.value)
                 self.health_caller.error(self.service_name, entry)
         

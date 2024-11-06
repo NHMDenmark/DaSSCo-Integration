@@ -11,6 +11,24 @@
    "job_3": "cropping",
    "job_4": "derivative"
  },
+ "PIPEHERB0002": {
+   "job_1": "assetLoader",
+   "job_2": "barcode",
+   "job_3": "cropping",
+   "job_4": "derivative"
+ },
+ "PIPEPIOF0001": {
+   "job_1": "assetLoader",
+   "job_2": "barcode",
+   "job_3": "cropping",
+   "job_4": "derivative"
+ },
+ "PIPEPIOF0002": {
+   "job_1": "assetLoader",
+   "job_2": "barcode",
+   "job_3": "cropping",
+   "job_4": "derivative"
+ },
  "ti-p1": {
   "job_1": "test",
   "job_2": "label"
