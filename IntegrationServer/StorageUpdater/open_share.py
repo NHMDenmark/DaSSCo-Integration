@@ -152,7 +152,7 @@ class OpenShare(Status, Validate):
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 asset_size = self.mongo_track.get_value_for_key(guid, "asset_size")
                 
-                proxy_path = self.storage_api.open_share(guid, institution, collection, asset_size)
+                proxy_path, status_code = self.storage_api.open_share(guid, institution, collection, asset_size)
                 
                 if proxy_path is not False:
 
@@ -170,6 +170,22 @@ class OpenShare(Status, Validate):
                     self.update_throttle(asset)
                     self.mongo_track.update_entry(guid, "has_open_share", self.YES)
 
+                if proxy_path is False:
+
+                    if status_code == 504:
+                        check = self.handle_status_504(guid, status_code)
+
+                        if check is True:
+                            self.update_throttle(asset)
+                            self.mongo_track.update_entry(guid, "has_open_share", self.YES)
+                        else:
+                            self.handle_failures(guid, status_code)
+
+                    # other failures    
+                    else:
+                        self.handle_failures(guid, status_code)
+
+                    time.sleep(1)
                 # TODO handle if proxy path is false
             
             self.end_of_loop_checks()
@@ -179,6 +195,30 @@ class OpenShare(Status, Validate):
         self.mongo_metadata.close_connection()
         self.service_mongo.close_connection()
         self.throttle_mongo.close_connection()
+
+    def handle_failures(self, guid, status_code):
+        entry = self.run_util.log_msg(self.prefix_id, f"Failed opening share for guid: {guid} Received status: {status_code}", self.ERROR)
+        self.health_caller.error(self.service_name, entry, guid, "has_open_share", self.ERROR)
+        self.mongo_track.update_entry(guid, "has_open_share", self.ERROR)
+
+    def handle_status_504(self, guid, status_code):
+        
+        try:
+            full_status = self.storage_api.get_full_asset_status(guid)
+
+            if full_status["data"].status == "COMPLETED" and full_status["data"].share_allocation_mb != 0:
+                entry = self.run_util.log_msg(self.prefix_id, f"Received status {status_code} for {guid}. Checked and the share was opened anyway.", self.run_util.log_enum.WARNING.value)
+                self.health_caller.warning(self.service_name, entry, guid)
+                return True
+            
+            else:
+                return False
+
+        except Exception as e:
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to receive the status of asset {guid} while checking a status {status_code}.", e, self.ERROR)
+            self.health_caller.error(self.service_name, entry, guid)
+            return False
+        
 
     def end_of_loop_checks(self):
         # checks if service should keep running          

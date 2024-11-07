@@ -192,13 +192,16 @@ class StorageClient():
                
                     link = hostname + path
                     
-                    return link
+                    return link, status_code
                else:
-                    return False
+                    return False, status_code
 
           except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
+
+               status, note = self.get_status_code_from_exc(e)
+
+               print(f"Api or wrapper fail: {e} Note: {note}")
+               return False, status
      
      def close_share(self, guid, institution = "INSERTED_VALUE", collection = "INSERTED_VALUE", users = ["STARFISH"], allocation_mb = 1):
 

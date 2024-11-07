@@ -173,9 +173,11 @@ class AssetHandler:
                         shutil.move(subdirectory_path, error_dir)
                     else:
                         shutil.move(subdirectory_path, new_directory_path)
-
+                    print(guid)
+                    import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
+                    print(import_directory)
                     self.mongo_track.update_entry(guid, "temporary_files_ndrive", self.validate.YES.value)
-                    self.mongo_track.update_entry(guid, "temporary_path_ndrive", f"{self.ndrive_path}/{workstation_name}/imported_{batch_name}")
+                    self.mongo_track.update_entry(guid, "temporary_path_ndrive", f"{self.ndrive_path}/{workstation_name}/{import_directory}")
                     
                     self.mongo_track.update_entry(guid, "temporary_files_local", self.validate.YES.value)
                     self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)
@@ -243,3 +245,19 @@ class AssetHandler:
             self.util.write_full_json(process_data_path, new_data)
 
             shutil.rmtree(subdirectory_path)
+
+    def find_directory_name_with_file(self, parent_directory, filename):
+        """
+        Search for the directory name containing the specified filename within the parent directory.
+
+        Args:
+            parent_directory (str): The root directory to start the search.
+            filename (str): The name of the file to look for.
+
+        Returns:
+            str: The name of the directory containing the file, or None if not found.
+        """
+        for dirpath, _, filenames in os.walk(parent_directory):
+            if filename in filenames:
+                return os.path.basename(dirpath) 
+        return None  

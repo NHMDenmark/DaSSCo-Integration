@@ -28,6 +28,7 @@ from Enums.feedback_enum import Feedback
 from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
+from AssetFileHandler import asset_handler
 #from pymongo.errors import InvalidOperation
 #import field_validation
 #from validator_collection import checkers, validators
@@ -162,6 +163,14 @@ def test_mail():
     process.communicate(input=email_content)
 
 if __name__ == '__main__':
+    
+    u = utility.Utility()
+    a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
+    print(a)
+    #a = asset_handler.AssetHandler()
+    #name = a.find_directory_name_with_file("/work/data/Ndrive/WORKHERB0002", "7e7-a-04-0d-1e-1b-1-001-01-000-098b37-00000.json")
+    #print(name)
+    
     #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
     #test() 2024-04-09T10:00:52+02:00
     #test()
@@ -174,9 +183,9 @@ if __name__ == '__main__':
     
     #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
     #print(max_total_asset_size)
-    e = email_sender.EmailSender("test")
+    #e = email_sender.EmailSender("test")
 
-    e.send_status_change_mail("h", "Test health api", "bogus", None)
+    #e.send_status_change_mail("h", "Test health api", "bogus", None)
     #test_mail()
     """
     mongo = track_repository.TrackRepository()

@@ -37,8 +37,15 @@ class StorageService():
         self.api_metadata.subject = entry["asset_subject"]
         
         #for p in entry["payload_type"]:
-        #    self.api_metadata.payload_type.append(p) 
-        self.api_metadata.payload_type = entry["payload_type"]
+        #    self.api_metadata.payload_type.append(p)
+        if isinstance(entry["payload_type"], list):
+            for payload in entry["payload_type"]:
+                if isinstance(payload, list):
+                    self.api_metadata.payload_type = payload[0]
+                else:
+                    self.api_metadata.payload_type = payload
+        else:        
+            self.api_metadata.payload_type = entry["payload_type"]
         # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides TODO messy 
         self.api_metadata.file_formats = []
         self.api_metadata.file_formats.append(entry["file_format"].upper())
