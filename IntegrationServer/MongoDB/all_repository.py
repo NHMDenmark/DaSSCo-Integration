@@ -149,3 +149,69 @@ class AllRepository:
         result = self.collection.update_one(query, update)
 
         return result.modified_count > 0
+    
+    def calculate_values_for_fields_with_key_value(self, field, key, value):
+        """
+        Retrieve entries from the MongoDB collection based a key and a value.
+        Calculate the sum of a field from those entries. 
+        :param key: The key
+        :param value: The value
+        :param field: The field to be calculated
+        :return: A total of the field for the entries found, 0 if not entries found or False.
+        """        
+        try:
+            query = {key:value}
+            entries = list(self.collection.find(query))
+
+            total = 0
+            for entry in entries:
+                total = total + entry[field]
+            
+            return total
+        except Exception as e:
+            print(e)
+            return False
+        
+    def multiple_key_values_calculate_field_total_value(self, field, key_value_pairs):
+        """
+        Retrieve entries from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]
+        Calculate the sum of a field from those entries. 
+        :param key_value_pairs: List of dictionaries representing key-value pairs.
+        :param field: The field to be calculated
+        :return: A total of the field for the entries found, 0 if not entries found or False.
+        """
+        try:
+            query = {"$and": key_value_pairs}
+            entries = list(self.collection.find(query))
+            
+            total = 0
+            for entry in entries:
+                total = total + entry[field]
+                
+            return total
+            
+        except Exception as e:
+            print(e)
+            return False
+    
+    def get_count_for_key_value_pair(self, key, value):
+        """
+        Retrieve entries from the MongoDB collection based a key and a value.
+        Counts the amount of entries found. 
+        :param key: The key
+        :param value: The value
+        :return: The number of entries found, 0 if not entries found or False.
+        """
+        try:
+            query = {key:value}
+            entries = list(self.collection.find(query))
+
+            total = 0
+            for entry in entries:
+                total = total + 1
+            
+            return total
+        
+        except Exception as e:
+            print(e)
+            return False

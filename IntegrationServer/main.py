@@ -163,11 +163,22 @@ def test_mail():
     process.communicate(input=email_content)
 
 if __name__ == '__main__':
-    
-    u = utility.Utility()
-    a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
-    print(a)
-    #a = asset_handler.AssetHandler()
+    """
+    track = track_repository.TrackRepository()
+
+    x = track.all.get_count_for_key_value_pair("jobs_status", "DONE")
+    y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
+    z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])
+    print(f"multiple key value: {z}")
+    print(f"total single key-value: {y}")
+    print(f"count: {x}")
+    track.close_connection()
+    """
+
+    #u = utility.Utility()
+    #a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
+    #print(a)
+    #a = asset_handler.AssetHandler()   
     #name = a.find_directory_name_with_file("/work/data/Ndrive/WORKHERB0002", "7e7-a-04-0d-1e-1b-1-001-01-000-098b37-00000.json")
     #print(name)
     
