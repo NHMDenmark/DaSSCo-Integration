@@ -17,6 +17,7 @@ from HpcApi.job_model import JobModel
 from HpcApi.barcode_model import BarcodeModel
 from HpcApi.file_info_model import FileInfoModel
 from HpcApi.fail_job_model import FailJobModel
+from HpcApi.fail_derivative_creation_model import FailDerivativeCreationModel
 
 """
 Rest api setup for receiving data from hpc. 
@@ -31,7 +32,7 @@ barcode_model = BarcodeModel
 job_model = JobModel
 fail_job_model = FailJobModel
 file_info_model = FileInfoModel
-
+fail_derivative_creation_model = FailDerivativeCreationModel
 
 @app.get("/dev/yo")
 def index():
@@ -138,4 +139,12 @@ async def file_uploaded(asset_guid: str):
     cleaned = service.clean_up(asset_guid)
 
     if cleaned is False:
+        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+    
+# derivative creation fail endpoint, not the same as the job failed - sometimes derivatives dont get created for various reasons
+@app.post("/dev/api/v1/fail_derivative_creation")
+async def fail_derivative_creation(info: fail_derivative_creation_model):
+    acknowledged = service.fail_derivative_creation(info)
+
+    if acknowledged is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)

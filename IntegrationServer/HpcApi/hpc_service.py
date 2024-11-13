@@ -523,6 +523,36 @@ class HPCService():
         else:
             return False
     
+    def fail_derivative_creation(self, info):
+        
+        guid = info.guid
+        ppi = info.ppi
+        note = info.note
+
+        track_data = self.mongo_track.get_entry("_id", guid)
+        
+        if track_data is not None:
+            
+            # tags is a dictionary
+            tags = self.mongo_metadata.get_value_for_key(guid, "tags")
+
+            if "missing_derivative" in tags:
+                tags["missing_derivative"] += f" and ppi {ppi}"
+            else:
+                tags["missing_derivative"] = f"No derivative for ppi {ppi}"
+
+            self.mongo_metadata.update_entry(guid, "tags", tags)
+
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} did not create a derivative with a ppi of {ppi}. {info.note}")
+            self.health_caller.warning(self.service_name, entry, guid)
+
+            self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+
+            return True
+        else:
+            return False
+
+
     # successfull clean up/deletion of the assets from the hpc server
     def clean_up(self, guid):
 

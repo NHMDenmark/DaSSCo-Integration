@@ -163,17 +163,17 @@ def test_mail():
     process.communicate(input=email_content)
 
 if __name__ == '__main__':
-    """
+    
     track = track_repository.TrackRepository()
 
-    x = track.all.get_count_for_key_value_pair("jobs_status", "DONE")
+    x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
     y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
     z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])
     print(f"multiple key value: {z}")
     print(f"total single key-value: {y}")
     print(f"count: {x}")
     track.close_connection()
-    """
+    
 
     #u = utility.Utility()
     #a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
