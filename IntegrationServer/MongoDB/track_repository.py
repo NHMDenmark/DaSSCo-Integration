@@ -104,7 +104,30 @@ class TrackRepository:
         
         entry = self.collection.find_one(error_query)
         return entry
+    
+    def get_paused_entries(self):
+        """
+        Retrieve entries from the MongoDB collection with a flag field value indicating its paused.
 
+        :return: A list of entries, empty if none was found.
+        """
+    
+        pause_query = {
+                "$or": [
+                    {"jobs_status": {"$eq": "PAUSED"}},
+                    {"files_status": {"$eq": "PAUSED"}},
+                    {"has_open_share": {"$eq": "PAUSED"}},
+                    {"is_in_ars": {"$eq": "PAUSED"}},
+                    {"erda_sync": {"$eq": "PAUSED"}},
+                    {"has_new_file": {"$eq": "PAUSED"}},
+                    {"hpc_ready": {"$eq": "PAUSED"}},
+                    {"update_metadata": {"$eq": "PAUSED"}}
+                    ]
+                }
+    
+        entries = list(self.collection.find(pause_query))
+
+        return entries
 
     def create_derivative_track_entry(self, guid, pipeline, asset_type=AssetTypeEnum.UNKNOWN.value):
         """

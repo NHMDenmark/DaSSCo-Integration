@@ -192,3 +192,10 @@ class Utility:
             return date_time
         except Exception as e:
             return False
+        
+    def find_key_by_value(self, dictionary, target_value):
+
+        for key, value in dictionary.items():
+            if value == target_value:
+                return key
+        return None

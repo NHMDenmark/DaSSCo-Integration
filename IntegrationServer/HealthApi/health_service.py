@@ -50,6 +50,8 @@ class HealthService():
         if model_data is False:
             return False
 
+        print(warning.service_name)
+
         # gets the id for the health database
         id = self.create_id(msg_parts)
 
@@ -89,6 +91,8 @@ class HealthService():
 
         if model_data is False:
             return False
+
+        print(error.service_name)
 
         # gets the id for the health database
         id = self.create_id(msg_parts)

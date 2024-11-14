@@ -164,7 +164,6 @@ class AssetCreator():
 
                     if 401 <= status_code <= 499:
                         message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
-                        #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
                         time.sleep(1)
                     
@@ -181,29 +180,9 @@ class AssetCreator():
                         # changes status to NO for is_in_ars
                         # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.NO.value)
 
-                    # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down.
+                    # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down. Or just a normal 504. 
                     if status_code == 504:
-                        print(f"{guid} got time out status: {status_code} Checking if asset was created.")
-                        try:
-                            exists = self.storage_api.get_asset_status(guid)
-
-                            # TODO might want to add some kind of pausing if too many timeouts happe
-                            # logs the timeout failure, does not update the asset flags -> asset will be retried
-                            if exists == False:                                
-                                message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Status: {status_code}. {response}")
-                                self.health_caller.warning(self.service_name, message, guid)
-
-                            if exists == self.erda_status_enum.METADATA_RECEIVED.value:
-                                # success anyway
-                                self.success_asset_created(guid, asset)
-                                self.handle_throttle(asset)
-                                # log the time out
-                                message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
-                                self.health_caller.warning(self.service_name, message, guid)
-
-                        except Exception as e:
-                            message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
-                            self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.handle_status_504(guid, asset, status_code, response, exc)
 
                 time.sleep(1)
 
@@ -216,6 +195,36 @@ class AssetCreator():
         self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)        
         self.close_all_connections()
         print("service stopped")
+
+    def handle_status_504(self, guid, asset, status_code, response = None, exc = None):
+        print(f"{guid} got time out status: {status_code}. Checking if asset was created.")
+        try:
+            exists = self.storage_api.get_asset_status(guid)
+
+        # TODO might want to add some kind of pausing if too many timeouts happe
+        # logs the timeout failure, does not update the asset flags -> asset will be retried
+            if exists == False:
+
+                self.track_mongo.update_entry(guid, "temp_timeout_status", True)
+                self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
+                self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
+                self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
+
+                message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Asset will wait at least 10 minutes before trying to create again. Status: {status_code}. {response}")
+                self.health_caller.warning(self.service_name, message, guid)
+
+            if exists == self.erda_status_enum.METADATA_RECEIVED.value:
+                # success anyway
+                self.success_asset_created(guid, asset)
+                self.handle_throttle(asset)
+                # log the time out
+                message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
+                self.health_caller.warning(self.service_name, message, guid)
+
+        except Exception as e:
+            message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
+            self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)       
+
 
     def success_asset_created(self, guid, asset):
         # metadata = self.metadata_mongo.get_entry("_id", guid)

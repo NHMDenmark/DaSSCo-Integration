@@ -43,7 +43,8 @@ class IntegrationServer(object):
         self.new_files_path = "IntegrationServer/Files/NewFiles/"
         self.updated_files_path = "IntegrationServer/Files/UpdatedFiles/"
         self.ssh_config_path = f"{project_root}/IntegrationServer/ConfigFiles/ucloud_connection_config.json"
-
+        self.service_config_path = (f"{project_root}/IntegrationServer/ConfigFiles/micro_service_config.json")
+        
         cons = connections.Connections()
         cons.create_ssh_connection(self.ssh_config_path)
         cons.close_connection()
@@ -64,7 +65,7 @@ def test():
     # job_caller = hpc_job_caller.HPCJobCaller()
     # hpc_creator = hpc_asset_creator.HPCAssetCreator()
     # cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
-
+    
     relPath = "Tests/TestConfigFiles/test_track_entry.json"
     #name = os.path.basename(relPath)
     #print(name)
@@ -166,16 +167,28 @@ if __name__ == '__main__':
     
     track = track_repository.TrackRepository()
 
-    x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
-    y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
-    z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])
-    print(f"multiple key value: {z}")
-    print(f"total single key-value: {y}")
-    print(f"count: {x}")
+    list = track.get_paused_entries()
+    for l in list:
+        print(l["_id"])
+
+    #x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
+    #y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
+    #z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])
+    #print(f"multiple key value: {z}")
+    #print(f"total single key-value: {y}")
+    #print(f"count: {x}")
     track.close_connection()
     
+    
+    #i = IntegrationServer()
 
+    #t = i.util.get_nested_value(i.service_config_path, "File uploader ARS", "mail_wait_time")
+    #print(t)
+    
     #u = utility.Utility()
+    #c = {"h":1, "b":2}
+    #print(c["h"])
+    #a = u.find_key_by_value(c, 2)
     #a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
     #print(a)
     #a = asset_handler.AssetHandler()   

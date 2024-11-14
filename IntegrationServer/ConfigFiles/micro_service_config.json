@@ -26,6 +26,15 @@
     "error_time_span": 10,
     "mail_wait_time": 20
   },
+  "Asset paused status handler": {
+    "module": "health utility",
+    "pause_time": 60,
+    "pause_check_list": [5, 20],
+    "pause_loop_count": 30,
+    "error_tolerance": 3,
+    "error_time_span": 60,
+    "mail_wait_time": 10
+  },
   "Asset creator ARS": {
     "module": "storage updater",
     "pause_time": 5,
