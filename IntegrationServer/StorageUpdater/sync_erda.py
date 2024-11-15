@@ -75,7 +75,7 @@ class SyncErda():
             sync_count = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
             if sync_count >= self.max_sync_asset_count:
                 # TODO implement better throttle than sleep
-                time.sleep(5)
+                time.sleep(30)
                 self.end_of_loop_checks()
                 continue
 

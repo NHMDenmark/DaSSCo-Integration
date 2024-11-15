@@ -105,6 +105,31 @@ class TrackRepository:
         entry = self.collection.find_one(error_query)
         return entry
     
+    def get_error_entries(self):
+
+        """
+        Retrieve entries from the MongoDB collection with a flag field value set to error.
+
+        :return: A list of entries, empty if none was found.
+        """
+        
+        error_query = {
+            "$or": [
+                {"jobs_status": {"$eq": "ERROR"}},
+                {"files_status": {"$eq": "ERROR"}},
+                {"has_open_share": {"$eq": "ERROR"}},
+                {"is_in_ars": {"$eq": "ERROR"}},
+                {"erda_sync": {"$eq": "ERROR"}},
+                {"has_new_file": {"$eq": "ERROR"}},
+                {"hpc_ready": {"$eq": "ERROR"}},
+                {"update_metadata": {"$eq": "ERROR"}}
+            ]
+        }
+        
+        entries = list(self.collection.find(error_query))
+        
+        return entries
+
     def get_paused_entries(self):
         """
         Retrieve entries from the MongoDB collection with a flag field value indicating its paused.

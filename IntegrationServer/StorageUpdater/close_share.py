@@ -112,6 +112,15 @@ class CloseShare(LogClass):
 
     def update_throttle(self, asset):
         self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.subtract_from_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
+
+        # TODO decide if this belongs here - its kind of natural to have the removal of the temp tag here though
+        if "temporary_reopened_share_status" in asset:
+            self.track_mongo.delete_field(asset["_id"], "temporary_reopened_share_status")
+        else:
+            entry = self.run_util.log_msg(self.prefix_id, f"Closed share of {asset["_id"]} without a temporary_reopened_share_status flag.", self.run_util.log_enum.WARNING.value)
+            self.health_caller.warning(self.service_name, entry, asset["_id"])
+
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):

@@ -246,7 +246,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         for file in asset["file_list"]:
             self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
         
-        print(f"Validated erda sync for asset: {guid}")
+        print(f"Validated erda sync for asset: {guid} Size: {asset["asset_size"]}")
 
     def check_timeout(self, guid):
 
@@ -318,10 +318,15 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
 
-        if is_derivative:
-            self.throttle_mongo.subtract_from_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
+        # check first if its a reopened asset that is being synce, then if not if its a derivative or a regular asset
+        if "temporary_reopened_share_status" in asset:
+            self.throttle_mongo.subtract_from_amount("total_reopened_size_mb", "value", asset["asset_size"])
+            self.track_mongo.delete_field(guid, "temporary_reopened_share_status")
         else:
-            self.throttle_mongo.subtract_from_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])        
+            if is_derivative:
+                self.throttle_mongo.subtract_from_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
+            else:
+                self.throttle_mongo.subtract_from_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])        
     
     def update_throttle_count(self):
         self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")

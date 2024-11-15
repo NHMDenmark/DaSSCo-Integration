@@ -167,10 +167,12 @@ if __name__ == '__main__':
     
     track = track_repository.TrackRepository()
 
-    list = track.get_paused_entries()
+    list = track.get_error_entries()
+    f = 0
     for l in list:
         print(l["_id"])
-
+        f += 1
+    print(f)
     #x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
     #y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
     #z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])

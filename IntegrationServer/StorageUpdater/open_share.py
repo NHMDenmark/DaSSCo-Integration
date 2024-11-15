@@ -230,6 +230,9 @@ class OpenShare(Status, Validate):
 
     def update_throttle(self, asset):
         self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
+        # TODO decide if this belongs here. But seems natural enough to include it. 
+        self.mongo_track.update_entry(asset["_id"], "temporary_reopened_share_status", True)
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):
