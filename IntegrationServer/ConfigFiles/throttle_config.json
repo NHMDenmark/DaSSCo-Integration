@@ -1,7 +1,7 @@
 {   
     "max_assets_in_flight": 30,
     "max_sync_asset_count": 12,
-    "total_max_asset_size_mb": 45000,
+    "total_max_asset_size_mb": 60000,
     "total_max_new_asset_size_mb": 20000,
     "total_max_derivative_size_mb": 30000,
     "total_reopened_share_size_mb": 77777777

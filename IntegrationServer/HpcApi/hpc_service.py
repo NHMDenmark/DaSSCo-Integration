@@ -11,6 +11,7 @@ from MongoDB import track_repository, metadata_repository, mos_repository
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
+from Enums.asset_status_nt import AssetStatusNT
 from HealthUtility import run_utility, health_caller
 
 class HPCService():
@@ -32,6 +33,8 @@ class HPCService():
         self.status = StatusEnum
         self.validate = ValidateEnum
         self.asset_type = AssetTypeEnum
+        self.asset_status_nt = AssetStatusNT
+
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_mos = mos_repository.MOSRepository()
@@ -523,6 +526,7 @@ class HPCService():
         else:
             return False
     
+    # not the same as job failed - derivatives can fail to be created without the job failing as such
     def fail_derivative_creation(self, info):
         
         guid = info.guid
@@ -542,6 +546,7 @@ class HPCService():
                 tags["missing_derivative"] = f"No derivative for ppi {ppi}"
 
             self.mongo_metadata.update_entry(guid, "tags", tags)
+            self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.ISSUE_WITH_MEDIA.value)
 
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} did not create a derivative with a ppi of {ppi}. {info.note}")
             self.health_caller.warning(self.service_name, entry, guid)

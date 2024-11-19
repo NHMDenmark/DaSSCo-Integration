@@ -29,6 +29,7 @@ from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
 from AssetFileHandler import asset_handler
+import traceback
 #from pymongo.errors import InvalidOperation
 #import field_validation
 #from validator_collection import checkers, validators
@@ -163,6 +164,12 @@ def test_mail():
     # Send the email content via the process
     process.communicate(input=email_content)
 
+def test_exception():
+    try:
+        a = 1/0
+    except:
+        raise Exception("fun")
+
 if __name__ == '__main__':
     
     track = track_repository.TrackRepository()
@@ -172,6 +179,16 @@ if __name__ == '__main__':
     for l in list:
         print(l["_id"])
         f += 1
+
+    #try:
+    #    test_exception()
+    #except Exception as e:
+    #    print(e)
+    #guid = "7e7-a-04-0d-25-05-1-001-01-000-0557a6-00000_400"
+    #track.update_track_job_status(guid, "uploader", "DONE")
+
+    #f = "'b200 ad"
+    #print(int(f[2:5]))
     print(f)
     #x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
     #y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
