@@ -372,6 +372,8 @@ class HPCService():
 
         self.mongo_track.update_track_job_list(guid, job_name, "job_start_time", job_start_time)
 
+        self.jobs_status_update(guid, job_name, self.status.RUNNING.value)
+
         print(f"{job_name} started for {guid}")
         return True
     
@@ -388,7 +390,7 @@ class HPCService():
             hpc_exception = failed_data.hpc_exception
         except:
             return False
-
+        print(f"Fail: {guid} {job_name}")
         try:
             asset = self.mongo_track.get_entry("_id", guid)
             if asset is None:

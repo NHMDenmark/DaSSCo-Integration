@@ -151,7 +151,7 @@ class FileUploader():
                             if self.util.verify_path(file_path) is False:
                                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
                                 entry = self.run_util.log_exc(self.prefix_id, f"File uploader failed to find the file at: {file_path}", None, self.status_enum.ERROR.value)
-                                self.health_caller.error(self.service_name, entry, guid, self.status_enum.ERROR.value, "has_new_file")
+                                self.health_caller.error(self.service_name, entry, guid, "has_new_file", self.status_enum.ERROR.value)
                                 continue
 
                             uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)

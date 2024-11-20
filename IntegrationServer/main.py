@@ -173,13 +173,21 @@ def test_exception():
 if __name__ == '__main__':
     
     track = track_repository.TrackRepository()
-
-    list = track.get_error_entries()
+    #[{key: value, key: value}]
+    #list = track.get_entries_from_multiple_key_pairs([{"hpc_ready": 'AWAIT', "is_in_ars": 'YES', "has_new_file": 'NO', "has_open_share": 'YES', "erda_sync": 'YES', "update_metadata": 'NO', "batch_list_name": 'WORKHERB0001_2023-05-12'}])
+    list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
+    #track.update_track_job_status("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "barcode", "WAITING")
+    #track.update_entry("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "jobs_status", "WAITING")
+    #list = track.get_error_entries()
+    
     f = 0
     for l in list:
         print(l["_id"])
+        #track.update_entry(l["_id"], "has_new_file", "YES")
+        #track.update_track_job_status(l["_id"], "uploader", "WAITING")
+        track.update_entry(l["_id"], "has_new_file", "NO")
         f += 1
-
+    
     #try:
     #    test_exception()
     #except Exception as e:
