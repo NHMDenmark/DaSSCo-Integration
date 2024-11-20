@@ -22,6 +22,7 @@ import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 import subprocess
 import logging
+from HpcApi import caller_hpc_api
 from Connections import connections
 from HealthUtility import health_caller
 from Enums.feedback_enum import Feedback
@@ -174,20 +175,43 @@ if __name__ == '__main__':
     
     track = track_repository.TrackRepository()
     #[{key: value, key: value}]
-    #list = track.get_entries_from_multiple_key_pairs([{"hpc_ready": 'AWAIT', "is_in_ars": 'YES', "has_new_file": 'NO', "has_open_share": 'YES', "erda_sync": 'YES', "update_metadata": 'NO', "batch_list_name": 'WORKHERB0001_2023-05-12'}])
-    list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
+    list = track.get_entries_from_multiple_key_pairs([{"has_open_share":"ERROR"}])
+    #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
     #track.update_track_job_status("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "barcode", "WAITING")
     #track.update_entry("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "jobs_status", "WAITING")
     #list = track.get_error_entries()
     
+    sc = storage_client.StorageClient()
+    #hpc_caller = caller_hpc_api.CallerHPCApi()
+    #p = hpc_caller.say_hi()
+    #print(p)
+    
     f = 0
     for l in list:
+        guid = l["_id"] 
         print(l["_id"])
-        #track.update_entry(l["_id"], "has_new_file", "YES")
-        #track.update_track_job_status(l["_id"], "uploader", "WAITING")
-        track.update_entry(l["_id"], "has_new_file", "NO")
         f += 1
-    
+        full_status = sc.get_full_asset_status(guid)
+        
+        if full_status["data"].share_allocation_mb is not None:
+            track.update_entry(guid, "has_open_share", "YES")
+
+        #job = track.get_job_info(l["_id"], "derivative")
+        #track.update_entry(l["_id"], "has_open_share", "YES")
+        #if job["status"] == "RUNNING":
+            #print(l["_id"])
+            #track.update_track_job_status(l["_id"], "derivative", "WAITING")
+            #track.update_entry(l["_id"], "jobs_status", "WAITING")
+            #f += 1
+        #x = sc.check_file_uploaded(l["_id"])
+        #if x is True:
+        #    pass
+        #track.update_entry(l["_id"], "jobs_status", "WAITING")
+        #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
+        #track.update_entry(l["_id"], "has_open_share", "YES")
+        
+    print(f)
+
     #try:
     #    test_exception()
     #except Exception as e:
@@ -197,7 +221,6 @@ if __name__ == '__main__':
 
     #f = "'b200 ad"
     #print(int(f[2:5]))
-    print(f)
     #x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
     #y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
     #z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])

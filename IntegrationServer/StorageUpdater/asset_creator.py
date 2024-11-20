@@ -163,7 +163,7 @@ class AssetCreator():
                             self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
 
                     if 401 <= status_code <= 499:
-                        message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
+                        message = self.run_util.log_exc(self.prefix_id, f"{response} Status: {status_code}", exc, self.run_util.log_enum.ERROR.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
                         time.sleep(1)
                     
