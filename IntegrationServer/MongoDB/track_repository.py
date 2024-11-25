@@ -13,8 +13,12 @@ from pymongo.errors import InvalidOperation
 from Enums.asset_type_enum import AssetTypeEnum
 
 class TrackRepository:
-
+    """
+    Contains the track database functionalities.
+    Includes the functions from the all repository.
+    """
     def __init__(self):
+        """Creates the connection object for track and all databases."""
         self.util = utility.Utility()
         self.mongo_track = mongo_connection.MongoConnection("track")
 
@@ -22,12 +26,13 @@ class TrackRepository:
         self.all = all_repository.AllRepository(self.collection)
 
     def close_connection(self):
+        """Closes the connection."""
         self.mongo_track.close_mdb()
 
-    """
-    Returns true if there is no issue, else returns the exception.
-    """
     def check_connection(self):
+        """
+        Returns true if there is no issue, else returns the exception.
+        """
         try:
             reply = self.mongo_track.ping_connection()
         except InvalidOperation as e:
@@ -35,38 +40,108 @@ class TrackRepository:
         return reply
 
     def update_entry(self, guid: str, key, value):
+        """
+        Updates an entry in the repository with a new value for the specified key.
+
+        :param guid: Unique identifier of the entry to be updated.
+        :param key: The key in the entry whose value needs updating.
+        :param value: The new value to set for the specified key.
+        :return: The response from the underlying repository.
+        """
         return self.all.update_entry(guid, key, value)
 
     def get_entry(self, key, value):
+        """
+        Retrieves a single entry from the repository that matches the given key-value pair.
+
+        :param key: The key to search for.
+        :param value: The value associated with the key to search for.
+        :return: The matching entry from the repository, or None if not found.
+        """
         return self.all.get_entry(key, value)
+
     
     def get_entries(self, key, value):
+        """
+        Retrieves all entries from the repository that match the given key-value pair.
+
+        :param key: The key to search for.
+        :param value: The value associated with the key to search for.
+        :return: A list of matching entries from the repository.
+        """
         return self.all.get_entries(key, value)
 
+
     def get_entry_from_multiple_key_pairs(self, key_value_pairs):
+        """
+        Retrieves a single entry that matches all the specified key-value pairs.
+
+        :param key_value_pairs: A dictionary of key-value pairs to match.
+        :return: The matching entry from the repository, or None if not found.
+        """
         return self.all.get_entry_from_multiple_key_pairs(key_value_pairs)
+
     
     def get_entries_from_multiple_key_pairs(self, key_value_pairs):
+        """
+        Retrieves all entries that match the specified key-value pairs.
+
+        :param key_value_pairs: A dictionary of key-value pairs to match.
+        :return: A list of entries that match all the specified key-value pairs.
+        """
         return self.all.get_entries_from_multiple_key_pairs(key_value_pairs)
 
+
     def get_value_for_key(self, id_value, key):
+        """
+        Retrieves the value of a specific key for the given identifier.
+
+        :param id_value: The unique identifier of the entry.
+        :param key: The key whose value needs to be retrieved.
+        :return: The value associated with the specified key, or None if not found.
+        """
         return self.all.get_value_for_key(id_value, key)
 
+
     def delete_entry(self, guid):
+        """
+        Deletes an entry from the repository.
+
+        :param guid: Unique identifier of the entry to be deleted.
+        :return: True if the deletion was successful, False otherwise.
+        """
         return self.all.delete_entry(guid)
+
     
     def append_existing_list(self, guid, list_key, value):
+        """
+        Appends a value to an existing list in the specified entry.
+
+        :param guid: Unique identifier of the entry to update.
+        :param list_key: The key of the list to which the value will be appended.
+        :param value: The value to append to the list.
+        :return: True if the operation was successful, False otherwise.
+        """
         return self.all.append_existing_list(guid, list_key, value)
+
     
     def delete_field(self, id, field_name):
-        return self.all.delete_field(id, field_name)    
+        """
+        Deletes a specific field from an entry in the repository.
+
+        :param id: Unique identifier of the entry to update.
+        :param field_name: The name of the field to delete.
+        :return: True if the field was successfully deleted, False otherwise.
+        """
+        return self.all.delete_field(id, field_name)
+    
 
     def create_track_entry(self, guid, pipeline):
         """
         Create a new track entry in the MongoDB collection.
-
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
+        Returns a boolean denoting success or failure.  
         """
         model = track_model.TrackModel(guid, pipeline)
         entry_data = model.get_entry_data()
@@ -234,12 +309,12 @@ class TrackRepository:
         :param guid: The unique identifier of the entry to be updated.
         :param type: The new asset type to be set.
         :return: A boolean indicating the success of the operation.
-    """
+        """
         self.update_entry(guid, "asset_type", type)
 
         if type == AssetTypeEnum.DEVICE_TARGET.value:
             # Fetch the current entry using the guid to access its job list
-            entry = self.get_entry(guid)
+            entry = self.get_entry("_id", guid)
         
             # Filter out the jobs with status "WAITING"
             updated_job_list = [job for job in entry["job_list"] if job["status"] != "WAITING"]
@@ -309,7 +384,7 @@ class TrackRepository:
         return True
 
     # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
-    # TODO missing unit test
+    # TODO missing unit test, not in use - needs way to know which config value to compare to
     def find_running_jobs_older_than(self):
         """
                 Finds an entry based on its job_start_time compared to current time and the max time set in the config file. 
@@ -325,7 +400,7 @@ class TrackRepository:
         return result
     
     # This can probably be made easier by just finding jobs that are running and getting the time stamps for those. Will depend on implementation in app script.
-    # TODO missing unit test
+    # TODO missing unit test, not in use - needs way to know which config value to compare to
     def find_queued_jobs_older_than(self):
         """
                 Finds an entry based on its job_queued_time compared to current time and the max time set in the config file. 

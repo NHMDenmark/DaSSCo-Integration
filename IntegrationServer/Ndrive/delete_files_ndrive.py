@@ -53,7 +53,7 @@ class DeleteFilesNdrive():
                                                                               "temporary_files_ndrive":self.validate_enum.YES.value}])
 
             if asset is None:
-                print(f"No asset found")
+                #print(f"No asset found")
                 time.sleep(10)
 
             if asset is not None:

@@ -92,8 +92,6 @@ class AssetCreator():
                 self.end_of_loop_checks()
                 continue
 
-            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
-
             # TODO this is dangerous. Using the jobs status to logically assume its a derivative. Maybe track needs a new field
             if new_asset is False:
                 asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value}])
@@ -105,6 +103,7 @@ class AssetCreator():
                 asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)                
 
             if asset is not None:
+                print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]                
                 
                 # Receives created: bool, response: str, exc: exception, status_code: int

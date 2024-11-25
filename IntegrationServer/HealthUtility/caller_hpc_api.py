@@ -16,14 +16,16 @@ class CallerHPCApi():
 
         load_dotenv()
 
-        start_url = os.environ.get("integration_url")
+        self.start_url = os.environ.get("integration_url")
 
-        self.url = f"{start_url}/api/v1/dev"
+        self.local_url = "http://localhost:8000"
+
+        self.url = f"{self.local_url}/dev/api/v1"
 
     # if both guid and flag is added then the health api service will update the flag to the flag status defaulting to ERROR if none is given.
     def say_hi(self):
+        new_url = f"{self.start_url}/dev/yo"
         
-        url = f"{self.url}/yo"
         """
         content = {
                 "guid": guid,
@@ -33,13 +35,33 @@ class CallerHPCApi():
                 "message": message
                 }
         """
-        try:    
+        try:              
             #response = requests.post(url, json=content)
-            response = requests.get(url)
+            response = requests.get("http://localhost:8000/dev/yo", timeout=5)
 
-
-            return response.json()
+            return response
                 
         except Exception as e:
             # TODO create log entry
             print(e)
+
+    def derivative_file_uploaded(self, guid):
+        
+        try:
+            param = {"asset_guid":{guid}}
+
+            url = f"{self.url}/derivative_uploaded"
+
+            print(url)
+
+            response = requests.post(url, params=param)
+
+            if response.status_code != 200:
+                print(f"Call got status: {response.status_code}")
+                return False
+            
+            return True
+        
+        except Exception as e:
+            print(e)
+            return False

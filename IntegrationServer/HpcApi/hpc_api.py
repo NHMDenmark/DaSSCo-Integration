@@ -36,7 +36,7 @@ fail_derivative_creation_model = FailDerivativeCreationModel
 
 @app.get("/dev/yo")
 def index():
-    return "keep out all devils"
+    return "keep out all devil"
 
 """
 Deprecated since we use the derivative endpoint instead.

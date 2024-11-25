@@ -164,7 +164,9 @@ class NdriveNewFilesFinder():
 
                 # Check for subdirectories that do not start with "imported_" or "error_"
                 for subdirectory in subdirectories:
+                    
                     if not subdirectory.startswith("imported_") and not subdirectory.startswith("error_"):
+                        print(subdirectory)
                         return f"{remote_folder}/{directory}/{subdirectory}"
         # If no matching directory is found
         return None

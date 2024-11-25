@@ -12,15 +12,11 @@ import utility
 from MongoDB import track_model
 from pymongo.errors import ConnectionFailure
 
-"""
-Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
-We use this to keep track of jobs and their status for each asset. 
-Should have full CRUD available. 
-"""
-# TODO ensure full crud functionalities have been added.
-
 class MongoConnection:
-
+    """
+    Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
+    """
+    
     def __init__(self, name):
         self.util = utility.Utility()
         self.name = name
@@ -50,13 +46,15 @@ class MongoConnection:
         return self.collection
 
     def close_mdb(self):
+        """Closes the connection to the database"""
         self.client.close()
         print(f"closed connection to: {self.name}")
     
-    """
-    Checks the connection is alive. 
-    """
+    
     def ping_connection(self):
+        """
+        Checks the connection is alive. 
+        """
         try:
             self.client.admin.command("ping")            
         except ConnectionFailure as e:

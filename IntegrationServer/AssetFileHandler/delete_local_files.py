@@ -52,7 +52,7 @@ class DeleteLocalFiles():
                                                                               "temporary_files_local":self.validate_enum.YES.value}])
 
             if asset is None:
-                print(f"No asset found")
+                #print(f"No asset found")
                 time.sleep(10)
 
             if asset is not None:

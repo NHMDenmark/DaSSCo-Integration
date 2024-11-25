@@ -15,7 +15,10 @@ Micro services added to the /ConfigFiles/micro_service_config.json will be creat
 Insert documents based on the throttle config file /ConfigFiles/throttle_config.json to the throttle database. 
 """
 class SetupServices:
-
+    """
+    Imports the service configurations and creates or adds them to the database.
+    Prints changes in terminal.
+    """
     def __init__(self):
         self.service_repo = service_repository.ServiceRepository()
         self.util = utility.Utility()
@@ -40,7 +43,11 @@ class SetupServices:
         self.service_repo.close_connection()
 
 class SetupThrottleService:
-
+    """
+    Imports the throttle configuration names and inserts them into the throttle database. 
+    Starts out with a default value for each of 0. 
+    Prints updates in terminal. 
+    """
     def __init__(self):
         self.throttle_repo = throttle_repository.ThrottleRepository()
         self.util = utility.Utility()

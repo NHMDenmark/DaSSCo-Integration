@@ -74,7 +74,7 @@ class HPCCleanUp():
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value}])
             if asset is None:
-                print("No asset found")
+                #print("No asset found")
                 time.sleep(10)        
             else: 
                 guid = asset["_id"]

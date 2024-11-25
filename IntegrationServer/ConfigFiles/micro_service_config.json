@@ -22,9 +22,9 @@
     "pause_time": 60,
     "pause_check_list": [5, 10],
     "pause_loop_count": 15,
-    "error_tolerance": 2,
+    "error_tolerance": 5,
     "error_time_span": 10,
-    "mail_wait_time": 20
+    "mail_wait_time": 30
   },
   "Asset paused status handler": {
     "module": "health utility",
@@ -100,19 +100,19 @@
   },
   "New files finder (Ndrive)": {
     "module": "ndrive",
-    "pause_time": 3,
+    "pause_time": 8,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
-    "error_tolerance": 2,
+    "error_tolerance": 3,
     "error_time_span": 3,
-    "mail_wait_time": 30
+    "mail_wait_time": 60
   },
   "Delete files (Ndrive)": {
     "module": "ndrive",
     "pause_time": 3,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
-    "error_tolerance": 2,
+    "error_tolerance": 4,
     "error_time_span": 20,
     "mail_wait_time": 30
   },

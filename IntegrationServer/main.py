@@ -5,8 +5,8 @@ import sys
 script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
-from MongoDB import mongo_connection, track_repository, health_repository, service_model
-import IntegrationServer.Ndrive.ndrive_new_files as ndrive_new_files
+from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository
+from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
 from HpcSsh import hpc_job_caller, hpc_asset_creator
@@ -22,9 +22,8 @@ import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 import subprocess
 import logging
-from HpcApi import caller_hpc_api
 from Connections import connections
-from HealthUtility import health_caller
+from HealthUtility import health_caller, caller_hpc_api
 from Enums.feedback_enum import Feedback
 from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
@@ -39,6 +38,9 @@ Test area for the different processes. May contain deprecated information.
 """
 
 class IntegrationServer(object):
+    """
+    Test text
+    """
     def __init__(self):
         self.util = utility.Utility()
 
@@ -172,10 +174,30 @@ def test_exception():
         raise Exception("fun")
 
 if __name__ == '__main__':
-    
+
+    print("yooodle")
+    import setup_service_script
+    a = str(help(setup_service_script))
+    print(a)
+    print("yo ho")
+    """
+    call = caller_hpc_api.CallerHPCApi()
+
+    u = utility.Utility()
+
     track = track_repository.TrackRepository()
+    meta = metadata_repository.MetadataRepository()
+    b = help(track)
+    print(str(b))
+    print("hi")
+    """
+    #track.update_track_job_status("7e8-8-08-0c-14-0b-0-001-00-000-03bf52-00000", "barcode", "WAITING")
+    #track.update_entry("7e8-8-08-0c-14-0b-0-001-00-000-03bf52-00000", "jobs_status", "WAITING")
+
+    """
     #[{key: value, key: value}]
-    list = track.get_entries_from_multiple_key_pairs([{"has_open_share":"ERROR"}])
+    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING", "has_open_share":"YES", "has_new_file":"UPLOADING"}])
+    
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
     #track.update_track_job_status("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "barcode", "WAITING")
     #track.update_entry("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "jobs_status", "WAITING")
@@ -185,33 +207,48 @@ if __name__ == '__main__':
     #hpc_caller = caller_hpc_api.CallerHPCApi()
     #p = hpc_caller.say_hi()
     #print(p)
-    
+    h = 0
     f = 0
     for l in list:
-        guid = l["_id"] 
-        print(l["_id"])
+        guid = l["_id"]
+        #print(l["_id"])
+        #track.update_entry(l["_id"], "hpc_ready", "NO")
+        #track.update_entry(l["_id"], "jobs_status", "WAITING")
+        #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
         f += 1
-        full_status = sc.get_full_asset_status(guid)
+        #full_status = sc.get_full_asset_status(guid)
         
-        if full_status["data"].share_allocation_mb is not None:
-            track.update_entry(guid, "has_open_share", "YES")
+        #if full_status["data"].share_allocation_mb is not None:
+            #track.update_entry(guid, "has_open_share", "YES")
 
-        #job = track.get_job_info(l["_id"], "derivative")
+        job = track.get_job_info(l["_id"], "uploader")
         #track.update_entry(l["_id"], "has_open_share", "YES")
-        #if job["status"] == "RUNNING":
+        #if job["status"] == "STARTING":
             #print(l["_id"])
-            #track.update_track_job_status(l["_id"], "derivative", "WAITING")
+            #track.update_track_job_status(l["_id"], "uploader", "WAITING")
             #track.update_entry(l["_id"], "jobs_status", "WAITING")
-            #f += 1
-        #x = sc.check_file_uploaded(l["_id"])
-        #if x is True:
-        #    pass
+            #h += 1
+        #else:
+            #print(guid)
+        x = sc.check_file_uploaded(l["_id"])
+        if x is True:
+            call.derivative_file_uploaded(guid)
+        if x is False:
+            track.update_entry(l["_id"], "jobs_status", "DONE")
+            track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
+            track.update_entry(l["_id"], "has_new_file", "YES")    
+        # pass
         #track.update_entry(l["_id"], "jobs_status", "WAITING")
         #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
         #track.update_entry(l["_id"], "has_open_share", "YES")
         
-    print(f)
+    print(f, h)
 
+    """
+
+    track.close_connection()
+    meta.close_connection()
+    
     #try:
     #    test_exception()
     #except Exception as e:
@@ -227,7 +264,7 @@ if __name__ == '__main__':
     #print(f"multiple key value: {z}")
     #print(f"total single key-value: {y}")
     #print(f"count: {x}")
-    track.close_connection()
+    #track.close_connection()
     
     
     #i = IntegrationServer()

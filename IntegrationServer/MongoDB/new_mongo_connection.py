@@ -18,9 +18,9 @@ We use this to keep track of jobs and their status for each asset.
 Should have full CRUD available. 
 """
 
-
 # TODO ensure full crud functionalities have been added.
 # TODO integrate with old system for keeping track of jobs through _jobs.json
+# TODO this is most likely not in use, check if can be deleted
 
 class MongoConnection:
 

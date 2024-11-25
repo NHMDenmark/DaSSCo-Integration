@@ -137,16 +137,14 @@ class OpenShare(Status, Validate):
                 time.sleep(5)
                 self.end_of_loop_checks()
                 continue
-            
-            print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
 
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
                                                                           "jobs_status": self.WAITING, "is_in_ars": self.YES,
                                                                             "has_new_file": self.NO, "erda_sync": self.YES}])
             if asset is None:
-                time.sleep(1)        
+                time.sleep(5)        
             else: 
-                 
+                print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")

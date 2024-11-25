@@ -1,7 +1,3 @@
-import os
-import shutil
-import sys
-import json
 """"
 Script for creating test assets. Requires a folder with an asset consisting of a metadata json and a tif image file.
 These fiels should be named "ucloud-test-1.json" and "ucloud-test-1.tif". These names can be changed if you bother to
@@ -12,6 +8,11 @@ Script runs form terminal and takes a number(x) as an argument. It then creates 
 changes the assets guid to the number in the text file and updates the file with +1. Copies are put in the output folder, 
 which should have a workstation name. 
 """
+import os
+import shutil
+import sys
+import json
+
 def copy_files(folder_path, output_folder, test_number, guid_number):
     # Ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
