@@ -134,32 +134,9 @@ class AssetCreator():
                     if status_code > 299 and status_code != 504:
                         print(f"{guid} failed to create and got status {status_code}")
 
+                    # handle status 400 - bad request. We can get this when an asset already exist. 
                     if status_code == 400:
-                        # check if the 400 is saying the asset exist. This can happen if the ARS is slow to create the asset and we rerun after a 504 too fast
-                        if f"Asset {guid} already exists" in response:
-                            try:
-                                exists = self.storage_api.get_asset_status(guid)
-
-                                # logs the 400 failure
-                                if exists == False:                                
-                                    message = self.run_util.log_msg(self.prefix_id, f"Failed to find asset despite receiving this: {response}")
-                                    self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
-
-                                if exists == self.erda_status_enum.METADATA_RECEIVED.value:
-                                    # success anyway
-                                    self.success_asset_created(guid, asset)
-                                    self.handle_throttle(asset)
-                                    # log the time out
-                                    message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
-                                    self.health_caller.warning(self.service_name, message, guid)
-
-                            except Exception as e:
-                                message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
-                                self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
-                        # handle other 400s
-                        else:
-                            message = self.run_util.log_msg(self.prefix_id, response)
-                            self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.handle_status_400(guid, asset, status_code, response, exc)
 
                     if 401 <= status_code <= 499:
                         message = self.run_util.log_exc(self.prefix_id, f"{response} Status: {status_code}", exc, self.run_util.log_enum.ERROR.value)
@@ -171,13 +148,10 @@ class AssetCreator():
                         #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
                         time.sleep(1)
-                    # handle status 503 - server unavaible. Basically just log it as a warning and retry
+
+                    # handle status 503 - server unavaible. This can also happen if erda is connections are not working for any reason.
                     if status_code == 503:
-                        message = self.run_util.log_msg(self.prefix_id, f"{guid} - status {status_code} - {response}")
-                        # changes status to NO for is_in_ars
-                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.NO.value)
-                        # changes status to NO for is_in_ars
-                        # self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.NO.value)
+                        self.handle_status_503(guid, status_code, response)
 
                     # handle status 504, this can happen while the asset successfully is created if ARS internal communication broken down. Or just a normal 504. 
                     if status_code == 504:
@@ -195,6 +169,47 @@ class AssetCreator():
         self.close_all_connections()
         print("service stopped")
 
+    def handle_status_400(self, guid, asset, status_code, response = None, exc = None):
+        # check if the 400 is saying the asset exist. This can happen if the ARS is slow to create the asset and we rerun after a 504 too fast
+        if f"Asset {guid} already exists" in response:
+            try:
+                exists = self.storage_api.get_asset_status(guid)
+
+                # logs the 400 failure
+                if exists == False:                                
+                    message = self.run_util.log_msg(self.prefix_id, f"Failed to find asset despite receiving this: {response}")
+                    self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+
+                if exists == self.erda_status_enum.METADATA_RECEIVED.value:
+                    # success anyway
+                    self.success_asset_created(guid, asset)
+                    self.handle_throttle(asset)
+                    # log the time out
+                    message = self.run_util.log_msg(self.prefix_id, f"{guid} was created despite receiving status {status_code} from ARS. {response}")
+                    self.health_caller.warning(self.service_name, message, guid)
+
+            except Exception as e:
+                message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
+                self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+        # handle other 400s
+        else:
+            message = self.run_util.log_msg(self.prefix_id, response)
+            self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)        
+        
+
+    def handle_status_503(self, guid, status_code, response = None):
+        print(f"{guid} got status {status_code} setting is_in_ars pause status")
+        
+        # sets flags for the asset paused status handler service to deal with
+        self.track_mongo.update_entry(guid, "temp_timeout_status", True)
+        self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
+        self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
+        self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
+        
+        message = self.run_util.log_msg(self.prefix_id, f"ARS not available (known cause could include erda being unavailable). {guid} will wait at least 10 minutes before trying to create again. Status: {status_code}. {response}")
+        self.health_caller.warning(self.service_name, message, guid)
+
+
     def handle_status_504(self, guid, asset, status_code, response = None, exc = None):
         print(f"{guid} got time out status: {status_code}. Checking if asset was created.")
         try:
@@ -203,7 +218,7 @@ class AssetCreator():
         # TODO might want to add some kind of pausing if too many timeouts happe
         # logs the timeout failure, does not update the asset flags -> asset will be retried
             if exists == False:
-
+                # sets flags for the asset paused status handler service to deal with
                 self.track_mongo.update_entry(guid, "temp_timeout_status", True)
                 self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
                 self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)

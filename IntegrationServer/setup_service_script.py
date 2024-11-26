@@ -1,12 +1,3 @@
-import sys
-import os
-script_dir = os.path.abspath(os.path.dirname(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
-sys.path.append(project_root)
-
-from MongoDB import service_repository, throttle_repository
-import utility
-
 """
 This script is part of the integration server configuration. Should be run independently before any other scripts or as part of a shell script.
 Install the mongo database before running this script.  
@@ -14,6 +5,15 @@ Creates the micro services in the database for controlling their run status.
 Micro services added to the /ConfigFiles/micro_service_config.json will be created.
 Insert documents based on the throttle config file /ConfigFiles/throttle_config.json to the throttle database. 
 """
+import sys
+import os
+script_dir = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(script_dir)
+
+from MongoDB import service_repository, throttle_repository
+import utility
+
 class SetupServices:
     """
     Imports the service configurations and creates or adds them to the database.
