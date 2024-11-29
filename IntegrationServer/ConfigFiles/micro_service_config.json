@@ -130,8 +130,8 @@
     "pause_time": 2,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
-    "error_tolerance": 2,
-    "error_time_span": 3,
+    "error_tolerance": 5,
+    "error_time_span": 5,
     "mail_wait_time": 30
   },
   "Close file share ARS": {

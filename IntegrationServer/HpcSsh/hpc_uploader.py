@@ -84,17 +84,9 @@ class HPCUploader():
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")
                 """
                 try:
-                    priority = len(asset["job_list"])
-                    job = {
-                        "name": "uploader",
-                        "status": status_enum.StatusEnum.STARTING.value,
-                        "priority": (priority + 1),
-                        "job_queued_time": None,
-                        "job_start_time": None,
-                        "hpc_job_id": -9,
-                        }
-                    
-                    self.mongo_track.append_existing_list(guid, "job_list", job)
+                    # adds a uploader job to the jobs list
+                    self.create_track_job(guid, asset)
+
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
                     self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
@@ -116,6 +108,31 @@ class HPCUploader():
         self.mongo_track.close_connection()
         self.mongo_metadata.close_connection()
         self.cons.close_connection()
+
+    def create_track_job(self, guid, asset):
+        """
+        Checks if there is already an uploader job and if so updates it to be a failure and renames it. 
+        Adds the uploader job to the job list. 
+        """
+        uploader_job = self.mongo_track.get_job_info(guid, "uploader")
+
+        if uploader_job is not None:
+            self.mongo_track.update_track_job_list(guid, "uploader", "status", self.status_enum.FAILED.value)
+            self.mongo_track.update_track_job_list(guid, "uploader", "name", "attempted_uploader")
+
+
+        priority = len(asset["job_list"])
+        job = {
+            "name": "uploader",
+            "status": status_enum.StatusEnum.STARTING.value,
+            "priority": (priority + 1),
+            "job_queued_time": None,
+            "job_start_time": None,
+            "hpc_job_id": -9,
+            }
+                    
+        self.mongo_track.append_existing_list(guid, "job_list", job)
+
 
 if __name__ == '__main__':
     HPCUploader()

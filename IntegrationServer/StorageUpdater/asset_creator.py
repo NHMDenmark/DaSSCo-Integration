@@ -13,14 +13,94 @@ from Enums import validate_enum, status_enum, erda_status
 from HealthUtility import health_caller, run_utility
 import utility
 
-"""
-Responsible creating new metadata assets in ars. Updates track database with assets status.
-Logs warnings and errors from this process, and directs them to the health service. 
-"""
 class AssetCreator():
-
+    """
+    Micro service - responsible for creating new metadata assets in ars. Configurable settings in micro_service_config.json.
+    Has heartbeat service attached for updating future GUI of its status.
+    Operates through a main loop that continually looks for valid assets and checks enough storage space is available.    
+    Looks for assets with the flag is_in_ars set to NO. Further checks what the jobs_status flag is and determines new asset or derivative status from that. 
+    Updates track and throttle database with assets status and storage usage after creation process.
+    Logs warnings and errors from this process, and directs them to the health service. 
+    """
     def __init__(self):
+        """
+        Initializes the service by setting up its configuration, dependencies, logging, 
+        and operational state. This method performs the following tasks:
 
+        1. **Service Configuration and Logging:**
+        - Sets the log file name based on the current script file.
+        - Configures the logger with a name relative to the project root.
+
+        2. **Service Metadata and Identification:**
+        - Defines the service name and prefix ID for unique identification.
+        - Initializes critical configuration paths and authentication variables.
+
+        3. **Database Repositories:**
+        - Instantiates repositories for interacting with MongoDB collections:
+            - `track_mongo`: Manages track repository interactions.
+            - `metadata_mongo`: Manages metadata repository interactions.
+            - `service_mongo`: Handles service-level data management.
+            - `throttle_mongo`: Manages throttling configurations and limits.
+
+        4. **Utility Components:**
+        - Initializes various utility objects for operations such as:
+            - Validation of enumerations.
+            - Handling service status values.
+            - Utility methods for common operations.
+
+        5. **Throttling Configuration:**
+        - Loads maximum size limits for assets and derivatives from a configuration file.
+
+        6. **Run Utility:**
+        - Initializes the `run_util` object to manage service-specific runtime state, 
+            including status updates and logging.
+
+        7. **Service Initialization:**
+        - Updates the service status in the database to `RUNNING`.
+        - Logs the status change and notifies the health API of the updated status.
+
+        8. **Runtime and Heartbeat:**
+        - Retrieves the current runtime status and syncs it with `run_util`.
+        - Creates a storage API instance for managing asset storage operations.
+        - Starts a separate thread to handle service heartbeat functionality.
+
+        9. **Main Loop:**
+        - Enters the main service loop, continuously executing the core functionality 
+            until stopped.
+
+        If an exception occurs during the initialization or runtime, the following steps are performed:
+        - Updates the service status in the database to `STOPPED`.
+        - Logs the exception and terminates connections gracefully.
+
+        Attributes:
+            log_filename (str): Name of the log file for the service.
+            logger_name (str): Relative path name for the logger configuration.
+            service_name (str): Name of the service.
+            prefix_id (str): Unique identifier prefix for the service.
+            auth_timestamp (None): Placeholder for authentication timestamp.
+            throttle_config_path (str): Path to the throttling configuration file.
+            track_mongo (TrackRepository): Object for managing track repository interactions.
+            metadata_mongo (MetadataRepository): Object for handling metadata operations.
+            service_mongo (ServiceRepository): Object for managing service-level MongoDB operations.
+            throttle_mongo (ThrottleRepository): Object for handling throttling configurations.
+            health_caller (HealthCaller): Object for interacting with the health-check API.
+            validate_enum (ValidateEnum): Enumeration validator utility.
+            status_enum (StatusEnum): Enumeration for service status values.
+            erda_status_enum (ErdaStatusEnum): Enumeration for ERDA-specific status values.
+            util (Utility): Utility object for common operations.
+            max_total_asset_size (int): Maximum allowed size for total assets in MB.
+            max_new_asset_size (int): Maximum allowed size for new assets in MB.
+            max_derivative_size (int): Maximum allowed size for derivative assets in MB.
+            run_util (RunUtility): Utility for managing service runtime state.
+            run (bool): Current runtime status of the service.
+            storage_api (StorageAPI): Instance of the storage API for asset management.
+            beat (str): Current heartbeat status of the service.
+
+        Exceptions:
+            If any error occurs during initialization or runtime, the service will update its 
+            status to `STOPPED`, log the error, and terminate all connections.
+
+        """
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         
@@ -71,11 +151,73 @@ class AssetCreator():
             self.close_all_connections()
             print("service crashed", e)
 
-    """
-    Main loop for the service.
-    """
+    
     def loop(self):
-        
+        """
+        Main execution loop for the service.
+
+        This loop continuously performs the core functionality of the service while 
+        the `run` attribute is set to `RUNNING`. It creates the assets 
+        in ARS, interacting with external storage APIs and handling throttling, 
+        errors, and status updates.
+
+        Workflow:
+            1. **Authorization and Storage API Setup:**
+            - Checks if Keycloak authorization is required and initializes the storage client.
+            - Skips iteration if the storage API is not available.
+
+            2. **Throttling Checks:**
+            - Evaluates current asset sizes (new, derivative, and total).
+            - If the total size exceeds the configured limit (`max_total_asset_size`), 
+                sleeps briefly before continuing to the next iteration.
+
+            3. **Asset Retrieval:**
+            - Retrieves assets from the MongoDB repository based on specific conditions:
+                - Assets identified as derivatives or new assets based on `jobs_status`.
+                - General assets marked as not in ARS (`is_in_ars = NO`).
+
+            4. **Asset Creation:**
+            - Calls the storage API to create the asset in ARS.
+            - Handles successful creation by updating throttling values and performing 
+                post-creation tasks.
+            - Manages failure scenarios by logging errors, handling specific HTTP status 
+                codes, and updating MongoDB records accordingly:
+                - **400 Bad Request:** Handles duplicate asset scenarios.
+                - **401-499:** Logs errors and warns about client-side issues.
+                - **500-502, 505-599:** Handles server-side errors.
+                - **503 Service Unavailable:** Handles temporary service unavailability.
+                - **504 Gateway Timeout:** Manages timeout scenarios during asset creation.
+
+            5. **End-of-Iteration Checks:**
+            - Ensures any necessary cleanup or final checks are performed at the end 
+                of each loop iteration.
+
+            6. **Idle Handling:**
+            - Sleeps for a longer period (10 seconds) when no assets are found for processing.
+
+        Termination:
+            - When `run` is no longer `RUNNING`, exits the loop.
+            - Updates the MongoDB service status to `STOPPED`.
+            - Closes all active connections and logs the service shutdown.
+
+        Notes:
+            - Contains TODO items for improving throttle handling and asset classification logic.
+            - Implements basic error handling but leaves room for enhancements like 
+            better management of specific HTTP status codes (e.g., 300-399).
+
+        Attributes:
+            run (str): The current runtime status of the service, controlling the loop.
+            storage_api (StorageAPI): The API client for interacting with asset storage.
+            max_total_asset_size (int): Maximum allowable total asset size.
+            track_mongo (TrackRepository): MongoDB repository for tracking assets.
+            validate_enum (ValidateEnum): Enumeration for validation constants.
+            status_enum (StatusEnum): Enumeration for service and job status values.
+
+        Exceptions:
+            - Any exception during execution gracefully terminates the loop, updates 
+            the service status, and cleans up resources.
+
+        """
         while self.run == self.status_enum.RUNNING.value:
             
             # check if new keycloak auth is needed, creates the storage client

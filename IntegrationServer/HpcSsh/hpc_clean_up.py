@@ -84,22 +84,13 @@ class HPCCleanUp():
                     time.sleep(60)
                     continue
                 
-                priority = len(asset["job_list"])
-                job = {
-                    "name": "clean_up",
-                    "status": status_enum.StatusEnum.STARTING.value,
-                    "priority": (priority + 1),
-                    "job_queued_time": None,
-                    "job_start_time": None,
-                    "hpc_job_id": -9,
-                    }
-                    
-                self.mongo_track.append_existing_list(guid, "job_list", job)
+                # adds a job to the job list.
+                self.create_track_job(self, guid, asset)
+
                 self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
-                self.con.ssh_command(f"bash {script_path} {guid}")
-
                 self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
+                self.con.ssh_command(f"bash {script_path} {guid}")
 
                 time.sleep(1)
 
@@ -114,6 +105,28 @@ class HPCCleanUp():
         self.mongo_track.close_connection()
         self.cons.close_connection()
 
+    def create_track_job(self, guid, asset):
+        """
+        Checks if there is already a clean up job and if so updates it to be a failure and renames it. 
+        Adds the clean_up job to the job list. 
+        """
+        clean_up_job = self.mongo_track.get_job_info(guid, "clean_up")
+
+        if clean_up_job is not None:
+            self.mongo_track.update_track_job_list(guid, "clean_up", "status", self.status_enum.FAILED.value)
+            self.mongo_track.update_track_job_list(guid, "clean_up", "name", "attempted_clean_up")
+
+        priority = len(asset["job_list"])
+        job = {
+            "name": "clean_up",
+            "status": status_enum.StatusEnum.STARTING.value,
+            "priority": (priority + 1),
+            "job_queued_time": None,
+            "job_start_time": None,
+            "hpc_job_id": -9,
+            }
+                    
+        self.mongo_track.append_existing_list(guid, "job_list", job)
 
 if __name__ == '__main__':
     HPCCleanUp()

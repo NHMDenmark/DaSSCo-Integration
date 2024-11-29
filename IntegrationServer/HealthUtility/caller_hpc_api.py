@@ -65,3 +65,24 @@ class CallerHPCApi():
         except Exception as e:
             print(e)
             return False
+        
+    def asset_clean_up(self, guid):
+        
+        try:
+            param = {"asset_guid":{guid}}
+
+            url = f"{self.url}/asset_clean_up"
+
+            print(url, guid)
+
+            response = requests.post(url, params=param)
+
+            if response.status_code != 200:
+                print(f"Call got status: {response.status_code}")
+                return False
+            
+            return True
+        
+        except Exception as e:
+            print(e)
+            return False
