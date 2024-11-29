@@ -7,16 +7,12 @@ sys.path.append(project_root)
 import time
 from datetime import datetime, timedelta
 import utility
-from MongoDB import service_repository, track_repository, health_repository
+from MongoDB import service_repository, track_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 
 """
-Service that checks assets for having flag status set to PAUSED.
-Then resets their status after 10 minutes to the previous value, probably NO but could be anything.
-Requires the temporary fields: temp_timeout_status, temp_timeout_timestamp, temp_previous_flag_value
-Removes the temporary fields that was added to the track entries when a pause status is set.
-Logs the reset process at the warning level.
+Service that checks assets for having available_for_services set to PAUSED and sets their status to yes once the pause period is over. 
 """
 class AssetPausedStatusHandler():
 
@@ -33,9 +29,9 @@ class AssetPausedStatusHandler():
         
         self.service_mongo = service_repository.ServiceRepository()
         self.track_mongo = track_repository.TrackRepository()
-        self.health_mongo = health_repository.HealthRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -57,64 +53,44 @@ class AssetPausedStatusHandler():
 
         while self.run == self.status_enum.RUNNING.value:
             
-            assets = self.track_mongo.get_paused_entries()
+            assets = self.track_mongo.get_entries(self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.status_enum.PAUSED.value)
 
             if assets == []:
-                # Total wait time is 3 min if no assets found 150 + 30
-                time.sleep(150)
                 self.end_of_loop_checks()
                 continue
 
+            current_time = datetime.now()
+
             for asset in assets:
-                
+
                 guid = asset["_id"]
 
-                if asset["temp_timeout_status"]:
-                    
-                    current_time = datetime.now()
-                    passed_time = current_time - asset["temp_timeout_timestamp"]
+                if asset[self.flag_enum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value] is None or asset[self.flag_enum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value] is None:
+                    self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.status_enum.ERROR.value)
+                    entry = self.run_util.log_msg(self.prefix_id, f"Missing timestamp or wait time so set AVAILABLE_FOR_SERVICE to ERROR for {guid}", self.validate_enum.ERROR.value)
+                    self.health_caller.error(self.service_name, entry, guid)
+                    print(f"Missing data for timestamp or wait time for {guid}")
+                    continue
 
-                    # Check if 10 minutes has passed since the pause status was set
-                    # TODO possible we want this to be more dynamic and part of configuration
-                    if passed_time > timedelta(minutes=10):
-                        
-                        # Get the flag 
-                        key = self.util.find_key_by_value(asset, self.validate_enum.PAUSED.value)
-                        
-                        # Reset value for flag
-                        value = asset["temp_timeout_previous_flag_value"]
+                passed_time = current_time - asset[self.flag_enum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value]
 
-                        # Get rid of temp fields
-                        self.remove_temp_fields(guid)
+                if passed_time > timedelta(seconds=asset[self.flag_enum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value]):
 
-                        # Reset the flag value form paused to its previous value
-                        self.track_mongo.update_entry(guid, key, value)
-
-                        entry = self.run_util.log_msg(self.prefix_id, f"Reset the status of {guid} from PAUSED to {value} for {key}")
-                        self.health_caller.warning(self.service_name, entry, guid)
-
-                        print(f"Unpaused {guid} after {passed_time}")
-
-                    else:
-                        print(f"Still paused {guid}")
+                    self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value, None)
+                    self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value, None)
+                    self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.YES.value)
+                    print(f"{guid} had available_for_service set to YES")
 
             self.end_of_loop_checks()
         
         # out of main loop
         self.close_all_connections()
-        print("Service was shut down")
-
-    def remove_temp_fields(self, guid):
-
-        self.track_mongo.delete_field(guid, "temp_timeout_status")
-        self.track_mongo.delete_field(guid, "temp_timeout_timestamp")
-        self.track_mongo.delete_field(guid, "temp_timeout_previous_flag_value")
+        print("Service has shut down")
 
     def close_all_connections(self):
 
         self.service_mongo.close_connection()
         self.track_mongo.close_connection()
-        self.health_mongo.close_connection()
 
     def end_of_loop_checks(self):
         #checks if service should keep running           

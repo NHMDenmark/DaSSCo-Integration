@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, metadata_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum
+from Enums import validate_enum, status_enum, flag_enum
 import InformationModule.slack_webhook as slack_webhook
 import InformationModule.email_sender as email_sender
 import utility
@@ -34,6 +34,7 @@ class FileUploader():
         self.service_mongo = service_repository.ServiceRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.slack_webhook = slack_webhook.SlackWebhook()
         self.email_sender = email_sender.EmailSender("test")
         self.util = utility.Utility()
@@ -127,7 +128,8 @@ class FileUploader():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value, "jobs_status" : self.status_enum.WAITING.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value,
+                                                                          "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if asset is not None:
                 guid = asset["_id"]

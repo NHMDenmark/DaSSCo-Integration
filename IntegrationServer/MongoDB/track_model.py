@@ -42,7 +42,9 @@ class TrackModel:
         self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
-        
+        self.available_for_services = validate_enum.ValidateEnum.YES.value
+        self.available_for_services_timestamp = None
+        self.available_for_services_wait_time = None
 
     def create_joblist(self):
         job_mapping = self.util.get_value(self.pipeline_job_config_path, self.pipeline)
@@ -81,6 +83,9 @@ class TrackModel:
             "has_new_file": self.has_new_file,
             "has_open_share": self.has_open_share,
             "erda_sync": self.erda_sync,
-            "update_metadata": self.update_metadata
+            "update_metadata": self.update_metadata,
+            "available_for_services": self.available_for_services,
+            "available_for_services_timestamp": self.available_for_services_timestamp,
+            "available_for_services_wait_time": self.available_for_services_wait_time
         }
         return entry_data

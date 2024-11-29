@@ -147,7 +147,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             if self.run == self.STOPPED:
                 continue           
             
-            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT, self.HAS_OPEN_SHARE: self.YES}])
+            assets = self.track_mongo.get_entries_from_multiple_key_pairs([{self.ERDA_SYNC: self.AWAIT, self.HAS_OPEN_SHARE: self.YES, self.AVAILABLE_FOR_SERVICES: self.YES}])
 
             if len(assets) == 0:
                 # no assets found that needed validation

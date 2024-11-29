@@ -122,7 +122,7 @@ class UpdateMetadata():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry(self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.UPDATE_METADATA.value: self.validate_enum.YES.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             
             if asset is not None:
                 if asset[self.flag_enum.IS_IN_ARS.value] == self.validate_enum.YES.value:

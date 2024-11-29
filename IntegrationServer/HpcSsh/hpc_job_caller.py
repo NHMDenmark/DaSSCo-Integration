@@ -70,7 +70,8 @@ class HPCJobCaller():
         while self.run == status_enum.StatusEnum.RUNNING.value:
             
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{self.flag_enum.HPC_READY.value: self.validate_enum.YES.value, self.flag_enum.IS_IN_ARS.value: self.validate_enum.YES.value, 
-                                                                         self.flag_enum.JOBS_STATUS.value: self.status_enum.WAITING.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.NO.value}])
+                                                                         self.flag_enum.JOBS_STATUS.value: self.status_enum.WAITING.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.NO.value,
+                                                                         self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             
             if asset is None:
                 time.sleep(1)        

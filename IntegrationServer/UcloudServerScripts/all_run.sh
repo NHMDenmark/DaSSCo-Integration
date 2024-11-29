@@ -9,6 +9,7 @@ nohup python "$root/Ndrive/delete_files_ndrive.py" > "$root/Ndrive/delete_files_
 nohup python "$root/AssetFileHandler/delete_local_files.py" > "$root/AssetFileHandler/delete_local_files.out" 2>&1 &
 
 nohup python "$root/HealthUtility/hpc_job_retry_handler.py" > "$root/HealthUtility/hpc_job_retry_handler.out" 2>&1 &
+nohup python "$root/HealthUtility/flag_paused_status_handler.py" > "$root/HealthUtility/flag_paused_status_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/asset_paused_status_handler.py" > "$root/HealthUtility/asset_paused_status_handler.out" 2>&1 &
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &

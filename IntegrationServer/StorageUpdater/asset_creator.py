@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import metadata_repository, track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, erda_status
+from Enums import validate_enum, status_enum, erda_status, flag_enum
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -115,6 +115,7 @@ class AssetCreator():
         self.health_caller = health_caller.HealthCaller()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.util = utility.Utility()
 
@@ -236,10 +237,10 @@ class AssetCreator():
 
             # TODO this is dangerous. Using the jobs status to logically assume its a derivative. Maybe track needs a new field
             if new_asset is False:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             # TODO this is dangerous. Using the jobs status to logically assume its a new asset. Maybe track needs a new field
             if derivative_asset is False:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.WAITING.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if new_asset and derivative_asset:
                 asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)                

@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, metadata_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 from Enums.status_enum import Status
 from Enums.validate_enum import Validate
 import utility
@@ -39,6 +39,7 @@ class OpenShare(Status, Validate):
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.validate_enum = validate_enum.ValidateEnum
         
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
@@ -128,6 +129,7 @@ class OpenShare(Status, Validate):
             # check if new keycloak auth is needed, creates the storage client
             self.authorization_check()
             if self.storage_api is None:
+                time.sleep(200)
                 continue
             
             # check throttle
@@ -140,7 +142,7 @@ class OpenShare(Status, Validate):
 
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
                                                                           "jobs_status": self.WAITING, "is_in_ars": self.YES,
-                                                                            "has_new_file": self.NO, "erda_sync": self.YES}])
+                                                                            "has_new_file": self.NO, "erda_sync": self.YES, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.YES}])
             if asset is None:
                 time.sleep(5)        
             else: 
