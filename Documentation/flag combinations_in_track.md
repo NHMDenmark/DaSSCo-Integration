@@ -1,7 +1,7 @@
 | Process | "jobs_status" | "files_status" | "asset_size" | "hpc_ready" | "is_in_ars" | "has_new_file" | "has_open_share" | "erda_sync" | "update_metadata" | "asset_type" | "temporary_files_ndrive" | "temporary_files_local" | "available_for_services" |
-|-------------|--------|----|----|----|---|----|----|-----|------|------|---|---|---|
+|-------------|--------|------|------|------|------|------|------|-----|------|------|------|------|------|
 | Ndrive\process_new_files_from_ndrive | -> WAITING | -> NONE | -> file size | -> NO | -> AWAIT -> NO | -> YES | -> NO | -> NO | -> NO | -> UNKNOWN | -> YES | -> YES | -> YES |
-| Ndrive\delete_files_ndrive | DONE | - | - | - | YES | NO | - | YES | - | - | YES -> remove field | - | - |
+| Ndrive\delete_files_ndrive | DONE | - | - | NO | YES | NO | - | YES | - | - | YES -> remove field | - | YES |
 | AssetFileHandler\delete_local_files | DONE | - | - | - | YES | NO | - | YES | - | - | - | YES -> remove field | - |
 | StorageUpdater\asset_creator | - | - | not -1 | - | NO -> YES | -> YES | -> YES | - | - | - | - | - | YES |
 | StorageUpdater\close_share | - | - | - | YES | - | NO | YES -> NO | YES | - | - | - | - | YES |
@@ -29,7 +29,7 @@
 
 | P | js | fs | a s | ready | ars | n file | open sha | e sync | upd mdata | asset type | temp f N | temp file l | available |
 
-empty doesnt concern this service 
+empty doesnt concern this service   
 (status) is when its a possibility for triggering
 
 status -> change in status

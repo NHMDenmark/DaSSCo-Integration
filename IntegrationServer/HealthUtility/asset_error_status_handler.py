@@ -72,9 +72,6 @@ class AssetErrorStatusHandler():
                 time.sleep(30)
             
 
-
-
-
             #checks if service should keep running           
             self.run = self.run_util.check_run_changes()
 

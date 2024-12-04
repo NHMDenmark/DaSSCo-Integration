@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import shutil
 import time
 import utility
-from MongoDB import service_repository
+from MongoDB import service_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum
 
@@ -33,6 +33,7 @@ class NdriveNewFilesFinder():
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.service_mongo = service_repository.ServiceRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -67,7 +68,8 @@ class NdriveNewFilesFinder():
         
         # out of main loop
         self.service_mongo.close_connection()
-                
+        self.throttle_mongo.close_connection()
+
 
     def copy_from_ndrive_and_update_ndrive_dirs(self, ndrive_path, local_destination):
 
@@ -108,8 +110,10 @@ class NdriveNewFilesFinder():
                             shutil.copy(remote_path, local_path)
 
                         self.rename_new_files_folder(local_folder)
+                        # add one to assets in flight count
+                        self.throttle_mongo.add_one_to_count("max_assets_in_flight", "value")
 
-                # logs the transaction # TODO logs it as a warning currently which is a bit wrong obv
+                # logs the transaction
                 self.run_util.log_msg(self.prefix_id, f"Copy successful from {remote_folder} to {local_destination}.")
                 
                 self.rename_batch_directory_after_import(remote_folder)

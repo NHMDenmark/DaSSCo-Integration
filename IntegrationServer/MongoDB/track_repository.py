@@ -271,6 +271,31 @@ class TrackRepository:
 
         return True
     
+    def update_track_job_data_point(self, guid, job_key, job_value, key, value):
+        """
+            Update an existing track_entrys job with a new value for a key in the MongoDB collection.
+
+            :param guid: The unique identifier of the entry.
+            :param job_key: The key identifier for the job to be updated.
+            :param job_value: The value identifier for the job to be updated.
+            :param key: The key (field) to be updated or created.
+            :param value: The new value for the specified key.
+            :return: A boolean denoting success or failure.
+        """
+        # Retrieve the entry
+        entry = self.get_entry("_id", guid)
+        if entry is None:
+            return False
+
+        # Check if the job exists in the job_list
+        job_exists = any(d[job_key] == job_value for d in entry.get('job_list', []))
+        if not job_exists:
+            return False
+
+        self.collection.update_one({"_id": guid, f"job_list.{job_key}": job_value}, {"$set": {f"job_list.$.{key}": value}})
+
+        return True
+
     def update_track_job_list(self, guid, job, key, value):
         """
             Update an existing track_entry with a new entry for a job in the MongoDB collection.

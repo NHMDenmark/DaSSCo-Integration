@@ -182,17 +182,25 @@ if __name__ == '__main__':
     track = track_repository.TrackRepository()
     meta = metadata_repository.MetadataRepository()
     
-    #track.update_track_job_status("7e8-a-0a-0f-0b-1b-0-001-00-000-081977-00000_400", "uploader", "WAITING")
-    #track.update_entry("7e8-a-0a-0f-0b-1b-0-001-00-000-081977-00000_400", "jobs_status", "DONE")
-    #track.update_entry("7e8-a-0a-0f-0b-1b-0-001-00-000-081977-00000_400", "has_new_file", "YES")
-    #track.update_entry("7e8-a-0a-0f-0b-1b-0-001-00-000-081977-00000_400", "erda_sync", "NO")
-    
+    guid = "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_72"
+
+    #track.update_track_job_status(guid, "uploader", "DONE")
+    #track.update_entry(guid, "jobs_status", "DONE")
+    #track.update_entry(guid, "has_new_file", "NO")
+    #track.update_entry(guid, "erda_sync", "AWAIT")
+    track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
+
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"has_open_share":"NO", "hpc_ready":"NO", "jobs_status":"RUNNING"}])
     
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
-    #track.update_track_job_status("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "barcode", "WAITING")
-    #track.update_entry("7e6-8-13-00-27-2e-0-001-00-000-077cdd-00000", "jobs_status", "WAITING")
+
+    track.update_entry(guid, "available_for_services", "YES")
+    track.update_entry(guid, "available_for_services_timestamp", None)
+    track.update_entry(guid, "available_for_services_wait_time", None)
+
+    #track.update_track_job_status("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "barcode", "WAITING")
+    #track.update_entry("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "jobs_status", "WAITING")
     #list = track.get_error_entries()
     
     #sc = storage_client.StorageClient()

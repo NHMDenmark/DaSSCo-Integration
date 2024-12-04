@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 import utility
-from MongoDB import service_repository, track_repository
+from MongoDB import service_repository, track_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
@@ -26,6 +26,7 @@ class DeleteFilesNdrive():
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.service_mongo = service_repository.ServiceRepository()
         self.track_mongo = track_repository.TrackRepository()
+        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
@@ -50,7 +51,8 @@ class DeleteFilesNdrive():
             
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"jobs_status": self.status_enum.DONE.value, "is_in_ars": self.validate_enum.YES.value,
                                                                             "has_new_file": self.validate_enum.NO.value, "erda_sync": self.validate_enum.YES.value,
-                                                                              "temporary_files_ndrive":self.validate_enum.YES.value}])
+                                                                             "hpc_ready":self.validate_enum.NO.value, "temporary_files_ndrive":self.validate_enum.YES.value,
+                                                                              "available_for_services":self.validate_enum.YES.value}])
 
             if asset is None:
                 #print(f"No asset found")
@@ -62,6 +64,9 @@ class DeleteFilesNdrive():
                     ndrive_path = asset["temporary_path_ndrive"]
                 except Exception as e:
                     print(f"no path found {guid}: {e}")
+                    self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
+                    entry = self.run_util.log_exc(self.prefix_id, f"{guid} had {ndrive_path} as directory. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}.", e, self.run_util.log_enum.ERROR.value)
+                    self.health_caller.error(self.service_name, entry, guid)
                     continue
                 
                 try:
@@ -78,7 +83,9 @@ class DeleteFilesNdrive():
                             print(f"Deleted files: {guid}")
                             # update track
                             self.track_mongo.delete_field(guid, "temporary_path_ndrive")
-                            self.track_mongo.delete_field(guid, "temporary_files_ndrive")                        
+                            self.track_mongo.delete_field(guid, "temporary_files_ndrive")
+                            # subtract one from assets in flight
+                            self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")      
                         else:
                             print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
                             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
@@ -110,6 +117,7 @@ class DeleteFilesNdrive():
 
         # out of main loop
         self.service_mongo.close_connection()
+        self.throttle_mongo.close_connection()
         self.track_mongo.close_connection()
         print("Service closed down")
 

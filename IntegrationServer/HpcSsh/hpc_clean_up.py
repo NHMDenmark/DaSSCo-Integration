@@ -32,6 +32,7 @@ class HPCCleanUp():
     
         self.mongo_track = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
+        
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
@@ -74,7 +75,7 @@ class HPCCleanUp():
             asset = None
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
-                                                                          self.flag_enum.AVAILABLE_FOR_SERVICES.value: validate_enum.ValidateEnum.YES.value}])
+                                                                           self.flag_enum.AVAILABLE_FOR_SERVICES.value: validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 #print("No asset found")
                 time.sleep(10)        
@@ -87,7 +88,7 @@ class HPCCleanUp():
                     continue
                 
                 # adds a job to the job list.
-                self.create_track_job(self, guid, asset)
+                self.create_track_job(guid, asset)
 
                 self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
@@ -105,6 +106,7 @@ class HPCCleanUp():
 
         # outside main while loop        
         self.mongo_track.close_connection()
+        self.service_mongo.close_connection()
         self.cons.close_connection()
 
     def create_track_job(self, guid, asset):

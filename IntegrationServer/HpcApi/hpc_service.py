@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import utility
 import json
 from HpcApi.file_model import FileModel
-from MongoDB import track_repository, metadata_repository, mos_repository
+from MongoDB import track_repository, metadata_repository, mos_repository, throttle_repository
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
@@ -38,6 +38,7 @@ class HPCService():
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_mos = mos_repository.MOSRepository()
+        self.mongo_throttle = throttle_repository.ThrottleRepository()
         
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -86,6 +87,8 @@ class HPCService():
             self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
             self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
+            # add one to the assets in flight count
+            self.mongo_throttle.add_one_to_count("max_assets_in_flight", "value")
 
             return metadata_flag
         
@@ -568,6 +571,11 @@ class HPCService():
         if asset is not None:
             self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
             self.jobs_status_update(guid, "clean_up", "DONE")
+            
+            # If asset is derivative -1 from assets in flight
+            if self.mongo_metadata.get_value_for_key("_id", guid, "parent_guid") is not None or "":
+                self.mongo_throttle.subtract_one_from_count("max_assets_in_flight", "value")
+
             return True
         else:
             return False
