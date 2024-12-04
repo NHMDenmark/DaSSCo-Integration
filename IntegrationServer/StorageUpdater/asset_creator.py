@@ -455,14 +455,15 @@ class AssetCreator():
             self.service_mongo.update_entry(self.service_name, "heartbeat", self.beat)
             entry = self.run_util.log_msg(self.prefix_id, f"Heartbeat service is initialising for {self.service_name}")
             self.health_caller.warning(self.service_name, entry)
-
+            print("im alive")
             while self.beat != self.status_enum.STOPPED.value:
                 time.sleep(20)
                 try:
                     self.beat = self.service_mongo.get_value_for_key(self.service_name, "heartbeat")
                     
                     if self.beat == self.status_enum.RUNNING.value:
-                        print("im alive")
+                        #print("im alive")
+                        pass
                     if self.beat == self.status_enum.STOPPED.value:
                         print("im dead")
                 except:

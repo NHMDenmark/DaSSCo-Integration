@@ -85,6 +85,13 @@ class NdriveNewFilesFinder():
                 # Group files by their base names
                 file_groups = {}
                 for file in files:
+                    
+                    # check for subdirectories that have somehow made their way here
+                    if os.path.isdir(os.path.join(remote_folder, file)):
+                        entry = self.run_util.log_msg(self.prefix_id, f"Found a directory {file} in {remote_folder}. Imported folder will not be deleted at the end of pipeline.")
+                        self.health_caller.warning(self.service_name, entry)
+                        continue
+
                     base_name, file_type = os.path.splitext(file)
                     if base_name not in file_groups:
                         file_groups[base_name] = []
