@@ -125,3 +125,15 @@ class ThrottleRepository:
             return True            
         except Exception as e:
             return False
+    
+    def reset_throttle(self):
+        try:
+            self.all.update_entry("max_assets_in_flight", "value", 0)
+            self.all.update_entry("max_sync_asset_count", "value", 0)
+            self.all.update_entry("total_max_asset_size_mb", "value", 0)
+            self.all.update_entry("total_max_new_asset_size_mb", "value", 0)
+            self.all.update_entry("total_max_derivative_size_mb", "value", 0)
+            self.all.update_entry("total_reopened_share_size_mb", "value", 0)
+            return True
+        except Exception as e:
+            return False

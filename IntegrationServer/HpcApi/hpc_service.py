@@ -573,7 +573,8 @@ class HPCService():
             self.jobs_status_update(guid, "clean_up", "DONE")
             
             # If asset is derivative -1 from assets in flight
-            if self.mongo_metadata.get_value_for_key("_id", guid, "parent_guid") is not None or "":
+            parent_guid = self.mongo_metadata.get_value_for_key(guid, "parent_guid")
+            if parent_guid is not None and parent_guid != "":
                 self.mongo_throttle.subtract_one_from_count("max_assets_in_flight", "value")
 
             return True

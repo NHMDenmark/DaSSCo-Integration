@@ -5,7 +5,7 @@ import sys
 script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
-from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository
+from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository, throttle_repository
 from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client
@@ -181,14 +181,17 @@ if __name__ == '__main__':
 
     track = track_repository.TrackRepository()
     meta = metadata_repository.MetadataRepository()
+    throttle  = throttle_repository.ThrottleRepository()
     
-    guid = "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_72"
+    #throttle.reset_throttle()
+    
+    guid = "dev-ucloud-900"
 
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")
-    #track.update_entry(guid, "has_new_file", "NO")
+    track.update_entry(guid, "has_open_share", "NO")
     #track.update_entry(guid, "erda_sync", "AWAIT")
-    track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
+    #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"has_open_share":"NO", "hpc_ready":"NO", "jobs_status":"RUNNING"}])
@@ -248,6 +251,7 @@ if __name__ == '__main__':
     print(f)
     """
 
+    throttle.close_connection()
     track.close_connection()
     meta.close_connection()
     

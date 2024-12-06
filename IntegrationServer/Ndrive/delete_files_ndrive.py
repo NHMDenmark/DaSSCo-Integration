@@ -102,6 +102,8 @@ class DeleteFilesNdrive():
                         entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. This directory was not found. Setting temporary_files_ndrive to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
                         self.health_caller.error(self.service_name, entry, guid)
                         print(f"{ndrive_path} is not a directory.")
+                        # TODO remove this for bigger tests, it prevents the test assets from clogging up the in flight assets count
+                        self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")
                         time.sleep(10)
 
                 except Exception as e:

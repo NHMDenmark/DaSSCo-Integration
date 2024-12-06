@@ -189,7 +189,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                             self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
                             self.update_throttle_count()
                             continue
-                    if second_asset_status == self.COMPLETED and second_asset_share_size is None:
+                    if second_asset_status == self.COMPLETED and second_asset_share_size is not None:
                         self.completed_sync_share_still_open(guid, asset)
 
                 # success scenario for an asset
