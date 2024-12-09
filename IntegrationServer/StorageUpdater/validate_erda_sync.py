@@ -177,7 +177,8 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 # check the case of a COMPLETED sync happens without the fileshare being closed
                 # TODO handle what happens if this triggers, for now retry once and if still getting the same result -> error status
                 if asset_status == self.COMPLETED and asset_share_size is not None:
-                    print(f"asset status: {asset_status} asset size: {asset_share_size}")
+                    print(f"guid: {guid} asset status: {asset_status} asset size: {asset_share_size}, sleeping for 5 secs before asking again, asset size should be null")
+                    time.sleep(5)
                     second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = self.storage_api.get_asset_sharesize_and_status(guid)
                     if second_attempted is False:
                         if second_status_code == 1000:
@@ -189,6 +190,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                             self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
                             self.update_throttle_count()
                             continue
+                    print(f"asset status: {second_asset_status} asset size: {second_asset_share_size}, second try gave these values, should be completed and none")
                     if second_asset_status == self.COMPLETED and second_asset_share_size is not None:
                         self.completed_sync_share_still_open(guid, asset)
 
@@ -297,7 +299,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         self.update_throttle_count()
         
-        self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.ERDA_ERROR)
+        self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.ERROR)
         
         # remove the temp sync timestamp 
         self.track_mongo.delete_field(guid, "temporary_erda_sync_time")
@@ -305,10 +307,11 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.track_mongo.delete_field(guid, "temporary_time_out_sync_erda_attempt")
 
         for file in asset["file_list"]:
-             self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.AWAIT)
+             if file["erda_sync"] is self.NO:
+                self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.AWAIT)
         
         # logs and sends a warning message to the health api
-        entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. This is a bug we have encountered before during testing. Erda_sync is set to ERROR. Check that asset is in erda")
+        entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. erda_sync status set to ERROR. Check that asset is in erda and that the share is closed - then set erda_sync to AWAIT and add 1 to the sync count.")
         self.health_caller.warning(self.service_name, entry, guid)
         # TODO handle how to get back on track, note the throttle has not been updated here
 

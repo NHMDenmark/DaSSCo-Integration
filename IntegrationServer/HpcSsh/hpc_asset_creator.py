@@ -112,6 +112,7 @@ class HPCAssetCreator():
 
         # outside main while loop        
         self.mongo_track.close_connection()
+        self.service_mongo.close_connection()
         self.cons.close_connection()
 
 

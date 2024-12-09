@@ -185,12 +185,12 @@ if __name__ == '__main__':
     
     #throttle.reset_throttle()
     
-    guid = "dev-ucloud-900"
+    guid = "dev-ucloud-901_72"
 
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")
-    track.update_entry(guid, "has_open_share", "NO")
-    #track.update_entry(guid, "erda_sync", "AWAIT")
+    #track.update_entry(guid, "has_open_share", "NO")
+    track.update_entry(guid, "erda_sync", "AWAIT")
     #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
 
     #[{key: value, key: value}]
@@ -211,6 +211,8 @@ if __name__ == '__main__':
     #p = hpc_caller.say_hi()
     #print(p)
     #h = 0
+    #second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = sc.get_asset_sharesize_and_status(guid)
+    #print(second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note)
     """
     f = 0
     for l in list:
