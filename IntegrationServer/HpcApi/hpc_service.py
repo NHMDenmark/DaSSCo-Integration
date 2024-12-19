@@ -393,7 +393,7 @@ class HPCService():
             hpc_exception = failed_data.hpc_exception
         except:
             return False
-        print(f"Fail: {guid} {job_name}")
+        print(f"Fail: {guid} {job_name} {fail_status} {hpc_message} {hpc_exception}")
         try:
             asset = self.mongo_track.get_entry("_id", guid)
             if asset is None:
