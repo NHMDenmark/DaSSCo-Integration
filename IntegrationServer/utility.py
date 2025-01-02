@@ -199,3 +199,22 @@ class Utility:
             if value == target_value:
                 return key
         return None
+    
+    def add_prefix_to_last_folder(self, path, prefix):
+        # Get the absolute path
+        path = os.path.abspath(path)
+        
+        # Split the path into head and tail
+        head, tail = os.path.split(path)
+        
+        # If there's no folder name (e.g., path ends with a slash), handle it
+        if not tail:
+            head, tail = os.path.split(head)
+        
+        # Add the prefix to the last folder
+        new_tail = prefix + tail
+        
+        # Construct the new path
+        new_path = os.path.join(head, new_tail)
+        
+        return new_path

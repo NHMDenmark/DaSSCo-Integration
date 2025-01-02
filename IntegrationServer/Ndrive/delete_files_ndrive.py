@@ -70,34 +70,15 @@ class DeleteFilesNdrive():
                     continue
                 
                 try:
+                    alt_path = self.util.add_prefix_to_last_folder(ndrive_path, "imported_")
                     # Check if it's a directory
                     if os.path.isdir(ndrive_path):
-                        # Look for any file in the directory that starts with the GUID
-                        files_to_delete = [f for f in os.listdir(ndrive_path) if f.startswith(f"{guid}.")]
+                        self.delete_files(guid, ndrive_path)
+                    # Check if the directory has prefix imported_ added
+                    elif os.path.isdir(alt_path):
+                        self.delete_files(guid, alt_path)
 
-                        # Delete the files
-                        if files_to_delete:
-                            for file in files_to_delete:
-                                file_path = os.path.join(ndrive_path, file)
-                                os.remove(file_path)
-                            print(f"Deleted files: {guid}")
-                            # update track
-                            self.track_mongo.delete_field(guid, "temporary_path_ndrive")
-                            self.track_mongo.delete_field(guid, "temporary_files_ndrive")
-                            # subtract one from assets in flight
-                            self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")      
-                        else:
-                            print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
-                            self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
-                            entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
-                            self.health_caller.error(self.service_name, entry, guid)
-                        
-                        # delete empty directories
-                        if not os.listdir(ndrive_path):
-                            os.rmdir(ndrive_path)
-                            print(f"Deleted empty directory: {ndrive_path}")
-
-                    else:                        
+                    else:
                         self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
                         entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. This directory was not found. Setting temporary_files_ndrive to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
                         self.health_caller.error(self.service_name, entry, guid)
@@ -122,6 +103,32 @@ class DeleteFilesNdrive():
         self.throttle_mongo.close_connection()
         self.track_mongo.close_connection()
         print("Service closed down")
+
+    def delete_files(self, guid, ndrive_path):
+        # Look for any file in the directory that starts with the GUID
+        files_to_delete = [f for f in os.listdir(ndrive_path) if f.startswith(f"{guid}.")]
+
+        # Delete the files
+        if files_to_delete:
+            for file in files_to_delete:
+                file_path = os.path.join(ndrive_path, file)
+                os.remove(file_path)
+                print(f"Deleted files: {guid}")
+                # update track
+                self.track_mongo.delete_field(guid, "temporary_path_ndrive")
+                self.track_mongo.delete_field(guid, "temporary_files_ndrive")
+                 # subtract one from assets in flight
+                self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")      
+        else:
+            print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
+            self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
+            self.health_caller.error(self.service_name, entry, guid)
+                        
+            # delete empty directories
+            if not os.listdir(ndrive_path):
+                os.rmdir(ndrive_path)
+                print(f"Deleted empty directory: {ndrive_path}")
 
 
 if __name__ == '__main__':
