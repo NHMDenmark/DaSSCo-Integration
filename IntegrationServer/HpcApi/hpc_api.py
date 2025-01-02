@@ -1,3 +1,6 @@
+"""
+Rest api for receiving data and providing information to and from hpc. 
+"""
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
@@ -5,7 +8,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Any, Optional, List, Dict
@@ -18,10 +21,6 @@ from HpcApi.barcode_model import BarcodeModel
 from HpcApi.file_info_model import FileInfoModel
 from HpcApi.fail_job_model import FailJobModel
 from HpcApi.fail_derivative_creation_model import FailDerivativeCreationModel
-
-"""
-Rest api setup for receiving data from hpc. 
-"""
 
 app = FastAPI()
 util = utility.Utility()
@@ -147,4 +146,4 @@ async def fail_derivative_creation(info: fail_derivative_creation_model):
     acknowledged = service.fail_derivative_creation(info)
 
     if acknowledged is False:
-        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+        return JSONResponse(content={"error": "asset not found."}, status_code=422)

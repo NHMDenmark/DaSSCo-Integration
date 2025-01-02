@@ -185,22 +185,22 @@ if __name__ == '__main__':
     
     #throttle.reset_throttle()
     
-    guid = "dev-ucloud-901_72"
+    guid = "dev-ucloud-926"
 
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")
     #track.update_entry(guid, "has_open_share", "NO")
-    track.update_entry(guid, "erda_sync", "AWAIT")
+    #track.update_entry(guid, "hpc_ready", "NO")
     #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
 
     #[{key: value, key: value}]
-    #list = track.get_entries_from_multiple_key_pairs([{"has_open_share":"NO", "hpc_ready":"NO", "jobs_status":"RUNNING"}])
+    list = track.get_entries_from_multiple_key_pairs([{"has_new_file":"ERROR"}])
     
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
-    track.update_entry(guid, "available_for_services", "YES")
-    track.update_entry(guid, "available_for_services_timestamp", None)
-    track.update_entry(guid, "available_for_services_wait_time", None)
+    #track.update_entry(guid, "available_for_services", "YES")
+    #track.update_entry(guid, "available_for_services_timestamp", None)
+    #track.update_entry(guid, "available_for_services_wait_time", None)
 
     #track.update_track_job_status("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "barcode", "WAITING")
     #track.update_entry("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "jobs_status", "WAITING")
@@ -213,14 +213,14 @@ if __name__ == '__main__':
     #h = 0
     #second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = sc.get_asset_sharesize_and_status(guid)
     #print(second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note)
-    """
+    
     f = 0
     for l in list:
         guid = l["_id"]
         print(guid)
         #hpc_caller.asset_clean_up(guid)
         #track.update_entry(guid, "hpc_ready", "YES")
-        track.update_entry(l["_id"], "jobs_status", "DONE")
+        #track.update_entry(l["_id"], "jobs_status", "DONE")
         
         #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
         f += 1
@@ -251,7 +251,7 @@ if __name__ == '__main__':
         #track.update_entry(l["_id"], "has_open_share", "YES")
         
     print(f)
-    """
+    
 
     throttle.close_connection()
     track.close_connection()
