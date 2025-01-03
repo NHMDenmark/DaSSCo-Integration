@@ -11,6 +11,7 @@ import uuid
 import hashlib
 import binascii
 from datetime import datetime
+import chardet
 
 """
 Class with helper methods that are used throughout the different processes.
@@ -159,16 +160,20 @@ class Utility:
         return False
     
     def convert_json_to_utf8(self, input_data):
-        # Function to decode a string
         def decode_string(s):
             try:
-                # First, decode the string using 'latin1' to get the correct bytes
-                bytes_str = s.encode('latin1')
-                # Then decode it to 'utf-8'
-                return bytes_str.decode('utf-8')
-            except UnicodeEncodeError:
-                return s
+                # Detect the encoding of the string
+                detected = chardet.detect(s.encode('latin1'))  # Ensure we handle unexpected cases
+                encoding = detected['encoding'] or 'latin1'
+                
+                print(encoding)
 
+                # Decode to 'utf-8' using the detected encoding
+                return s.encode(encoding).decode('utf-8')
+            except (UnicodeEncodeError, UnicodeDecodeError):
+                # If decoding fails, return the original string
+                return s
+    
         # Recursive function to handle all elements in the JSON structure
         def decode_json(data):
             if isinstance(data, str):

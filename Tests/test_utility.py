@@ -3,6 +3,7 @@ import hashlib
 import binascii
 import os
 import sys
+from datetime import datetime
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
@@ -151,7 +152,6 @@ class TestUtility(unittest.TestCase):
         self.assertEqual(result, expected_output, "Failed to convert JSON to UTF-8.")
 
     def test_convert_string_to_datetime(self):
-        from datetime import datetime
 
         time = datetime.now()
         result = Utility.convert_string_to_datetime(self, time)

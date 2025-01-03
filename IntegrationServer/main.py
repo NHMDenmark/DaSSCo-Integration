@@ -185,8 +185,9 @@ if __name__ == '__main__':
     
     #throttle.reset_throttle()
     
-    guid = "dev-ucloud-926"
-
+    #guid = "dev-ucloud-926"
+    a = u.convert_json_to_utf8("Charlotte Vikkels\u00c3\u00b8 Hansen")
+    print(a)
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")
     #track.update_entry(guid, "has_open_share", "NO")
@@ -194,7 +195,7 @@ if __name__ == '__main__':
     #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
 
     #[{key: value, key: value}]
-    list = track.get_entries_from_multiple_key_pairs([{"has_new_file":"ERROR"}])
+    list = track.get_entries_from_multiple_key_pairs([{"temporary_files_ndrive":"ERROR", "batch_list_name":"WORKHERB0001_2024-09-12"}])
     
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
@@ -219,7 +220,7 @@ if __name__ == '__main__':
         guid = l["_id"]
         print(guid)
         #hpc_caller.asset_clean_up(guid)
-        #track.update_entry(guid, "hpc_ready", "YES")
+        #track.update_entry(guid, "temporary_files_ndrive", "YES")
         #track.update_entry(l["_id"], "jobs_status", "DONE")
         
         #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")

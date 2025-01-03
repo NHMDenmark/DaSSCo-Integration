@@ -336,11 +336,11 @@ class TrackRepository:
         :return: A boolean indicating the success of the operation.
         """
         self.update_entry(guid, "asset_type", type)
-
+        
         if type == AssetTypeEnum.DEVICE_TARGET.value:
             # Fetch the current entry using the guid to access its job list
             entry = self.get_entry("_id", guid)
-        
+            
             # Filter out the jobs with status "WAITING"
             updated_job_list = [job for job in entry["job_list"] if job["status"] != "WAITING"]
         
