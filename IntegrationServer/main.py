@@ -186,7 +186,7 @@ if __name__ == '__main__':
     #throttle.reset_throttle()
     
     #guid = "dev-ucloud-926"
-    a = u.convert_json_to_utf8("Charlotte Vikkels\u00c3\u00b8 Hansen")
+    a = u.convert_json_to_utf8("\u00c3\u00b8")
     print(a)
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")

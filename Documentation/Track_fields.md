@@ -38,4 +38,7 @@
 | [temporary_path_ndrive](Track_field_descriptions/temporary_path_ndrive.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Temporary field that gets deleted at the end of the pipeline |
 | [temporary_files_local](Track_field_descriptions/temporary_files_local) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Temporary field that gets deleted at the end of the pipeline |
 | [temporary_path_local](Track_field_descriptions/temporary_path_local.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Temporary field that gets deleted at the end of the pipeline |
+| [available_for_services](Track_field_descriptions/available_for_services.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Flag set by any service and then handled by asset_paused_status_handler. Can be YES, PAUSED or ERROR. |
+| [available_for_services_timestamp](Track_field_descriptions/available_for_services_timestamp.md) | Integration | Receiving asset from ndrive | Integration | When an asset is paused. | Gets reset to null once pause status is changed. |
+| [available_for_services_wait_time](Track_field_descriptions/available_for_services_wait_time.md) | Integration | Receiving asset from ndrive | Integration | When an asset is paused. | Gets reset once an asset is no longer paused. |
 | t | h | e | e | n | d |
