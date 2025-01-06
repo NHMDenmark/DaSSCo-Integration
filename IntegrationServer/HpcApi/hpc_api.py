@@ -33,19 +33,18 @@ fail_job_model = FailJobModel
 file_info_model = FileInfoModel
 fail_derivative_creation_model = FailDerivativeCreationModel
 
+# TODO update unit tests
 @app.get("/dev/yo")
 def index():
     return "keep out all devil"
 
 """
 Deprecated since we use the derivative endpoint instead.
-# TODO receive metadata does not have unit test
 @app.post("/dev/api/v1/metadata_asset")
 async def receive_metadata(metadata: metadata_model):
     service.persist_new_metadata(metadata)
 """
     
-# TODO receive derivative does not have unit test
 @app.post("/dev/api/v1/derivative")
 async def receive_derivative_metadata(metadata: metadata_model):
     
@@ -69,7 +68,6 @@ async def insert_barcode(barcode_data: barcode_model):
 
     if updated is False:
         return JSONResponse(content={"error": "asset not found"}, status_code=422)
-
 
 @app.post("/dev/api/v1/queue_job")
 async def queue_job(queue_data: job_model):

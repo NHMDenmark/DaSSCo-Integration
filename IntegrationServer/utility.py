@@ -12,6 +12,7 @@ import hashlib
 import binascii
 from datetime import datetime
 import chardet
+import subprocess
 
 """
 Class with helper methods that are used throughout the different processes.
@@ -223,3 +224,22 @@ class Utility:
         new_path = os.path.join(head, new_tail)
         
         return new_path
+    
+    def run_shell_script(self, script_path):
+        try:
+            # Call the shell script and capture the output
+            result = subprocess.run(
+                [script_path],           # Path to the shell script
+                check=True,              # Raise exception if the command fails
+                stdout=subprocess.PIPE,  # Capture standard output
+                stderr=subprocess.PIPE,  # Capture standard error
+                text=True                # Decode output to string
+            )
+
+            return True
+
+        except subprocess.CalledProcessError as e:
+            # TODO Handle errors if the script fails
+            print(e.stderr)
+
+            return False
