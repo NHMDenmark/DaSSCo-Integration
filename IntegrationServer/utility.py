@@ -225,15 +225,19 @@ class Utility:
         
         return new_path
     
-    def run_shell_script(self, script_path):
+    def run_shell_script(self, script_path, arguments = [], directory = project_root):
+        
+        command = [script_path] + arguments
+        print(command)
         try:
             # Call the shell script and capture the output
             result = subprocess.run(
-                [script_path],           # Path to the shell script
+                command,                # Path to the shell script
                 check=True,              # Raise exception if the command fails
                 stdout=subprocess.PIPE,  # Capture standard output
                 stderr=subprocess.PIPE,  # Capture standard error
-                text=True                # Decode output to string
+                text=True,                # Decode output to string
+                cwd=directory            # Specify the working directory
             )
 
             return True

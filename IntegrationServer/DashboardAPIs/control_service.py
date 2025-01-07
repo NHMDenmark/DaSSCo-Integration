@@ -5,9 +5,10 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import utility
+from Enums import status_enum, validate_enum
 from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository
-
+from DashboardAPIs import micro_service_paths
 
 class ControlService():
 
@@ -25,6 +26,9 @@ class ControlService():
 
         self.mongo_service = service_repository.ServiceRepository()
         self.mongo_track = track_repository.TrackRepository()
+        self.micro_paths = micro_service_paths.MicroServicePaths()
+        self.validate_enum = validate_enum.ValidateEnum
+        self.status_enum = status_enum.StatusEnum
 
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -34,12 +38,12 @@ class ControlService():
 
         all_status = self.mongo_service.get_value_for_key("all_run", "run_status")
 
-        if all_status == "RUNNING":
+        if all_status == self.status_enum.RUNNING.value:
             return True, True
 
         all_run_path = self.util.get_value(self.control_service_config_path, "all_run")
         
-        update = self.mongo_service.update_entry("all_run", "run_status", "RUNNING")
+        update = self.mongo_service.update_entry("all_run", "run_status", self.status_enum.RUNNING.value)
 
         if update is False:
             return update, False
@@ -50,6 +54,25 @@ class ControlService():
     
     def stop_all(self):
 
-        stopped = self.mongo_service.update_entry("all_run", "run_status", "STOPPED")
+        stopped = self.mongo_service.update_entry("all_run", "run_status", self.status_enum.STOPPED.value)
         
         return stopped
+    
+    def start_service(self, service_name):
+
+        start_service_path = self.util.get_value(self.control_service_config_path, "start_service")
+
+        service_path = self.micro_paths.get_path_from_name(service_name)
+
+        if service_path is False:
+            return False
+
+        # update database status
+        updated = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)
+
+        if updated is False:
+            return False
+
+        started = self.util.run_shell_script(start_service_path, arguments = [service_path])
+
+        return started

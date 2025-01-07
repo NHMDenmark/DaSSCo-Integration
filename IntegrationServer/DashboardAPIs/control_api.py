@@ -18,10 +18,10 @@ service = control_service.ControlService()
 
 @control.get("/control/check")
 def index():
-    return "checks out"
+    return "check it out"
 
 @control.post("/control/start_all")
-def start_all():
+async def start_all():
 
     running, already_running = service.all_run()
 
@@ -34,7 +34,7 @@ def start_all():
     return JSONResponse(content={"status": "ALL RUNNING"}, status_code=200)
 
 @control.post("/control/stop_all")
-def stop_all():
+async def stop_all():
 
     stopped = service.stop_all()
 
@@ -42,3 +42,13 @@ def stop_all():
         return JSONResponse(content={"status": "ALL RUNNING"}, status_code=500)
 
     return JSONResponse(content={"status": "ALL STOPPING"}, status_code=200)
+
+@control.post("/control/start_service")
+async def service_start(service_name: str):
+
+    started = service.start_service(service_name)
+    
+    if started is False:
+        return JSONResponse(content={"status": f"Failed to start {service_name}"}, status_code=500)
+
+    return JSONResponse(content={"status": f"Started {service_name}"}, status_code=200)

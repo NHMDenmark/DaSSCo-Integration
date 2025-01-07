@@ -29,6 +29,7 @@ from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
 from HealthUtility.run_utility import LogClass
 from AssetFileHandler import asset_handler
+from DashboardAPIs import micro_service_paths
 import traceback
 #from pymongo.errors import InvalidOperation
 #import field_validation
@@ -174,6 +175,10 @@ def test_exception():
         raise Exception("fun")
 
 if __name__ == '__main__':
+
+    mp = micro_service_paths.MicroServicePaths()
+
+    print(mp.get_path_from_name("Delete local files"))
 
     #call = caller_hpc_api.CallerHPCApi()
 
