@@ -16,17 +16,16 @@ class MicroServicePaths():
         
         service_paths = {
         "Erda sync ARS":"StorageUpdater/sync_erda.py",
-        "Close file share ARS":"",
-        "Open file share ARS":"",
-        "Asset creator ARS":"",
-        "Validate erda sync ARS":"",
-        "File uploader ARS":"",
-        "Update metadata ARS":"",
-        "Asset creator HPC":"",
-        "HPC clean up service":"",
-        "HPC job caller":"",
-        "HPC job retry handler":"",
-        "HPC file uploader":"",
+        "Close file share ARS":"StorageUpdater/close_share.py",
+        "Open file share ARS":"StorageUpdater/open_share.py",
+        "Asset creator ARS":"StorageUpdater/asset_creator.py",
+        "Validate erda sync ARS":"StorageUpdater/validate_erda_sync.py",
+        "File uploader ARS":"StorageUpdater/file_uploader.py",
+        "Update metadata ARS":"StorageUpdater/update_metadata.py",
+        "Asset creator HPC":"HpcSsh/hpc_asset_creator.py",
+        "HPC clean up service":"HpcSsh/hpc_clean_up.py",
+        "HPC job caller":"HpcSsh/hpc_job_caller.py",
+        "HPC file uploader":"HpcSsh/hpc_uploader.py",
         "New files finder (Ndrive)":"Ndrive/ndrive_new_files.py",
         "Process new files (Ndrive)":"Ndrive/process_files_from_ndrive.py",
         "Delete files (Ndrive)":"Ndrive/delete_files_ndrive.py",
@@ -34,6 +33,7 @@ class MicroServicePaths():
         "Asset paused status handler":"HealthUtility/asset_paused_status_handler.py",
         "Flag paused status handler":"HealthUtility/flag_paused_status_handler.py",
         "Asset error status handler":"HealthUtility/asset_error_status_handler.py",
+        "HPC job retry handler":"HealthUtility/hpc_job_retry_handler.py",
         "Throttle service":"HealthUtility/throttle_service.py"
         }
 

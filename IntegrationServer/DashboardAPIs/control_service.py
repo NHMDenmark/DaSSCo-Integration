@@ -58,6 +58,12 @@ class ControlService():
         
         return stopped
     
+    def stop_service(self, service_name):
+
+        stopped = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.STOPPED.value)
+
+        return stopped
+    
     def start_service(self, service_name):
 
         start_service_path = self.util.get_value(self.control_service_config_path, "start_service")
@@ -66,6 +72,8 @@ class ControlService():
 
         if service_path is False:
             return False
+
+        # TODO check all_run status to determine if service can run
 
         # update database status
         updated = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)

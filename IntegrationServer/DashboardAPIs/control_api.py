@@ -52,3 +52,13 @@ async def service_start(service_name: str):
         return JSONResponse(content={"status": f"Failed to start {service_name}"}, status_code=500)
 
     return JSONResponse(content={"status": f"Started {service_name}"}, status_code=200)
+
+@control.post("/control/stop_service")
+async def service_stop(service_name: str):
+
+    stopped = service.stop_service(service_name)
+
+    if stopped is False:
+        return JSONResponse(content={"status": f"Failed to stop {service_name}"}, status_code=500)
+
+    return JSONResponse(content={"status": f"Stopping {service_name}"}, status_code=200)
