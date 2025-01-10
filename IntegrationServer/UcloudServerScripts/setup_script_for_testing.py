@@ -48,6 +48,8 @@ def copy_files(folder_path, output_folder, test_number, guid_number):
 
     with open("/work/data/Ndrive/test-guid-number.txt", "w") as f:
         f.write(str(guid_number))
+    old_guid_number = guid_number - test_number
+    os.rename(output_folder, f"/work/data/Ndrive/nhmd-ws-01/{old_guid_number}/")
 
 if __name__ == "__main__":
 

@@ -13,9 +13,7 @@ from Enums import status_enum, validate_enum
 from StorageApi import storage_client
 
 """
-Class responsible for initiating the process of importing new files from the ndrive. 
-Runs a loop that checks the ndrive for previously not imported files.
-Logs warnings and errors from this process, and directs them to the health service.
+Description
 """
 class AssetErrorStatusHandler():
 

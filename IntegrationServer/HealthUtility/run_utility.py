@@ -83,16 +83,22 @@ class RunUtility(LogClass, Status):
         module = self.util.get_nested_value(self.micro_service_config_path, self.service_name, "module")
 
         if module == "ssh hpc":
-            paused = True
+            paused, extra_msg = self.ssh_hpc_unpause_routine(self.service_name)
 
         if module == "storage updater":
             paused, extra_msg = self.storage_updater_unpause_routine(self.service_name)
             
         if module == "ndrive":
-            paused = True
+            paused, extra_msg = self.ndrive_unpause_routine(self.service_name)
 
         if module == "asset file handler":
-            paused = True
+            paused, extra_msg = self.asset_file_handler_unpause_routine(self.service_name)
+
+        if module == "health utility":
+            paused, extra_msg = self.health_utility_unpause_routine(self.service_name)
+
+        if module == "tests":
+            paused, extra_msg = self.tests_unpause_routine(self.service_name)
             
         if paused is True: 
             message = f"{self.service_name} attempted and failed to unpause. This was attempted after {pause_count} pause loops. {extra_msg}"
@@ -186,6 +192,12 @@ class RunUtility(LogClass, Status):
             self.health_caller.unexpected_error(service_name, entry)
             return stay_paused, "Unexpected error while attempting to create a new storage client. This error has also been logged separately."
 
+        # query ARS for their status
+        # check open/close share, file upload/download 
+
+
+        # check if last error has an asset guid attached
+        # check if asset data is fine both in ars and int server
 
         # TODO more logic
         try:
@@ -193,4 +205,34 @@ class RunUtility(LogClass, Status):
         except Exception as e:
             pass
 
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+    
+    def ndrive_unpause_routine(self, service_name):
+
+        stay_paused = True
+        # TODO more logic
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+    
+    def health_utility_unpause_routine(self, service_name):
+
+        stay_paused = True
+        # TODO more logic
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+    
+    def ssh_hpc_unpause_routine(self, service_name):
+
+        stay_paused = True
+        # TODO more logic
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+    
+    def asset_file_handler_unpause_routine(self, service_name):
+
+        stay_paused = True
+        # TODO more logic
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+    
+    def tests_unpause_routine(self, service_name):
+        # Always unpauses
+        stay_paused = False
+        
         return stay_paused, ""
