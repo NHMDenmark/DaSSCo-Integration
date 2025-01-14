@@ -8,7 +8,7 @@ sys.path.append(project_root)
 from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository, throttle_repository
 from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
-from StorageApi import storage_client
+from StorageApi import storage_client, ars_health_check
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
@@ -175,7 +175,8 @@ def test_exception():
         raise Exception("fun")
 
 if __name__ == '__main__':
-
+    
+    """
     mp = micro_service_paths.MicroServicePaths()
 
     print(mp.get_path_from_name("Delete local files"))
@@ -262,7 +263,7 @@ if __name__ == '__main__':
     throttle.close_connection()
     track.close_connection()
     meta.close_connection()
-    
+    """
     #try:
     #    test_exception()
     #except Exception as e:
