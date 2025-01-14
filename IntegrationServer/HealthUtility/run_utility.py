@@ -10,7 +10,7 @@ from MongoDB import service_repository
 from Enums.status_enum import Status
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
-from StorageApi import storage_client
+from StorageApi import storage_client, ars_health_check
 
 """
 Class that helps the micro services with logging, pausing and run status updates.
@@ -28,6 +28,7 @@ class RunUtility(LogClass, Status):
         self.util = utility.Utility()
         self.service_mongo = service_repository.ServiceRepository()
         self.health_caller = health_caller.HealthCaller()
+        self.ars_health_check = ars_health_check.ArsHealthCheck()
         self.service_name = service_name
         self.prefix_id = prefix_id
         
@@ -193,6 +194,17 @@ class RunUtility(LogClass, Status):
             return stay_paused, "Unexpected error while attempting to create a new storage client. This error has also been logged separately."
 
         # query ARS for their status
+        try:
+            ars_status = self.check_ars_total_health_status()
+            
+            if ars_status is False:
+                return stay_paused, "ARS or keycloak up status failed."
+
+        except Exception as e:
+            entry = self.log_exc(self.prefix_id, f"Error while attempting unpause routine for {service_name}", level=self.ERROR, exc=e)
+            self.health_caller.unexpected_error(service_name, entry)
+            return stay_paused, "Unexpected error while attempting to get ARS/keycloak health status. This error has also been logged separately."
+
         # check open/close share, file upload/download 
 
 
@@ -236,3 +248,15 @@ class RunUtility(LogClass, Status):
         stay_paused = False
         
         return stay_paused, ""
+    
+    # Checks the up status for ARS and keycloak. Returns True if all status are up and False otherwise.
+    def check_ars_total_health_status(self):
+        
+        ars_check = self.ars_health_check.check_asset_service_health()
+        keycloak_check = self.ars_health_check.check_keycloak_health()
+        fileproxy_check = self.ars_health_check.check_fileproxy_health()
+
+        if False in [ars_check, keycloak_check, fileproxy_check]:
+            return False
+        
+        return True
