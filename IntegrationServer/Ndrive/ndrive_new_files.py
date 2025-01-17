@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import shutil
 import time
 import utility
-from MongoDB import service_repository, throttle_repository
+from MongoDB import service_repository, throttle_repository, track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum
 
@@ -34,6 +34,7 @@ class NdriveNewFilesFinder():
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
+        self.track_mongo = track_repository.TrackRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -54,6 +55,9 @@ class NdriveNewFilesFinder():
     def loop(self):
 
         while self.run == self.status_enum.RUNNING.value:
+            
+            # in case of a crash its possible there will be leftover folders in NewFiles directory. They should be deleted before running main part of loop.
+            self.delete_any_wait_prefix()
 
             self.copy_from_ndrive_and_update_ndrive_dirs(self.ndrive_import_path, self.new_files_path)
 
@@ -69,6 +73,7 @@ class NdriveNewFilesFinder():
         # out of main loop
         self.service_mongo.close_connection()
         self.throttle_mongo.close_connection()
+        self.track_mongo.close_connection()
 
 
     def copy_from_ndrive_and_update_ndrive_dirs(self, ndrive_path, local_destination):
@@ -93,14 +98,22 @@ class NdriveNewFilesFinder():
                         continue
 
                     base_name, file_type = os.path.splitext(file)
+
+                    # check if file has been imported before, this could be due to a crash or stop/restart of services
+                    exists = self.track_mongo.get_entry("_id", base_name)
+                    if exists is not None:
+                        print(f"{base_name} was found to already exist in database - skipping")
+                        continue
+
                     if base_name not in file_groups:
                         file_groups[base_name] = []
+
                     file_groups[base_name].append((file, file_type))
 
                 # Create local folders and copy files
                 for base_name, file_list in file_groups.items():
 
-                    # Check if a directory with the same base_name already exists in the Error directory
+                    # Check if a directory with the same base_name already exists in the Error or directory
                     error_directory_path = os.path.join(f"{project_root}/Files/Error", base_name)
                     if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
                         entry = self.run_util.log_msg(self.prefix_id, f"Directory {error_directory_path} already exists in the Error path. Skipping copy.")
@@ -129,7 +142,8 @@ class NdriveNewFilesFinder():
                 self.rename_batch_directory_after_import(remote_folder, prefix="error_")
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} encountered an unexpected erorr while trying to copy new files from {remote_folder}. Added error_ to the folder name.", exc=e, level=self.status_enum.ERROR.value)
                 self.health_caller.error(self.service_name, entry)
-        
+                # return to end the function since something crashed
+                return None
         else:
             time.sleep(10)
 
@@ -181,7 +195,22 @@ class NdriveNewFilesFinder():
                         return f"{remote_folder}/{directory}/{subdirectory}"
         # If no matching directory is found
         return None
+    
+    def delete_any_wait_prefix(self):
+        
+        try:
+            for entry in os.listdir(self.new_files_path):
+                entry_path = os.path.join(self.new_files_path, entry)
+            
+                # Check if the entry is a directory and starts with "wait_"
+                if os.path.isdir(entry_path) and entry.startswith("wait_"):
+                    # Delete the directory and its contents
+                    shutil.rmtree(entry_path)
+                    print(f"Deleted directory: {entry_path}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
+        
 
 if __name__ == '__main__':
     NdriveNewFilesFinder()

@@ -8,7 +8,7 @@ sys.path.append(project_root)
 from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository, throttle_repository
 from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
-from StorageApi import storage_client, ars_health_check
+from StorageApi import storage_client, ars_health_check, storage_service
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
@@ -176,6 +176,11 @@ def test_exception():
 
 if __name__ == '__main__':
     
+    #throttle  = throttle_repository.ThrottleRepository()
+    #throttle.subtract_from_amount("total_max_new_asset_size_mb", "value", 15000) 
+    #throttle.subtract_from_amount("total_max_asset_size_mb", "value", 15000) 
+    
+    #throttle.reset_throttle()
     """
     mp = micro_service_paths.MicroServicePaths()
 
