@@ -36,29 +36,29 @@ source ~/.bashrc
 # Step 5: Install nginx and setup nginx
 echo "Installing and setting up nginx"
 
-apt-get install -y nginx
+# apt-get install -y nginx
 
 # this assumes the server running the nginx proxy has the job name added to the nginx default  
-echo "server {
-        listen 80;
-
-        root /var/www/html;
-
-        index index.html index.htm index.nginx-debian.html;
-        server_name j-5051363-job-0;
-
-        location / {
-            proxy_pass http://localhost:8000;
-            proxy_http_version 1.1;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-      }
-}
-upstream j-5051363-job-0 {
-  server localhost:8000;
-}" > /etc/nginx/sites-available/default
+#echo "server {
+#        listen 80;
+#
+#        root /var/www/html;
+#
+#        index index.html index.htm index.nginx-debian.html;
+#        server_name j-5051363-job-0;
+#
+#        location / {
+#            proxy_pass http://localhost:8000;
+#            proxy_http_version 1.1;
+#            proxy_set_header Host \$host;
+#            proxy_set_header X-Real-IP \$remote_addr;
+#            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+#            proxy_set_header X-Forwarded-Proto \$scheme;
+#      }
+#}
+#upstream j-5051363-job-0 {
+#  server localhost:8000;
+#}" > /etc/nginx/sites-available/default
 
 service nginx start
 echo "Nginx installed and running"
