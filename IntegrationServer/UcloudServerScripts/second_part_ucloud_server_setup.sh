@@ -2,13 +2,14 @@
 
 # chmod +x path/to/script
 # must use explicit paths in script,
-# since using sudo will cause /root/ folder to be used otherwise and sudo is needed
+# run with sudo
+# only run after running first part and sourcing bash for new paths
 
 # Exit on error
 set -e
 
 # Log output to a file
-LOGFILE="/var/log/server_setup.log"
+LOGFILE="/var/log/second_part_server_setup.log"
 exec > >(tee -i $LOGFILE)
 exec 2>&1
 
@@ -16,29 +17,9 @@ HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
 INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
+DB_PATH="/work/data/lars"
 
-echo "Starting server setup"
-
-# Step 1: Update and Upgrade System
-echo "Updating and upgrading the system"
-apt-get update -y && apt-get upgrade -y
-
-# Step 2: Get sendmail installed and running
-echo "Install and run sendmail"
-apt-get install -y sendmail
-apt-get install -y mailutils
-service sendmail start
-
-# Step 3: Update .bashrc with paths to mongo db
-echo "Updating .bashrc with MongoDB paths"
-
-echo "export PATH=/work/data/lars/mongodb-linux-x86_64-ubuntu2204-7.0.6/bin:\$PATH" >> $HOMEPATH/.bashrc
-echo "export PATH=/work/data/lars/mongosh-2.1.5-linux-x64/bin:\$PATH" >> $HOMEPATH/.bashrc
-echo "MongoDB paths added to .bashrc"
-
-# Step 4: Source the .bashrc file to apply changes
-echo "Sourcing .bashrc to apply changes"
-source $HOMEPATH/.bashrc
+echo "Starting second part of the server setup ---"
 
 # Step 5: Install nginx and setup nginx
 echo "Installing and setting up nginx"
@@ -85,31 +66,37 @@ echo "Nginx installed and running"
 # Step 6: Generate ssh key for slurm usage
 echo "Generating ssh key for slurm in ~/.ssh"
 ssh-keygen -N "" -f $HOMEPATH/.ssh/slurm
-echo "Generated shh key"
 
 # Step 7: Update venv
 echo "Activate and update python venv"
 source /work/data/integration/venv_integration/bin/activate
-pip install -r -y $INT_PATH/requirements.txt
+pip install -r $INT_PATH/requirements.txt
 echo "Venv good to go"
 
-# Missing actually running the database here
 # Step 8: Run the integration setup script for the database
-echo "Setting up the database"
+
+echo "Running the database"
+
+nohup mongod --dbpath $DB_PATH/db > $DB_PATH/$HOSTNAME.log 2>&1 &
+
+echo "Running setup script for database"
 python $INT_PATH/setup_service_script.py
 echo "Database set up"
 
 # Step 9: Run the api endpoints
-echo "Starting Health and Hpc api services"
-nohup uvicorn hpc_api:app --reload --host 127.0.0.1 --port 8000 > $INT_PATH/HpcApi/nohup1.log 2>&1 &
-nohup uvicorn health_api:health --reload --host 127.0.0.1 --port 8555 > $INT_PATH/HealthApi/nohup1.log 2>&1 &
+echo "Starting Hpc api service, Control api service and local Health api service."
+export PYTHONPATH=$INT_PATH
+nohup uvicorn HpcApi.hpc_api:app --reload --host 127.0.0.1 --port 8000 > $INT_PATH/HpcApi/$HOSTNAME.log 2>&1 &
+nohup uvicorn DashboardAPIs.control_api:control --reload --host 127.0.0.1 --port 8005 > $INT_PATH/DashboardAPIs/$HOSTNAME.log 2>&1 &
+nohup uvicorn HealthApi.health_api:health --reload --host 127.0.0.1 --port 8555 > $INT_PATH/HealthApi/$HOSTNAME.log 2>&1 &
 echo "Endpoint services started"
 
 # End of script messages
 deactivate
 echo "Exited the venv"
 
-echo "Server setup complete! Check the log file at $LOGFILE for details."
-echo "Change the ip addres in the nginx proxy to this servers ip (ifconfig)"
-echo "Add the ssh key to slurm authorised keys"
+echo "Server setup complete! Check the log files at $LOGFILE for details."
+echo "Change the ip address in the nginx proxy to this servers ip (ifconfig)"
+echo "Add the ssh key to hpc(slurm) authorised keys:"
+cat $HOMEPATH/.ssh/slurm.pub
 echo "Start the integration server services"
