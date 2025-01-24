@@ -38,7 +38,7 @@ class SyncErda():
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
-        self.max_sync_asset_count = self.util.get_value(self.throttle_config_path, "max_sync_asset_count")
+        self.await_sync_asset_count = self.util.get_value(self.throttle_config_path, "await_sync_asset_count")
 
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -72,8 +72,8 @@ class SyncErda():
                 continue
             
             # check throttle
-            sync_count = self.throttle_mongo.get_value_for_key("max_sync_asset_count", "value")
-            if sync_count >= self.max_sync_asset_count:
+            sync_count = self.throttle_mongo.get_value_for_key("await_sync_asset_count", "value")
+            if sync_count >= self.await_sync_asset_count:
                 # TODO implement better throttle than sleep
                 time.sleep(30)
                 self.end_of_loop_checks()
@@ -155,7 +155,7 @@ class SyncErda():
         self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)                    
         # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
         self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
-        self.throttle_mongo.add_one_to_count("max_sync_asset_count", "value")
+        self.throttle_mongo.add_one_to_count("await_sync_asset_count", "value")
 
     # handles status 400, checks if the asset has actually been synced despite the 400 status. Returns True if asset has synced, false otherwise
     def handle_status_400(self, guid, asset, note):

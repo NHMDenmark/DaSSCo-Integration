@@ -290,7 +290,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             if again is None:
                 self.track_mongo.update_entry(guid, self.ERDA_SYNC, self.NO)
                 self.track_mongo.update_entry(guid, "temporary_time_out_sync_erda_attempt", True)
-                self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+                self.throttle_mongo.subtract_one_from_count("await_sync_asset_count", "value")
                 # logs and sends a warning message to the health api
                 entry = self.run_util.log_msg(self.prefix_id, f"{guid} timed out while syncing with ERDA for the first time. Asset has had erda_sync flag set to NO and will be rescheduled for syncing.")
                 self.health_caller.warning(self.service_name, entry, guid)
@@ -319,7 +319,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         
         is_derivative = self.is_asset_derivative(guid)
 
-        self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
 
         # check first if its a reopened asset that is being synce, then if not if its a derivative or a regular asset
         if "temporary_reopened_share_status" in asset:
@@ -327,12 +327,12 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             self.track_mongo.delete_field(guid, "temporary_reopened_share_status")
         else:
             if is_derivative:
-                self.throttle_mongo.subtract_from_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
+                self.throttle_mongo.subtract_from_amount("total_derivative_size_mb", "value", asset["asset_size"])
             else:
-                self.throttle_mongo.subtract_from_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])        
+                self.throttle_mongo.subtract_from_amount("total_new_asset_size_mb", "value", asset["asset_size"])        
     
     def update_throttle_count(self):
-        self.throttle_mongo.subtract_one_from_count("max_sync_asset_count", "value")
+        self.throttle_mongo.subtract_one_from_count("await_sync_asset_count", "value")
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):

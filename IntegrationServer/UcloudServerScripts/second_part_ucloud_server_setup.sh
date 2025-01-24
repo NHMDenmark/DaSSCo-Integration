@@ -2,7 +2,7 @@
 
 # chmod +x path/to/script
 # must use explicit paths in script,
-# run with sudo
+# do not run with sudo
 # only run after running first part and sourcing bash for new paths
 
 # Exit on error
@@ -18,6 +18,7 @@ IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
 INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
 DB_PATH="/work/data/lars"
+DB_NAME="dev-db-1-11-2024"
 
 echo "Starting second part of the server setup ---"
 
@@ -77,7 +78,7 @@ echo "Venv good to go"
 
 echo "Running the database"
 
-nohup mongod --dbpath $DB_PATH/db > $DB_PATH/$HOSTNAME.log 2>&1 &
+nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
 
 echo "Running setup script for database"
 python $INT_PATH/setup_service_script.py

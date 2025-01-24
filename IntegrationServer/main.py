@@ -177,8 +177,8 @@ def test_exception():
 if __name__ == '__main__':
     
     #throttle  = throttle_repository.ThrottleRepository()
-    #throttle.subtract_from_amount("total_max_new_asset_size_mb", "value", 15000) 
-    #throttle.subtract_from_amount("total_max_asset_size_mb", "value", 15000) 
+    #throttle.subtract_from_amount("total_new_asset_size_mb", "value", 15000) 
+    #throttle.subtract_from_amount("total_asset_size_mb", "value", 15000) 
     
     #throttle.reset_throttle()
     """
@@ -312,7 +312,7 @@ if __name__ == '__main__':
     #throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
     #print(throttle_config_path)
     
-    #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_max_asset_size_mb")
+    #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_asset_size_mb")
     #print(max_total_asset_size)
     #e = email_sender.EmailSender("test")
 

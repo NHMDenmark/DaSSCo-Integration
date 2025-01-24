@@ -88,7 +88,7 @@ class HPCService():
             self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
             # add one to the assets in flight count
-            self.mongo_throttle.add_one_to_count("max_assets_in_flight", "value")
+            self.mongo_throttle.add_one_to_count("assets_in_flight", "value")
 
             return metadata_flag
         
@@ -577,7 +577,7 @@ class HPCService():
             # If asset is derivative -1 from assets in flight
             parent_guid = self.mongo_metadata.get_value_for_key(guid, "parent_guid")
             if parent_guid is not None and parent_guid != "":
-                self.mongo_throttle.subtract_one_from_count("max_assets_in_flight", "value")
+                self.mongo_throttle.subtract_one_from_count("assets_in_flight", "value")
 
             return True
         else:

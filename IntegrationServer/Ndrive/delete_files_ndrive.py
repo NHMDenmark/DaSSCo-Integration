@@ -84,7 +84,7 @@ class DeleteFilesNdrive():
                         self.health_caller.error(self.service_name, entry, guid)
                         print(f"{ndrive_path} is not a directory.")
                         # TODO remove this for bigger tests, it prevents the test assets from clogging up the in flight assets count
-                        self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")
+                        self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
                         time.sleep(10)
 
                 except Exception as e:
@@ -118,7 +118,7 @@ class DeleteFilesNdrive():
                 self.track_mongo.delete_field(guid, "temporary_path_ndrive")
                 self.track_mongo.delete_field(guid, "temporary_files_ndrive")
                  # subtract one from assets in flight
-                self.throttle_mongo.subtract_one_from_count("max_assets_in_flight", "value")      
+                self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")      
         else:
             print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)

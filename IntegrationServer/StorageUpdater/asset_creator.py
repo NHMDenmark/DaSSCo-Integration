@@ -119,9 +119,9 @@ class AssetCreator():
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.util = utility.Utility()
 
-        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
-        self.max_new_asset_size = self.util.get_value(self.throttle_config_path, "total_max_new_asset_size_mb")
-        self.max_derivative_size = self.util.get_value(self.throttle_config_path, "total_max_derivative_size_mb")
+        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
+        self.max_new_asset_size = self.util.get_value(self.throttle_config_path, "total_new_asset_size_mb")
+        self.max_derivative_size = self.util.get_value(self.throttle_config_path, "total_derivative_size_mb")
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -394,12 +394,12 @@ class AssetCreator():
         
         is_derivative = self.is_asset_derivative(asset["_id"])
         
-        self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
 
         if is_derivative is False:
-            self.throttle_mongo.add_to_amount("total_max_new_asset_size_mb", "value", asset["asset_size"])
+            self.throttle_mongo.add_to_amount("total_new_asset_size_mb", "value", asset["asset_size"])
         else:
-            self.throttle_mongo.add_to_amount("total_max_derivative_size_mb", "value", asset["asset_size"])
+            self.throttle_mongo.add_to_amount("total_derivative_size_mb", "value", asset["asset_size"])
 
     # end of loop checks
     def end_of_loop_checks(self):
@@ -426,9 +426,9 @@ class AssetCreator():
     """
     def check_throttle(self):
         
-            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
-            new_asset_size = self.throttle_mongo.get_value_for_key("total_max_new_asset_size_mb", "value")
-            derivative_asset_size = self.throttle_mongo.get_value_for_key("total_max_derivative_size_mb", "value")
+            total_size = self.throttle_mongo.get_value_for_key("total_asset_size_mb", "value")
+            new_asset_size = self.throttle_mongo.get_value_for_key("total_new_asset_size_mb", "value")
+            derivative_asset_size = self.throttle_mongo.get_value_for_key("total_derivative_size_mb", "value")
             
             new_asset = True
             derivative_asset = True

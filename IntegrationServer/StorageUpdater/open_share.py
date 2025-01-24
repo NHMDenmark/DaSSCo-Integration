@@ -42,7 +42,7 @@ class OpenShare(Status, Validate):
         self.flag_enum = flag_enum.FlagEnum
         self.validate_enum = validate_enum.ValidateEnum
         
-        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
+        self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
 
@@ -133,7 +133,7 @@ class OpenShare(Status, Validate):
                 continue
             
             # check throttle
-            total_size = self.throttle_mongo.get_value_for_key("total_max_asset_size_mb", "value")
+            total_size = self.throttle_mongo.get_value_for_key("total_asset_size_mb", "value")
             if total_size >= self.max_total_asset_size:
                 # TODO implement better throttle than sleep
                 time.sleep(5)
@@ -229,7 +229,7 @@ class OpenShare(Status, Validate):
             self.run = self.run_util.pause_loop()
 
     def update_throttle(self, asset):
-        self.throttle_mongo.add_to_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
         # TODO decide if this belongs here. But seems natural enough to include it. 
         self.mongo_track.update_entry(asset["_id"], "temporary_reopened_share_status", True)

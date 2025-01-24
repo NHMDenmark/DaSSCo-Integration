@@ -131,7 +131,7 @@ class NdriveNewFilesFinder():
 
                         self.rename_new_files_folder(local_folder)
                         # add one to assets in flight count
-                        self.throttle_mongo.add_one_to_count("max_assets_in_flight", "value")
+                        self.throttle_mongo.add_one_to_count("assets_in_flight", "value")
 
                 # logs the transaction
                 self.run_util.log_msg(self.prefix_id, f"Copy successful from {remote_folder} to {local_destination}.")

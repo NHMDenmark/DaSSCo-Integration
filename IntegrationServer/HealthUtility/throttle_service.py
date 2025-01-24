@@ -63,8 +63,8 @@ class ThrottleService():
     
     def set_max_values(self):
         try:
-            self.max_total = self.util.get_value(self.throttle_config_path, "max_assets_in_flight")
-            self.total_size = self.util.get_value(self.throttle_config_path, "total_max_asset_size_mb")
+            self.max_total = self.util.get_value(self.throttle_config_path, "assets_in_flight")
+            self.total_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
             self.sync_max = self.util.get_value(self.throttle_config_path, "max_asset_sync_count")
         except Exception as e:
             print(f"Continuing with default or old values. {e}")

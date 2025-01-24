@@ -175,15 +175,15 @@ List of workstations names. Used for recognising which folders on the ndrive to 
 ## throttle_config.json
 Throttle configuration. Sets the max values allowed before the system pauses. The first two are a set number of assets allowed. The last 3 is the max amount of space we allow the assets to use in ARS. Total reopened share size is amount shares that have been opened after syncing at least once take up. There is no limit implementation for this amount its just to keep track of it.
 
-Note: max_assets_in_flight is not implemented in the code.
+Note: assets_in_flight is not implemented in the code.
 
 ```bash
   {
-    "max_assets_in_flight": 30,
-    "max_sync_asset_count": 30,
-    "total_max_asset_size_mb": 45000,
-    "total_max_new_asset_size_mb": 20000,
-    "total_max_derivative_size_mb": 30000,
+    "assets_in_flight": 30,
+    "await_sync_asset_count": 30,
+    "total_asset_size_mb": 45000,
+    "total_new_asset_size_mb": 20000,
+    "total_derivative_size_mb": 30000,
     "total_reopened_share_size_mb": 1000000
   }
 ```

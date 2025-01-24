@@ -112,7 +112,7 @@ class CloseShare(LogClass):
             self.run = self.run_util.pause_loop()
 
     def update_throttle(self, asset):
-        self.throttle_mongo.subtract_from_amount("total_max_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.throttle_mongo.subtract_from_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
 
         # TODO decide if this belongs here - its kind of natural to have the removal of the temp tag here though
