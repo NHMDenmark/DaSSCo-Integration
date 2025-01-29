@@ -11,6 +11,7 @@ nohup python "$root/AssetFileHandler/delete_local_files.py" > "$root/AssetFileHa
 nohup python "$root/HealthUtility/hpc_job_retry_handler.py" > "$root/HealthUtility/hpc_job_retry_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/flag_paused_status_handler.py" > "$root/HealthUtility/flag_paused_status_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/asset_paused_status_handler.py" > "$root/HealthUtility/asset_paused_status_handler.out" 2>&1 &
+nohup python "$root/HealthUtility/asset_error_status_handler.py" > "$root/HealthUtility/asset_error_status_handler.out" 2>&1 &
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/job_caller.out" 2>&1 &

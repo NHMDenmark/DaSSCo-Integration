@@ -311,9 +311,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.AWAIT)
         
         # logs and sends a warning message to the health api
-        entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. erda_sync status set to ERROR. Check that asset is in erda and that the share is closed - then set erda_sync to AWAIT and add 1 to the sync count.")
+        entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. erda_sync status set to ERROR. Aesh will handle further.")
         self.health_caller.warning(self.service_name, entry, guid)
-        # TODO handle how to get back on track, note the throttle has not been updated here
+        
 
     def update_throttle_size(self, asset, guid):
         

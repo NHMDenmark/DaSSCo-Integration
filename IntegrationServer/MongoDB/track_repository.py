@@ -173,7 +173,8 @@ class TrackRepository:
                 {"erda_sync": {"$eq": "ERROR"}},
                 {"has_new_file": {"$eq": "ERROR"}},
                 {"hpc_ready": {"$eq": "ERROR"}},
-                {"update_metadata": {"$eq": "ERROR"}}
+                {"update_metadata": {"$eq": "ERROR"}},
+                {"available_for_services": {"$eq": "ERROR"}}
             ]
         }
         
@@ -197,7 +198,8 @@ class TrackRepository:
                 {"erda_sync": {"$eq": "ERROR"}},
                 {"has_new_file": {"$eq": "ERROR"}},
                 {"hpc_ready": {"$eq": "ERROR"}},
-                {"update_metadata": {"$eq": "ERROR"}}
+                {"update_metadata": {"$eq": "ERROR"}},
+                {"available_for_services": {"$eq": "ERROR"}}
             ]
         }
         

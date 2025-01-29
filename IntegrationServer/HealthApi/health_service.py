@@ -232,6 +232,9 @@ class HealthService():
     # TODO could be used to create a new part to the mail - a number of errors/warning received since the last mail was sent. 
     def mail_check_requirements(self, service_name, severity_level):
         
+        if severity_level == self.status_enum.CRITICAL_ERROR.value:
+            return True
+
         mail_wait_time = self.util.get_nested_value(self.micro_service_config_path, service_name, "mail_wait_time")
         
         # get list of entries in the given timeframe 

@@ -4,7 +4,7 @@
     "pause_time": 5,
     "pause_check_list": [2, 7],
     "pause_loop_count": 4,
-    "error_tolerance": 2,
+    "error_tolerance": 20,
     "error_time_span": 10,
     "mail_wait_time": 20
   },

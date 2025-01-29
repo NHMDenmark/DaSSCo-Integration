@@ -176,15 +176,11 @@ def test_exception():
 
 if __name__ == '__main__':
     
-    #throttle  = throttle_repository.ThrottleRepository()
-    #throttle.subtract_from_amount("total_new_asset_size_mb", "value", 15000) 
-    #throttle.subtract_from_amount("total_asset_size_mb", "value", 15000) 
     
-    #throttle.reset_throttle()
-    """
-    mp = micro_service_paths.MicroServicePaths()
+    
+    #mp = micro_service_paths.MicroServicePaths()
 
-    print(mp.get_path_from_name("Delete local files"))
+    #print(mp.get_path_from_name("Delete local files"))
 
     #call = caller_hpc_api.CallerHPCApi()
 
@@ -197,8 +193,8 @@ if __name__ == '__main__':
     #throttle.reset_throttle()
     
     #guid = "dev-ucloud-926"
-    a = u.convert_json_to_utf8("\u00c3\u00b8")
-    print(a)
+    #a = u.convert_json_to_utf8("\u00c3\u00b8")
+    #print(a)
     #track.update_track_job_status(guid, "uploader", "DONE")
     #track.update_entry(guid, "jobs_status", "DONE")
     #track.update_entry(guid, "has_open_share", "NO")
@@ -206,8 +202,8 @@ if __name__ == '__main__':
     #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
 
     #[{key: value, key: value}]
-    list = track.get_entries_from_multiple_key_pairs([{"temporary_files_ndrive":"ERROR", "batch_list_name":"WORKHERB0001_2024-09-12"}])
-    
+    #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
+    list = track.get_entries_from_multiple_key_pairs([{"temporary_path_ndrive":"/work/data/Ndrive/WORKHERB0001/error_2024-7-4"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
     #track.update_entry(guid, "available_for_services", "YES")
@@ -232,9 +228,9 @@ if __name__ == '__main__':
         print(guid)
         #hpc_caller.asset_clean_up(guid)
         #track.update_entry(guid, "temporary_files_ndrive", "YES")
-        #track.update_entry(l["_id"], "jobs_status", "DONE")
+        track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
+        #track.update_track_job_status(l["_id"], "temporary_path_ndrive", x)
         
-        #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
         f += 1
         #full_status = sc.get_full_asset_status(guid)
         
@@ -318,6 +314,7 @@ if __name__ == '__main__':
 
     #e.send_status_change_mail("h", "Test health api", "bogus", None)
     #test_mail()
+    """
     """
     mongo = track_repository.TrackRepository()
     
