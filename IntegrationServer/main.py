@@ -176,8 +176,6 @@ def test_exception():
 
 if __name__ == '__main__':
     
-    
-    
     #mp = micro_service_paths.MicroServicePaths()
 
     #print(mp.get_path_from_name("Delete local files"))
@@ -203,7 +201,7 @@ if __name__ == '__main__':
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    list = track.get_entries_from_multiple_key_pairs([{"temporary_path_ndrive":"/work/data/Ndrive/WORKHERB0001/error_2024-7-4"}])
+    #list = track.get_entries_from_multiple_key_pairs([{"erda_sync":"ERROR"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
     #track.update_entry(guid, "available_for_services", "YES")
@@ -212,7 +210,7 @@ if __name__ == '__main__':
 
     #track.update_track_job_status("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "barcode", "WAITING")
     #track.update_entry("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "jobs_status", "WAITING")
-    #list = track.get_error_entries()
+    list = track.get_error_entries()
     
     #sc = storage_client.StorageClient()
     #hpc_caller = caller_hpc_api.CallerHPCApi()
@@ -223,12 +221,22 @@ if __name__ == '__main__':
     #print(second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note)
     
     f = 0
+    error_counts = {}
     for l in list:
         guid = l["_id"]
-        print(guid)
+
+        for key, value in l.items():
+            if value == "ERROR":
+                #print(guid, key)
+                error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
+
+    # Print results
+    for key, count in error_counts.items():
+        print(f"{key}: {count}")
+        #print(guid, l["created_timestamp"])
         #hpc_caller.asset_clean_up(guid)
         #track.update_entry(guid, "temporary_files_ndrive", "YES")
-        track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
+        #track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
         #track.update_track_job_status(l["_id"], "temporary_path_ndrive", x)
         
         f += 1

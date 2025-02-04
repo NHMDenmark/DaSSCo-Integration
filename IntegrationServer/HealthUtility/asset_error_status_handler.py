@@ -69,7 +69,7 @@ class AssetErrorStatusHandler():
             else:
                 errors_found = 0
                 for asset in assets:
-                    errors_found =+ 1
+                    errors_found += 1
                     guid = asset["_id"]
                     
                     # erda_sync error
@@ -157,7 +157,7 @@ class AssetErrorStatusHandler():
             
             self.throttle_mongo.add_one_to_count("await_sync_asset_count", "value")
             self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)
-            print(f"found {guid} to have been successfully synced to erda - send asset back to normal flow")
+            print(f"found {guid} to have been successfully synced to erda - sent asset back to normal flow")
 
         else:
             print(f"unable to handle {guid} - set to critical error")

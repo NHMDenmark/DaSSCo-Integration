@@ -62,3 +62,13 @@ async def service_stop(service_name: str):
         return JSONResponse(content={"status": f"Failed to stop {service_name}"}, status_code=500)
 
     return JSONResponse(content={"status": f"Stopping {service_name}"}, status_code=200)
+
+@control.get("/control/get_track_data")
+async def get_track_data(guid: str):
+
+    found, msg = service.get_track_asset_data(guid)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return JSONResponse(content=msg, status_code=200)

@@ -84,3 +84,17 @@ class ControlService():
         started = self.util.run_shell_script(start_service_path, arguments = [service_path])
 
         return started
+
+    def get_track_asset_data(self, guid):
+
+        try:
+            asset = self.mongo_track.get_entry("_id", guid)
+
+            if asset is None:
+                return False, "Asset does not exist"
+            else:
+                return True, asset
+            
+        except Exception as e:
+            print(f"get track asset data: {e}")
+            return False, "Things went wrong"

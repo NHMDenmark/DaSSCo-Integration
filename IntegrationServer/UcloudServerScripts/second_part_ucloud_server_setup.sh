@@ -25,7 +25,7 @@ echo "Starting second part of the server setup ---"
 # Step 5: Install nginx and setup nginx
 echo "Installing and setting up nginx"
 
-apt-get install -y nginx
+sudo apt-get install -y nginx
 
 # this assumes the server running the nginx proxy has the job name added to the nginx default  
 echo "server {
@@ -66,7 +66,7 @@ echo "Nginx installed and running"
 
 # Step 6: Generate ssh key for slurm usage
 echo "Generating ssh key for slurm in ~/.ssh"
-ssh-keygen -N "" -f $HOMEPATH/.ssh/slurm
+ssh-keygen -t ed25519 -N "" -f "$HOMEPATH/.ssh/id_ed25519"
 
 # Step 7: Update venv
 echo "Activate and update python venv"
