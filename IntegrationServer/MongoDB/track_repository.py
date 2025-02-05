@@ -207,6 +207,32 @@ class TrackRepository:
         
         return entries
 
+    def get_critical_error_entries(self):
+
+        """
+        Retrieve entries from the MongoDB collection with a flag field value set to error.
+
+        :return: A list of entries, empty if none was found.
+        """
+        
+        error_query = {
+            "$or": [
+                {"jobs_status": {"$eq": "CRITICAL_ERROR"}},
+                {"files_status": {"$eq": "CRITICAL_ERROR"}},
+                {"has_open_share": {"$eq": "CRITICAL_ERROR"}},
+                {"is_in_ars": {"$eq": "CRITICAL_ERROR"}},
+                {"erda_sync": {"$eq": "CRITICAL_ERROR"}},
+                {"has_new_file": {"$eq": "CRITICAL_ERROR"}},
+                {"hpc_ready": {"$eq": "CRITICAL_ERROR"}},
+                {"update_metadata": {"$eq": "CRITICAL_ERROR"}},
+                {"available_for_services": {"$eq": "CRITICAL_ERROR"}}
+            ]
+        }
+        
+        entries = list(self.collection.find(error_query))
+        
+        return entries
+
     def get_paused_entries(self):
         """
         Retrieve entries from the MongoDB collection with a flag field value indicating its paused.

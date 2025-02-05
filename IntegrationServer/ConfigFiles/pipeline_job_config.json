@@ -17,6 +17,12 @@
    "job_3": "cropping",
    "job_4": "derivative"
  },
+ "PIPEHERB0003": {
+   "job_1": "assetLoader",
+   "job_2": "barcode",
+   "job_3": "cropping",
+   "job_4": "derivative"
+ },
  "PIPEPIOF0001": {
    "job_1": "assetLoader",
    "job_2": "barcode",

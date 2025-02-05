@@ -146,4 +146,70 @@ class ControlService():
         except Exception as e:
             print(f"get throttle data: {e}")
             return False, "Things went wrong"
-            
+    
+    def get_list_of_guids_with_error_flag(self):
+
+        entries = self.mongo_track.get_error_entries()
+
+        if not entries:  # Check if entries is None or empty list
+            return False, "No entries found"
+        else:                
+            error_counts = {}
+            error_guids = {}
+
+            for entry in entries:
+                guid = entry["_id"]
+
+                for key, value in entry.items():
+                    if value == "ERROR":
+                        # Count occurrences of each error type
+                        error_counts[key] = error_counts.get(key, 0) + 1
+                        
+                        # Store GUIDs where the error occurs
+                        if key not in error_guids:
+                            error_guids[key] = []
+                        error_guids[key].append(guid)
+
+            # Format output as required
+            response = {
+                "error_counts": [
+                    error_counts,  # First object: error type counts
+                    {key + "_guids": guids for key, guids in error_guids.items()}  # Second object: error GUIDs
+                ]
+            }
+
+            return True, response
+
+    def get_list_of_guids_with_critical_error_flag(self):
+
+        entries = self.mongo_track.get_critical_error_entries()
+
+        if not entries:  # Check if entries is None or empty list
+            return False, "No entries found"
+        else:                
+            error_counts = {}
+            error_guids = {}
+
+            for entry in entries:
+                guid = entry["_id"]
+
+                for key, value in entry.items():
+                    if value == "CRITICAL_ERROR":
+                        # Count occurrences of each error type
+                        error_counts[key] = error_counts.get(key, 0) + 1
+                        
+                        # Store GUIDs where the error occurs
+                        if key not in error_guids:
+                            error_guids[key] = []
+                        error_guids[key].append(guid)
+
+            # Format output as required
+            response = {
+                "critical_error_counts": [
+                    error_counts,  # First object: error type counts
+                    {key + "_guids": guids for key, guids in error_guids.items()}  # Second object: error GUIDs
+                ]
+            }
+
+            return True, response
+    

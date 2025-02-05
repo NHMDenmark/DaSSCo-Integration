@@ -102,3 +102,23 @@ async def get_track_data():
         return JSONResponse(content={"status": msg}, status_code=500)
     
     return msg
+
+@control.get("/control/get_error_lists")
+async def get_error_lists():
+
+    found, msg = service.get_list_of_guids_with_error_flag()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.get("/control/get_critical_error_lists")
+async def get_critical_error_lists():
+
+    found, msg = service.get_list_of_guids_with_critical_error_flag()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
