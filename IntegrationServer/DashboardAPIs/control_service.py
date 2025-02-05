@@ -7,8 +7,10 @@ sys.path.append(project_root)
 import utility
 from Enums import status_enum, validate_enum
 from HealthUtility import health_caller, run_utility
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository
 from DashboardAPIs import micro_service_paths
+import json
+from datetime import datetime
 
 class ControlService():
 
@@ -26,6 +28,10 @@ class ControlService():
 
         self.mongo_service = service_repository.ServiceRepository()
         self.mongo_track = track_repository.TrackRepository()
+        self.mongo_health = health_repository.HealthRepository()
+        self.mongo_metadata = metadata_repository.MetadataRepository()
+        self.mongo_throttle = throttle_repository.ThrottleRepository()
+
         self.micro_paths = micro_service_paths.MicroServicePaths()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
@@ -92,9 +98,52 @@ class ControlService():
 
             if asset is None:
                 return False, "Asset does not exist"
-            else:
+            else:                
                 return True, asset
             
         except Exception as e:
             print(f"get track asset data: {e}")
             return False, "Things went wrong"
+        
+    def get_metadata_asset_data(self, guid):
+
+        try:
+            asset = self.mongo_metadata.get_entry("_id", guid)
+
+            if asset is None:
+                return False, "Asset does not exist"
+            else:                
+                return True, asset
+            
+        except Exception as e:
+            print(f"get metadata asset data: {e}")
+            return False, "Things went wrong"
+        
+    def get_health_asset_data(self, guid):
+
+        try:
+            entries = self.mongo_health.get_entries("guid", guid)
+
+            if entries is None or entries == []:
+                return False, "No entries for asset was found"
+            else:                
+                return True, entries
+            
+        except Exception as e:
+            print(f"get health asset data: {e}")
+            return False, "Things went wrong"
+        
+    def get_throttle_data(self):
+
+        try:
+            entries = self.mongo_throttle.get_all_entries()
+
+            if entries is None or entries == []:
+                return False, "No entries found"
+            else:                
+                return True, entries
+            
+        except Exception as e:
+            print(f"get throttle data: {e}")
+            return False, "Things went wrong"
+            

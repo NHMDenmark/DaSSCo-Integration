@@ -36,7 +36,7 @@ fail_derivative_creation_model = FailDerivativeCreationModel
 # TODO update unit tests
 @app.get("/dev/yo")
 def index():
-    return "keep out all devil"
+    return "keep out all devils!"
 
 """
 Deprecated since we use the derivative endpoint instead.

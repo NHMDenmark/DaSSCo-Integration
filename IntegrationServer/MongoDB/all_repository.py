@@ -54,6 +54,16 @@ class AllRepository:
         entries = list(self.collection.find(query))
         return entries
 
+    def get_all_entries_in_db(self):
+        """
+        Retrieve all entries in a mongo db
+
+        :return: A list of entries, returns an empty list if nothing is there
+        """
+        entries = list(self.collection.find())
+
+        return entries
+
     def get_entry_from_multiple_key_pairs(self, key_value_pairs):
         """
             Retrieve an entry from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]

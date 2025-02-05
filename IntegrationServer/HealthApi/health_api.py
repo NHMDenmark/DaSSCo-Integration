@@ -27,7 +27,7 @@ unexpected_error_model = UnexpectedErrorModel
 
 @health.get("/")
 def index():
-    return "sickeningly"
+    return "sickening"
 
 @health.post("/api/warning")
 async def receive_warning(warning: message_model):

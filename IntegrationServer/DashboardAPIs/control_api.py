@@ -18,7 +18,7 @@ service = control_service.ControlService()
 
 @control.get("/control/check")
 def index():
-    return "check it out"
+    return "check it out!"
 
 @control.post("/control/start_all")
 async def start_all():
@@ -71,4 +71,34 @@ async def get_track_data(guid: str):
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
     
-    return JSONResponse(content=msg, status_code=200)
+    return msg
+
+@control.get("/control/get_metadata")
+async def get_track_data(guid: str):
+
+    found, msg = service.get_metadata_asset_data(guid)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.get("/control/get_health_data")
+async def get_track_data(guid: str):
+
+    found, msg = service.get_health_asset_data(guid)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.get("/control/get_throttle_data")
+async def get_track_data():
+
+    found, msg = service.get_throttle_data()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
