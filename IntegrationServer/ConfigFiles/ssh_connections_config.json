@@ -1,0 +1,14 @@
+{
+    "ucloud": {
+      "host": "hpc-type3.sdu.dk",
+      "port": "22",
+      "password": "put/in/environment/variable",
+      "username": "put/in/environment/variable"
+    },
+    "lumi": {
+      "host": "lumi.csc.fi",
+      "port": "22",
+      "password": "put/in/environment/variable",
+      "username": "put/in/environment/variable"
+    }
+  }

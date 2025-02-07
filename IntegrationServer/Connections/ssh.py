@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import paramiko
 import stat
 from utility import Utility
-
+from MongoDB import ssh_connection_repository
 
 """
 Class that creates a ssh connection. Includes function to make use of the connection. 
@@ -16,10 +16,10 @@ Sends commands directly through ssh connection.
 Needs ssh keys to avoid password prompts. 
 """
 
-
 class SSHConnection:
     def __init__(self, name, host, port, username, password):
         self.util = Utility()
+        self.mongo_connection = ssh_connection_repository.SshConnectionRepository()
         self.sftp = None
         self.name = name
         self.host = host
@@ -43,15 +43,18 @@ class SSHConnection:
     Updates the status of the connection config file. 
     """
     def connect(self):
-        # need if statement, checking status for open already -  get specific value from json
+        # need if statement, checking status for open already -  get specific value from json or db
         self.exc = None
         self.msg = None
 
         try:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
-
-            self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
+            try:
+                self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
+            except Exception as e:
+                pass
+            
             self.sftp = self.get_sftp()
 
         except Exception as e:
@@ -68,7 +71,10 @@ class SSHConnection:
         try:
             self.sftp.close()
             self.ssh_client.close()
-            self.util.update_layered_json(self.config_path, [self.name, "status"], "closed")
+            try:
+                self.util.update_layered_json(self.config_path, [self.name, "status"], "closed")
+            except Exception as e:
+                pass
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")

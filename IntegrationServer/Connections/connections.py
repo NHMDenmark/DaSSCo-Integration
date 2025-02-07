@@ -14,12 +14,11 @@ Connection username and connection passwords must be called {NAME}_USER and {NAM
 variables.
 Includes functions for creating, getting and shutting down connection(s).  
 """
-
-
 class Connections:
     def __init__(self):
         load_dotenv()
         self.util = Utility()
+        self.ssh_config_path = f"{project_root}/ConfigFiles/ssh_connections_config.json" 
         self.connection = None
         self.msg = None
         self.exc = None
@@ -29,9 +28,6 @@ class Connections:
     """
     def create_ssh_connection(self, ssh_file_path):
         config = self.util.read_json(ssh_file_path)
-        self.msg = None
-        self.exc = None
-
 
         for connection_name, connection_details in config.items():
             con_user = connection_name + "_USER"
@@ -62,6 +58,37 @@ class Connections:
             else:
                 self.msg = connection.msg
                 self.exc = connection.exc
+
+    def create_ssh_connection_by_name(self, connection_name):
+
+        connections_config_details = self.util.read_json(self.ssh_config_path)
+        
+        connection_details = connections_config_details[connection_name]
+        print(connection_details["host"])
+        con_user = connection_name + "_USER"
+        con_user = con_user.upper()
+        
+        username = os.getenv(con_user)
+        
+        if username == None:
+            username = os.environ.get(con_user)
+        password = None
+
+        connection = None
+        try:
+            connection = SSHConnection(
+                    connection_name,
+                    connection_details["host"],
+                    connection_details["port"],
+                    username,
+                    password
+                )
+        except Exception as e:
+            print(e)
+        
+        if connection is not None:
+            self.connection = connection
+
 
     def close_connection(self):
         if self.connection is not None:

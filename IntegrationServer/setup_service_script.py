@@ -11,7 +11,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(script_dir)
 
-from MongoDB import service_repository, throttle_repository
+from MongoDB import service_repository, throttle_repository, ssh_connection_repository
 import utility
 
 class SetupServices:
@@ -65,11 +65,35 @@ class SetupThrottleService:
 
         self.throttle_repo.close_connection()
 
+class SetupSshConnectionDB:
+    """
+    Imports the ssh connection configuration names and inserts them into the ssh connections database.  
+    Prints updates in terminal.
+    """
+    def __init__(self):
+
+        self.ssh_repo = ssh_connection_repository.SshConnectionRepository()
+        self.util = utility.Utility()
+        self.ssh_config_path = f"{project_root}/IntegrationServer/ConfigFiles/ssh_connections_config.json"
+        self.ssh_config = self.util.read_json(self.ssh_config_path)
+        self.ssh_configs = list(self.ssh_config.keys())
+
+        try:
+            for config in self.ssh_configs:
+                if self.ssh_repo.get_entry("_id", config) is None:
+                    self.ssh_repo.insert_default_value(config)
+                    print(f"Inserted document: _id: {config}, status: closed, pid: None - in ssh connection database")
+        except Exception as e:
+            print("Failed to insert ssh connection documents to ssh connection database.", e)
+
+        self.ssh_repo.close_connection()
+
 if __name__ == "__main__":
         
     try:
         SetupServices()
         SetupThrottleService()
+        SetupSshConnectionDB()
     except Exception as e:
         print(f"An error occurred: {e}")
     

@@ -176,12 +176,25 @@ def test_exception():
 
 if __name__ == '__main__':
     
+    c = connections.Connections()
+
+    c.create_ssh_connection_by_name("lumi")
+
+    con = c.get_connection()
+    
+    a = con.ssh_command("echo 'yo'")
+
+    print(a)
+
+    con.close()
+
     #mp = micro_service_paths.MicroServicePaths()
 
     #print(mp.get_path_from_name("Delete local files"))
 
     #call = caller_hpc_api.CallerHPCApi()
 
+    """
     u = utility.Utility()
 
     track = track_repository.TrackRepository()
@@ -201,16 +214,17 @@ if __name__ == '__main__':
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    #list = track.get_entries_from_multiple_key_pairs([{"erda_sync":"ERROR"}])
+    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
-
+    
     #track.update_entry(guid, "available_for_services", "YES")
     #track.update_entry(guid, "available_for_services_timestamp", None)
     #track.update_entry(guid, "available_for_services_wait_time", None)
 
     #track.update_track_job_status("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "barcode", "WAITING")
-    #track.update_entry("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "jobs_status", "WAITING")
-    list = track.get_error_entries()
+    #track.update_entry("7e7-6-02-0e-06-27-0-001-00-000-08d944-00000", "jobs_status", "CRITICAL_ERROR")
+    
+    #list = track.get_error_entries()
     
     #sc = storage_client.StorageClient()
     #hpc_caller = caller_hpc_api.CallerHPCApi()
@@ -224,12 +238,19 @@ if __name__ == '__main__':
     error_counts = {}
     for l in list:
         guid = l["_id"]
+        
+        jinfo = track.get_job_info(guid, "derivative")
+        if jinfo["status"] == "STARTING":
+            
+            #track.update_entry(guid, "jobs_status", "WAITING")
+            #track.update_track_job_status(guid, "derivative", "WAITING")
 
+            f += 1
         for key, value in l.items():
             if value == "ERROR":
                 #print(guid, key)
                 error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
-
+    
     # Print results
     for key, count in error_counts.items():
         print(f"{key}: {count}")
@@ -239,7 +260,7 @@ if __name__ == '__main__':
         #track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
         #track.update_track_job_status(l["_id"], "temporary_path_ndrive", x)
         
-        f += 1
+        
         #full_status = sc.get_full_asset_status(guid)
         
         #if full_status["data"].share_allocation_mb is not None:
@@ -272,6 +293,7 @@ if __name__ == '__main__':
     throttle.close_connection()
     track.close_connection()
     meta.close_connection()
+    """
     """
     #try:
     #    test_exception()

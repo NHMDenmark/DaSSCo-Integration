@@ -90,8 +90,17 @@ class HPCJobCaller():
                         self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                         print(script_path, name)
-                        self.con.ssh_command(f"bash {script_path} {guid}")
-                        time.sleep(1)
+                        try:
+                            self.con.ssh_command(f"bash {script_path} {guid}")
+                            time.sleep(1)
+                        except Exception as e:
+                            print(e)
+                            time.sleep(20)
+                            self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.WAITING.value)
+                            self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.WAITING.value)
+                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry)
+                            self.create_ssh_connection()
                     except Exception as e:
                         # TODO handle better this will potentially loop the same issue over and over
                         continue

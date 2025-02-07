@@ -98,7 +98,17 @@ class HPCAssetCreator():
 
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     print(f"bash {script_path} {guid} {batch_id} {link}")
-                    self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
+                    try:
+                        self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
+                    except Exception as e:
+                        print(e)
+                        time.sleep(20)
+                        self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
+                        entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                        self.health_caller.error(self.service_name, entry)
+                        self.create_ssh_connection()
+
+                    
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(1)
 

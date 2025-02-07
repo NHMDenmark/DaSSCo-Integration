@@ -52,5 +52,11 @@
     "port": 27017,
     "data_base": "dev_db",
     "collection_name": "throttle"
+  },
+  "ssh":{
+    "host": "localhost",
+    "port": 27017,
+    "data_base": "dev_db",
+    "collection_name": "ssh"
   }
 }
