@@ -89,6 +89,15 @@
     "error_time_span": 3,
     "mail_wait_time": 30
   },
+  "Hpc api Service": {
+    "module": "hpc api",
+    "pause_time": 6,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
+    "error_tolerance": 2,
+    "error_time_span": 3,
+    "mail_wait_time": 5
+  },
   "HPC file uploader": {
     "module": "ssh hpc",
     "pause_time": 5,

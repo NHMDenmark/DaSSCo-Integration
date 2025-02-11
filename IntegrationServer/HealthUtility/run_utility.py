@@ -98,6 +98,9 @@ class RunUtility(LogClass, Status):
         if module == "health utility":
             paused, extra_msg = self.health_utility_unpause_routine(self.service_name)
 
+        if module == "hpc api":
+            paused, extra_msg = self.hpc_api_utility_unpause_routine(self.service_name)
+
         if module == "tests":
             paused, extra_msg = self.tests_unpause_routine(self.service_name)
             
@@ -231,6 +234,12 @@ class RunUtility(LogClass, Status):
         # TODO more logic
         return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
     
+    def hpc_api_utility_unpause_routine(self, service_name):
+
+        stay_paused = True
+        # TODO more logic
+        return stay_paused, "This module is unable to unpause itself. Requires manual intervention."
+
     def ssh_hpc_unpause_routine(self, service_name):
 
         stay_paused = True

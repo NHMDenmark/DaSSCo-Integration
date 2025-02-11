@@ -92,6 +92,10 @@ class TrackRepository:
         return self.all.get_entries_from_multiple_key_pairs(key_value_pairs)
 
 
+    def get_time_based_multiple_key_list(self, key_value_pairs, time_key=None, after=None, before=None):
+
+        return self.all.get_time_based_multiple_key(key_value_pairs, time_key=time_key, after=after, before=before)
+
     def get_value_for_key(self, id_value, key):
         """
         Retrieves the value of a specific key for the given identifier.

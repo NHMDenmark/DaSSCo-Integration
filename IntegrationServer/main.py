@@ -12,11 +12,12 @@ from StorageApi import storage_client, ars_health_check, storage_service
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
+
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
 #from pyexiv2 import Image as ImgMeta
 from bson.json_util import dumps
-from datetime import datetime, timedelta
+import datetime
 from dotenv import load_dotenv
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
@@ -176,24 +177,37 @@ def test_exception():
 
 if __name__ == '__main__':
     
+    d = datetime
+    after = d.datetime(2025, 2, 4)
+    #before = d.datetime(2025, 2, 4)
+    before = None
+
+    track = track_repository.TrackRepository()
+    print(after, before)
+    list = track.get_time_based_multiple_key_list([{"jobs_status": "DONE"}], time_key="created_timestamp", after=after, before=before)
+    #list = track.get_entries_from_multiple_key_pairs([{"batch_list_name":"WORKHERB0003_2024-10-05", "jobs_status": "DONE"}])
+    f = 0
+    for l in list:
+        guid = l["_id"]
+        #print(guid)
+        f += 1
+    print(f)
+
+    track.close_connection()
+    
+    """
     c = connections.Connections()
 
     c.create_ssh_connection_by_name("lumi")
 
     con = c.get_connection()
     
-    a = con.ssh_command("echo 'yo'")
+    a = con.ssh_command("echo $(whoami)")
 
     print(a)
 
     con.close()
-
-    #mp = micro_service_paths.MicroServicePaths()
-
-    #print(mp.get_path_from_name("Delete local files"))
-
-    #call = caller_hpc_api.CallerHPCApi()
-
+    """
     """
     u = utility.Utility()
 
@@ -214,7 +228,7 @@ if __name__ == '__main__':
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING"}])
+    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"RUNNING", "batch_list_name":"WORKHERB0003_2024-10-05"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
     
     #track.update_entry(guid, "available_for_services", "YES")
@@ -239,18 +253,21 @@ if __name__ == '__main__':
     for l in list:
         guid = l["_id"]
         
-        jinfo = track.get_job_info(guid, "derivative")
-        if jinfo["status"] == "STARTING":
-            
+        #jinfo = track.get_job_info(guid, "barcode")
+        
+        #if jinfo["status"] == "RUNNING":
+            #print(guid)
             #track.update_entry(guid, "jobs_status", "WAITING")
-            #track.update_track_job_status(guid, "derivative", "WAITING")
+            #track.update_track_job_status(guid, "barcode", "WAITING")
 
-            f += 1
+        f += 1
+            
+        
         for key, value in l.items():
             if value == "ERROR":
                 #print(guid, key)
                 error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
-    
+        
     # Print results
     for key, count in error_counts.items():
         print(f"{key}: {count}")
@@ -293,99 +310,6 @@ if __name__ == '__main__':
     throttle.close_connection()
     track.close_connection()
     meta.close_connection()
-    """
-    """
-    #try:
-    #    test_exception()
-    #except Exception as e:
-    #    print(e)
-    #guid = "7e7-a-04-0d-25-05-1-001-01-000-0557a6-00000_400"
-    #track.update_track_job_status(guid, "uploader", "DONE")
-
-    #f = "'b200 ad"
-    #print(int(f[2:5]))
-    #x = track.all.get_count_for_key_value_pair("hpc_ready", "AWAIT")
-    #y = track.all.calculate_values_for_fields_with_key_value("asset_size", "has_open_share", "ERROR")
-    #z = track.all.multiple_key_values_calculate_field_total_value("asset_size", [{"has_open_share":"YES", "erda_sync":"ERROR"}])
-    #print(f"multiple key value: {z}")
-    #print(f"total single key-value: {y}")
-    #print(f"count: {x}")
-    #track.close_connection()
-    
-    
-    #i = IntegrationServer()
-
-    #t = i.util.get_nested_value(i.service_config_path, "File uploader ARS", "mail_wait_time")
-    #print(t)
-    
-    #u = utility.Utility()
-    #c = {"h":1, "b":2}
-    #print(c["h"])
-    #a = u.find_key_by_value(c, 2)
-    #a = u.convert_json_to_utf8({"id":"\u00c3\u00b8ab"})
-    #print(a)
-    #a = asset_handler.AssetHandler()   
-    #name = a.find_directory_name_with_file("/work/data/Ndrive/WORKHERB0002", "7e7-a-04-0d-1e-1b-1-001-01-000-098b37-00000.json")
-    #print(name)
-    
-    #logging.basicConfig(filename="myapp.log", format='%(levelname)s:%(asctime)s:%(name)s:%(message)s:%(exc_info)s', encoding="utf-8", level=logging.INFO)
-    #test() 2024-04-09T10:00:52+02:00
-    #test()
-    #t = datetime.now() - timedelta(hours=1000)
-    #load_dotenv()
-    #print(os.environ.get("UCLOUD_USER"))
-
-    #throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
-    #print(throttle_config_path)
-    
-    #max_total_asset_size = utility.Utility().get_value(file_path=throttle_config_path, key="total_asset_size_mb")
-    #print(max_total_asset_size)
-    #e = email_sender.EmailSender("test")
-
-    #e.send_status_change_mail("h", "Test health api", "bogus", None)
-    #test_mail()
-    """
-    """
-    mongo = track_repository.TrackRepository()
-    
-    mongo.update_track_job_list("dev-ucloud-400", "attempt_1", "name", f"assetLoader")
-    a = mongo.get_job_from_key_value("dev-ucloud-400", "name", "assetLoader")
-    print(a)
-    mongo.close_connection()
-    """
-    """
-    time = ""
-    b = field_validation.FieldValidation().datetime_validator(time)
-    print(b)
-    x = validators.datetime(time, allow_empty=True)
-    y = checkers.is_datetime(x)
-    print(x, y, type(x))
-    """
-    """
-    Image.MAX_IMAGE_PIXELS = None
-    new_exif_data = {
-    270: "New Description",  # Tag 270 is for ImageDescription
-    305: "New Software"      # Tag 305 is for Software
-}
-
-    modify_exif_data("C:/Users/tvs157/Desktop/first.tif", new_exif_data)
-
-    exif_data("C:/Users/tvs157/Desktop/first3.tif")
-    """
-    """
-    with ImgMeta("C:/Users/tvs157/Desktop/first2.tif") as img_meta:
-
-        exif = img_meta.read_exif()
-        
-        a = exif.items()
-
-        for key, value in a:
-            print(key, value)
-
-        #img_meta.modify_exif({305: "Lars' studio"})
-
-
-    exif_data("C:/Users/tvs157/Desktop/first2.tif")
     """
     #i = IntegrationServer()
     #test()

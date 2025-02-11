@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import utility
+import datetime
 
 class AllRepository:
 
@@ -85,6 +86,31 @@ class AllRepository:
         query = {"$and": key_value_pairs}
         entries = list(self.collection.find(query))
         return entries
+
+    def get_time_based_multiple_key(self, key_value_pairs, time_key = None, after = None, before = None):
+
+        if time_key is not None:
+            
+            time_query = {time_key: {}}
+
+            if after is not None:
+            # Convert "after" into a datetime if it isn't one already.
+                if not isinstance(after, datetime.datetime):
+                    after = datetime.datetime(after)
+                time_query[time_key].update({"$gte": after})
+        
+            if before is not None:
+                if not isinstance(before, datetime.datetime):
+                    before = datetime.datetime(before)
+                time_query[time_key].update({"$lte": before})
+
+            key_value_pairs.append(time_query)
+
+        query = {"$and": key_value_pairs}
+        
+        entries = list(self.collection.find(query))
+        return entries
+
 
     def get_value_for_key(self, id_value, key):
         """

@@ -360,4 +360,7 @@ class SSHConnection:
             # print(stderr.read().decode('utf-8'))
             return output
         except Exception as e:
-            print(f"An error occurred while executing ssh command: {command} : {e}")
+            error_message = f"An error occurred while executing ssh command: {command} : {e}"
+            print(error_message)
+            # Raising a new exception while preserving the original exception context:
+            raise Exception(error_message) from e
