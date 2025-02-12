@@ -213,3 +213,113 @@ class ControlService():
 
             return True, response
     
+    def search_metadata_db(self, criteria):
+
+        try:
+            
+            if criteria.time_key is not None:
+
+                if criteria.after is not None:
+
+                    criteria.after = datetime.strptime(criteria.after, '%Y-%m-%d')
+                
+                if criteria.before is not None:
+
+                    criteria.before = datetime.strptime(criteria.before, '%Y-%m-%d')
+
+                if criteria.after is None and criteria.before is None:
+
+                    return True, None, "Missing date - example: 2024-03-30"
+
+            data_list = self.mongo_metadata.get_time_based_multiple_key_list(criteria.key_values, criteria.time_key, criteria.after, criteria.before)
+
+            if data_list == []:
+                return True, data_list, None
+            
+            guid_list = []
+            count = 0
+            for entry in data_list:
+                count += 1
+                guid_list.append(entry["_id"])
+
+            return_value = {"count":count, "guids":guid_list}
+
+            return True, return_value, None
+        
+        except Exception as e:
+            print(e)
+            return False, None, ("Something went wrong while searching for metadata.")
+        
+    def search_track_db(self, criteria):
+
+        try:
+            
+            if criteria.time_key is not None:
+
+                if criteria.after is not None:
+
+                    criteria.after = datetime.strptime(criteria.after, '%Y-%m-%d')
+                
+                if criteria.before is not None:
+
+                    criteria.before = datetime.strptime(criteria.before, '%Y-%m-%d')
+
+                if criteria.after is None and criteria.before is None:
+
+                    return True, None, "Missing date - example: 2024-03-30"
+
+            data_list = self.mongo_track.get_time_based_multiple_key_list(criteria.key_values, criteria.time_key, criteria.after, criteria.before)
+
+            if data_list == []:
+                return True, data_list, None
+            
+            guid_list = []
+            count = 0
+            for entry in data_list:
+                count += 1
+                guid_list.append(entry["_id"])
+
+            return_value = {"count":count, "guids":guid_list}
+
+            return True, return_value, None
+        
+        except Exception as e:
+            print(e)
+            return False, None, ("Something went wrong while searching for track data.")
+        
+    def search_health_db(self, criteria):
+
+        try:
+                
+            if criteria.time_key is not None:
+                    
+                if criteria.after is not None:
+
+                    criteria.after = datetime.strptime(criteria.after, '%Y-%m-%d')
+                    
+                if criteria.before is not None:
+
+                    criteria.before = datetime.strptime(criteria.before, '%Y-%m-%d')
+
+                if criteria.after is None and criteria.before is None:
+
+                    return True, None, "Missing date - example: 2024-03-30"
+
+            data_list = self.mongo_health.get_time_based_multiple_key_list(criteria.key_values, criteria.time_key, criteria.after, criteria.before)
+
+            if data_list == []:
+                return True, data_list, None
+                
+            id_list = []
+            count = 0
+            for entry in data_list:
+                count += 1
+                id_list.append(entry["_id"])
+
+            return_value = {"count":count, "id_list":id_list}
+
+            return True, return_value, None
+            
+        except Exception as e:
+            print(e)
+            return False, None, ("Something went wrong while searching for health data.")

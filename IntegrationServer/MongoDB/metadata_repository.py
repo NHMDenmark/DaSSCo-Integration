@@ -54,6 +54,10 @@ class MetadataRepository:
     def append_existing_list(self, guid, list_key, value):
         return self.all.append_existing_list(guid, list_key, value)
 
+    def get_time_based_multiple_key_list(self, key_value_pairs, time_key=None, after=None, before=None):
+
+        return self.all.get_time_based_multiple_key(key_value_pairs, time_key=time_key, after=after, before=before)
+
     def create_metadata_entry(self, json_path, guid):
         """
         Create a new metadata entry in the MongoDB collection.

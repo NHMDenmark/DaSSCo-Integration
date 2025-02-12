@@ -176,7 +176,7 @@ def test_exception():
         raise Exception("fun")
 
 if __name__ == '__main__':
-    
+    """
     d = datetime
     after = d.datetime(2025, 2, 4)
     #before = d.datetime(2025, 2, 4)
@@ -194,27 +194,15 @@ if __name__ == '__main__':
     print(f)
 
     track.close_connection()
+    """
     
-    """
-    c = connections.Connections()
-
-    c.create_ssh_connection_by_name("lumi")
-
-    con = c.get_connection()
-    
-    a = con.ssh_command("echo $(whoami)")
-
-    print(a)
-
-    con.close()
-    """
-    """
     u = utility.Utility()
 
     track = track_repository.TrackRepository()
     meta = metadata_repository.MetadataRepository()
     throttle  = throttle_repository.ThrottleRepository()
-    
+    dt = datetime
+
     #throttle.reset_throttle()
     
     #guid = "dev-ucloud-926"
@@ -228,9 +216,18 @@ if __name__ == '__main__':
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"RUNNING", "batch_list_name":"WORKHERB0003_2024-10-05"}])
+    #list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING", "batch_list_name":"WORKHERB0003_2024-10-05"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
-    
+
+    after = dt.datetime(2022, 10, 20)
+    #before = dt.datetime(2025, 2, 4)
+    before = None
+    #after = dt.datetime.strptime("2022-10-20", "%Y-%m-%d")
+    print(after)
+    #list = track.get_time_based_multiple_key_list([{"has_new_file": "ERROR"}], time_key="created_timestamp", after=after, before=before)
+    #list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003'}], "date_asset_taken", after, None)
+    list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003', "asset_guid": "7e8-a-05-03-0c-1a-0-001-04-000-0242b2-00000"}], "date_asset_taken", None, None)
+
     #track.update_entry(guid, "available_for_services", "YES")
     #track.update_entry(guid, "available_for_services_timestamp", None)
     #track.update_entry(guid, "available_for_services_wait_time", None)
@@ -248,25 +245,28 @@ if __name__ == '__main__':
     #second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = sc.get_asset_sharesize_and_status(guid)
     #print(second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note)
     
+    #list = meta.get_entries_from_multiple_key_pairs([{"workstation_name": "WORKHERB0003", "digitiser":"Rebekka Lesske"}])
+
     f = 0
     error_counts = {}
     for l in list:
         guid = l["_id"]
+        print(guid)
+        #jinfo = track.get_job_info(guid, "uploader")
         
-        #jinfo = track.get_job_info(guid, "barcode")
-        
-        #if jinfo["status"] == "RUNNING":
-            #print(guid)
-            #track.update_entry(guid, "jobs_status", "WAITING")
-            #track.update_track_job_status(guid, "barcode", "WAITING")
-
+        #if jinfo:
+            #if jinfo["status"] == "ERROR":
+                #track.update_entry(guid, "has_new_file", "YES")
+        #track.update_entry(guid, "has_new_file", "YES")
+                #track.update_track_job_status(guid, "barcode", "WAITING")
+                #print(guid)
         f += 1
-            
+                
         
-        for key, value in l.items():
-            if value == "ERROR":
+        #for key, value in l.items():
+            #if value == "ERROR":
                 #print(guid, key)
-                error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
+                #error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
         
     # Print results
     for key, count in error_counts.items():
@@ -277,40 +277,12 @@ if __name__ == '__main__':
         #track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
         #track.update_track_job_status(l["_id"], "temporary_path_ndrive", x)
         
-        
-        #full_status = sc.get_full_asset_status(guid)
-        
-        #if full_status["data"].share_allocation_mb is not None:
-            #track.update_entry(guid, "has_open_share", "YES")
-
-        #job = track.get_job_info(l["_id"], "uploader")
-        #track.update_entry(l["_id"], "has_open_share", "YES")
-        #if job["status"] == "STARTING":
-            #print(l["_id"])
-            #track.update_track_job_status(l["_id"], "uploader", "WAITING")
-            #track.update_entry(l["_id"], "jobs_status", "WAITING")
-            #h += 1
-        #else:
-            #print(guid)
-        #x = sc.check_file_uploaded(l["_id"])
-        #if x is True:
-        #    call.derivative_file_uploaded(guid)
-        #if x is False:
-        #    track.update_entry(l["_id"], "jobs_status", "DONE")
-        #    track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
-        #    track.update_entry(l["_id"], "has_new_file", "YES")    
-        # pass
-        #track.update_entry(l["_id"], "jobs_status", "WAITING")
-        #track.update_track_job_status(l["_id"], "assetLoader", "WAITING")
-        #track.update_entry(l["_id"], "has_open_share", "YES")
-        
     print(f)
     
-
     throttle.close_connection()
     track.close_connection()
     meta.close_connection()
-    """
+    
     #i = IntegrationServer()
     #test()
     #x()

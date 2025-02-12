@@ -11,10 +11,12 @@ from DashboardAPIs import control_service
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import utility
+from DashboardAPIs.search_model import SearchModel
 
 control = FastAPI()
 util = utility.Utility()
 service = control_service.ControlService()
+search_model = SearchModel
 
 @control.get("/control/check")
 def index():
@@ -122,3 +124,51 @@ async def get_critical_error_lists():
         return JSONResponse(content={"status": msg}, status_code=500)
     
     return msg
+
+@control.get("/control/search_in_metadata")
+async def search_in_metadata(search_model: search_model):
+
+    found, data_list, msg = service.search_metadata_db(search_model)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    if data_list == []:
+        return JSONResponse(content={"message": "failed to find any assets with these criteria"}, status_code=200)
+    
+    if data_list is None:
+        return JSONResponse(content={"message": msg}, status_code=422)
+
+    return data_list
+
+@control.get("/control/search_in_track")
+async def search_in_metadata(search_model: search_model):
+
+    found, data_list, msg = service.search_track_db(search_model)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    if data_list == []:
+        return JSONResponse(content={"message": "failed to find any assets with these criteria"}, status_code=200)
+    
+    if data_list is None:
+        return JSONResponse(content={"message": msg}, status_code=422)
+
+    return data_list
+
+@control.get("/control/search_in_health")
+async def search_in_metadata(search_model: search_model):
+
+    found, data_list, msg = service.search_health_db(search_model)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    if data_list == []:
+        return JSONResponse(content={"message": "failed to find any entries with these criteria"}, status_code=200)
+    
+    if data_list is None:
+        return JSONResponse(content={"message": msg}, status_code=422)
+
+    return data_list

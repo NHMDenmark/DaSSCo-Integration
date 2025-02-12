@@ -204,15 +204,15 @@ TIMESTAMP: {timestamp}
     
     def create_mail_happiness(self):
 
-        noun = ["A lion", "A tiger", "A biologist", "A clown", "The primeminister", "A goldfish", "A martian", "The sun", "A boat", "A ghost", "A dragon", "A god", "A student", "A professor", "A rabbit", "A bumble-bee"]
+        noun = ["A penguin", "A lion", "A tiger", "A biologist", "A clown", "The primeminister", "A goldfish", "A martian", "The sun", "A boat", "A ghost", "A dragon", "A god", "A student", "A professor", "A rabbit", "A bumble-bee"]
 
-        verb = ["dances with", "swings", "adjusts", "holds onto", "laughs at", "kisses", "praises", "roars towards", "handles", "makes", "loves"]
+        verb = ["dances with", "swings", "adjusts", "holds onto", "laughs at", "kisses", "praises", "roars towards", "handles", "makes", "loves", "creates", "carries", "bends", "dashes after", "apologises to"]
 
-        adjective = ["a blue", "a spotted", "an orange", "a smelly", "a dangerous", "a lovely", "a striped", "a hungry", "a pretentious", "a green"]
+        adjective = ["a blue", "a spotted", "an orange", "a smelly", "a dangerous", "a lovely", "a striped", "a hungry", "a pretentious", "a green", "a serious", "a golden", "a basking"]
 
-        object = ["computer", "pencil", "car", "cow", "beer can", "apple tree", "model", "painting", "song", "cat", "guitar", "mask", "teapot"]
+        object = ["computer", "pencil", "car", "cow", "beer can", "apple tree", "model", "painting", "song", "cat", "guitar", "mask", "teapot", "tentacle", "soap bubble", "radiator", "cake"]
 
-        time_desc = ["at noon", "during a hot summer", "once a blue moon", "everytime", "early mornings", "late evenings", "has never happened", "could be", "is not happening", "in a good mood", "happily"]
+        time_desc = ["at noon", "during a hot summer", "once a blue moon", "in the afternoon", "when the first snow falls" "everytime", "early mornings", "late evenings", "has never happened", "could be", "is not happening", "in a good mood", "happily"]
 
         n = noun[random.randint(0,len(noun)-1)]
         v = verb[random.randint(0,len(verb)-1)]

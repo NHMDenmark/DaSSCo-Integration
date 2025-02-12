@@ -54,6 +54,10 @@ class HealthRepository(Status):
     def delete_entry(self, id):
         return self.all.delete_entry(id)
     
+    def get_time_based_multiple_key_list(self, key_value_pairs, time_key=None, after=None, before=None):
+
+        return self.all.get_time_based_multiple_key(key_value_pairs, time_key=time_key, after=after, before=before)
+
     def create_health_entry_from_api(self, id, data):
             self.collection.insert_one({"_id": id, **data})
 
