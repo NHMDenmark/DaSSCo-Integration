@@ -355,7 +355,7 @@ class HPCService():
     
     # update track database that a job has started
     # TODO figure out if this needs to call the jobs_status_update local function
-    def  job_started(self, started_data):
+    def job_started(self, started_data):
 
         guid = started_data.guid
         job_name = started_data.job_name
@@ -555,7 +555,7 @@ class HPCService():
             self.mongo_metadata.update_entry(guid, "tags", tags)
             self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.ISSUE_WITH_MEDIA.value)
 
-            entry = self.run_util.log_msg(self.prefix_id, f"{guid} did not create a derivative with a ppi of {ppi}. {info.note}")
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} did not create a derivative with a ppi of {ppi}. {note}")
             self.health_caller.warning(self.service_name, entry, guid)
 
             self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
@@ -577,6 +577,7 @@ class HPCService():
             # If asset is derivative -1 from assets in flight
             parent_guid = self.mongo_metadata.get_value_for_key(guid, "parent_guid")
             if parent_guid is not None and parent_guid != "":
+                
                 self.mongo_throttle.subtract_one_from_count("assets_in_flight", "value")
 
             return True

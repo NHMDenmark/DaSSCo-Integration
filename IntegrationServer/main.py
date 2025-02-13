@@ -219,14 +219,14 @@ if __name__ == '__main__':
     #list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING", "batch_list_name":"WORKHERB0003_2024-10-05"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
-    after = dt.datetime(2022, 10, 20)
+    after = dt.datetime(2025, 2, 2)
     #before = dt.datetime(2025, 2, 4)
     before = None
     #after = dt.datetime.strptime("2022-10-20", "%Y-%m-%d")
     print(after)
     #list = track.get_time_based_multiple_key_list([{"has_new_file": "ERROR"}], time_key="created_timestamp", after=after, before=before)
     #list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003'}], "date_asset_taken", after, None)
-    list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003', "asset_guid": "7e8-a-05-03-0c-1a-0-001-04-000-0242b2-00000"}], "date_asset_taken", None, None)
+    list = track.get_time_based_multiple_key_list([{"hpc_ready":"YES"}], "created_timestamp", after, None)
 
     #track.update_entry(guid, "available_for_services", "YES")
     #track.update_entry(guid, "available_for_services_timestamp", None)
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         #if jinfo:
             #if jinfo["status"] == "ERROR":
                 #track.update_entry(guid, "has_new_file", "YES")
-        #track.update_entry(guid, "has_new_file", "YES")
+        #track.update_entry(guid, "has_open_share", "YES")
                 #track.update_track_job_status(guid, "barcode", "WAITING")
                 #print(guid)
         f += 1

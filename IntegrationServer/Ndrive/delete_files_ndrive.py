@@ -117,8 +117,8 @@ class DeleteFilesNdrive():
                 # update track
                 self.track_mongo.delete_field(guid, "temporary_path_ndrive")
                 self.track_mongo.delete_field(guid, "temporary_files_ndrive")
-                 # subtract one from assets in flight
-                self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")      
+            # subtract one from assets in flight
+            self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")      
         else:
             print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
