@@ -34,6 +34,7 @@ class MicroServicePaths():
         "Flag paused status handler":"HealthUtility/flag_paused_status_handler.py",
         "Asset error status handler":"HealthUtility/asset_error_status_handler.py",
         "HPC job retry handler":"HealthUtility/hpc_job_retry_handler.py",
+        "HPC unresponsive job handler":"HealthUtility/hpc_unresponsive_job_handler.py",
         "Throttle service":"HealthUtility/throttle_service.py"
         }
 
@@ -67,5 +68,6 @@ class MicroServicePaths():
         "Flag paused status handler"
         "Asset error status handler"
         "Throttle service"
+        "HPC unresponsive job handler"
 
         return False

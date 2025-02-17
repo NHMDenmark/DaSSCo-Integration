@@ -15,6 +15,7 @@ class MicroServiceNamesEnum(Enum):
         HCUS = "HPC clean up service"
         HJC = "HPC job caller"
         HJRH = "HPC job retry handler"
+        HUJH = "HPC unresponsive job handler"
         HFU = "HPC file uploader"
         NFFN = "New files finder (Ndrive)"
         PNFN = "Process new files (Ndrive)"
