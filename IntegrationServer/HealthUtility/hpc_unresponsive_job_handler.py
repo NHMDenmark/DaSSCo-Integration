@@ -57,22 +57,23 @@ class HPCUnresponsiveJobHandler():
             starting_tuple_list = []
             running_tuple_list = []
 
-            starting_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs(self.flag_enum.JOBS_STATUS.value == self.status_enum.STARTING.value)
+            starting_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs([{self.flag_enum.JOBS_STATUS.value: self.status_enum.STARTING.value}])
             
             for asset in starting_asset_list:
                 guid = asset["_id"]
                 asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.STARTING.value)
-
+                
                 if asset_job is not None:
                     job_name = asset_job["name"]
                 else:
                     continue
                 
-                asset_tuple = asset, guid, job_name
+                asset_tuple = (asset, guid, job_name)
 
                 starting_tuple_list.append(asset_tuple)
+                
 
-            running_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs(self.flag_enum.JOBS_STATUS.value == self.status_enum.RUNNING.value)
+            running_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs([{self.flag_enum.JOBS_STATUS.value: self.status_enum.RUNNING.value}])
             
             for asset in running_asset_list:
                 guid = asset["_id"]
@@ -80,16 +81,16 @@ class HPCUnresponsiveJobHandler():
 
                 if asset_job is not None:
                     job_name = asset_job["name"]
-                    hpc_job_id = asset["hpc_job_id"]
+                    hpc_job_id = asset_job["hpc_job_id"]
                 else:
                     continue
                 
-                asset_tuple = asset, guid, job_name, hpc_job_id
+                asset_tuple = (asset, guid, job_name, hpc_job_id)
 
                 running_tuple_list.append(asset_tuple)
 
             # TODO decide if queued here
-            #queued_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs(self.flag_enum.JOBS_STATUS.value == self.status_enum.QUEUED.value)
+            #queued_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs()
             
             wait_time = 600
             time.sleep(wait_time)
@@ -102,7 +103,7 @@ class HPCUnresponsiveJobHandler():
                 if asset[self.flag_enum.JOBS_STATUS.value] == self.status_enum.STARTING.value and job_name == current_job_name:
                     unresponsive_starting_list.append(asset_tuple)
 
-            for asset in running_asset_list:
+            for asset_tuple in running_asset_list:
                 asset, guid, job_name, hpc_job_id = asset_tuple
 
                 current_asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.RUNNING.value)
@@ -119,8 +120,7 @@ class HPCUnresponsiveJobHandler():
                     
                     asset, guid, job_name = asset_tuple
 
-                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name} not responding for more than {wait_time} seconds while status was {self.status_enum.STARTING.value}.
-                                                   Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
+                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name} not responding for more than {wait_time} seconds while status was {self.status_enum.STARTING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
                     sent = self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
                     # TODO handle "sent"
 
@@ -129,8 +129,7 @@ class HPCUnresponsiveJobHandler():
                     
                     asset, guid, job_name, hpc_job_id = asset_tuple
 
-                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name}, hpc job id : {hpc_job_id}, not respond for more than {wait_time} seconds while status was {self.status_enum.RUNNING.value}.
-                                                   Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
+                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name}, hpc job id : {hpc_job_id}, not respond for more than {wait_time} seconds while status was {self.status_enum.RUNNING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
                     sent = self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
                     # TODO handle "sent"
 

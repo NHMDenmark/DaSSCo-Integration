@@ -175,6 +175,7 @@ def test_exception():
     except:
         raise Exception("fun")
 
+
 if __name__ == '__main__':
     """
     d = datetime
@@ -287,6 +288,5 @@ if __name__ == '__main__':
     #test()
     #x()
     
-
         
     
