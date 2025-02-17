@@ -31,12 +31,13 @@ class HealthCaller():
             response = requests.post(url, json=content)
             
             if response.status_code != 200:
-                pass # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
+                return False
+                # TODO create log entry maybe direct call to slack web hook to warn that health api is not working
 
         except Exception as e:
             # TODO create log entry
             print(e)
-
+        return True
 
     def error(self, service, message, guid = None, flag = None, flag_status = None):
         

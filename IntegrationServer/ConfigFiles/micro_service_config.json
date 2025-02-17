@@ -1,6 +1,7 @@
 {
   "Asset error status handler": {
     "module": "health utility",
+    "run_service":true,
     "pause_time": 5,
     "pause_check_list": [2, 7],
     "pause_loop_count": 4,
@@ -10,6 +11,7 @@
   },
   "Throttle service": {
     "module": "health utility",
+    "run_service":true,
     "pause_time": 60,
     "pause_check_list": [5, 10],
     "pause_loop_count": 15,
@@ -19,6 +21,7 @@
   },
   "HPC job retry handler": {
     "module": "health utility",
+    "run_service":true,
     "pause_time": 60,
     "pause_check_list": [5, 10],
     "pause_loop_count": 15,
@@ -26,8 +29,19 @@
     "error_time_span": 10,
     "mail_wait_time": 30
   },
+  "HPC unresponsive job handler": {
+    "module": "health utility",
+    "run_service":true,
+    "pause_time": 60,
+    "pause_check_list": [5, 10],
+    "pause_loop_count": 15,
+    "error_tolerance": 50,
+    "error_time_span": 10,
+    "mail_wait_time": 1
+  },
   "Flag paused status handler": {
     "module": "health utility",
+    "run_service":true,
     "pause_time": 60,
     "pause_check_list": [5, 20],
     "pause_loop_count": 30,
@@ -37,6 +51,7 @@
   },
   "Asset paused status handler": {
     "module": "health utility",
+    "run_service":true,
     "pause_time": 60,
     "pause_check_list": [5, 20],
     "pause_loop_count": 30,
@@ -46,6 +61,7 @@
   },
   "Asset creator ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 5,
     "pause_check_list": [2, 7],
     "pause_loop_count": 4,
@@ -55,6 +71,7 @@
   },
   "Asset creator HPC": {
     "module": "ssh hpc",
+    "run_service":true,
     "pause_time": 9,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 88,
@@ -64,6 +81,7 @@
   },
   "Erda sync ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 8,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -73,6 +91,7 @@
   },
   "File uploader ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 7,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -82,6 +101,7 @@
   },
   "HPC clean up service": {
     "module": "ssh hpc",
+    "run_service":true,
     "pause_time": 6,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -91,6 +111,7 @@
   },
   "Hpc api Service": {
     "module": "hpc api",
+    "run_service":false,
     "pause_time": 6,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -100,6 +121,7 @@
   },
   "HPC file uploader": {
     "module": "ssh hpc",
+    "run_service":true,
     "pause_time": 5,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -109,6 +131,7 @@
   },
   "HPC job caller": {
     "module": "ssh hpc",
+    "run_service":true,
     "pause_time": 4,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -118,6 +141,7 @@
   },
   "New files finder (Ndrive)": {
     "module": "ndrive",
+    "run_service":true,
     "pause_time": 8,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -127,6 +151,7 @@
   },
   "Delete files (Ndrive)": {
     "module": "ndrive",
+    "run_service":true,
     "pause_time": 3,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -136,6 +161,7 @@
   },
   "Delete local files": {
     "module": "asset file handler",
+    "run_service":true,
     "pause_time": 3,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -145,6 +171,7 @@
   },
   "Open file share ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 2,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -154,6 +181,7 @@
   },
   "Close file share ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 2,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -163,6 +191,7 @@
   },
   "Process new files (Ndrive)": {
     "module": "ndrive",
+    "run_service":true,
     "pause_time": 11,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -172,6 +201,7 @@
   },
   "Update metadata ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 12,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -181,6 +211,7 @@
   },
   "Validate erda sync ARS": {
     "module": "storage updater",
+    "run_service":true,
     "pause_time": 13,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
@@ -191,6 +222,7 @@
   },
   "all_run": {
     "module": "null",
+    "run_service":true,
     "pause_time": -1,
     "pause_check_list": [-1],
     "pause_loop_count": -1,
@@ -200,6 +232,7 @@
   },
   "Test health api": {
       "module": "tests",
+      "run_service":true,
       "pause_time": 5,
       "pause_check_list": [2, 7],
       "pause_loop_count": 4,

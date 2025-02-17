@@ -2,7 +2,7 @@
   "max_queued_jobs": 6,
   "parallel_jobs": 3,
   "max_expected_time": 2000,
-  "max_expected_time_running_job": 1,
+  "max_expected_time_running_job": 600,
   "max_expected_time_in_queue": 1,
   "job_list_script_path": "/work/dassco_23_request/ldam/job_list.sh",
   "export_to_path": "/work/dassco_23_request/ldam/received",

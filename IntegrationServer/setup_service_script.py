@@ -27,18 +27,19 @@ class SetupServices:
         self.service_names = list(self.service_config.keys())
 
         for name in self.service_names:
-            
-            created = self.service_repo.create_micro_service_entry(name)
-            if created is False:
-                # print(f"Failed to create service {name}, in mongo micro service collection.")
-                exist = self.service_repo.get_entry("_id", name)
-                if exist is None:
-                    print(f"Failed to find {name}, in mongo db. Failed to create.")
+            if self.util.get_nested_value(self.service_config_path, name, "run_service"):
+                created = self.service_repo.create_micro_service_entry(name)
+                if created is False:
+                    # print(f"Failed to create service {name}, in mongo micro service collection.")
+                    exist = self.service_repo.get_entry("_id", name)
+                    if exist is None:
+                        print(f"Failed to find {name}, in mongo db. Failed to create.")
+                    else:
+                        print(f"{name} has already been created in the mongo db.")
                 else:
-                    print(f"{name} has already been created in the mongo db.")
+                    print(f"{name} was created successfully.")
             else:
-                print(f"{name} was created successfully.")
-
+                print(f"{name} is not a micro service and will not be added to the mongo db.")
 
         self.service_repo.close_connection()
 

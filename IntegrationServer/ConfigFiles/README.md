@@ -58,7 +58,8 @@ Mail configuration file. Test is setup using gmail as a host here. If we are usi
 ## micro_service_config.json
 Service configuration file. Each service has its own block of configuration values.  
 The name is the name the service_name defined in its script. Used to identify the service in logs, mails and between services.  
-Module is the module each service belongs to. It is used for defining steps the service should go through when attempting to handle errors/warnings/pause status.   
+Module is the module each service belongs to. It is used for defining steps the service should go through when attempting to handle errors/warnings/pause status.
+Run_service lets us have services that doesnt have to run by themself, but still could want the rest of the configuration settings available. Rest api services fall into this category.    
 Pause_time is the length in seconds each loop in the pause mode should wait.
 Pause_check_list is a list of numbers that tells the service at which initial pause loops it should attempt to run again.   
 Pause_loop_count is used to define the ongoing attempts to unpause. If set to 100 that means the service will attempt to unpause every 100 loops. This number should be higher than any numbers in the pause_check_list.
@@ -70,6 +71,7 @@ Max_sync_erda_attempt_wait_time only matters for the "Validate erda sync ARS ser
 {
   "Asset creator ARS": {
     "module": "storage updater",
+    "run_service": true,
     "pause_time": 5,
     "pause_check_list": [2, 7],
     "pause_loop_count": 4,
@@ -173,9 +175,9 @@ List of workstations names. Used for recognising which folders on the ndrive to 
 ```
 
 ## throttle_config.json
-Throttle configuration. Sets the max values allowed before the system pauses. The first two are a set number of assets allowed. The last 3 is the max amount of space we allow the assets to use in ARS. Total reopened share size is amount shares that have been opened after syncing at least once take up. There is no limit implementation for this amount its just to keep track of it.
+Throttle configuration. Sets the max values allowed before the system pauses. The first two are a set number of assets allowed. The last 3 is the max amount of space(in mb) we allow the assets to use in ARS. Total reopened share size is amount shares that have been opened after syncing at least once take up. There is no limit implementation for this amount its just to keep track of it.
 
-Note: assets_in_flight is not implemented in the code.
+Note: assets_in_flight is not implemented in the code to limit the applications, it is implemented at counting assets in flight.
 
 ```bash
   {
