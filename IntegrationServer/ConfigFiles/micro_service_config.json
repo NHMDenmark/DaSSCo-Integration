@@ -82,7 +82,7 @@
   "Erda sync ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 8,
+    "pause_time": 600,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
     "error_tolerance": 2,
@@ -92,7 +92,7 @@
   "File uploader ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 7,
+    "pause_time": 600,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
     "error_tolerance": 2,

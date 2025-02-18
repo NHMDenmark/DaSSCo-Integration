@@ -62,11 +62,22 @@ class HPCJobRetryHandler():
             
             guid = asset["_id"]
             print(f"found {guid}")
+            
+            # avoid any timing issues
+            self.track_mongo.update_entry(guid, "available_for_services", self.validate_enum.NO.value)
 
             # find the job that has the RETRY status
             job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.RETRY.value)
             
-            job_name = job["name"]
+            # somehow retry status has not been set to the actual job which means more things could be wrong.
+            if job is None:
+                self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+                entry = self.run_util.log_msg(self.prefix_id, f"{guid} had jobs_status set to critical error.", self.status_enum.CRITICAL_ERROR.value)
+                self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+                self.end_of_loop_checks()
+                continue
+
+            job_name = job["name"]            
 
             # check if the job is set to retry for the 3rd time. If so set jobs status and job status as ERROR
             first_job_try = self.track_mongo.get_job_info(guid, f"attempt_1_{job_name}")
@@ -81,7 +92,8 @@ class HPCJobRetryHandler():
 
                 entry = self.run_util.log_msg(self.prefix_id, f"{guid} received RETRY status twice before for {job_name}. Job status is being set to ERROR.", self.status_enum.ERROR.value)
                 self.health_caller.error(self.service_name, entry, guid)
-                
+                # asset back as available
+                self.track_mongo.update_entry(guid, "available_for_services", self.validate_enum.YES.value)
                 self.end_of_loop_checks()
                 continue            
 
@@ -107,15 +119,20 @@ class HPCJobRetryHandler():
                 self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.NO.value)
 
             if job["name"] == "clean_up":
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
                 self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.YES.value)
 
             if job["name"] == "uploader":
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
             # Notification of event
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} will reattempt {job_name} after HPC sent RETRY status back.")
             self.health_caller.warning(self.service_name, entry, guid)
 
+            # asset back as available
+            self.track_mongo.update_entry(guid, "available_for_services", self.validate_enum.YES.value)
+            
             self.end_of_loop_checks()
         
         # outside loop

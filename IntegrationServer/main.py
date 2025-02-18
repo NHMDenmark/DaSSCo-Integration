@@ -217,17 +217,16 @@ if __name__ == '__main__':
 
     #[{key: value, key: value}]
     #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    #list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"STARTING", "batch_list_name":"WORKHERB0003_2024-10-05"}])
+    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"WAITING"}])
     #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
 
     after = dt.datetime(2025, 2, 2)
     #before = dt.datetime(2025, 2, 4)
     before = None
     #after = dt.datetime.strptime("2022-10-20", "%Y-%m-%d")
-    print(after)
     #list = track.get_time_based_multiple_key_list([{"has_new_file": "ERROR"}], time_key="created_timestamp", after=after, before=before)
     #list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003'}], "date_asset_taken", after, None)
-    list = track.get_time_based_multiple_key_list([{"hpc_ready":"YES"}], "created_timestamp", after, None)
+    #list = track.get_time_based_multiple_key_list([{"hpc_ready":"YES"}], "created_timestamp", after, None)
 
     #track.update_entry(guid, "available_for_services", "YES")
     #track.update_entry(guid, "available_for_services_timestamp", None)
@@ -252,18 +251,28 @@ if __name__ == '__main__':
     error_counts = {}
     for l in list:
         guid = l["_id"]
-        print(guid)
-        #jinfo = track.get_job_info(guid, "uploader")
         
-        #if jinfo:
+        #jinfo = track.get_job_info(guid, "uploader")
+        #jinfo = track.get_job_from_key_value(guid, "name", "uploader")
+        s = None
+        try:
+            s = l["available_for_services"]
+        except:
+            pass
+    
+
+        if s is None:
             #if jinfo["status"] == "ERROR":
                 #track.update_entry(guid, "has_new_file", "YES")
-        #track.update_entry(guid, "has_open_share", "YES")
-                #track.update_track_job_status(guid, "barcode", "WAITING")
+            #track.update_entry(guid, "has_new_file", "YES")
+            #track.update_track_job_status(guid, jinfo["name"], "RETRY")
                 #print(guid)
-        f += 1
-                
-        
+            track.update_entry(guid, "available_for_services", "YES")
+            track.update_entry(guid, "available_for_services_timestamp", None)
+            track.update_entry(guid, "available_for_services_wait_time", None)
+            print(guid)
+                 
+            f += 1
         #for key, value in l.items():
             #if value == "ERROR":
                 #print(guid, key)
@@ -287,6 +296,3 @@ if __name__ == '__main__':
     #i = IntegrationServer()
     #test()
     #x()
-    
-        
-    
