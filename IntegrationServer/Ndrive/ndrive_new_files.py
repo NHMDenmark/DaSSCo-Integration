@@ -51,6 +51,11 @@ class NdriveNewFilesFinder():
             self.loop()
         except Exception as e:
             print("service crashed", e)
+            try:
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                self.health_caller.unexpected_error(self.service_name, entry)
+            except:
+                print(f"failed to inform about crash")
 
     def loop(self):
 

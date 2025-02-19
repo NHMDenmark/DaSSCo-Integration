@@ -147,10 +147,15 @@ class AssetCreator():
         try:
             self.loop()
         except Exception as e:
+            print("service crashed", e)
+            try:
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                self.health_caller.unexpected_error(self.service_name, entry)
+            except:
+                print(f"failed to inform about crash")
             self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)
             self.beat = self.status_enum.STOPPED.value        
             self.close_all_connections()
-            print("service crashed", e)
 
     
     def loop(self):

@@ -10,7 +10,9 @@ from MongoDB import service_repository, track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
-# TODO untested
+"""
+Service for deleting files that have been moved to the integration server as part of the pipeline. Files are first deleted when everything else has happened succesfully. 
+"""
 class DeleteLocalFiles():
 
     def __init__(self):
@@ -42,6 +44,12 @@ class DeleteLocalFiles():
             self.loop()
         except Exception as e:
             print("service crashed", e)
+            try:
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                self.health_caller.unexpected_error(self.service_name, entry)
+            except:
+                print(f"failed to inform about crash")
+            self.close_all_connections()
 
     def loop(self):
 
@@ -102,10 +110,12 @@ class DeleteLocalFiles():
                 self.run = self.run_util.pause_loop()
 
         # out of main loop
-        self.service_mongo.close_connection()
-        self.track_mongo.close_connection()
+        self.close_all_connections()
         print("Service closed down")
 
+    def close_all_connections(self):
+        self.service_mongo.close_connection()
+        self.track_mongo.close_connection()
 
 if __name__ == '__main__':
     DeleteLocalFiles()

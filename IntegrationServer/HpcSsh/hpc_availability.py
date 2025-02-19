@@ -12,7 +12,7 @@ import time
 """
 # TODO Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
 """
-
+# This is not in use
 class HPCAvailability:
 
     def __init__(self):

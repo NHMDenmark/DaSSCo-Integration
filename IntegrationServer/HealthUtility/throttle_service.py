@@ -14,6 +14,7 @@ from Enums import status_enum, validate_enum
 """
 Service that checks if there are too many or too much asset in the pipeline at any one point. Will change the run_status of other services to throttle their input/output of assets.
 """
+# Not in use
 class ThrottleService():
 
     def __init__(self):
