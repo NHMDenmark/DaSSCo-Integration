@@ -12,11 +12,13 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import utility
 from DashboardAPIs.search_model import SearchModel
+from DashboardAPIs.update_track_model import UpdateTrackhModel
 
 control = FastAPI()
 util = utility.Utility()
 service = control_service.ControlService()
 search_model = SearchModel
+update_track_model = UpdateTrackhModel
 
 @control.get("/control/check")
 def index():
@@ -172,3 +174,13 @@ async def search_in_metadata(search_model: search_model):
         return JSONResponse(content={"message": msg}, status_code=422)
 
     return data_list
+
+@control.put("/control/update_track_data")
+async def update_track_data(update_track_model: update_track_model):
+    
+    updated, msg = service.update_track_data(update_track_model)
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)

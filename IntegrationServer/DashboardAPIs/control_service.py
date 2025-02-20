@@ -323,3 +323,34 @@ class ControlService():
         except Exception as e:
             print(e)
             return False, None, ("Something went wrong while searching for health data.")
+
+    def update_track_data(self, update_model):
+        # TODO verify that keys are actual fields before updating, not sure if want a different endpoint for adding new fields
+
+        asset_list = update_model.asset_guids
+
+        if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
+            return False, "Wrong input for asset_guids."
+        
+        job_name = update_model.job_name
+        job_key_values = update_model.job_key_values
+
+        if job_name is not None or job_name != "" and job_key_values is not None and job_key_values != {}:
+            
+            for guid in asset_list:
+                
+                for key, value in job_key_values.items():
+
+                    self.mongo_track.update_track_job_data_point(guid, "name", job_name, key, value)
+
+        key_values = update_model.key_values
+
+        if key_values is not None and key_values != {}:
+            
+            for guid in asset_list:
+                
+                for key, value in key_values.items():
+
+                    self.mongo_track.update_entry(guid, key, value)
+
+        return True, "Update success"        
