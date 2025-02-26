@@ -48,6 +48,9 @@ class MetadataRepository:
     def get_value_for_key(self, id_value, key):
         return self.all.get_value_for_key(id_value, key)
 
+    def insert_entry(self, id, data):
+        return self.all.insert_entry(id, data)
+
     def delete_entry(self, guid):
         return self.all.delete_entry(guid)
     

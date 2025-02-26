@@ -163,11 +163,15 @@ class Utility:
     def convert_json_to_utf8(self, input_data):
         def decode_string(s):
             try:
-                # Detect the encoding of the string
-                detected = chardet.detect(s.encode('latin1'))  # Ensure we handle unexpected cases
-                encoding = detected['encoding'] or 'latin1'
                 
-                print(encoding)
+                # in case of small strings the detector can have trouble determining the correct encoding
+                big_string = "adding context" + s
+                
+                # Detect the encoding of the string
+                detected = chardet.detect(big_string.encode('latin1'))  # Ensure we handle unexpected cases
+                encoding = detected['encoding'] or 'latin1'
+                    
+                print("found: ", encoding)
 
                 # Decode to 'utf-8' using the detected encoding
                 return s.encode(encoding).decode('utf-8')

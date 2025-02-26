@@ -111,6 +111,20 @@ class AllRepository:
         entries = list(self.collection.find(query))
         return entries
 
+    def insert_entry(self, id, data):
+        """
+            Insert any document based on a dictionary.
+
+            :param id: The id of the new entry
+            :param data: The dictionary with the data for the document
+            :return: True for success, False for failure.
+        """
+        try:
+            self.collection.insert_one({"_id": id, **data})
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     def get_value_for_key(self, id_value, key):
         """

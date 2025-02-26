@@ -198,7 +198,14 @@ if __name__ == '__main__':
     """
     
     u = utility.Utility()
+    track = track_repository.TrackRepository()
 
+    h = {"hit":"YES", "gold":{"y":1, "b":34}}
+
+    print(track.delete_entry("yuppi"))
+
+    track.close_connection()
+    """
     track = track_repository.TrackRepository()
     meta = metadata_repository.MetadataRepository()
     throttle  = throttle_repository.ThrottleRepository()
@@ -267,9 +274,9 @@ if __name__ == '__main__':
             #track.update_entry(guid, "has_new_file", "YES")
             #track.update_track_job_status(guid, jinfo["name"], "RETRY")
                 #print(guid)
-            track.update_entry(guid, "available_for_services", "YES")
-            track.update_entry(guid, "available_for_services_timestamp", None)
-            track.update_entry(guid, "available_for_services_wait_time", None)
+            #track.update_entry(guid, "available_for_services", "YES")
+            #track.update_entry(guid, "available_for_services_timestamp", None)
+            #track.update_entry(guid, "available_for_services_wait_time", None)
             print(guid)
                  
             f += 1
@@ -292,7 +299,7 @@ if __name__ == '__main__':
     throttle.close_connection()
     track.close_connection()
     meta.close_connection()
-    
+    """
     #i = IntegrationServer()
     #test()
     #x()

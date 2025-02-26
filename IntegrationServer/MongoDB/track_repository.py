@@ -29,6 +29,9 @@ class TrackRepository:
         """Closes the connection."""
         self.mongo_track.close_mdb()
 
+    def insert_entry(self, id, data):
+        return self.all.insert_entry(id, data)
+
     def check_connection(self):
         """
         Returns true if there is no issue, else returns the exception.

@@ -61,6 +61,9 @@ class HealthRepository(Status):
     def create_health_entry_from_api(self, id, data):
             self.collection.insert_one({"_id": id, **data})
 
+    def insert_entry(self, id, data):
+        return self.all.insert_entry(id, data)
+
     # TODO logic
     def get_count_errors(self, minutes, service):
         pass
@@ -69,7 +72,6 @@ class HealthRepository(Status):
         pass
     
     def get_recent_errors(self, service_name, interval, severity_level = "ERROR"):
-    
     
         time_ago = datetime.now() - timedelta(seconds=interval)
         

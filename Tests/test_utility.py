@@ -151,6 +151,13 @@ class TestUtility(unittest.TestCase):
         result = Utility.convert_json_to_utf8(self, input_data)
         self.assertEqual(result, expected_output, "Failed to convert JSON to UTF-8.")
 
+        input_data = {"key1": "\u00c6\u00d8\u00c5", "key2": "s\u00c3\u00b8"}
+        expected_output = {"key1": "ÆØÅ", "key2": "sø"}
+
+        # Convert the input JSON
+        result = Utility.convert_json_to_utf8(self, input_data)
+        self.assertEqual(result, expected_output, "Failed to convert JSON to UTF-8.")
+
     def test_convert_string_to_datetime(self):
 
         time = datetime.now()
