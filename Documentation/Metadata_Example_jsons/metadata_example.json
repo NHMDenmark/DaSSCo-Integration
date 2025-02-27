@@ -1,4 +1,3 @@
-#metadata on N-Drive after ingestion from IngestionClient
 {
     "asset_created_by": "",
     "asset_deleted_by": "",
@@ -19,7 +18,7 @@
     "date_metadata_created": "2023-10-31T08:22:17+01:00",
     "date_metadata_updated": "",
     "date_metadata_uploaded": "",
-    "digitiser": "Jesper Mandrup Jensen",
+    "digitiser": "Santa Claus",
     "external_publisher": [],
     "file_format": "tif",
     "funding": "DaSSCo",

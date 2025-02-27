@@ -16,7 +16,17 @@ None
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Running IngestionClient/pipeline
+Running IngestionClient/pipeline  
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+asset_guid
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+None
+

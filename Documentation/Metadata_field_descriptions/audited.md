@@ -7,7 +7,7 @@ Boolean
 Metadata
 
 **Description:**  
-This is to mark the record as to having been manually audited. This will occur after complete processing and syncing with Specify.
+This is to mark the record as to having been manually audited. This will occur after complete processing and syncing with Specify.  
 
 **Value:**  
 True or False
@@ -16,7 +16,17 @@ True or False
 Because it tells us something important  
 
 **Populated by whom and when:**  
-TBD
+TBD  
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+audited
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+None
+

@@ -1,19 +1,17 @@
 ## "barcode"
 
 **Type of field:**  
-String  
+List of strings
 
 **Part of which document:**  
 Metadata
 
 **Description:**  
-"This refers to a physical barcode on the specimen consisting of 8 digits. It is part of an ID unique to that specimen and consisting of: 
-An institution acronym, a collection acronym, and the barcode. 
-We can have one specimen barcode related to multiple assets and in sme cases one asset with multiple specimen barcodes (an example of the later is a multispecimen herbarium sheet)."
+"This refers to a physical barcode on the specimen consisting of 8 digits. It is part of an ID unique to that specimen and consisting of: An institution acronym, a collection acronym, and the barcode. We can have one specimen barcode related to multiple assets and in sme cases one asset with multiple specimen barcodes (an example of the later is a multispecimen herbarium sheet)."
 
 **Value:**  
-8 Digit code prefaced by the institution. The institution string is NOT part of the encoded digit code.
-Fx NHMD00929517
+8 Digit code prefaced by the institution. The institution string is NOT part of the encoded digit code.Fx NHMD00929517
+
 **Why do we have this field:**  
 Because it tells us something important 
 
@@ -22,3 +20,13 @@ Running pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+barcode
+
+**Maps to in Specify:**  
+Catalog Number
+
+**Issues:**  
+None
+

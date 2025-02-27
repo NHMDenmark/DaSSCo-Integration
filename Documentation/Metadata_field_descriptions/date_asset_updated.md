@@ -7,12 +7,10 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+Missing description  
 
 **Value:**  
-ISO 8601:
-YYYY-MM-DDThh:mm:ssZ
-or NULL
+ISO 8601:YYYY-MM-DDThh:mm:ssZor NULL
 
 **Why do we have this field:**  
 Because it tells us something important  
@@ -22,3 +20,13 @@ Note
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Does not exist in ARS. Not sure what this is meant to tell. What does updating an asset mean?
+

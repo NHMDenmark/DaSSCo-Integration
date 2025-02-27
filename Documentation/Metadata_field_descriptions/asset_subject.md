@@ -16,7 +16,17 @@ One of the following strings: folder, device target, specimen, label
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Running pipeline
+Running pipeline  
 
 **Updated where and when:**  
-Never
+Never  
+
+**Maps to in ARS:**  
+subject
+
+**Maps to in Specify:**  
+Part of the Title field together with payload_type
+
+**Issues:**  
+Naming mapping issue with ARS.
+

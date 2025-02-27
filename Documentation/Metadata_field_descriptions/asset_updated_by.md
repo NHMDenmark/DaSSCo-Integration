@@ -7,16 +7,26 @@ String
 Metadata
 
 **Description:**  
-Entity that updated the asset
+Entity that updated the asset  
 
 **Value:**  
-None
+None  
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-TBD
+TBD  
 
 **Updated where and when:**  
-Never
+Never  
+
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+This field is I think never used. It does not exist in ARS. Not sure what updating the asset (not metadata means).
+

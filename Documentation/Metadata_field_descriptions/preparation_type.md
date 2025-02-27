@@ -20,3 +20,13 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+preparation_type in the specimen protocol
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Gets shortened to the first letter in ARS - "sheets" become "s"
+

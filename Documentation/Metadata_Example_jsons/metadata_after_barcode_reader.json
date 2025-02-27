@@ -1,42 +1,39 @@
-#metadata fields updated from us after barcode reading for different cases
-#specimen sheet: 1 specimen, no label
+{"metadata_after_barcode_reader": {
+
+"#specimen sheet: 1 specimen, no label":
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1"], 
-     "multispecimen": false,
+     "multispecimen": false
+},
 
-}
-
-#multispecimen sheet: 2 specimen, no label
+"#multispecimen sheet: 2 specimen, no label":
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-2"],
-     "multispecimen": true,
+     "multispecimen": true
 
-}
-
-#specimen sheet: 1 specimen, 1 label
+},
+"#specimen sheet: 1 specimen, 1 label":
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
-     "multispecimen": false,
+     "multispecimen": false
 
-}
-
-#multispecimen sheet: 2 specimen, 1 label
+},
+"#multispecimen sheet: 2 specimen, 1 label":
 {    "asset_subject": "specimen",
     "barcode": ["specimen-barcode-1","specimen-barcode-2","specimen-barcode-of_specimen_related_by_disposable_barcode-1"], 
-     "multispecimen": true,
+     "multispecimen": true
 
-}
+},
 
 
-#label sheet: no specimen, 1 label
+"#label sheet: no specimen, 1 label":
 {    "asset_subject": "label",
     "barcode": ["specimen-barcode-of_specimen_related_by_disposable_barcode-1","specimen-barcode-of_specimen_related_by_disposable_barcode-2"],
-     "multispecimen": false,
+     "multispecimen": false
 
-}
+},
 
-#metadata fields that should be updated by ARS automatically
-
+"#metadata fields that should be updated by ARS automatically":
 {
     "asset_created_by": "",
     "asset_updated_by": "",
@@ -45,7 +42,8 @@
     "date_metadata_updated": "",
     "date_metadata_uploaded": "",
     "metadata_updated_by": "",
-    "metadata_uploaded_by": "",
+    "metadata_uploaded_by": ""
 
 }
-
+}
+}

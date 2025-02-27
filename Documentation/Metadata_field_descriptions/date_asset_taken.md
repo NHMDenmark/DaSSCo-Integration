@@ -10,7 +10,7 @@ Metadata
 A date and time of when the original raw image was taken
 
 **Value:**  
-None
+ISO 8601:YYYY-MM-DDThh:mm:ssZor NULL
 
 **Why do we have this field:**  
 Because it tells us something important  
@@ -20,3 +20,13 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+date_asset_taken
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Does not persist in ARS (bug). 
+

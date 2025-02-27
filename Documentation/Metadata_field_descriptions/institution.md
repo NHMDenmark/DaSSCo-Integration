@@ -10,7 +10,7 @@ Metadata
 The name of the Institution which owns and digitised the specimen
 
 **Value:**  
-None
+NHMD, AU
 
 **Why do we have this field:**  
 Because it tells us something important  
@@ -20,3 +20,13 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+institution
+
+**Maps to in Specify:**  
+Defines the list that maps to Copyright(?), License and Credit
+
+**Issues:**  
+None
+

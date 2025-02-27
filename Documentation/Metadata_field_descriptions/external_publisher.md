@@ -1,7 +1,7 @@
 ## "external_publisher"
 
 **Type of field:**  
-String  
+List of strings
 
 **Part of which document:**  
 Metadata
@@ -20,3 +20,13 @@ Note
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+external_publisher
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Needs some kind of url check. Not sure if this is implemented in ARS, we are missing it for integration server. 
+

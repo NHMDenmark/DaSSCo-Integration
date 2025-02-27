@@ -12,7 +12,6 @@ This is the date the asset was audited. Auditing happens following complete proc
 **Value:**  
 ISO 8601:YYYY-MM-DDThh:mm:ssZ or NULL
 
-
 **Why do we have this field:**  
 Because it tells us something important  
 
@@ -21,3 +20,13 @@ TBD
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Same as audited by.
+

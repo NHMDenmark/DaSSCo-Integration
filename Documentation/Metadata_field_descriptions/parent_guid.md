@@ -20,3 +20,13 @@ Running pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+parent_guid
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+This field cannot have an empty string in ARS it must be "null" or an actual parent guid. There is a bug where it can be overwritten to null again (not sure exactly how this works though).
+

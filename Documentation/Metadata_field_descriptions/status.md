@@ -21,3 +21,12 @@ Populated by integration server just before upload if empty.
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+status
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+We don�t use this. It must be populated for an asset to get created in ARS. Missing decisions.
+

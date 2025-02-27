@@ -20,3 +20,13 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+collection
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+None
+

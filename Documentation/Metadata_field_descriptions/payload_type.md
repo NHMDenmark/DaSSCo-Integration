@@ -1,13 +1,13 @@
 ## "payload_type"
 
 **Type of field:**  
-String  
+List of strings
 
 **Part of which document:**  
 Metadata
 
 **Description:**  
-Yada yada  
+Missing description  
 
 **Value:**  
 None
@@ -20,3 +20,13 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+payload_type
+
+**Maps to in Specify:**  
+Part of the Title field together with asset_subject
+
+**Issues:**  
+We have a list, ARS has a single value. Can this be multiple things?
+
