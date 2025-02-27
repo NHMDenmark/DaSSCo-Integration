@@ -32,4 +32,4 @@
 empty doesnt concern this service   
 (status) is when its a possibility for triggering
 
-status -> change in status
+required status -> change in status

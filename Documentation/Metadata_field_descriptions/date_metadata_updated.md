@@ -21,3 +21,12 @@ Event based and populated by ARS
 **Updated where and when:**  
 After each update to an assets metadata in ARS 
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+We can only keep one value here despite the asset potentially having its metadata updated multiple times. 
+

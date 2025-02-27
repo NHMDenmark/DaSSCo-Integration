@@ -21,3 +21,12 @@ Note
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+specimen_pid part of the specimens protocol
+
+**Maps to in Specify:**  
+Persistent Identifier
+
+**Issues:**  
+Missing decision on how and where to construct this.
+

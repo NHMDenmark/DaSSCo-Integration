@@ -21,3 +21,12 @@ Upon event
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+date_created and timestamp in event protocol
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Naming mapping issue with ARS.
+

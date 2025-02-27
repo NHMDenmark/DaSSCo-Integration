@@ -1,7 +1,7 @@
 ## "barcode"
 
 **Type of field:**  
-String  
+List of strings
 
 **Part of which document:**  
 Metadata
@@ -20,4 +20,13 @@ Running pipeline
 
 **Updated where and when:**  
 Never
+
+**Maps to in ARS:**  
+barcode
+
+**Maps to in Specify:**  
+Catalog Number
+
+**Issues:**  
+None
 

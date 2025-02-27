@@ -21,3 +21,12 @@ Running pipeline
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+multi_specimen
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Naming mapping issue
+

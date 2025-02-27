@@ -21,3 +21,12 @@ Can be populated by anyone at anytime.
 **Updated where and when:**  
 Anytime and anywhere.
 
+**Maps to in ARS:**  
+tags
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Best field ever! Does everything when you need it. Currently gets populated with metadata_template: v2.1.0 
+

@@ -21,3 +21,12 @@ Note
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Does not exist in ARS. Not sure what this is meant to tell. What does updating an asset mean?
+

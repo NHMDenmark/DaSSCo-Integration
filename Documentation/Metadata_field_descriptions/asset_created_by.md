@@ -21,3 +21,12 @@ Upon event
 **Updated where and when:**  
 Never  
 
+**Maps to in ARS:**  
+None
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+This could be part of the event protocol in ARS populating the user field. Currently that field will be populated by the digitiser when you create a new asset in ARS. The field does not exist as such in ARS. NT documentation says this should be filled when asset is synced with erda. 
+

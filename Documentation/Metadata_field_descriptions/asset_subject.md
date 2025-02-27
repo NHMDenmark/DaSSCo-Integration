@@ -21,3 +21,12 @@ Running pipeline
 **Updated where and when:**  
 Never  
 
+**Maps to in ARS:**  
+subject
+
+**Maps to in Specify:**  
+Part of the Title field together with payload_type
+
+**Issues:**  
+Naming mapping issue with ARS.
+

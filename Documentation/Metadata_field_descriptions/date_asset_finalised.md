@@ -21,3 +21,12 @@ Note
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+date_asset_finalised and timestamp in event protocol
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Finalised, locked and audited is confusing.
+

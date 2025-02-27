@@ -21,3 +21,12 @@ Running IngestionClient/pipeline
 **Updated where and when:**  
 Never
 
+**Maps to in ARS:**  
+pipeline
+
+**Maps to in Specify:**  
+None
+
+**Issues:**  
+Naming mapping issue
+
