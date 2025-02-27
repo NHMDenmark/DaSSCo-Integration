@@ -1,22 +1,23 @@
-## "Field name"
+## "multi_specimen"
 
 **Type of field:**  
-String, boolean  
+Boolean
 
 **Part of which document:**  
-Metadata, track data, mos data, etc  
+ARS
 
 **Description:**  
-Please remember that there are two white spaces after each header. 
+Tells if the asset contains multiple specimens.
 
 **Value:**  
-None
+True or False
 
 **Why do we have this field:**  
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Note  
+Ingestion server. When the metadata is created. 
 
 **Updated where and when:**  
-Never  
+Never
+

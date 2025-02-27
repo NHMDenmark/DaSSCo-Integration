@@ -7,18 +7,17 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+Tells when an asset was finalised.   
 
 **Value:**  
-ISO 8601:
-YYYY-MM-DDThh:mm:ssZ
-or NULL
+ISO 8601:YYYY-MM-DDThh:mm:ssZor NULL
 
 **Why do we have this field:**  
-Because it tells us something important  
+Timestamp for when an asset was finalised.  
 
 **Populated by whom and when:**  
 Note  
 
 **Updated where and when:**  
 Never
+

@@ -16,7 +16,8 @@ One of the following strings: folder, device target, specimen, label
 Because it tells us something important  
 
 **Populated by whom and when:**  
-Running pipeline
+Running pipeline  
 
 **Updated where and when:**  
-Never
+Never  
+

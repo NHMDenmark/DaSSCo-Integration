@@ -36,7 +36,7 @@ def process_md_files(folder_path, output_file_path):
 
     for md_file in md_files:
         file_path = os.path.join(folder_path, md_file)
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
             content = file.read()
             if not headers:
                 headers = ["Name"] + get_headers_from_md(content)
@@ -54,6 +54,6 @@ def process_md_files(folder_path, output_file_path):
             output_file.write("| " + " | ".join(row) + " |\n")
 
 if __name__ == "__main__":
-    folder_path = f"{project_root}/Track_field_descriptions"  # Replace with your folder path
-    output_file_path = f"{project_root}/Track_overview1.md"  # Replace with your desired output file path
+    folder_path = f"{project_root}/ARS_metadata_field_descriptions/"  # Replace with your folder path
+    output_file_path = f"{project_root}/test_overview_15_08_24.md"  # Replace with your desired output file path
     process_md_files(folder_path, output_file_path)

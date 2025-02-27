@@ -1,7 +1,7 @@
 ## "tags"
 
 **Type of field:**  
-String  
+Dictionary containing key strings each with a value string. 
 
 **Part of which document:**  
 Metadata
@@ -10,14 +10,14 @@ Metadata
 We are still developing our pipelines and can imagine the need to add additional fields in the future. It would be good to have a field to cover ourselves if we discover the need to additionally annotate our metadata assets until we can add more. 
 
 **Value:**  
-A dictionary of dynamic properties
-Fx "ocr": ocr_tex
+A dictionary of dynamic propertiesFx "ocr": ocr_tex
 
 **Why do we have this field:**  
-Because it tells us something important  
+Gives us flexibility to incorporate new information or make changes without having to overhaul the whole system immediately.  
 
 **Populated by whom and when:**  
-Note  
+Can be populated by anyone at anytime.  
 
 **Updated where and when:**  
-Never
+Anytime and anywhere.
+

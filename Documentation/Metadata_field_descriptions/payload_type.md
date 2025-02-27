@@ -7,7 +7,7 @@ String
 Metadata
 
 **Description:**  
-Yada yada  
+What the asset contain, could be images, ct-scans etc
 
 **Value:**  
 None
@@ -20,3 +20,4 @@ Running IngestionClient/pipeline
 
 **Updated where and when:**  
 Never
+
