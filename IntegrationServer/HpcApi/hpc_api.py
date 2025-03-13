@@ -132,7 +132,7 @@ async def file_info(file_info: file_info_model):
 
 # confirmation endpoint for asset having been cleaned up on hpc
 @app.post("/dev/api/v1/asset_clean_up")
-async def file_uploaded(asset_guid: str):
+async def asset_clean_up(asset_guid: str):
     cleaned = service.clean_up(asset_guid)
 
     if cleaned is False:
