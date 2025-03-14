@@ -81,58 +81,151 @@ class CallsHandler():
                 self.asset_deleter_handler(guid)
         
         return command
-    
-    def barcode_handler(self, guid):
-        job_name = ""
-    
-    def cropping_handler(self, guid):
-        job_name = ""
 
     def derivative_handler(self, guid):
-        job_name = ""
+
+        job = "derivative"
+        guid_72 = f"{guid}_72"
+        guid_400 = f"{guid}_400"
+        derivative_metadata = self.util.read_json(f"{project_root}/Mockservers/derivative_metadata.json")
+
+        update_dict = self.get_update_dict(guid, job)
+        job_dict = self.get_job_dict(guid, job)
+
+        file_info_72 = {"guid": guid_72,
+                    "name": f"{guid_72}.jpg",
+                    "type": "jpg",
+                    "check_sum": 123,
+                    "file_size": 12
+                    }
+
+        file_info_400 = {"guid": guid_400,
+                    "name": f"{guid_400}.jpg",
+                    "type": "tif",
+                    "check_sum": 123,
+                    "file_size": 12
+                    }
+
+        self.queue_job(job_dict)
+        time.sleep(1)
+        self.start_job(job_dict)
+        time.sleep(1)
+
+        metadata_json = self.get_metadata(guid)
+        derivative_metadata["asset_guid"] = guid_72
+        time.sleep(1)
+        self.receive_derivative(derivative_metadata)
+        time.sleep(1)
+        self.file_info(file_info_72)
+        time.sleep(1)
+
+        metadata_json = self.get_metadata(guid)
+        derivative_metadata["asset_guid"] = guid_400
+        time.sleep(1)
+        self.receive_derivative(derivative_metadata)
+        time.sleep(1)
+        self.file_info(file_info_400)
+        time.sleep(1)
+
+        self.update_asset(update_dict)
+
 
     def asset_uploader_handler(self, guid):
-        job_name = ""
+
+        job = "uploader"
+
+        job_dict = self.get_job_dict(guid, job)
+
+        self.queue_job(job_dict)
+        time.sleep(1)
+        self.start_job(job_dict)
+        time.sleep(1)
+
+    def cropping_handler(self, guid):
+
+        job = "cropping"
+
+        job_dict = self.get_job_dict(guid, job)
+        
+        update_dict = self.get_update_dict(guid, job)
+
+        self.queue_job(job_dict)
+        time.sleep(1)
+        self.start_job(job_dict)
+        time.sleep(1)
+        self.update_asset(update_dict)
+
+    def barcode_handler(self, guid):
+
+        job = "barcode"
+
+        job_dict = self.get_job_dict(guid, job)
+
+        update_dict = self.get_update_dict(guid, job, {"payload_type":"image"})
+        
+        barcode_dict = {"guid": guid,
+                    "job": job,
+                    "status": "DONE",
+                    "barcodes": ["mock_barcode"],
+                    "asset_subject": "specimen",
+                    "MSO": False,
+                    "MOS": False,
+                    "label": False,
+                    "disposable": None}
+
+        self.queue_job(job_dict)
+        time.sleep(1)
+        self.start_job(job_dict)
+        time.sleep(1)
+        self.insert_barcode(barcode_dict)
+        time.sleep(1)
+        self.update_asset(update_dict)
+
 
     def asset_loader_handler(self, guid):
-        timestamp = datetime.datetime.now().isoformat()
-
-        job_dict = {
-                "guid": guid,
-                "job_name": "assetLoader",
-                "job_id": "mock_asset_loader",
-                "timestamp": timestamp}
         
+        job = "assetLoader"
+
+        job_dict = self.get_job_dict(guid, job)
+        
+        update_dict= self.get_update_dict(guid, job)
+
         self.queue_job(job_dict)
         time.sleep(1)
         self.start_job(job_dict)
         time.sleep(1)
         self.asset_ready(guid)
-        time.sleep(1)
-
-        update_dict={
-            "guid": guid,
-            "job": "assetLoader",
-            "status": "DONE",
-            "data": {}}
-        
+        time.sleep(1)        
         self.update_asset(update_dict)
 
     def asset_deleter_handler(self, guid):
 
-        timestamp = datetime.datetime.now().isoformat()
-
-        job_dict = {
-                "guid": guid,
-                "job_name": "clean_up",
-                "job_id": "mock_clean_up",
-                "timestamp": timestamp}
+        job_dict = self.get_job_dict(guid, "clean_up")
         
         self.queue_job(job_dict)
         time.sleep(1)
         self.start_job(job_dict)
         time.sleep(1)
         self.asset_clean_up(guid)
+
+    def get_job_dict(self, guid, job):
+        timestamp = datetime.datetime.now().isoformat()
+        job_dict = {
+                "guid": guid,
+                "job_name": job,
+                "job_id": "mock_id",
+                "timestamp": timestamp}
+        return job_dict
+    
+    def get_update_dict(self, guid, job, data={}):
+
+        update_dict={
+            "guid": guid,
+            "job": job,
+            "status": "DONE",
+            "data": data}
+        
+        return update_dict
 
     def derivative_file_uploaded(self, guid):
         self.hpc_api.derivative_file_uploaded(guid)
@@ -163,6 +256,9 @@ class CallsHandler():
 
     def file_info(self, file_info_data):
         self.hpc_api.file_info(file_info_data)
+
+    def get_metadata(self, guid):
+        return self.hpc_api.get_metadata_asset(guid)
     
 
 
