@@ -14,6 +14,7 @@ import time
 
 from IntegrationServer import utility
 from IntegrationServer.HealthUtility import caller_hpc_api
+from IntegrationServer.StorageApi import storage_client
 
 class Connections():
     """
@@ -48,12 +49,23 @@ class CallsHandler():
 
     def __init__(self):
         
-        self.mock_file_path = f"{project_root}/MockServers/mock.tif"
+        self.mock_derivative_file = f"{project_root}/Mockservers/MockData/derivative_metadata.json"
+        self.mock_72_file = f"{project_root}/Mockservers/MockData/72.jpeg"
+        self.mock_400_file = f"{project_root}/Mockservers/MockData/400.tif"
         
         self.util = utility.Utility()
 
         self.hpc_api = caller_hpc_api.CallerHPCApi()
 
+        # get size and crc values for mock files. 
+        self.size_72 = self.util.calculate_file_size_round_to_next_mb(self.mock_72_file)
+        self.size_400 = self.util.calculate_file_size_round_to_next_mb(self.mock_400_file)
+        
+        self.crc_72 = self.util.calculate_crc_checksum(self.mock_72_file)
+        self.crc_400 = self.util.calculate_crc_checksum(self.mock_400_file)
+
+        # get mock metadata used for derivatives (this is not following metadata versions so changes needs to be made manually to the mock data)
+        self.derivative_metadata = self.util.read_json(self.mock_derivative_file)
 
     def ssh_command(self, command, output_path=None):
 
@@ -87,23 +99,24 @@ class CallsHandler():
         job = "derivative"
         guid_72 = f"{guid}_72"
         guid_400 = f"{guid}_400"
-        derivative_metadata = self.util.read_json(f"{project_root}/Mockservers/derivative_metadata.json")
 
         update_dict = self.get_update_dict(guid, job)
         job_dict = self.get_job_dict(guid, job)
 
+        self.derivative_metadata["parent_guid"] = guid
+
         file_info_72 = {"guid": guid_72,
                     "name": f"{guid_72}.jpg",
                     "type": "jpg",
-                    "check_sum": 123,
-                    "file_size": 12
+                    "check_sum": self.crc_72,
+                    "file_size": self.size_72
                     }
 
         file_info_400 = {"guid": guid_400,
-                    "name": f"{guid_400}.jpg",
+                    "name": f"{guid_400}.tif",
                     "type": "tif",
-                    "check_sum": 123,
-                    "file_size": 12
+                    "check_sum": self.crc_400,
+                    "file_size": self.size_400
                     }
 
         self.queue_job(job_dict)
@@ -112,17 +125,19 @@ class CallsHandler():
         time.sleep(1)
 
         metadata_json = self.get_metadata(guid)
-        derivative_metadata["asset_guid"] = guid_72
+        self.derivative_metadata["asset_guid"] = guid_72
+        self.derivative_metadata["file_format"] = "jpg"
         time.sleep(1)
-        self.receive_derivative(derivative_metadata)
+        self.receive_derivative(self.derivative_metadata)
         time.sleep(1)
         self.file_info(file_info_72)
         time.sleep(1)
 
         metadata_json = self.get_metadata(guid)
-        derivative_metadata["asset_guid"] = guid_400
+        self.derivative_metadata["asset_guid"] = guid_400
+        self.derivative_metadata["file_format"] = "tif"
         time.sleep(1)
-        self.receive_derivative(derivative_metadata)
+        self.receive_derivative(self.derivative_metadata)
         time.sleep(1)
         self.file_info(file_info_400)
         time.sleep(1)
@@ -141,6 +156,26 @@ class CallsHandler():
         self.start_job(job_dict)
         time.sleep(1)
 
+        # upload file
+        try:
+            client = storage_client.StorageClient()
+
+            if guid[:-3] == "_72":
+                file = self.mock_72_file
+                size = self.size_72
+            else:
+                file = self.mock_400_file
+                size = self.size_400
+
+            client.upload_file(guid, "test-institution", "test-collection", file, size)
+
+            time.sleep(1)
+            self.derivative_file_uploaded(guid)
+        except Exception as e:
+            print(f"Will wait 5 minutes before trying next: Failed uploading a file: {e}")
+            time.sleep(300)
+            
+
     def cropping_handler(self, guid):
 
         job = "cropping"
@@ -154,6 +189,7 @@ class CallsHandler():
         self.start_job(job_dict)
         time.sleep(1)
         self.update_asset(update_dict)
+
 
     def barcode_handler(self, guid):
 
@@ -198,6 +234,7 @@ class CallsHandler():
         time.sleep(1)        
         self.update_asset(update_dict)
 
+
     def asset_deleter_handler(self, guid):
 
         job_dict = self.get_job_dict(guid, "clean_up")
@@ -207,6 +244,7 @@ class CallsHandler():
         self.start_job(job_dict)
         time.sleep(1)
         self.asset_clean_up(guid)
+
 
     def get_job_dict(self, guid, job):
         timestamp = datetime.datetime.now().isoformat()
@@ -258,12 +296,4 @@ class CallsHandler():
         self.hpc_api.file_info(file_info_data)
 
     def get_metadata(self, guid):
-        return self.hpc_api.get_metadata_asset(guid)
-    
-
-
-    
-    
-
-
-        
+        return self.hpc_api.get_metadata_asset(guid)        

@@ -198,6 +198,22 @@ if __name__ == '__main__':
     """
     
     u = utility.Utility()
+
+    size_72 = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/72.jpeg")
+    
+    size_400 = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/400.tif")
+    
+    size_parent = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/parent.tif")
+
+    crc_72 = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/72.jpeg")
+    
+    crc_400 = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/400.tif")
+
+    crc_parent = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/parent.tif")
+
+    print(f"s72: {size_72}, s400: {size_400}, sParent: {size_parent}, crc72: {crc_72}, crc400: {crc_400}, crcParent: {crc_parent}")
+
+    """
     track = track_repository.TrackRepository()
 
     h = {"hit":"YES", "gold":{"y":1, "b":34}}
@@ -205,6 +221,7 @@ if __name__ == '__main__':
     print(track.delete_entry("yuppi"))
 
     track.close_connection()
+    """
     """
     track = track_repository.TrackRepository()
     meta = metadata_repository.MetadataRepository()

@@ -13,6 +13,7 @@ __pycache__
 !ConfigFiles/**/*.json
 !Tests/**/*.json
 !Tests/**/*.tif
+Tests/MockServers/MockData/400.tif
 !IntegrationServer/ConfigFiles/*.json
 Files/Error/**
 Files/NewFiles/**
