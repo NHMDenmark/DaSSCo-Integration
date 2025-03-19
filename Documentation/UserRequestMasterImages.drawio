@@ -1,0 +1,117 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.1">
+  <diagram name="Page-1" id="2EJGotbgzcUJEXgHxPfz">
+    <mxGraphModel dx="1434" dy="744" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="wD_IZJfp_UTXeCv4Mxem-1" target="wD_IZJfp_UTXeCv4Mxem-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="240" as="sourcePoint" />
+            <mxPoint x="260" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="wD_IZJfp_UTXeCv4Mxem-14">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="285" y="310" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="285" y="311" />
+              <mxPoint x="505" y="311" />
+              <mxPoint x="505" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.533;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="403.96000000000004" y="348" as="targetPoint" />
+            <mxPoint x="285" y="310" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="285" y="311" />
+              <mxPoint x="404" y="311" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-1" value="External user" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="245" y="260" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="wD_IZJfp_UTXeCv4Mxem-2" target="wD_IZJfp_UTXeCv4Mxem-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="180" as="sourcePoint" />
+            <mxPoint x="260" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-2" value="Collection manager&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="245" y="90" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="wD_IZJfp_UTXeCv4Mxem-7" target="wD_IZJfp_UTXeCv4Mxem-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-7" value="Fileproxy (ARS)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="715" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-10" value="ERDA" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="725" y="40" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-12" value="Keycloak" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="340" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="wD_IZJfp_UTXeCv4Mxem-13" target="wD_IZJfp_UTXeCv4Mxem-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-13" value="ARS UI" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="515" y="50" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-14" value="Downlad page" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="525" y="290" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-17" value="External publisher" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="405" y="170" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-22" value="10" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="485" y="340" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-23" value="2, 8" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="210" y="195" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="wD_IZJfp_UTXeCv4Mxem-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="120" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="755" y="190" />
+              <mxPoint x="755" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-37" value="3, 4" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="90" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-38" value="5" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="645" y="120" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-39" value="6" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="725" y="170" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-40" value="7" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="745" y="300" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-41" value="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="355" y="220" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-42" value="9" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="370" y="315" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-52" value="1. User finds artifacts.&amp;nbsp;&lt;div&gt;2. User requests access from collection manager.&lt;/div&gt;&lt;div&gt;3. Manager creates group with read acces to artifacts.&lt;/div&gt;&lt;div&gt;4. Manager request group in download page.&lt;/div&gt;&lt;div&gt;5. UI requests assets from fileproxy to download link.&lt;/div&gt;&lt;div&gt;6. Fileproxy fetches assets from erda.&lt;/div&gt;&lt;div&gt;7. Fileproxy publish to download page.&lt;/div&gt;&lt;div&gt;8. Manager gives credentials and link to user.&lt;/div&gt;&lt;div&gt;9. User verifies credentials with keycloak when logging in to download page.&lt;/div&gt;&lt;div&gt;10. User accesses download page.&lt;/div&gt;&lt;div&gt;11. Manager removes access to group and/or group.&lt;/div&gt;&lt;div&gt;&amp;nbsp;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="160" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="wD_IZJfp_UTXeCv4Mxem-53" value="11" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="205" y="100" width="40" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
