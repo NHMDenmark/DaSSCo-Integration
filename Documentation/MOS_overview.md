@@ -1,6 +1,7 @@
 | Name | Type of field | Part of which document | Description | Why do we have this field | Populated by whom and when | Updated where and when |
 | --- | --- | --- | --- | --- | --- | --- |
 | disposable_id | String | MOS | The id used by digitisers to show the connection between MOS assets. | We use this to connect assets that are part of the same MOS. | Integration server when it receives an update about an asset denoting it as a MOS asset. | Never |
+| created | Date | MOS | Timestamp for database entry | Helps searching for assets when things have gone awry. | Integration server when it receives an update denoting an asset as part of a MOS. | Never |
 | label | Boolean | MOS | Flag showing if the asset is a label. | Labels metadata need to be handled differently than normal assets so we want to keep track of this. | Integration server when it receives an update denoting an asset as part of a MOS. | Never |
 | label_connections | List of strings | MOS | List of guids belonging to assets connected through the same unique label id. | Lets us know which assets are part of the same MOS. | Integration server when it receives an update denoting an asset as part of a MOS. | Integration server. Whenever another asset with the same unique_label_id is found. |
 | spid | String | MOS | Specimen id. Consist of institution + collection + the barcode found on the asset. This assumes no MOS MSO is possible. | ??? | Integration server when it receives an update denoting an asset as part of a MOS. | Never |

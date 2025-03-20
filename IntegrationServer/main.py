@@ -12,6 +12,7 @@ from StorageApi import storage_client, ars_health_check, storage_service
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
+from dassco_utils.metadata import MetadataModel, MetadataHandler
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -199,19 +200,9 @@ if __name__ == '__main__':
     
     u = utility.Utility()
 
-    size_72 = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/72.jpeg")
-    
-    size_400 = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/400.tif")
-    
-    size_parent = u.calculate_file_size_round_to_next_mb(f"{project_root}/Tests/MockServers/MockData/parent.tif")
+    h = MetadataHandler(asset_guid="yo", collection="check", institution="xd", workstation_name="asd", pipeline_name="yuou", legality={"copyright":"nope"})
 
-    crc_72 = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/72.jpeg")
-    
-    crc_400 = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/400.tif")
-
-    crc_parent = u.calculate_crc_checksum(f"{project_root}/Tests/MockServers/MockData/parent.tif")
-
-    print(f"s72: {size_72}, s400: {size_400}, sParent: {size_parent}, crc72: {crc_72}, crc400: {crc_400}, crcParent: {crc_parent}")
+    print(h.metadata_to_dict())
 
     """
     track = track_repository.TrackRepository()

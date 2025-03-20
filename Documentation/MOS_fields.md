@@ -1,6 +1,7 @@
 | MOS Data Field name   | Written by          | When          | Saved where        | When       | Relevant into      |
 |--------------------------------|---------------------|---------------|--------------------|------------|--------------------|
 | [_id](MOS_field_descriptions/_id.md) | Integration server | Entry creation | Integration server MOS db | Received data from hpc script | This is the asset guid |
+| [created](MOS_field_descriptions/created.md) | Integration server | Entry creation | Integration server MOS db | Received data from hpc script | Timestamp for entry |
 | [label](MOS_field_descriptions/label.md) | Barcode reader | Result from pipeline | Integration server MOS db | Received data from hpc script | Is this a label |
 | [spid](MOS_field_descriptions/spid.md) | Integration server | Calculated for entry creation | Integration server MOS db | Received data from hpc script | Created from institution collection and barcode belonging to the asset |
 | [disposable_id](MOS_field_descriptions/disposable_id.md) | Barcode reader | Result from pipeline | Integration server MOS db | Received data from hpc script | The id used by digitisers to show the connection |
