@@ -8,6 +8,7 @@ from StorageApi import storage_service
 import json
 from dotenv import load_dotenv
 
+
 """
 Uses the Dassco storage api repository as library to create the storage client and call the fileproxy and asset registry service apis.
 Please note that the ARS and the fileproxy calls returns slightly different types of responses. See the github repo for details on what the responses look like.
@@ -19,6 +20,8 @@ class StorageClient():
           self.service = storage_service.StorageService()
           client_id = os.getenv("client_id")
           client_secret = os.getenv("client_secret")
+
+          self.service_username = "STARFISH"
 
           try:
                self.client = DaSSCoStorageClient(client_id, client_secret)
@@ -78,6 +81,36 @@ class StorageClient():
                     
                     if 500 <= status_code <= 599:
                          return False, "ARS api, keycloak or dassco sdk failure", exc, status_code
+
+     def update_metadata(self, guid, update_user = None):
+
+          json_data = self.service.get_metadata_json_format(guid)
+          data_dict = json.loads(json_data)
+          
+          if update_user is None:
+               update_user = self.service_username
+
+          data_dict['updateUser'] = update_user
+
+          # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
+          if data_dict["payload_type"] == "":
+               data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
+          if data_dict["asset_pid"] == "":
+               data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
+
+          try:
+               response = self.client.assets.update(guid, data_dict)
+
+               status_code = response["status_code"]
+               if status_code == 200:
+
+                    return True
+               else:
+                    return False
+
+          except Exception as e:
+               print(f"Api or wrapper fail: {e}")
+               return False
 
      # helper function that extracts the status code from the exception received from dassco-storage-client 
      def get_status_code_from_exc(self, exc):
@@ -209,33 +242,6 @@ class StorageClient():
                response = self.client.file_proxy.delete_share(institution, collection, guid, users, allocation_mb)
 
                status_code = response.status_code
-               if status_code == 200:
-
-                    return True
-               else:
-                    return False
-
-          except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
-
-     def update_metadata(self, guid, update_user = "STARFISH"):
-
-          json_data = self.service.get_metadata_json_format(guid)
-          data_dict = json.loads(json_data)
-
-          data_dict['updateUser'] = update_user
-
-          # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
-          if data_dict["payload_type"] == "":
-               data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
-          if data_dict["asset_pid"] == "":
-               data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
-
-          try:
-               response = self.client.assets.update(guid, data_dict)
-
-               status_code = response["status_code"]
                if status_code == 200:
 
                     return True

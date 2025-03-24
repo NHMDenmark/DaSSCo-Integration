@@ -30,14 +30,34 @@ class StorageService():
 
         self.api_metadata.asset_guid = guid
         self.api_metadata.asset_pid = entry["asset_pid"]
-        self.api_metadata.parent_guid = entry["parent_guid"]
-        self.api_metadata.status = entry["status"]
-        self.api_metadata.multi_specimen = entry["multi_specimen"]
-        self.api_metadata.funding = entry["funding"]
-        self.api_metadata.subject = entry["asset_subject"]
+        self.api_metadata.asset_subject = entry["asset_subject"]
+        self.api_metadata.audited = entry["audited"]
+        self.api_metadata.camera_setting_control = entry["camera_setting_control"]
+        self.api_metadata.collection = entry["collection"]
+
+        if entry["complete_digitiser_list"] == []:
+            self.api_metadata.complete_digitiser_list.append(entry["digitiser"])
+        else:    
+            self.api_metadata.complete_digitiser_list = entry["complete_digitiser_list"]
         
-        #for p in entry["payload_type"]:
-        #    self.api_metadata.payload_type.append(p)
+        self.api_metadata.date_asset_finalised = entry["date_asset_finalised"]
+        self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
+        self.api_metadata.date_metadata_ingested = entry["date_metadata_ingested"]
+        self.api_metadata.digitiser = entry["digitiser"]
+        self.api_metadata.external_publisher = entry["external_publisher"]
+        # ingestion/integration has file format as a single string entry
+        self.api_metadata.file_formats.append(entry["file_format"].upper())
+        self.api_metadata.funding = entry["funding"]
+        self.api_metadata.institution = entry["institution"]
+        self.api_metadata.issues = entry["issues"]
+        self.api_metadata.legality = entry["legality"]
+        self.api_metadata.make_public = entry["make_public"]
+        self.api_metadata.metadata_source = entry["metadata_source"]
+        self.api_metadata.metadata_version = entry["metadata_version"]
+        self.api_metadata.mos_id = entry["mos_id"]
+        self.api_metadata.multi_specimen = entry["multi_specimen"]
+        self.api_metadata.parent_guid = entry["parent_guid"]     
+        
         if isinstance(entry["payload_type"], list):
             for payload in entry["payload_type"]:
                 if isinstance(payload, list):
@@ -46,26 +66,21 @@ class StorageService():
                     self.api_metadata.payload_type = payload
         else:        
             self.api_metadata.payload_type = entry["payload_type"]
-        # self.api_metadata.file_formats = entry["file_format"] # needs to ensure list on both sides TODO messy 
-        self.api_metadata.file_formats = []
-        self.api_metadata.file_formats.append(entry["file_format"].upper())
-        self.api_metadata.restricted_access = entry["restricted_access"] # needs to ensure agreed upon data here
-        self.api_metadata.audited = entry["audited"]
-        self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
-        self.api_metadata.pipeline = entry["pipeline_name"]
-        self.api_metadata.workstation = entry["workstation_name"]
-        self.api_metadata.digitiser = entry["digitiser"]
-        self.api_metadata.tags = entry["tags"]
 
-        self.api_metadata.institution = entry["institution"]
-        self.api_metadata.collection = entry["collection"]
+        self.api_metadata.pipeline = entry["pipeline_name"]
+        self.api_metadata.restricted_access = entry["restricted_access"]             
+        self.api_metadata.status = entry["status"]
+        self.api_metadata.tags = entry["tags"]
+        self.api_metadata.workstation = entry["workstation_name"] 
+        
         barcode = []
         for b in entry["barcode"]:
             barcode.append(b)
 
         if len(barcode) != 0:
             for b in barcode:
-                new_specimen = api_metadata_model.Specimen()  # Create a new instance of Specimen
+                # Create a new instance of Specimen
+                new_specimen = api_metadata_model.Specimen()  
                 new_specimen.barcode = b
                 new_specimen.collection = self.api_metadata.collection
                 new_specimen.institution = self.api_metadata.institution
@@ -80,15 +95,9 @@ class StorageService():
                         new_specimen.specimen_pid = ""
 
                 self.api_metadata.specimens.append(new_specimen)
-        
-        # This should maybe not be empty. Not sure when or with which specific values we want to populate this.
-        """
-        if self.api_metadata.restricted_access is []:
-            self.api_metadata.restricted_access.append(restricted_access_nt.RestrictedAccessNT.USER.value)
-        """
             
-        # This field cannot be empty
-        if self.api_metadata.status == "":
+        # This field cannot be empty # TODO there are other fields that must have values in order to update/create assets in ARS - make some check for this
+        if self.api_metadata.status == "" or self.api_metadata.status is None:
             self.api_metadata.status = asset_status_nt.AssetStatusNT.WORKING_COPY.value
 
         return self.api_metadata
