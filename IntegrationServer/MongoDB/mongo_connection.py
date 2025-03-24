@@ -67,6 +67,7 @@ class MongoConnection:
     Deleting should not be done without being sure everything else has changed to using the new setup for repositories. This 
     includes tests.     
     """
+    # .this is being used in AssetFileHandler asset_handler so need refactoring before below can be removed
 
     def create_track_entry(self, guid, pipeline):
         """

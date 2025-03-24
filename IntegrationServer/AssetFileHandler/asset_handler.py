@@ -159,9 +159,16 @@ class AssetHandler:
                     # Add asset to batch list in mongodb
                     self.mongo_batchlist.add_entry_to_list(guid, batchlist_name)
 
-                    # Need to change from "" to null if there is no parent guid for NT api
-                    if parent == "":
-                        self.util.update_json(json_file_path, "parent_guid", None)
+                    # handling cases with parent not being a list
+                    if isinstance(parent, list) is False:
+                        
+                        if parent != None and parent != "":                            
+                            parent = [parent]
+                            self.util.update_json(json_file_path, "parent_guid", parent)
+                            print(f"parent_guid for {guid} was not nothing and also not a list, and has been appended into a list.")
+                        else:
+                            print(f"parent_guid for {guid} was not a list and a empty list has been created.")
+                            self.util.update_json(json_file_path, "parent_guid", [])
 
                     # Add new metadata entry to mongoDB
                     check = self.mongo_metadata.create_metadata_entry(json_file_path, guid)

@@ -3,46 +3,71 @@ from datetime import datetime
 from typing import Optional, List, Dict
 
 """
-Model class for the metadata file.
+Model class for the metadata v3.0.2 file. 
 """
 
+from datetime import datetime
+from pydantic import BaseModel, Field
+from typing import List, Dict, Optional
+
+class IssueModel(BaseModel):
+    category: str
+    name: str
+    timestamp: Optional[datetime] = None
+    description: Optional[str] = None
+    note: Optional[str] = None
+    solved: bool = False
+
+class LegalityModel(BaseModel):
+    copyright: Optional[str] = None
+    license: Optional[str] = None
+    credit: Optional[str] = None
+
 class MetadataModel(BaseModel):
-    asset_created_by: Optional[str]
-    asset_deleted_by: Optional[str]
-    asset_guid: Optional[str]
-    asset_locked: Optional[bool]
-    asset_pid: Optional[str]
-    asset_subject: Optional[str]
-    date_asset_taken: Optional[datetime]
-    asset_updated_by: Optional[str]
-    date_metadata_uploaded: Optional[datetime]
-    date_asset_finalised: Optional[datetime]
-    audited: Optional[bool]
-    audited_by: Optional[str]
-    audited_date: Optional[datetime]
-    barcode: Optional[List[str]]
-    collection: Optional[str]
-    date_asset_created: Optional[datetime]
-    date_asset_deleted: Optional[datetime]
-    date_asset_updated: Optional[List[datetime]]
-    date_metadata_created: Optional[datetime]
-    date_metadata_updated: Optional[List[datetime]]
-    digitiser: Optional[str]
-    external_publisher: Optional[List[str]]
-    file_format: Optional[List[str]] # Should be an Enum of file formats
-    funding: Optional[str]
-    institution: Optional[str]
-    metadata_created_by: Optional[str]
-    metadata_updated_by: Optional[str]
-    metadata_uploaded_by: Optional[str]
-    multispecimen: Optional[bool]
-    parent_guid: Optional[str]
-    payload_type: Optional[List[str]]
-    pipeline_name: Optional[str]
-    preparation_type: Optional[List[str]]
-    pushed_to_specify_date: Optional[datetime]
-    restricted_access: Optional[bool] # or a Optional[List[str]] from the restricted access enum
-    specimen_pid: Optional[List[dict]] # keys being barcodes and the values are currently unknown 
-    status: Optional[str]
-    tags: Optional[Dict[str, str]] # basically a way to add comments
-    workstation_name: Optional[str]
+    asset_created_by: Optional[str] = None
+    asset_deleted_by: Optional[str] = None
+    asset_guid: str
+    asset_pid: Optional[str] = None
+    asset_subject: Optional[str] = None
+    asset_updated_by: Optional[str] = None
+    audited: bool = False
+    audited_by: Optional[str] = None
+    barcode: List[str] = []
+    camera_setting_control: Optional[str] = None
+    collection: str
+    complete_digitiser_list: List[str] = []
+    date_asset_created_ars: Optional[datetime] = None
+    date_asset_deleted_ars: Optional[datetime] = None
+    date_asset_finalised: Optional[datetime] = None
+    date_asset_taken: Optional[datetime] = None
+    date_asset_updated_ars: Optional[datetime] = None
+    date_audited: Optional[datetime] = None
+    date_metadata_created_ars: Optional[datetime] = None
+    date_metadata_ingested: Optional[datetime] = None
+    date_metadata_updated_ars: Optional[datetime] = None
+    date_pushed_to_specify: Optional[datetime] = None
+    digitiser: Optional[str] = None
+    external_publisher: List[str] = []
+    file_format: Optional[str] = None
+    funding: List[str] = []
+    institution: str
+    issues: List[IssueModel] = []
+    legality: LegalityModel = LegalityModel()
+    make_public: bool = False
+    metadata_created_by: Optional[str] = None
+    metadata_source: Optional[str] = None
+    metadata_updated_by: Optional[str] = None
+    metadata_version: Optional[str] = None
+    mos_id: Optional[str] = None
+    multi_specimen: bool = False
+    parent_guid: List[str] = []
+    payload_type: Optional[str] = None
+    pipeline_name: str
+    preparation_type: Optional[str] = None
+    push_to_specify: bool = False
+    restricted_access: List[str] = []
+    session_id: Optional[str] = None
+    specimen_pid: Optional[str] = None
+    status: Optional[str] = None
+    tags: Dict[str, str] = {}
+    workstation_name: str

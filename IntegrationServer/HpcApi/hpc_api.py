@@ -13,7 +13,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Any, Optional, List, Dict
 import utility
-from metadata_model import MetadataAsset
+#from metadata_model import MetadataAsset
+from dassco_utils.metadata import MetadataModel
 from HpcApi import hpc_service
 from HpcApi.update_model import UpdateAssetModel
 from HpcApi.job_model import JobModel
@@ -25,7 +26,8 @@ from HpcApi.fail_derivative_creation_model import FailDerivativeCreationModel
 app = FastAPI()
 util = utility.Utility()
 service = hpc_service.HPCService()
-metadata_model = MetadataAsset
+#metadata_model = MetadataAsset
+metadata_model = MetadataModel
 update_model = UpdateAssetModel
 barcode_model = BarcodeModel
 job_model = JobModel

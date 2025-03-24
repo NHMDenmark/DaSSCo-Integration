@@ -32,7 +32,7 @@ class StorageService():
         self.api_metadata.asset_pid = entry["asset_pid"]
         self.api_metadata.parent_guid = entry["parent_guid"]
         self.api_metadata.status = entry["status"]
-        self.api_metadata.multi_specimen = entry["multispecimen"]
+        self.api_metadata.multi_specimen = entry["multi_specimen"]
         self.api_metadata.funding = entry["funding"]
         self.api_metadata.subject = entry["asset_subject"]
         
@@ -108,6 +108,7 @@ class StorageService():
                 date_object = datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S%z")
                 return date_object
             except Exception as e:
+                print(f"converting to date object from string went wrong: {e}")
                 return timestring
         else:
             return timestring
