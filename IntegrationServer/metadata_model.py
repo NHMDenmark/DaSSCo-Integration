@@ -7,8 +7,9 @@ Model class for metadata v3.0.2, used for referencing.
 """
 class IssueModel(BaseModel):
     category: str
-    name: str
+    name: Optional[str] = None
     timestamp: Optional[datetime] = None
+    status: Optional[str] = None
     description: Optional[str] = None
     note: Optional[str] = None
     solved: bool = False

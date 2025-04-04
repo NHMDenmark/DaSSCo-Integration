@@ -9,8 +9,9 @@ class Tag(BaseModel):
 
 class IssueModel(BaseModel):
     category: str
-    name: str
+    name: Optional[str] = None
     timestamp: Optional[datetime] = None
+    status: Optional[str] = None
     description: Optional[str] = None
     note: Optional[str] = None
     solved: bool = False
@@ -54,7 +55,7 @@ class ApiMetadataModel(BaseModel):
     file_formats: List[str] = []
     funding: List[str] = []
     institution: str = ""
-    issue: List[IssueModel] = []
+    issues: List[IssueModel] = []
     legality: LegalityModel = LegalityModel()
     make_public: bool = False
     metadata_created_by: Optional[str] = None
