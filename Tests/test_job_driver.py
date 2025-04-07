@@ -6,7 +6,7 @@ import shutil
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from AssetFileHandler.asset_handler import AssetHandler
+from IntegrationServer.AssetFileHandler.asset_handler import AssetHandler
 from IntegrationServer.MongoDB import track_repository, metadata_repository
 
 class TestJobDriver(unittest.TestCase):

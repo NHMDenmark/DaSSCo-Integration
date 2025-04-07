@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import shutil
 import utility
 from AssetFileHandler import job_assigner
-from MongoDB import mongo_connection, file_model
+from MongoDB import file_model, track_repository, metadata_repository, batch_repository
 from Enums import status_enum, validate_enum
 import json
 
@@ -30,9 +30,9 @@ class AssetHandler:
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"
 
-        self.mongo_track = mongo_connection.MongoConnection("track")
-        self.mongo_metadata = mongo_connection.MongoConnection("metadata")
-        self.mongo_batchlist = mongo_connection.MongoConnection("batch")
+        self.mongo_track = track_repository.TrackRepository()
+        self.mongo_metadata = metadata_repository.MetadataRepository()
+        self.mongo_batchlist = batch_repository.BatchRepository()
 
     """
     Creates the pipeline folder and moves the assets into it based on the date the asset was taken.

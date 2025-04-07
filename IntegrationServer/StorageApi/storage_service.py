@@ -6,9 +6,8 @@ sys.path.append(project_root)
 
 import utility
 from datetime import datetime
-from MongoDB import mongo_connection
+from MongoDB import metadata_repository
 from StorageApi import api_metadata_model
-from Enums import restricted_access_nt
 from Enums import asset_status_nt
 from pydantic import BaseModel, Field, Json
 
@@ -16,8 +15,9 @@ class StorageService():
 
     def __init__(self):
         self.util = utility.Utility()
-        self.metadata_db = mongo_connection.MongoConnection("metadata")
+        self.metadata_db = metadata_repository.MetadataRepository()
         self.api_metadata = api_metadata_model.ApiMetadataModel()
+        self.asset_status_nt_enum = asset_status_nt.AssetStatusNT
 
     def get_metadata_creation_body(self, guid):
         
@@ -98,7 +98,7 @@ class StorageService():
             
         # This field cannot be empty # TODO there are other fields that must have values in order to update/create assets in ARS - make some check for this
         if self.api_metadata.status == "" or self.api_metadata.status is None:
-            self.api_metadata.status = asset_status_nt.AssetStatusNT.WORKING_COPY.value
+            self.api_metadata.status = self.asset_status_nt_enum.WORKING_COPY.value
 
         return self.api_metadata
 

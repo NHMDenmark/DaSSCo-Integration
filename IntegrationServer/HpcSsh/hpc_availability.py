@@ -26,7 +26,7 @@ class HPCAvailability:
 
         self.cons = connections.Connections()
         self.util = utility.Utility()
-        self.mongo_availability = mongo_connection.MongoConnection("availability")
+        self.mongo_availability = mongo_connection.MongoConnection("availability") # TODO create new repository for this so availability_repository.AvailabilityRepository()
 
         self.cons.create_ssh_connection(self.ssh_config_path)
         self.con = self.cons.get_connection()

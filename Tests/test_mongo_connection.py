@@ -5,8 +5,7 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-
-from IntegrationServer.MongoDB.mongo_connection import MongoConnection
+from IntegrationServer.MongoDB import track_repository, metadata_repository, batch_repository
 from IntegrationServer.Enums.status_enum import StatusEnum
 
 class TestMongoConnection(unittest.TestCase):
@@ -14,9 +13,9 @@ class TestMongoConnection(unittest.TestCase):
     # Maybe change to different test dbs(?)
     @classmethod
     def setUpClass(self):
-        self.track = MongoConnection("track")
-        self.metadata = MongoConnection("metadata")
-        self.batch = MongoConnection("batch")
+        self.track = track_repository.TrackRepository()
+        self.metadata = metadata_repository.MetadataRepository()
+        self.batch = batch_repository.BatchRepository()
 
         self.bogus = "bogus"
         self.guid = "test_mongo"
@@ -28,7 +27,6 @@ class TestMongoConnection(unittest.TestCase):
                                    "check_sum": 3247235, "file_size": 100, "ars_link": "fake/link", "erda_sync": False, "deleted":False}
 
 
-
         self.track.create_track_entry(self.guid, self.pipeline)
         
     @classmethod
@@ -38,9 +36,9 @@ class TestMongoConnection(unittest.TestCase):
         self.metadata.delete_entry(self.guid)
         self.batch.delete_entry(self.batch_list)
 
-        self.batch.close_mdb()
-        self.track.close_mdb()
-        self.metadata.close_mdb()
+        self.batch.close_connection()
+        self.track.close_connection()
+        self.metadata.close_connection()
 
     def test_create_track_entry(self):
         

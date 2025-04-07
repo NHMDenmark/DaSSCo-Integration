@@ -7,8 +7,8 @@ import json
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.MongoDB.mongo_connection import MongoConnection
-from StorageApi.api_metadata_model import ApiMetadataModel
+from IntegrationServer.MongoDB.metadata_repository import MetadataRepository
+from IntegrationServer.StorageApi.api_metadata_model import ApiMetadataModel
 from IntegrationServer.StorageApi.storage_service import StorageService
 
 class TestStorageService(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestStorageService(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.service = StorageService()
-        self.metadata = MongoConnection("metadata")
+        self.metadata = MetadataRepository()
         
         self.guid = "test_mongo"
 
@@ -27,7 +27,7 @@ class TestStorageService(unittest.TestCase):
     def tearDownClass(self):
         self.metadata.delete_entry(self.guid)
 
-        self.metadata.close_mdb()
+        self.metadata.close_connection()
 
     def setUp(self):
         pass

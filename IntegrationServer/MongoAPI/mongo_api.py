@@ -18,7 +18,7 @@ from MongoAPI import link_model, mongo_service
 Api for querying the mongo db instead of directly accessing it. Useful if parts of the integration server needs to be deployed separately. 
 Usage of this api in the other parts of the overall service will need to be implemented/refactored.
 """
-
+# This functionality has been moved to DashboardsAPI, can probably be removed completely
 mongo_app = FastAPI()
 util = utility.Utility()
 
