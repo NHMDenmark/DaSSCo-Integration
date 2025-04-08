@@ -22,7 +22,6 @@ class TestStorageService(unittest.TestCase):
 
         self.metadata.create_metadata_entry(f"{project_root}/Tests/TestConfigFiles/test_metadata_entry2.json", self.guid)
         
-
     @classmethod
     def tearDownClass(self):
         self.metadata.delete_entry(self.guid)
@@ -72,7 +71,6 @@ class TestStorageService(unittest.TestCase):
 
         self.assertNotIsInstance(datetime_obj, datetime, f"Somehow converted {timestring} to object of type datetime")
         self.assertEqual(timestring, datetime_obj, f"Did not return {timestring} as {datetime_obj}")
-
 
 
 if __name__ == "__main__":

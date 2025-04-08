@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import utility
 from datetime import datetime
 from MongoDB import metadata_repository
-from StorageApi import api_metadata_model
+from IntegrationServer.StorageApi import api_metadata_model
 from Enums import asset_status_nt
 from pydantic import BaseModel, Field, Json
 
@@ -22,7 +22,7 @@ class StorageService():
     def get_metadata_creation_body(self, guid):
         
         self.api_metadata = api_metadata_model.ApiMetadataModel()
-
+        
         entry = self.metadata_db.get_entry("_id", guid)
 
         if entry is None:
@@ -42,7 +42,7 @@ class StorageService():
         
         self.api_metadata.date_asset_finalised = entry["date_asset_finalised"]
         self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
-        self.api_metadata.date_metadata_ingested = entry["date_metadata_ingested"]
+        self.api_metadata.date_metadata_ingested = self.convert_str_to_datetime(entry["date_metadata_ingested"])
         self.api_metadata.digitiser = entry["digitiser"]
         self.api_metadata.external_publisher = entry["external_publisher"]
         # ingestion/integration has file format as a single string entry
@@ -50,7 +50,14 @@ class StorageService():
         self.api_metadata.funding = entry["funding"]
         self.api_metadata.institution = entry["institution"]
         self.api_metadata.issues = entry["issues"]
-        self.api_metadata.legality = entry["legality"]
+
+        if entry["legality"] is not None:
+            legality = api_metadata_model.LegalityModel()
+            legality.copyright = entry["legality"]["copyright"]
+            legality.license = entry["legality"]["license"]
+            legality.credit = entry["legality"]["credit"]
+            self.api_metadata.legality = legality
+
         self.api_metadata.make_public = entry["make_public"]
         self.api_metadata.metadata_source = entry["metadata_source"]
         self.api_metadata.metadata_version = entry["metadata_version"]
@@ -117,7 +124,7 @@ class StorageService():
                 date_object = datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S%z")
                 return date_object
             except Exception as e:
-                print(f"converting to date object from string went wrong: {e}")
+                print(f"Ignore this is running tests: converting to date object from string went wrong: {e}")
                 return timestring
         else:
             return timestring
