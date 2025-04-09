@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 import utility
-from MongoDB import service_repository, track_repository, throttle_repository
+from MongoDB import track_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
@@ -16,7 +16,7 @@ class DeleteFilesNdrive():
     def __init__(self):
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
-        
+        self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "Delete files (Ndrive)"
         self.prefix_id= "Df(N)"
@@ -24,16 +24,14 @@ class DeleteFilesNdrive():
         self.util = utility.Utility()
         
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
-        self.service_mongo = service_repository.ServiceRepository()
         self.track_mongo = track_repository.TrackRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-       # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.run_util.service_starting_updates()
         
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -49,6 +47,9 @@ class DeleteFilesNdrive():
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
+            self.run_util.service_stopping_updates()
+            self.close_db_connections()
+
 
     def loop(self):
 
@@ -104,10 +105,16 @@ class DeleteFilesNdrive():
                 self.run = self.run_util.pause_loop()
 
         # out of main loop
-        self.service_mongo.close_connection()
-        self.throttle_mongo.close_connection()
-        self.track_mongo.close_connection()
+        self.run_util.service_stopping_updates()
+        self.close_db_connections()
         print("Service closed down")
+
+    def close_db_connections(self):
+        try:
+            self.throttle_mongo.close_connection()
+            self.track_mongo.close_connection()
+        except Exception as e:
+            print(f"Failed to close db connections: {e}")
 
     def delete_files(self, guid, ndrive_path):
         # Look for any file in the directory that starts with the GUID
