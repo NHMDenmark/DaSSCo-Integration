@@ -5,7 +5,7 @@ import sys
 script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
-from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository, throttle_repository
+from MongoDB import mongo_connection, track_repository, health_repository, service_model, metadata_repository, throttle_repository, service_repository
 from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client, ars_health_check, storage_service
@@ -199,10 +199,6 @@ if __name__ == '__main__':
     """
     
     u = utility.Utility()
-
-    h = MetadataHandler(asset_guid="yo", collection="check", institution="xd", workstation_name="asd", pipeline_name="yuou", legality={"copyright":"nope"})
-
-    print(h.metadata_to_dict())
 
     """
     track = track_repository.TrackRepository()

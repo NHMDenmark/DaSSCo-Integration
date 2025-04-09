@@ -27,6 +27,7 @@ class OpenShare(Status, Validate):
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+        self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "Open file share ARS"
         self.prefix_id = "OfsA"
@@ -44,10 +45,9 @@ class OpenShare(Status, Validate):
         
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.run_util.service_starting_updates()
         # special status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -69,7 +69,10 @@ class OpenShare(Status, Validate):
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
-                
+            self.run_util.service_stopping_updates()
+            self.close_db_connections()
+
+
     """
     Creates the storage client.
     If this fails it sets the service run config to STOPPED and notifies the health service.  
@@ -195,11 +198,19 @@ class OpenShare(Status, Validate):
             
             self.end_of_loop_checks()
 
-        # outside main while loop        
-        self.mongo_track.close_connection()
-        self.mongo_metadata.close_connection()
-        self.service_mongo.close_connection()
-        self.throttle_mongo.close_connection()
+        # outside main while loop  
+        self.run_util.service_stopping_updates()      
+        self.close_db_connections()
+        print("service closed")
+
+    def close_db_connections(self):
+        try:
+            self.mongo_track.close_connection()
+            self.mongo_metadata.close_connection()
+            self.service_mongo.close_connection()
+            self.throttle_mongo.close_connection()
+        except Exception as e:
+            print(f"Failed to close db connections: {e}")
 
     def handle_failures(self, guid, status_code):
         entry = self.run_util.log_msg(self.prefix_id, f"Failed opening share for guid: {guid} Received status: {status_code}", self.ERROR)

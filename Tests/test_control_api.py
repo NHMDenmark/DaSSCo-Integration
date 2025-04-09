@@ -53,6 +53,18 @@ class TestControlApi(unittest.TestCase):
         self.metadata_db.close_connection()
         self.health_db.close_connection()    
 
+    def test_start_service(self):
+
+        response = self.client.post("/control/start_service", params={"service_name": "testy"})
+
+        self.assertEqual(response.status_code, 500, f"Did not get status 500, instead got status {response.status_code}")
+
+    def test_stop_service(self):
+
+        response = self.client.post("/control/stop_service", params={"service_name": "testy"})
+
+        self.assertEqual(response.status_code, 500, f"Did not get status 500, instead got status {response.status_code}")
+
     def test_get_track_data(self):
 
         response = self.client.get("/control/get_track_data", params={"guid":self.entry_id})
@@ -117,6 +129,7 @@ class TestControlApi(unittest.TestCase):
 
         return health_data
 
+    # TODO update the metadata to v3.0.2 - may not really be necessary for testing though
     def get_metadata_data():
 
         metadata_data = {"asset_created_by": "",

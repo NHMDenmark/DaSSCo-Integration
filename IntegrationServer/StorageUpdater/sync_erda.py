@@ -23,6 +23,7 @@ class SyncErda():
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+        self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "Erda sync ARS"
         self.prefix_id = "EsA"
@@ -41,10 +42,9 @@ class SyncErda():
         self.await_sync_asset_count = self.util.get_value(self.throttle_config_path, "await_sync_asset_count")
 
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.run_util.service_starting_updates()
         # special status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -66,6 +66,10 @@ class SyncErda():
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
+
+            self.run_util.service_stopping_updates()
+            self.close_db_connections()
+
 
     def loop(self):
 
@@ -142,9 +146,17 @@ class SyncErda():
             self.end_of_loop_checks()
         
         # Outside main while loop
-        self.track_mongo.close_connection()
-        self.service_mongo.close_connection()
-        self.throttle_mongo.close_connection()
+        self.run_util.service_stopping_updates()
+        self.close_db_connections()
+        print("service closed")
+
+    def close_db_connections(self):
+        try:
+            self.track_mongo.close_connection()
+            self.service_mongo.close_connection()
+            self.throttle_mongo.close_connection()
+        except Exception as e:
+            print(f"Failed to close db connections: {e}")
 
     # end of loop checks
     def end_of_loop_checks(self):

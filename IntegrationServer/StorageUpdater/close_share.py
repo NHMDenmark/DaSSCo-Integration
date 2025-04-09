@@ -25,6 +25,7 @@ class CloseShare(LogClass):
         # setting up logging
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+        self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "Close file share ARS"
         self.prefix_id = "CfsA"
@@ -39,10 +40,10 @@ class CloseShare(LogClass):
         self.flag_enum = flag_enum.FlagEnum
         self.util = utility.Utility()
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        # updates db with the service start information
+        self.run_util.service_starting_updates()
         # special status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -63,6 +64,10 @@ class CloseShare(LogClass):
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
+            
+            self.close_db_connections()
+            self.run_util.service_stopping_updates()
+
 
     def loop(self):
  
@@ -101,11 +106,10 @@ class CloseShare(LogClass):
             self.end_of_loop_checks()
 
         # outside main while loop        
-        self.track_mongo.close_connection()
-        self.service_mongo.close_connection()
-        self.throttle_mongo.close_connection()
-        self.run_util.service_mongo.close_connection()
-        self.storage_api.service.metadata_db.close_mdb()
+        self.close_db_connections()
+
+        self.run_util.service_stopping_updates()
+
         print("service stopped")
 
     def end_of_loop_checks(self):
@@ -198,6 +202,17 @@ class CloseShare(LogClass):
             return storage_api
         
         return storage_api
+
+    def close_db_connections(self):
+        try:
+            self.track_mongo.close_connection()
+            self.service_mongo.close_connection()
+            self.throttle_mongo.close_connection()
+            self.run_util.service_mongo.close_connection()
+            self.storage_api.service.metadata_db.close_connection()
+
+        except Exception as e:
+            print(f"Failed closing db connections: {e}")
 
 if __name__ == '__main__':
     CloseShare()

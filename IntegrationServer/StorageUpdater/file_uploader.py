@@ -9,8 +9,6 @@ from datetime import datetime, timedelta
 from MongoDB import track_repository, metadata_repository, service_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum
-import InformationModule.slack_webhook as slack_webhook
-import InformationModule.email_sender as email_sender
 import utility
 from HealthUtility import health_caller, run_utility
 
@@ -25,6 +23,7 @@ class FileUploader():
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+        self.pid = os.getpid()
 
         self.service_name = "File uploader ARS"
         self.prefix_id = "FuA"
@@ -35,15 +34,12 @@ class FileUploader():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
-        self.slack_webhook = slack_webhook.SlackWebhook()
-        self.email_sender = email_sender.EmailSender("test")
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.run_util.service_starting_updates()
         # special status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
@@ -65,6 +61,10 @@ class FileUploader():
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
+
+            self.run_util.service_stopping_updates()
+            self.close_db_connections()
+
 
     """
     Creates the storage client.
@@ -196,10 +196,18 @@ class FileUploader():
                 self.run = self.run_util.pause_loop()
         
         # Outside main while loop
-        self.track_mongo.close_connection()
-        self.metadata_mongo.close_connection()
-        self.service_mongo.close_connection()
+        self.run_util.service_stopping_updates()
+        self.close_db_connections()
         print("Service stopped")
+
+    def close_db_connections(self):
+        try:
+            self.track_mongo.close_connection()
+            self.metadata_mongo.close_connection()
+            self.service_mongo.close_connection()
+        except Exception as e:
+            print(f"Failed to close db connections: {e}")
+
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):
@@ -239,7 +247,6 @@ class FileUploader():
         entry = self.run_util.log_exc(self.prefix_id, f"File uploader failed with status: {status}", None, self.status_enum.ERROR.value)
         self.health_caller.error(self.service_name, entry, guid, "has_new_file", self.status_enum.ERROR.value)
                                 
-
 
 if __name__ == '__main__':
     FileUploader()

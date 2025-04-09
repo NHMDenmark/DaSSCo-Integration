@@ -106,6 +106,7 @@ class AssetCreator():
         
         self.service_name = "Asset creator ARS"
         self.prefix_id = "AcA"
+        self.pid = os.getpid()
         self.auth_timestamp = None
         self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.track_mongo = track_repository.TrackRepository()
@@ -123,11 +124,12 @@ class AssetCreator():
         self.max_new_asset_size = self.util.get_value(self.throttle_config_path, "total_new_asset_size_mb")
         self.max_derivative_size = self.util.get_value(self.throttle_config_path, "total_derivative_size_mb")
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
-        # special status change, logging and contact health api
+        # updates db with the service start information
+        self.run_util.service_starting_updates()
+
+        # status change, logging and contact health api
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
@@ -152,12 +154,15 @@ class AssetCreator():
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
-                print(f"failed to inform about crash")
+                print(f"failed to inform health api about crash")
+
             self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)
-            self.beat = self.status_enum.STOPPED.value        
+            self.beat = self.status_enum.STOPPED.value
+
+            self.run_util.service_stopping_updates()
+
             self.close_all_connections()
 
-    
     def loop(self):
         """
         Main execution loop for the service.
@@ -313,8 +318,11 @@ class AssetCreator():
             self.end_of_loop_checks()
 
         # outside main while loop
-        self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)        
-        self.close_all_connections()
+        self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)
+
+        self.run_util.service_stopping_updates()        
+        
+        self.close_all_connections()        
         print("service stopped")
 
     def handle_status_400(self, guid, asset, status_code, response = None, exc = None):
@@ -422,7 +430,7 @@ class AssetCreator():
             self.service_mongo.close_connection()
             self.throttle_mongo.close_connection()
             self.run_util.service_mongo.close_connection()
-            self.storage_api.service.metadata_db.close_mdb()
+            self.storage_api.service.metadata_db.close_connection()
         except:
             pass
 

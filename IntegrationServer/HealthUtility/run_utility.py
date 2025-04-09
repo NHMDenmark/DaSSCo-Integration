@@ -11,6 +11,7 @@ from Enums.status_enum import Status
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 from StorageApi import storage_client, ars_health_check
+from datetime import datetime
 
 """
 Class that helps the micro services with logging, pausing and run status updates.
@@ -19,7 +20,7 @@ Example: "AcA", "Asset creator ARS", "asset_creator.py.log", "asset_creator"
 """
 class RunUtility(LogClass, Status):
 
-    def __init__(self, prefix_id, service_name, log_filename, logger_name):
+    def __init__(self, prefix_id, service_name, log_filename, logger_name, pid = None):
 
         LogClass.__init__(self, log_filename, logger_name)
         Status.__init__(self)
@@ -31,6 +32,7 @@ class RunUtility(LogClass, Status):
         self.ars_health_check = ars_health_check.ArsHealthCheck()
         self.service_name = service_name
         self.prefix_id = prefix_id
+        self.pid = pid
         
         # flag for the all run status
         self.all_run_status = self.get_all_run()
@@ -39,6 +41,9 @@ class RunUtility(LogClass, Status):
 
         # combined run flag
         self.service_run = self.get_service_run_status()
+
+        if self.pid is not None:
+            self.service_starting_updates()
 
     """
     Loop for services that have their status set to paused. 
@@ -269,3 +274,12 @@ class RunUtility(LogClass, Status):
             return False
         
         return True
+
+    def service_starting_updates(self):
+        self.service_mongo.update_entry(self.service_name, "pid", self.pid)
+        self.service_mongo.update_entry(self.service_name, "start_time", datetime.now())
+        self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
+
+    def service_stopping_updates(self):
+        self.service_mongo.update_entry(self.service_name, "stop_time", datetime.now())
+        self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
