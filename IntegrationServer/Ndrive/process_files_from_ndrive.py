@@ -7,7 +7,6 @@ sys.path.append(project_root)
 from AssetFileHandler import asset_handler
 import time
 import utility
-from MongoDB import service_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum
 
