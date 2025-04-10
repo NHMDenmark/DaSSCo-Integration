@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from datetime import datetime, timedelta
 import utility
-from MongoDB import service_repository, track_repository, health_repository
+from MongoDB import track_repository, health_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum
 
@@ -24,25 +24,22 @@ class FlagPausedStatusHandler():
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
-        
+        self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "Flag paused status handler"
         self.prefix_id= "Fpsh"
 
         self.util = utility.Utility()
         
-        self.service_mongo = service_repository.ServiceRepository()
         self.track_mongo = track_repository.TrackRepository()
         self.health_mongo = health_repository.HealthRepository()
         self.health_caller = health_caller.HealthCaller()
         self.flag_enum = flag_enum.FlagEnum
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
-
-        # set the service db value to RUNNING, mostly for ease of testing
-        self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.RUNNING.value)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
         
+        self.run_util.service_starting_updates()
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
@@ -57,6 +54,7 @@ class FlagPausedStatusHandler():
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
+            self.run_util.service_stopping_updates()
             self.close_all_connections()
             
 
@@ -108,6 +106,7 @@ class FlagPausedStatusHandler():
             self.end_of_loop_checks()
         
         # out of main loop
+        self.run_util.service_stopping_updates()
         self.close_all_connections()
         print("Service was shut down")
 
@@ -118,8 +117,6 @@ class FlagPausedStatusHandler():
         self.track_mongo.delete_field(guid, "temp_timeout_previous_flag_value")
 
     def close_all_connections(self):
-
-        self.service_mongo.close_connection()
         self.track_mongo.close_connection()
         self.health_mongo.close_connection()
 
