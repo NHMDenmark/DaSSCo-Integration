@@ -60,6 +60,9 @@ class ServiceRepository(Status):
     def get_entries(self, key, value):
         return self.all.get_entries(key, value)
 
+    def get_all_entries(self):
+        return self.all.get_all_entries_in_db()
+
     def get_entry_from_multiple_key_pairs(self, key_value_pairs):
         return self.all.get_entry_from_multiple_key_pairs(key_value_pairs)
     

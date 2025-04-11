@@ -248,7 +248,6 @@ class AssetCreator():
             # TODO this is dangerous. Using the jobs status to logically assume its a derivative. Maybe track needs a new field
             if new_asset is False:
                 asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
-            # TODO this is dangerous. Using the jobs status to logically assume its a new asset. Maybe track needs a new field
             if derivative_asset is False:
                 asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
@@ -320,8 +319,7 @@ class AssetCreator():
         # outside main while loop
         self.service_mongo.update_entry(self.service_name, "heartbeat", self.status_enum.STOPPED.value)
 
-        self.run_util.service_stopping_updates()        
-        
+        self.run_util.service_stopping_updates()     
         self.close_all_connections()        
         print("service stopped")
 
@@ -431,9 +429,9 @@ class AssetCreator():
             self.throttle_mongo.close_connection()
             self.run_util.service_mongo.close_connection()
             self.storage_api.service.metadata_db.close_connection()
-        except:
-            pass
-
+        except Exception as e:
+            print(f"Failed to close db connections: {e}")
+            
     """
     Checks the throttle and sends back bools for new asset and derivative that tells if they can be used. Also sends back the total amount in the system.     
     """

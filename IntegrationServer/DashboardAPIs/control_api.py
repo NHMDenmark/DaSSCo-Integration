@@ -184,3 +184,23 @@ async def update_track_data(update_track_model: update_track_model):
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
     
     return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+
+@control.get("/control/get_service_data")
+async def run_status(service_name: str):
+
+    found, msg = service.get_service_data(service_name)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.get("/control/get_all_service_data")
+async def get_all_service_data():
+
+    found, msg = service.get_all_service_data()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg

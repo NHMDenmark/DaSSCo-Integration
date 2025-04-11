@@ -13,6 +13,7 @@ from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
 from dassco_utils.metadata import MetadataModel, MetadataHandler
+from bson import ObjectId
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -197,10 +198,24 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
-    
+    """
+    {'_id': ObjectId('67f5202572dd37c767e65d24'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
+    {'_id': ObjectId('67f52093e5b8a15c650ffc7e'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
+    {'_id': ObjectId('67f520b76739286469234e6e'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
+    {'_id': ObjectId('67f5211c33abfa98218c2616'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
+    {'_id': ObjectId('67f521ef4c199bfb243543a7'), 'id': 'test', 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
+    """
+
+    s = service_repository.ServiceRepository()
+
+    a = s.delete_entry(ObjectId('67f5202572dd37c767e65d24'))
+
+    print(a)
+
+    s.close_connection()
+    """
     u = utility.Utility()
 
-    """
     track = track_repository.TrackRepository()
 
     h = {"hit":"YES", "gold":{"y":1, "b":34}}

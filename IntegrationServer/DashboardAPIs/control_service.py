@@ -354,3 +354,78 @@ class ControlService():
                     self.mongo_track.update_entry(guid, key, value)
 
         return True, "Update success"        
+
+    def get_service_data(self, service_name):
+
+        try:
+            data = self.mongo_service.get_entry("_id", service_name)
+
+            if data is None:
+                return False, "Service does not exist or has no data."
+            else:                
+                return True, data
+            
+        except Exception as e:
+            print(f"get service data: {e}")
+            return False, "Things went wrong"
+    
+    def get_all_service_data(self):
+
+        try:
+            data_list = self.mongo_service.get_all_entries()
+            
+            if data_list is None:
+                return False, "Services does not exist or has no data."
+            else:
+                data = {"all status": None, "services": []}
+                for entry in data_list:
+                    if entry["_id"] == "all_run":
+                        data["all status"] = entry["run_status"]
+                    elif entry["_id"] == "Test health api":
+                        continue
+                    else:    
+                        print(entry)
+                        data["services"].append(entry)
+
+                data["services"] = sorted(data["services"], key=lambda x: x["_id"])
+
+                for entry in data["services"]:                    
+                    try:
+                        if "pid" in entry and entry["pid"] is not None:
+                            is_running = self.is_process_running(entry["pid"])
+
+                            if is_running is True and entry["run_status"] not in (self.status_enum.RUNNING.value, self.status_enum.PAUSED.value):
+                                entry["run_status"] = self.status_enum.RUNNING.value
+                                self.service_running_updates(entry["_id"])
+                            elif is_running is False and entry["run_status"] != self.status_enum.STOPPED.value:
+                                entry["run_status"] = self.status_enum.STOPPED.value
+                                self.service_stopping_updates(entry["_id"])
+                            else:
+                                continue
+                    except Exception as e:
+                        print(f"Failed to find pid for service {entry["_id"]}: {e}")
+
+                return True, data
+            
+        except Exception as e:
+            print(f"get service data: {e}")
+            return False, "Things went wrong"   
+
+    def is_process_running(self, pid):
+        """Check if a process with given PID is still running."""
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True  # Process exists but we don't have permission
+        return True
+    
+
+    def service_stopping_updates(self, service_name):
+        self.mongo_service.update_entry(service_name, "stop_time", datetime.now())
+        self.mongo_service.update_entry(service_name, "run_status", self.status_enum.STOPPED.value)
+    
+    def service_running_updates(self, service_name):
+        self.mongo_service.update_entry(service_name, "start_time", datetime.now())
+        self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)
