@@ -80,7 +80,7 @@ class FieldValidation:
     def digitiser_validation(self, value: str):  
         check = self.is_acceptable_string(value)
         return check
-    def external_publisher_validation(self, value: list[str]):  
+    def external_publishers_validation(self, value: list[str]):  
         check = False 
         return check
     def file_format_validation(self, value: list[str]):  
@@ -104,7 +104,7 @@ class FieldValidation:
     def multispecimen_validation(self, value: bool):  
         check = False 
         return check
-    def parent_guid_validation(self, value: str):  
+    def parent_guids_validation(self, value: list[str]):  
         check = self.is_acceptable_string(value) 
         return check
     def payload_type_validation(self, value: list[str]):  
@@ -121,6 +121,12 @@ class FieldValidation:
         return check
     def restricted_access_validation(self, value: bool):  
         check = False 
+        return check
+    def specify_attachment_remarks_validation(self, value: str):  
+        check = self.is_acceptable_string(value) 
+        return check
+    def specify_attachment_title_validation(self, value: str):  
+        check = self.is_acceptable_string(value) 
         return check
     def specimen_pid_validation(self, value: list[dict]):  
         check = False 

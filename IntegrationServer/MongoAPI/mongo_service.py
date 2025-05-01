@@ -32,8 +32,8 @@ class MongoService():
             return http_status, msg
         
         # Handle empty parent guid
-        if metadata["parent_guid"] == "":
-            metadata["parent_guid"] = None
+        if metadata["parent_guids"] == "":
+            metadata["parent_guids"] = []
         
         # Handle empty status
         if metadata["status"] == "":

@@ -63,7 +63,7 @@ class StorageService():
         self.api_metadata.metadata_version = entry["metadata_version"]
         self.api_metadata.mos_id = entry["mos_id"]
         self.api_metadata.multi_specimen = entry["multi_specimen"]
-        self.api_metadata.parent_guid = entry["parent_guid"]     
+        self.api_metadata.parent_guids = entry["parent_guids"]     
         
         if isinstance(entry["payload_type"], list):
             for payload in entry["payload_type"]:

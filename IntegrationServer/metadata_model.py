@@ -19,6 +19,9 @@ class LegalityModel(BaseModel):
     license: Optional[str] = None
     credit: Optional[str] = None
 
+class ExternalPublisherModel(BaseModel):
+    name: str
+
 class MetadataModel(BaseModel):
     asset_created_by: Optional[str] = None
     asset_deleted_by: Optional[str] = None
@@ -43,7 +46,7 @@ class MetadataModel(BaseModel):
     date_metadata_updated_ars: Optional[datetime] = None
     date_pushed_to_specify: Optional[datetime] = None
     digitiser: Optional[str] = None
-    external_publisher: List[str] = []
+    external_publishers: List[ExternalPublisherModel] = []
     file_format: Optional[str] = None
     funding: List[str] = []
     institution: str
@@ -56,13 +59,15 @@ class MetadataModel(BaseModel):
     metadata_version: Optional[str] = "v3.0.2"
     mos_id: Optional[str] = None
     multi_specimen: bool = False
-    parent_guid: List[str] = []
+    parent_guids: List[str] = []
     payload_type: Optional[str] = None
     pipeline_name: str
     preparation_type: Optional[str] = None
     push_to_specify: bool = False
     restricted_access: List[str] = []
     session_id: Optional[str] = None # this only exist in integration and ingestion client. ARS does not have this field.
+    specify_attachment_remarks: Optional[str] = None
+    specify_attachment_title: Optional[str] = None
     specimen_pid: Optional[str] = None
     status: Optional[str] = None
     tags: Dict[str, str] = {}

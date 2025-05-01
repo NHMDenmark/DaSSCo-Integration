@@ -33,6 +33,7 @@ class ApiMetadataModel(BaseModel):
     asset_created_by: Optional[str] = None
     asset_deleted_by: Optional[str] = None
     asset_guid: str = ""
+    asset_locked: bool = False # field not in integration servers metadata
     asset_pid: Optional[str] = None
     asset_subject: Optional[str] = None
     asset_updated_by: Optional[str] = None
@@ -65,7 +66,7 @@ class ApiMetadataModel(BaseModel):
     metadata_version: Optional[str] = None
     mos_id: Optional[str] = None
     multi_specimen: bool = False
-    parent_guid: List[str] = []
+    parent_guids: List[str] = []
     payload_type: str = None
     pipeline: str = ""
     push_to_specify: bool = False
@@ -73,5 +74,4 @@ class ApiMetadataModel(BaseModel):
     status: str = asset_status_nt.AssetStatusNT.WORKING_COPY.value # not optional must come from an enum list
     tags: Dict[str, str] = {}
     workstation: str = ""
-    asset_locked: bool = False # field not in integration servers metadata
     specimens: List[Specimen] = [] # contains preparation_type, barcode, specimen_pid

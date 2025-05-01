@@ -367,8 +367,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
     #check if an asset is a derivative by checking if it has a parent
     def is_asset_derivative(self, guid):
-        value = self.metadata_mongo.get_value_for_key(guid, "parent_guid")
-        if value is None or value == "":
+        value = self.metadata_mongo.get_value_for_key(guid, "parent_guids")
+
+        if value is None or value == "" or value == []:
             return False
         else:
             return True
