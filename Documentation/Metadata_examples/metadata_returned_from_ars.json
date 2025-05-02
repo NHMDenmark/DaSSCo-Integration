@@ -1,0 +1,48 @@
+{
+    "asset_pid": "asdf-12346-3333-100a21",
+    "asset_guid": "asset_10",
+    "status": "WORKING_COPY",
+    "multi_specimen": true,
+    "specimens": [],
+    "funding": "hundredetusindvis af dollars",
+    "subject": "folder",
+    "payload_type": "ct scan",
+    "file_formats": [
+        "TIF"
+    ],
+    "asset_locked": false,
+    "restricted_access": [
+        "USER"
+    ],
+    "tags": {
+        "testtag2": "teztific8"
+    },
+    "audited": false,
+    "created_date": "2024-08-06T11:15:24.021285859Z",
+    "date_metadata_updated": "2024-08-06T11:15:24.021285638Z",
+    "date_asset_taken": "1998-11-15T16:00:00Z",
+    "date_asset_deleted": null,
+    "date_asset_finalised": null,
+    "date_metadata_taken": null,
+    "institution": "test-institution",
+    "parent_guid": null,
+    "collection": "test-collection",
+    "httpInfo": {
+        "path": "/assetfiles/test-institution/test-collection/asset_10/",
+        "hostname": "https://dassco.dk",
+        "total_storage_mb": 10226,
+        "cache_storage_mb": 200,
+        "remaining_storage_mb": 4534,
+        "allocated_storage_mb": 20,
+        "allocation_status_text": null,
+        "http_allocation_status": "SUCCESS"
+    },
+    "internal_status": "METADATA_RECEIVED",
+    "updateUser": null,
+    "events": null,
+    "digitiser": null,
+    "workstation": "ti-ws-01",
+    "pipeline": "ti-p1",
+    "error_message": null,
+    "error_timestamp": null
+}

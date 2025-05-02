@@ -1,0 +1,50 @@
+{
+  "asset_pid": "asdf-12346-3333-100a21",
+  "asset_guid": "asset_10",
+  "parent_guid": null,
+  "status": "WORKING_COPY",
+  "multi_specimen": true,
+  "specimens": [
+  ],
+  "funding": "hundredetusindvis af dollars",
+  "subject": "folder",
+  "payload_type": "ct scan",
+  "file_formats": [
+    "TIF"
+  ],
+  "asset_locked": false,
+  "restricted_access": [
+    "USER"
+  ],
+  "audited": false,
+  "date_asset_taken": "1998-11-15T16:00:00.000Z",
+  "institution": "test-institution",
+  "collection": "test-collection",
+  "pipeline": "ti-p1",
+  "workstation": "ti-ws-01",
+  "digitizer" : "thbo",
+  "tags": {
+      "testtag2": "teztific8"
+  },
+      "asset_created_by": "",
+    "asset_deleted_by": "",
+    "asset_subject": "",
+    "asset_updated_by": "",
+    "audited_by": "",
+    "audited_date": null,
+    "barcode": "",
+    "date_asset_created": null,
+    "date_asset_deleted": null,
+    "date_asset_finalised": null,
+    "date_asset_updated": null,
+    "date_metadata_created": "2024-05-15T09:11:21+02:00",
+    "date_metadata_updated": "",
+    "date_metadata_uploaded": "",
+    "external_publisher": [],
+    "metadata_created_by": "",
+    "metadata_updated_by": "",
+    "metadata_uploaded_by": "",
+    "preparation_type": "sheet",
+    "pushed_to_specify_date": null,
+    "specimen_pid": ""
+}
