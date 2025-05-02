@@ -50,24 +50,48 @@ class HPCService():
     
     def receive_derivative_metadata(self, metadata):
 
-        print("parent:", metadata.parent_guid)
+        # local logging
+        parents_print = "parents: "
+        for p in metadata.parent_guids:
+            parents_print = parents_print + " " + p
+        print(parents_print)
 
         try:
-            t_parent = None
-            t_parent = self.mongo_track.get_entry("_id", metadata.parent_guid)
-
-            if t_parent is None:
-                print("failed to find parent guid")
-                return False
-
-            asset_type = t_parent["asset_type"]
-            print(asset_type)
-
+            total_parent_size = 0
+            asset_type = ""
             metadata_flag = True
+
+            # Calculate total parent size and find out what asset type should be. 
+            # Logic for asset type is that if there is a specimen among the parents then the derivative will also be a specimen.
+            for parent in metadata.parent_guids:
+
+                t_parent = None
+                t_parent = self.mongo_track.get_entry("_id", parent)
+
+                if t_parent is None:
+                    print(f"failed to find parent guid for {parent}")
+                    return False
+                
+                total_parent_size = total_parent_size + t_parent["asset_size"]
+
+                if t_parent["asset_type"] in asset_type:
+                    continue
+                
+                if t_parent["asset_type"] == self.asset_type.SPECIMEN.value:
+                    asset_type = t_parent["asset_type"]
+
+                if t_parent["asset_type"] is None and asset_type == "":
+                    asset_type = self.asset_type.UNKNOWN.value
+
+                if asset_type == "":
+                    asset_type = t_parent["asset_type"]
+                
+            print(f"asset type: {asset_type}")
+
             metadata_flag = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
-            print("created metadata for derivative")
+            
             if metadata_flag is True:
-                print(metadata.asset_guid, metadata.pipeline_name)
+                print(f"created metadata for derivative: {metadata.asset_guid} {metadata.pipeline_name}")
                 metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
                 print(f"track data for derivative {metadata_flag}")
                 if metadata_flag is False:
@@ -83,8 +107,7 @@ class HPCService():
             if metadata.file_format == "jpeg":
                 est_size = self.jpeg_est
             
-                
-            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (t_parent["asset_size"] + est_size))          
+            self.mongo_track.update_entry(metadata.asset_guid, "asset_size", (total_parent_size + est_size))          
             self.mongo_track.update_entry(metadata.asset_guid, "hpc_ready", self.validate.YES.value)
             self.mongo_track.update_entry(metadata.asset_guid, "is_in_ars", self.validate.NO.value)
             # add one to the assets in flight count
@@ -93,6 +116,7 @@ class HPCService():
             return metadata_flag
         
         except Exception as e:
+            print(e)
             return False
         
     # generic update after some type of job has run on hpc that has updates for the metadata         
