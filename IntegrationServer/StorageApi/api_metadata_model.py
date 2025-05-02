@@ -29,6 +29,9 @@ class Specimen(BaseModel):
     specimen_pid: str = ""
     preparation_type: str = ""
 
+class ExternalPublisherModel(BaseModel):
+    name: str
+
 class ApiMetadataModel(BaseModel):
     asset_created_by: Optional[str] = None
     asset_deleted_by: Optional[str] = None
@@ -53,7 +56,7 @@ class ApiMetadataModel(BaseModel):
     date_metadata_updated_ars: Optional[datetime] = None
     date_pushed_to_specify: Optional[datetime] = None
     digitiser: Optional[str] = None
-    external_publisher: List[str] = []
+    external_publishers: List[ExternalPublisherModel] = []
     file_formats: List[str] = []
     funding: List[str] = []
     institution: str = ""
@@ -71,6 +74,8 @@ class ApiMetadataModel(BaseModel):
     pipeline: str = ""
     push_to_specify: bool = False
     restricted_access: List[str] = []
+    specify_attachment_remarks: Optional[str] = None
+    specify_attachment_title: Optional[str] = None
     status: str = asset_status_nt.AssetStatusNT.WORKING_COPY.value # not optional must come from an enum list
     tags: Dict[str, str] = {}
     workstation: str = ""

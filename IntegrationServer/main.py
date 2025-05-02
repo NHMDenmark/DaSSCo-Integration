@@ -198,21 +198,14 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
-    """
-    {'_id': ObjectId('67f5202572dd37c767e65d24'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
-    {'_id': ObjectId('67f52093e5b8a15c650ffc7e'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
-    {'_id': ObjectId('67f520b76739286469234e6e'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
-    {'_id': ObjectId('67f5211c33abfa98218c2616'), 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
-    {'_id': ObjectId('67f521ef4c199bfb243543a7'), 'id': 'test', 'run_status': 'STOPPED', 'pid': None, 'start_time': None, 'stop_time': None}
-    """
 
-    s = service_repository.ServiceRepository()
+    #s = service_repository.ServiceRepository()
 
-    a = s.delete_entry(ObjectId('67f5202572dd37c767e65d24'))
+    #a = s.delete_entry(ObjectId('67f5202572dd37c767e65d24'))
 
-    print(a)
+    #print(a)
 
-    s.close_connection()
+    #s.close_connection()
     """
     u = utility.Utility()
 
