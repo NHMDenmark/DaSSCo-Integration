@@ -8,12 +8,12 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, metadata_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, metadata_origin
 import utility
 from HealthUtility import health_caller, run_utility
 
 """
-Responsible uploading files to open shares. Updates track database with assets status.
+Responsible for uploading files to open shares from the NDRIVE. Updates track database with assets status.
 Logs warnings and errors from this process, and directs them to the health service. 
 """
 
@@ -33,6 +33,7 @@ class FileUploader():
         self.service_mongo = service_repository.ServiceRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.metadata_origin_enum = metadata_origin.MetadataOriginEnum
         self.flag_enum = flag_enum.FlagEnum
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
@@ -133,7 +134,7 @@ class FileUploader():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value,
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"metadata_origin" : self.metadata_origin_enum.NDRIVE.value, "has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value,
                                                                           "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if asset is not None:

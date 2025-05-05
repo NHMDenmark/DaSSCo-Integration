@@ -1,5 +1,7 @@
 from enum import Enum
-
+"""
+Classes for the different places the integration server can receive new metadata from.
+"""
 class MetadataOriginEnum(Enum):
 
     NDRIVE = "NDRIVE"

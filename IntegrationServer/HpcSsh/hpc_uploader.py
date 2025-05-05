@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, metadata_repository, service_repository
 from Connections import connections
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, metadata_origin
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -34,6 +34,7 @@ class HPCUploader():
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
         self.validate_enum = validate_enum.ValidateEnum
+        self.metadata_origin_enum = metadata_origin.MetadataOriginEnum
         self.cons = connections.Connections()
         self.upload_file_script = self.util.get_value(self.slurm_config_path, "upload_file_script")
 
@@ -78,7 +79,7 @@ class HPCUploader():
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "has_open_share": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.NO.value,
-                                                                            self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                                                                            self.flag_enum.AVAILABLE_FOR_SERVICES.value : self.validate_enum.YES.value, self.flag_enum.METADATA_ORIGIN.value : self.metadata_origin_enum.UCLOUD_HPC.value}])
             if asset is None:
                 #print("No asset found")
                 time.sleep(10)        

@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import metadata_repository, track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, erda_status, flag_enum
+from Enums import validate_enum, status_enum, erda_status, flag_enum, metadata_origin
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -118,6 +118,7 @@ class AssetCreator():
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
         self.erda_status_enum = erda_status.ErdaStatusEnum
+        self.metadata_origin = metadata_origin.MetadataOriginEnum
         self.util = utility.Utility()
 
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
@@ -245,15 +246,18 @@ class AssetCreator():
                 self.end_of_loop_checks()
                 continue
 
-            # TODO this is dangerous. Using the jobs status to logically assume its a derivative. Maybe track needs a new field
+            # Looking for asset types that has free space available - starting with derivatives, then assets from the ndrive
+            asset = None
+
             if new_asset is False:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.DONE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.UCLOUD_HPC.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             if derivative_asset is False:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.NDRIVE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
-            if new_asset and derivative_asset:
-                asset = self.track_mongo.get_entry("is_in_ars", self.validate_enum.NO.value)                
+            if new_asset and derivative_asset and asset is None:
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])                
 
+            # if an asset is found create it in ARS
             if asset is not None:
                 print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]                
