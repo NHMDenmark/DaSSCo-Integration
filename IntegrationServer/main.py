@@ -198,14 +198,8 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
-
-    #s = service_repository.ServiceRepository()
-
-    #a = s.delete_entry(ObjectId('67f5202572dd37c767e65d24'))
-
-    #print(a)
-
-    #s.close_connection()
+    
+    
     """
     u = utility.Utility()
 
