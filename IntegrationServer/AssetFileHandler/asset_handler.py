@@ -8,11 +8,11 @@ import shutil
 import utility
 from AssetFileHandler import job_assigner
 from MongoDB import file_model, track_repository, metadata_repository, batch_repository
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, metadata_origin
 import json
 
 """
-Responsible for the internal processing of assets. 
+Responsible for the processing/creation of assets coming from the Ndrive. 
 """
 
 class AssetHandler:
@@ -22,6 +22,7 @@ class AssetHandler:
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
         self.validate = validate_enum.ValidateEnum
+        self.origin = metadata_origin.MetadataOriginEnum
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
@@ -105,7 +106,7 @@ class AssetHandler:
                         continue
                         
                     # Add new track entry to mongoDB
-                    self.mongo_track.create_track_entry(subdirectory, pipeline_name)
+                    self.mongo_track.create_track_entry(subdirectory, pipeline_name, self.origin.NDRIVE.value )
 
                     # default asset size
                     asset_size = -1

@@ -15,7 +15,7 @@ Model used when creating a new entry in the track collection.
 """
 class TrackModel:
 
-    def __init__(self, guid, pipeline, asset_type=asset_type_enum.AssetTypeEnum.UNKNOWN.value, derivative=False):
+    def __init__(self, guid, pipeline, metadata_origin, asset_type=asset_type_enum.AssetTypeEnum.UNKNOWN.value, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
@@ -24,6 +24,8 @@ class TrackModel:
         self._id = guid
         self.created_time = datetime.now() #datetime.utcnow()
         self.pipeline = pipeline
+        self.asset_type = asset_type
+        self.metadata_origin = metadata_origin
         self.batch_list_name = ""
         self.job_list = []
         if derivative is False:
@@ -35,7 +37,6 @@ class TrackModel:
         self.files_status = status_enum.StatusEnum.NONE.value
         self.asset_size = -1
         self.proxy_path = ""
-        self.asset_type = asset_type
         self.hpc_ready = validate_enum.ValidateEnum.NO.value
         self.is_in_ars = validate_enum.ValidateEnum.AWAIT.value
         self.has_new_file = validate_enum.ValidateEnum.NO.value
@@ -70,6 +71,8 @@ class TrackModel:
             "_id": self._id,
             "created_timestamp": self.created_time,
             "pipeline": self.pipeline,
+            "asset_type": self.asset_type,
+            "metadata_origin": self.metadata_origin,
             "batch_list_name": self.batch_list_name,
             "job_list": self.job_list,
             "jobs_status": self.jobs_status,
@@ -77,7 +80,6 @@ class TrackModel:
             "files_status": self.files_status,
             "asset_size": self.asset_size,
             "proxy_path": self.proxy_path,
-            "asset_type": self.asset_type,
             "hpc_ready": self.hpc_ready,
             "is_in_ars": self.is_in_ars,
             "has_new_file": self.has_new_file,

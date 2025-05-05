@@ -143,14 +143,14 @@ class TrackRepository:
         return self.all.delete_field(id, field_name)
     
 
-    def create_track_entry(self, guid, pipeline):
+    def create_track_entry(self, guid, pipeline, metadata_origin):
         """
         Create a new track entry in the MongoDB collection.
         :param guid: The unique identifier of the asset.
         :param pipeline: The value for the 'pipeline' field.
         Returns a boolean denoting success or failure.  
         """
-        model = track_model.TrackModel(guid, pipeline)
+        model = track_model.TrackModel(guid, pipeline, metadata_origin)
         entry_data = model.get_entry_data()
 
         if self.get_entry("_id", guid) is None:
@@ -264,7 +264,7 @@ class TrackRepository:
 
         return entries
 
-    def create_derivative_track_entry(self, guid, pipeline, asset_type=AssetTypeEnum.UNKNOWN.value):
+    def create_derivative_track_entry(self, guid, pipeline, metadata_origin, asset_type=AssetTypeEnum.UNKNOWN.value):
         """
         Create a new track entry in the MongoDB collection for a derivative.
 
@@ -272,7 +272,7 @@ class TrackRepository:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = track_model.TrackModel(guid, pipeline, asset_type, derivative=True)
+        model = track_model.TrackModel(guid, pipeline, metadata_origin, asset_type, derivative=True)
         entry_data = model.get_entry_data()
         print(pipeline)
         if self.get_entry("_id", guid) is None:

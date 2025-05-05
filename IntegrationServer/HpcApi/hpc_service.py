@@ -12,6 +12,7 @@ from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
 from Enums.asset_status_nt import AssetStatusNT
+from Enums.metadata_origin import MetadataOriginEnum
 from HealthUtility import run_utility, health_caller
 
 class HPCService():
@@ -34,6 +35,7 @@ class HPCService():
         self.validate = ValidateEnum
         self.asset_type = AssetTypeEnum
         self.asset_status_nt = AssetStatusNT
+        self.origin = MetadataOriginEnum
 
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
@@ -92,7 +94,7 @@ class HPCService():
             
             if metadata_flag is True:
                 print(f"created metadata for derivative: {metadata.asset_guid} {metadata.pipeline_name}")
-                metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, asset_type)
+                metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, self.origin.UCLOUD_HPC.value, asset_type)
                 print(f"track data for derivative {metadata_flag}")
                 if metadata_flag is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
