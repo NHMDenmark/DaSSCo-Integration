@@ -198,7 +198,13 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
+    u = utility.Utility()
+
+    d = {"name": "\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}
+
+    d = u.convert_json_to_utf8(d)
     
+    print(d)
     
     """
     u = utility.Utility()
