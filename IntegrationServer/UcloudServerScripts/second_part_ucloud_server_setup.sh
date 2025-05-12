@@ -2,7 +2,7 @@
 
 # chmod +x path/to/script
 # must use explicit paths in script,
-# do not run with sudo
+# do not run with sudo, further steps that doesnt need root user should be added to this part of the setup scripts
 # only run after running first part and sourcing bash for new paths
 
 # Exit on error
@@ -20,71 +20,34 @@ INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
 DB_PATH="/work/data/lars"
 DB_NAME="dev-db-1-11-2024"
 
+
 echo "Starting second part of the server setup ---"
 
-# Step 5: Install nginx and setup nginx
-echo "Installing and setting up nginx"
+# Step 4:
+echo "Running the database"
 
-sudo apt-get install -y nginx
+nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
+sudo chown -R ucloud:ucloud $DB_PATH/$HOSTNAME.log
+chmod 755 $DB_PATH/$HOSTNAME.log
 
-# this assumes the server running the nginx proxy has the job name added to the nginx default  
-echo "server {
-        listen 80;
 
-        root /var/www/html;
-
-        index index.html index.htm index.nginx-debian.html;
-        server_name $HOSTNAME;
-
-        location /dev/ {
-            proxy_pass http://localhost:8000;
-            proxy_http_version 1.1;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-      }
-        location /control/ {
-            proxy_pass http://localhost:8005;
-            proxy_http_version 1.1;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-      }
-}
-upstream dev {
-  server localhost:8000;
-}
-
-upstream control {
-  server localhost:8005;
-}" > /etc/nginx/sites-available/default
-
-service nginx start
-echo "Nginx installed and running"
-
-# Step 6: Generate ssh key for slurm usage
+# Step 5: Generate ssh key for slurm usage
 echo "Generating ssh key for slurm in ~/.ssh"
-ssh-keygen -t ed25519 -N "" -f "$HOMEPATH/.ssh/id_ed25519"
+ssh-keygen -t ed25519 -N "" -f "$HOMEPATH/.ssh/slurm"
 
-# Step 7: Update venv
+# Step 6: Update venv
 echo "Activate and update python venv"
 source /work/data/integration/venv_integration/bin/activate
 pip install -r $INT_PATH/requirements.txt
 echo "Venv good to go"
 
-# Step 8: Run the integration setup script for the database
-
-echo "Running the database"
-
-nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
+# Step 7: Run the integration setup script for the database
 
 echo "Running setup script for database"
 python $INT_PATH/setup_service_script.py
 echo "Database set up"
 
-# Step 9: Run the api endpoints
+# Step 8: Run the api endpoints
 echo "Starting Hpc api service, Control api service and local Health api service."
 export PYTHONPATH=$INT_PATH
 nohup uvicorn HpcApi.hpc_api:app --reload --host 127.0.0.1 --port 8000 > $INT_PATH/HpcApi/$HOSTNAME.log 2>&1 &
