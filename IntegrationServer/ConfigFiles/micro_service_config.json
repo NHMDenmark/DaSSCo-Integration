@@ -220,6 +220,16 @@
     "mail_wait_time": 30,
     "max_sync_erda_attempt_wait_time": 900
   },
+  "ING Receive metadata": {
+    "module": "ingestion interface",
+    "run_service":true,
+    "pause_time": 60,
+    "pause_check_list": [5, 10],
+    "pause_loop_count": 15,
+    "error_tolerance": 3,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
   "all_run": {
     "module": "null",
     "run_service":true,

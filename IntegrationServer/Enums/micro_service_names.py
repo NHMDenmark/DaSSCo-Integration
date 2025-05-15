@@ -25,6 +25,7 @@ class MicroServiceNamesEnum(Enum):
         FPSH = "Flag paused status handler"
         AESH = "Asset error status handler"
         THS = "Throttle service"
+        IRM = "ING Receive metadata"
 
 class MicroServiceNames:
     def __init__(self):

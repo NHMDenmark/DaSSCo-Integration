@@ -14,6 +14,7 @@ import json
 import time
 from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
+from rabbitmq_client import RabbitMqClient as rmq
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -177,6 +178,8 @@ def test_exception():
     except:
         raise Exception("fun")
 
+def print_something(input):
+    print(input["asd"])
 
 if __name__ == '__main__':
     """
@@ -199,13 +202,29 @@ if __name__ == '__main__':
     track.close_connection()
     """
     u = utility.Utility()
-
-    d = {"name": "\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}
-
-    d = u.convert_json_to_utf8(d)
     
-    print(d)
+    load_dotenv()
+    user = os.getenv("rabbit_user")
+    pw = os.getenv("rabbit_pw")
+
+    rmc = rmq(host_name="localhost", port=5672, credentials={"username":user, "password":pw})
     
+    #rmc.add_handler("first_test", print_something)
+
+    rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})
+    #rmc.publish("first_test", {"asd":4})
+
+    #rmc.start_consuming()
+
+    #rmc.publish("first_test", {"asd":1})
+    #rmc.publish("first_test", {"asd":4})
+    
+    #m = rmc.consume_one("first_test")
+    #if m is not None:
+    #    m = json.loads(m)
+    #print(type(m))
+    #print(m["asset"])
+
     """
     u = utility.Utility()
 

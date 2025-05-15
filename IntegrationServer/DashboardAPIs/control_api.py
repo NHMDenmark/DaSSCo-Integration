@@ -22,7 +22,7 @@ update_track_model = UpdateTrackhModel
 
 @control.get("/control/check")
 def index():
-    return "check it out!"
+    return "check it out"
 
 @control.post("/control/start_all")
 async def start_all():

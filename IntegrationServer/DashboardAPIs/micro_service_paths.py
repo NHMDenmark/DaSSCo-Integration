@@ -35,7 +35,8 @@ class MicroServicePaths():
         "Asset error status handler":"HealthUtility/asset_error_status_handler.py",
         "HPC job retry handler":"HealthUtility/hpc_job_retry_handler.py",
         "HPC unresponsive job handler":"HealthUtility/hpc_unresponsive_job_handler.py",
-        "Throttle service":"HealthUtility/throttle_service.py"
+        "Throttle service":"HealthUtility/throttle_service.py",
+        "ING Receive metadata":"IngestionInterface/ING_receive_metadata.py"
         }
 
         json_paths = json.dumps(service_paths)
@@ -69,5 +70,6 @@ class MicroServicePaths():
         "Asset error status handler"
         "Throttle service"
         "HPC unresponsive job handler"
+        "ING Receive metadata"
 
         return False

@@ -4,12 +4,14 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+import json
 from dotenv import load_dotenv
 import utility
 from dassco_utils.messaging.rabbitmq_client import RabbitMqClient
 from MongoDB import metadata_repository, track_repository, service_repository, file_model
 from Enums import status_enum, flag_enum, validate_enum, metadata_origin
 from HealthUtility import health_caller, run_utility
+from rabbitmq_client import RabbitMqClient as RMC
 
 """
 Listens for new messages from the ingestion server with metadata and file information.
@@ -27,8 +29,8 @@ class ReceiveMetadata():
         self.pid = os.getpid()
         
         # service name for logging/info purposes
-        self.service_name = "Ingestion communication metadata receiver"
-        self.prefix_id = "Icmr"
+        self.service_name = "ING Receive metadata"
+        self.prefix_id = "IRM"
 
         # RabbitMQ channel name
         self.queue_channel = "metadata_and_file_info"
@@ -50,17 +52,17 @@ class ReceiveMetadata():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         # TODO setup real url in env
-        self.msg_url = os.getenv("ingestion_queue_url")
+        self.msg_url = os.getenv("rabbit_url")
+        self.msg_user = os.getenv("rabbit_user")
+        self.msg_pw = os.getenv("rabbit_pw")
 
-        self.msg_client = RabbitMqClient(host_name=self.msg_url, run_async=True, credentials={"username": "guest", "password": "guest"})
-        
-        self.msg_client.add_handler(self.queue_channel, handler=self.handle_msg)
+        self.msg_client = RMC(host_name=self.msg_url, run_async=True, credentials={"username": self.msg_user, "password": self.msg_pw})
 
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
         
         try:
-            self.consumption()
+            self.loop()
         except Exception as e:
             print("service crashed", e)
             try:
@@ -70,26 +72,44 @@ class ReceiveMetadata():
                 print(f"failed to inform about crash")
             self.run_util.service_stopping_updates()
             self.close_db_connections()
+            self.msg_client.channel.close()
 
     # consuming loop
-    def consumption(self):                  
-        self.msg_client.start_consuming()
+    def loop(self):     
+        while self.run == self.status_enum.RUNNING.value:
+
+            msg = self.msg_client.consume_one("metadata-info-queue")
+
+
+            if msg is not None:
+                
+                msg = json.loads(msg)
+                
+                print(msg["file"])
+                print(msg["metadata"])
+                #self.handle_msg(msg)
+
+            self.run = self.run_util.check_run_changes()
+            # TODO figure out if any handling of pause status is necessary / also throttling here - maybe we dont want 100k assets in system from the get go
+        
+        self.run_util.service_stopping_updates()     
+        self.close_db_connections()
+        self.msg_client.channel.close()        
+        print("service stopped")
+        
 
     def handle_msg(self, msg):
-        
-        # Checks if the status for running the service has changed before handling the msg. Will close/pause the service without handling the msg if so.
-        self.run_status_check_and_handle()
 
-        metadata = msg.metadata
-        file_info = msg.file_info
+        metadata = msg["metadata"]
+        file_info = msg["file"]
 
-        filename = file_info.file_filename
-        crc = file_info.crc
-        filesize = file_info.filesize
-        tusd_id = file_info.tusd_file_id
+        filename = file_info["file_name"]
+        crc = file_info["crc"]
+        filesize = file_info["file_size"]
+        tusd_id = file_info["tusd_file_id"]
 
-        guid = metadata.guid
-        pipeline = metadata.pipeline
+        guid = metadata["guid"]
+        pipeline = metadata["pipeline"]
 
         # TODO check all data is here and version is correct
 
@@ -101,19 +121,7 @@ class ReceiveMetadata():
 
         self.mongo_track.append_existing_list(guid, "file_list", file_info_model)
         self.mongo_track.update_entry(guid, "tusd_id", tusd_id)
-
-    def run_status_check_and_handle(self):
-        # checks if service should keep running           
-        self.run = self.run_util.check_run_changes()
-
-        # TODO figure out if any handling of pause status is necessary / also throttling here - maybe we dont want 100k assets in system from the get go
-
-        # TODO figure out if killing the service results in a nack for the queue
-        if self.run == self.status_enum.STOPPED.value:
-            self.run_util.service_stopping_updates()     
-            self.close_db_connections()        
-            print("service stopped")
-            os.kill(self.pid, 9)
+            
 
     def close_db_connections(self):
         try:
