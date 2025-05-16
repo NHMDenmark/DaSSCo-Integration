@@ -82,9 +82,7 @@ class ReceiveMetadata():
                 
                 msg = json.loads(msg)
                 
-                print(msg["file"])
-                print(msg["metadata"])
-                #self.handle_msg(msg)
+                self.handle_msg(msg)
 
             self.run = self.run_util.check_run_changes()
             # TODO figure out if any handling of pause status is necessary / also throttling here - maybe we dont want 100k assets in system from the get go
@@ -117,6 +115,7 @@ class ReceiveMetadata():
 
         self.mongo_track.append_existing_list(guid, "file_list", file_info_model)
         self.mongo_track.update_entry(guid, "temporary_tusd_id", tusd_id)
+        self.mongo_track.update_entry(guid, self.flag_enum.IS_IN_ARS.value, self.validate_enum.NO.value)
             
     def close_db_connections(self):
         try:
