@@ -76,6 +76,23 @@ class AllRepository:
         entry = self.collection.find_one(query)
         return entry
     
+    def get_entry_key_exist_and_key_pair_values(self, key_value_pairs, must_have_key=None):
+        """
+        Retrieve an entry from the MongoDB collection based on multiple key-value pairs,
+        and optionally ensure a specific key exists in the entry.
+
+        :param key_value_pairs: List of dictionaries representing key-value pairs. E.g., [{"a": 1}, {"b": 2}]
+        :param must_have_key: Optional; a key that must exist in the matched document.
+        :return: The first entry matching the specified criteria. Returns None if nothing matches.
+        """
+        query_conditions = key_value_pairs.copy()  # ensure we don't mutate input
+
+        if must_have_key:
+            query_conditions.append({must_have_key: {"$exists": True}})
+
+        query = {"$and": query_conditions} if query_conditions else {}
+        return self.collection.find_one(query)
+    
     def get_entries_from_multiple_key_pairs(self, key_value_pairs):
         """
         Retrieve entries from the MongoDB collection based on multiple key-value pairs. [{key: value, key: value}]

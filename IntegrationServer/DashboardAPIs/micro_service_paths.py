@@ -12,6 +12,7 @@ class MicroServicePaths():
     def __init__(self):
         self.util = utility.Utility()
 
+    # TODO move the paths into the microservice part of the configuration
     def get_path_from_name(self, service_name):
         
         service_paths = {
@@ -36,7 +37,10 @@ class MicroServicePaths():
         "HPC job retry handler":"HealthUtility/hpc_job_retry_handler.py",
         "HPC unresponsive job handler":"HealthUtility/hpc_unresponsive_job_handler.py",
         "Throttle service":"HealthUtility/throttle_service.py",
-        "ING Receive metadata":"IngestionInterface/ING_receive_metadata.py"
+        "ING Receive metadata":"IngestionInterface/ING_receive_metadata.py",
+        "ING ARS uploaded listener":"IngestionInterface/ING_ARS_uploaded_listener.py",
+        "ING Publisher ARS link":"IngestionInterface/ING_publisher_ARS_link.py",
+        "ING Synced ERDA publisher":"IngestionInterface/ING_synced_ERDA_publisher.py"
         }
 
         json_paths = json.dumps(service_paths)
@@ -47,29 +51,6 @@ class MicroServicePaths():
             path = paths[service_name]
             return path
         except Exception as e:
-            pass
-
-        "Erda sync ARS"
-        "Close file share ARS"
-        "Open file share ARS"
-        "Asset creator ARS"
-        "Validate erda sync ARS"
-        "File uploader ARS"
-        "Update metadata ARS"
-        "Asset creator HPC"
-        "HPC clean up service"
-        "HPC job caller"
-        "HPC job retry handler"
-        "HPC file uploader"
-        "New files finder (Ndrive)"
-        "Process new files (Ndrive)"
-        "Delete files (Ndrive)"
-        "Delete local files"
-        "Asset paused status handler"
-        "Flag paused status handler"
-        "Asset error status handler"
-        "Throttle service"
-        "HPC unresponsive job handler"
-        "ING Receive metadata"
+            print(e)
 
         return False

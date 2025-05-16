@@ -230,6 +230,36 @@
     "error_time_span": 10,
     "mail_wait_time": 20
   },
+  "ING ARS uploaded listener": {
+    "module": "ingestion interface",
+    "run_service":true,
+    "pause_time": 60,
+    "pause_check_list": [5, 10],
+    "pause_loop_count": 15,
+    "error_tolerance": 3,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
+  "ING Publisher ARS link": {
+    "module": "ingestion interface",
+    "run_service":true,
+    "pause_time": 60,
+    "pause_check_list": [5, 10],
+    "pause_loop_count": 15,
+    "error_tolerance": 3,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
+  "ING Synced ERDA publisher": {
+    "module": "ingestion interface",
+    "run_service":true,
+    "pause_time": 60,
+    "pause_check_list": [5, 10],
+    "pause_loop_count": 15,
+    "error_tolerance": 3,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
   "all_run": {
     "module": "null",
     "run_service":true,

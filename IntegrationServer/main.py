@@ -203,6 +203,11 @@ if __name__ == '__main__':
     """
     u = utility.Utility()
     
+    c = mongo_connection.MongoConnection("micro_service")
+    print(c.ping_connection())
+    c.close_mdb()
+
+    """
     load_dotenv()
     user = os.getenv("rabbit_user")
     pw = os.getenv("rabbit_pw")
@@ -212,7 +217,9 @@ if __name__ == '__main__':
     #rmc.add_handler("first_test", print_something)
 
     rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})
+    """
     #rmc.publish("first_test", {"asd":4})
+
 
     #rmc.start_consuming()
 
