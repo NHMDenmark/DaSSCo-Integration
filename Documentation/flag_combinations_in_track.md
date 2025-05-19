@@ -5,7 +5,7 @@
 | AssetFileHandler\delete_local_files | DONE | - | - | - | YES | NO | - | YES | - | - | - | YES -> remove field | - | - | - |
 | StorageUpdater\asset_creator | - | - | not -1 | - | NO -> YES | -> YES | -> YES | - | - | - | - | - | YES | - | - |
 | StorageUpdater\close_share | - | - | - | YES | - | NO | YES -> NO | YES | - | - | - | - | YES | - | - |
-| StorageUpdater\file_uploader | WAITING | - | not -1 | - | - | YES -> AWAIT | YES | -> NO | - | - | - | - | YES | - | - |
+| StorageUpdater\file_uploader | WAITING | - | not -1 | - | - | YES -> AWAIT | YES | -> NO | - | - | - | - | YES | NDRIVE | - |
 | StorageUpdater\sync_erda | - | - | - | - | - | AWAIT | - | NO -> AWAIT | - | - | - | - | YES | - | - |
 | StorageUpdater\validate_sync_erda | - | - | - | - | - | -> NO | YES -> NO | AWAIT -> YES | - | - | - | - | YES | - | - |
 | StorageUpdater\update_metadata | - | - | - | - | - | - | - | - | YES -> NO | - | - | - | YES | - | - |

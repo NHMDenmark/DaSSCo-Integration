@@ -141,6 +141,29 @@ class TrackRepository:
         :return: True if the operation was successful, False otherwise.
         """
         return self.all.append_existing_list(guid, list_key, value)
+    
+    def append_file_list(self, guid, file_info):
+        """
+                Appends a new file to the file_list if it does not already exist in the list.
+
+                :param guid: The unique identifier of the entry.
+                :param file_info: The file info to be appended to the list.
+                :return: A boolean denoting success or failure.
+        """
+        entry = self.get_entry("_id", guid)
+
+        if entry is None:
+            return False
+        
+        # Check if the file with the same name already exists in the file_list
+        if any(f.get("name") == file_info.get("name") for f in entry.get("file_list", [])):
+            return False
+
+        entry["file_list"].append(file_info)
+
+        self.collection.update_one({"_id": guid}, {"$set": entry})
+
+        return True
 
     
     def delete_field(self, id, field_name):
@@ -344,7 +367,7 @@ class TrackRepository:
 
     def update_track_job_list(self, guid, job, key, value):
         """
-            Update an existing track_entry with a new entry for a job in the MongoDB collection.
+            Update an existing track_entry for a job in the MongoDB collection.
 
             :param guid: The unique identifier of the entry.
             :param job: The job name to be updated.
@@ -398,7 +421,7 @@ class TrackRepository:
 
     def update_track_file_list(self, guid, file, key, value):
         """
-            Update an existing track_entry with a new entry for a file in the track MongoDB collection.
+            Update an existing track_entry for a file in the track MongoDB collection.
 
             :param guid: The unique identifier of the entry.
             :param file: The file name to be updated.

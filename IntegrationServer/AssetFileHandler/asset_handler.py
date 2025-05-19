@@ -137,7 +137,7 @@ class AssetHandler:
 
                         file_data = json.loads(file_data)
 
-                        self.mongo_track.append_existing_list(guid, "file_list", file_data)
+                        self.mongo_track.append_file_list(guid, file_data)
 
                         if asset_size == -1:
                             asset_size = img_size

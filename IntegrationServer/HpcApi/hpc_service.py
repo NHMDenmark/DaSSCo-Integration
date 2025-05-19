@@ -6,8 +6,7 @@ sys.path.append(project_root)
 
 import utility
 import json
-from HpcApi.file_model import FileModel
-from MongoDB import track_repository, metadata_repository, mos_repository, throttle_repository
+from MongoDB import track_repository, metadata_repository, mos_repository, throttle_repository, file_model
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
@@ -523,7 +522,7 @@ class HPCService():
         
         if track_data is not None:
 
-            file_model = FileModel()
+            file_model = file_model.FileModel()
 
             file_model.file_size = file_size
             file_model.check_sum = check_sum
@@ -536,7 +535,7 @@ class HPCService():
 
             file_data = json.loads(file_data)
 
-            self.mongo_track.append_existing_list(guid, "file_list", file_data)
+            self.mongo_track.append_file_list(guid, file_data)
 
             # this part assumes that we can only receive one file per derivative- would need a check of file_list size if/when we want more files
             file_size_est = 0

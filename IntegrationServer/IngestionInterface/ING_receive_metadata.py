@@ -113,7 +113,7 @@ class ReceiveMetadata():
 
         file_info_model = file_model.FileModel(name = filename, type= filename[:-3], check_sum= crc, file_size= filesize)
 
-        self.mongo_track.append_existing_list(guid, "file_list", file_info_model)
+        self.mongo_track.append_file_list(guid, file_info_model)
         self.mongo_track.update_entry(guid, "temporary_tusd_id", tusd_id)
         self.mongo_track.update_entry(guid, self.flag_enum.IS_IN_ARS.value, self.validate_enum.NO.value)
             

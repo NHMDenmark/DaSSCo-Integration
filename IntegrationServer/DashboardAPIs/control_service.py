@@ -325,7 +325,8 @@ class ControlService():
             return False, None, ("Something went wrong while searching for health data.")
 
     def update_track_data(self, update_model):
-        # TODO verify that keys are actual fields before updating, not sure if want a different endpoint for adding new fields
+        # TODO verify that keys are actual fields before updating, not sure if want a different endpoint for adding new fields/appending files or jobs to the lists.
+        # TODO add option to update file info in the file_list
 
         asset_list = update_model.asset_guids
 
