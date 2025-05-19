@@ -4,8 +4,9 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from dassco_utils.metadata.models import MetadataModel
 import utility
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository
 from DashboardAPIs import micro_service_paths
@@ -35,6 +36,7 @@ class ControlService():
         self.micro_paths = micro_service_paths.MicroServicePaths()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
 
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
@@ -119,13 +121,13 @@ class ControlService():
             print(f"get metadata asset data: {e}")
             return False, "Things went wrong"
         
-    def get_health_asset_data(self, guid):
+    def get_health_asset_data(self, key, value):
 
         try:
-            entries = self.mongo_health.get_entries("guid", guid)
+            entries = self.mongo_health.get_entries(key, value)
 
             if entries is None or entries == []:
-                return False, "No entries for asset was found"
+                return False, "No entries was found for search criterias key and value."
             else:                
                 return True, entries
             
@@ -354,7 +356,50 @@ class ControlService():
 
                     self.mongo_track.update_entry(guid, key, value)
 
-        return True, "Update success"        
+        return True, "Update success"
+    
+    def update_metadata(self, update_model):
+        
+        asset_list = update_model.asset_guids
+
+        if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
+            return False, "Wrong input for asset_guids."
+
+        key_values = update_model.key_values
+
+        if key_values is not None and key_values != {}:
+
+            for guid in asset_list:
+                for key, value in key_values.items():
+                    # Check if the field exists
+                    if key in MetadataModel.model_fields:
+                        field_info = MetadataModel.model_fields[key]
+                        expected_type = field_info.annotation
+
+                        compatible = self.util.is_compatible(value, expected_type)
+                        if compatible:
+                            continue
+                        else:
+                            return False, f"Type mismatch for key {key}: expected {expected_type}, got {type(value)}."
+
+                    elif key not in MetadataModel.model_fields:
+                        return False, f"Could not find {key} in metadata."
+                
+                for key, value in key_values.items():
+                    self.mongo_metadata.update_entry(guid, key, value)
+                    
+
+        if update_model.append_issue is not None or update_model.append_issue != {}:
+            # TODO
+            pass
+
+        if update_model.update_ars is True:
+             
+             for guid in asset_list:
+
+                self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+
+        return True, "Update success"
 
     def get_service_data(self, service_name):
 
@@ -392,19 +437,34 @@ class ControlService():
 
                 for entry in data["services"]:                    
                     try:
-                        if "pid" in entry and entry["pid"] is not None:
+                        if "pid" in entry and entry["pid"] is not None:    
+                            # Check if the service process is running, update run status accordingly
                             is_running = self.is_process_running(entry["pid"])
 
                             if is_running is True and entry["run_status"] not in (self.status_enum.RUNNING.value, self.status_enum.PAUSED.value):
                                 entry["run_status"] = self.status_enum.RUNNING.value
                                 self.service_running_updates(entry["_id"])
                             elif is_running is False and entry["run_status"] != self.status_enum.STOPPED.value:
-                                entry["run_status"] = self.status_enum.STOPPED.value
+                                entry["run_status"] = self.status_enum.STOPPED.value                                
                                 self.service_stopping_updates(entry["_id"])
-                            else:
-                                continue
+                            
+                            # Dont show old pid if service has stopped
+                            if is_running is False:
+                                entry["pid"] = None
+                    
                     except Exception as e:
                         print(f"Failed to find pid for service {entry["_id"]}: {e}")
+
+                    # Dont show old stop time values if service is running
+                    try: 
+                        if "stop_time" in entry and entry["stop_time"] is not None:
+
+                            if entry["start_time"] > entry["stop_time"]:
+
+                                entry["stop_time"] = None
+
+                    except Exception as e:
+                        print(f"Failed to find stop_time for service {entry["_id"]}: {e}")
 
                 return True, data
             

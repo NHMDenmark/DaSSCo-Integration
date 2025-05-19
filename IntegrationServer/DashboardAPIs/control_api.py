@@ -13,12 +13,14 @@ from fastapi.responses import JSONResponse
 import utility
 from DashboardAPIs.search_model import SearchModel
 from DashboardAPIs.update_track_model import UpdateTrackhModel
+from DashboardAPIs.update_metadata_model import UpdateMetadataModel
 
 control = FastAPI()
 util = utility.Utility()
 service = control_service.ControlService()
 search_model = SearchModel
 update_track_model = UpdateTrackhModel
+update_metadata_model = UpdateMetadataModel
 
 @control.get("/control/check")
 def index():
@@ -88,9 +90,9 @@ async def get_track_data(guid: str):
     return msg
 
 @control.get("/control/get_health_data")
-async def get_track_data(guid: str):
+async def get_track_data(key: str, value: str):
 
-    found, msg = service.get_health_asset_data(guid)
+    found, msg = service.get_health_asset_data(key, value)
 
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
@@ -204,3 +206,13 @@ async def get_all_service_data():
         return JSONResponse(content={"status": msg}, status_code=500)
     
     return msg
+
+@control.put("/control/update_metadata")
+async def update_metadata(update_metadata_model: update_metadata_model):
+    
+    updated, msg = service.update_metadata(update_metadata_model)
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)

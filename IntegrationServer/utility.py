@@ -13,6 +13,8 @@ import binascii
 from datetime import datetime
 import chardet
 import subprocess
+from typing import get_origin, get_args, Union
+from pydantic import BaseModel
 
 """
 Class with helper methods that are used throughout the different processes.
@@ -250,4 +252,52 @@ class Utility:
             # TODO Handle errors if the script fails
             print(e.stderr)
 
+            return False
+        
+    def is_compatible(self, value, expected_type):
+        origin = get_origin(expected_type)
+        args = get_args(expected_type)
+
+        # Handle Optional[X] (which is Union[X, NoneType])
+        if origin is Union and type(None) in args:
+            non_none_type = [arg for arg in args if arg is not type(None)][0]
+            return value is None or self.is_compatible(value, non_none_type)
+
+        # Handle List[X]
+        elif origin is list:
+            if not isinstance(value, list):
+                return False
+            if not args:
+                return True
+            return all(self.is_compatible(item, args[0]) for item in value)
+
+        # Handle Dict[K, V]
+        elif origin is dict:
+            if not isinstance(value, dict):
+                return False
+            key_type, val_type = args
+            return all(self.is_compatible(k, key_type) and self.is_compatible(v, val_type) for k, v in value.items())
+
+        # Handle nested Pydantic models
+        elif isinstance(origin, type) and issubclass(expected_type, BaseModel):
+            try:
+                # Try constructing the model — this validates structure and field types
+                expected_type.model_validate(value)
+                return True
+            except Exception:
+                return False
+        
+        # Handle models
+        elif isinstance(expected_type, type) and issubclass(expected_type, BaseModel):
+            print(expected_type)
+            try:
+                expected_type.model_validate(value)
+                return True
+            except Exception:
+                return False
+
+        # Fallback to direct isinstance
+        try:
+            return isinstance(value, expected_type)
+        except TypeError:
             return False
