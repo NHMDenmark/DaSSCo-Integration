@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from dassco_utils.metadata.models import MetadataModel
+from dassco_utils.metadata.models import MetadataModel, IssueModel
 import utility
 from Enums import status_enum, validate_enum, flag_enum
 from HealthUtility import health_caller, run_utility
@@ -387,13 +387,65 @@ class ControlService():
                 
                 for key, value in key_values.items():
                     self.mongo_metadata.update_entry(guid, key, value)
-                    
-
-        if update_model.append_issue is not None or update_model.append_issue != {}:
-            # TODO
-            pass
 
         if update_model.update_ars is True:
+             
+             for guid in asset_list:
+
+                self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+
+        return True, "Update success"
+
+    def append_issue_to_metadata(self, append_issue_model):
+
+        asset_list = append_issue_model.asset_guids
+
+        if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
+            return False, "Wrong input for asset_guids."
+        
+        for guid in asset_list:
+            a = self.mongo_track.get_entry("_id", guid)
+            if a is None:
+                return False, f"Failed to find asset: {guid}"
+        
+        issue = append_issue_model.issue
+
+        compat = self.util.is_compatible(type(issue), type(IssueModel))
+
+        if compat is False:
+            return False, "Issue compatibility fail"
+        
+        issue = IssueModel.model_dump(issue)
+
+        for key, value in issue.items():    
+
+            # Check if the field exists
+            if key in IssueModel.model_fields:
+                field_info = IssueModel.model_fields[key]
+                expected_type = field_info.annotation
+
+                compatible = self.util.is_compatible(value, expected_type)
+                if compatible:
+                    continue
+                else:
+                    return False, f"Type mismatch for key {key}: expected {expected_type}, got {type(value)}."
+            
+            elif key not in IssueModel.model_fields:
+                        return False, f"Could not find {key} in metadata."        
+
+        updated_assets = []
+        temp_guid = None
+        try:
+            for guid in asset_list:
+                self.mongo_metadata.append_existing_list(guid, "issues", issue)
+                updated_assets.append(guid)
+                temp_guid = guid
+
+        except Exception as e:
+            print(f"Failed to update issues list for assets: {e}")
+            return False, f"Failed to update all assets with the issue. Failed with :{temp_guid}. List of assets updated, if any: {updated_assets}"
+            
+        if append_issue_model.update_ars is True:
              
              for guid in asset_list:
 
