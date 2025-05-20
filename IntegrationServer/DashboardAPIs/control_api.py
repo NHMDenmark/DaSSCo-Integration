@@ -15,6 +15,7 @@ from DashboardAPIs.search_model import SearchModel
 from DashboardAPIs.update_track_model import UpdateTrackhModel
 from DashboardAPIs.update_metadata_model import UpdateMetadataModel
 from DashboardAPIs.append_issue_model import AppendIssueModel
+from DashboardAPIs.update_issue_model import UpdateIssueModel
 
 control = FastAPI()
 util = utility.Utility()
@@ -23,6 +24,7 @@ search_model = SearchModel
 update_track_model = UpdateTrackhModel
 update_metadata_model = UpdateMetadataModel
 append_issue_model = AppendIssueModel
+update_issue_model = UpdateIssueModel
 
 @control.get("/control/check")
 def index():
@@ -223,6 +225,16 @@ async def update_metadata(update_metadata_model: update_metadata_model):
 async def append_issue(append_issue_model: append_issue_model):
     
     updated, msg = service.append_issue_to_metadata(append_issue_model)
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+
+@control.put("/control/update_issue")
+async def update_issue(update_issue_model: update_issue_model):
+
+    updated, msg = service.update_issue(update_issue_model)
 
     if updated is False:
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)

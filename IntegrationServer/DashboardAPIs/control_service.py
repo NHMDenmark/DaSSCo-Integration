@@ -431,7 +431,7 @@ class ControlService():
                     return False, f"Type mismatch for key {key}: expected {expected_type}, got {type(value)}."
             
             elif key not in IssueModel.model_fields:
-                        return False, f"Could not find {key} in metadata."        
+                        return False, f"Could not find {key} in issue model."        
 
         updated_assets = []
         temp_guid = None
@@ -451,6 +451,50 @@ class ControlService():
 
                 self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
 
+        return True, "Update success"
+
+    def update_issue(self, update_issue_model):
+
+        asset_list = update_issue_model.asset_guids
+
+        if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
+            return False, "Wrong input for asset_guids. Should be a list with asset guid(s)."
+        
+        for guid in asset_list:
+            a = self.mongo_track.get_entry("_id", guid)
+            if a is None:
+                return False, f"Failed to find asset: {guid}"
+
+        for key, value in update_issue_model.key_values.items():    
+
+            # Check if the field exists
+            if key in IssueModel.model_fields:
+                field_info = IssueModel.model_fields[key]
+                expected_type = field_info.annotation
+
+                compatible = self.util.is_compatible(value, expected_type)
+                if compatible:
+                    continue
+                else:
+                    return False, f"Type mismatch for key {key}: expected {expected_type}, got {type(value)}."
+            
+            elif key not in IssueModel.model_fields:
+                        return False, f"Could not find {key} in issue model."
+            
+        try:            
+            for guid in asset_list:
+                i = self.mongo_metadata.get_issue_from_key_value_pairs(guid, {"category":update_issue_model.issue_category, "name":update_issue_model.issue_name})
+
+                if i is None:
+                    return False, f"Could not find issue matching {guid}."
+            
+            for guid in asset_list:
+                self.mongo_metadata.update_issue_data(guid, {"category":update_issue_model.issue_category, "name":update_issue_model.issue_name}, update_issue_model.key_values)
+
+        except Exception as e:
+            print(f"Failed to update issues: {e}")
+            return False, f"Failed updating the issues."
+        
         return True, "Update success"
 
     def get_service_data(self, service_name):

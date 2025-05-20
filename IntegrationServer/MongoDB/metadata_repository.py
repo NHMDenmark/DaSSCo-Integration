@@ -91,3 +91,65 @@ class MetadataRepository:
         else:
             print("returning false")
             return False
+        
+    def get_issue_from_key_value(self, guid, key, value):
+        """
+                Finds an issue based on the asset and a key value pair of the issue.
+                :returns the issue info or none
+        """
+
+        issue_key = f"issues.{key}"
+
+        result = self.collection.find_one({ "_id": guid, issue_key: value },{ "issues.$": 1 })
+        
+        # get the actual job info from the resulting dictionary
+        if result and "issues" in result:
+            result = result["issues"][0]
+            return result
+        
+        return None
+    
+    def get_issue_from_key_value_pairs(self, guid, key_value_pairs):
+        """
+        Finds an issue in the 'issues' array of a document with the given guid, matching all key-value pairs.
+
+        :param guid: The asset _id (GUID).
+        :param key_value_pairs: Dictionary of key-value pairs to match inside an issue.
+        :return: The first matching issue or None.
+        """
+        # Build query using $elemMatch for nested matching
+        issue_query = {
+            "_id": guid,
+            "issues": {"$elemMatch": key_value_pairs}
+        }
+
+        # Use projection to return only the matched issue
+        result = self.collection.find_one(issue_query, {"issues.$": 1})
+
+        if result and "issues" in result:
+            return result["issues"][0]
+
+        return None
+
+    def update_issue_data(self, guid, key_value_pairs_identify, key_value_pairs_to_update):
+        """
+        Update an issue's fields inside the 'issues' array of a document, based on matching key-value pairs.
+
+        :param guid: The asset _id (GUID).
+        :param key_value_pairs_identify: Dictionary of key-value pairs to identify the issue.
+        :param key_value_pairs_to_update: Dictionary of key-value pairs to update in the matched issue.
+        :return: True if a document was modified, False otherwise.
+        """
+        # Prepare the array filter with identifier keys
+        array_filter = {f"issue.{k}": v for k, v in key_value_pairs_identify.items()}
+
+        # Prepare the update keys with positional $[issue]
+        update_fields = {f"issues.$[issue].{k}": v for k, v in key_value_pairs_to_update.items()}
+
+        result = self.collection.update_one(
+            {"_id": guid},
+            {"$set": update_fields},
+            array_filters=[array_filter]
+        )
+
+        return result.modified_count > 0 
