@@ -6,9 +6,8 @@
 5. [ndrive_path_config.json](#ndrive_path_configjson)
 6. [pipeline_job_config.json](#pipeline_job_configjson)
 7. [slurm_config.json](#slurm_configjson)
-8. [name_connection_config.json](#name_connection_configjson)
-9. [workstations_config.json](#workstations_configjson)
-10. [throttle_config.json](#throttle_configjson)
+8. [workstations_config.json](#workstations_configjson)
+9. [throttle_config.json](#throttle_configjson)
 
 ## job_detail_config.json
 Job names followed by a time estimate of running them on HPC cluster and the path to the script that needs to be called to run the job on the HPC cluster.
@@ -145,22 +144,6 @@ Note: aside from the paths none of these configurations are in use currently.
   "initiate_script": "/work/dassco_23_request/ldam/test_init.sh",
   "clean_up_script": "path/to/script"
 }
-```
-
-## {name}_connection_config.json
-
-First key is the name of the connection. A connection file must start with the name of the connection. Password and username should be stored as environment variables named {connection_name}_PWD and {connection_name}_USER (example: UCLOUD_PWD).  
-is_slurm refers to whether the connection connects to the slurm cluster that runs the pipeline jobs. 
-Directory paths defines where files end up or are coming from. 
-```bash
-    "ucloud": {
-      "host": "hpc-type3.sdu.dk",
-      "is_slurm": "true",
-      "password": "put/in/environment/variable",
-      "port": "22",
-      "status": "closed",
-      "username": "put/in/environment/variable"
-      }
 ```
 
 ## workstations_config.json

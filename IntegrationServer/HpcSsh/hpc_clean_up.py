@@ -28,7 +28,7 @@ class HPCCleanUp():
         self.service_name = "HPC clean up service"
         self.prefix_id = "Hcus"
 
-        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.ssh_config_name = "ucloud"
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
     
         self.mongo_track = track_repository.TrackRepository()
@@ -65,7 +65,7 @@ class HPCCleanUp():
             self.close_db_connections()
 
     def create_ssh_connection(self):
-        self.cons.create_ssh_connection(self.ssh_config_path)
+        self.cons.create_ssh_connection(self.ssh_config_name)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
             entry = self.run_util.log_exc(self.prefix_id, self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)

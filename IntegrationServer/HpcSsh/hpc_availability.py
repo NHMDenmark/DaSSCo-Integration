@@ -17,7 +17,7 @@ class HPCAvailability:
 
     def __init__(self):
 
-        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.ssh_config_name = "ucloud"
         self.slurm_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
         self.job_list_path = "job_list.txt"
 

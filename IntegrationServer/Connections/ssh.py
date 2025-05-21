@@ -24,12 +24,6 @@ class SSHConnection:
         self.name = name
         self.host = host
         self.port = port
-        self.config_path = f"{project_root}/ConfigFiles/{self.name}_connection_config.json"
-        self.status = ""
-        self.is_slurm = ""
-        self.new_import_directory_path = ""
-        self.updated_import_directory_path = ""
-        self.export_directory_path = ""
         self.username = username
         self.password = password
         self.ssh_client = paramiko.SSHClient()
@@ -50,11 +44,7 @@ class SSHConnection:
         try:
             self.ssh_client.connect(self.host, self.port, self.username, self.password)
             print(f"connected to {self.name}")
-            try:
-                self.util.update_layered_json(self.config_path, [self.name, "status"], "open")
-            except Exception as e:
-                pass
-            
+                        
             self.sftp = self.get_sftp()
 
         except Exception as e:
@@ -71,10 +61,7 @@ class SSHConnection:
         try:
             self.sftp.close()
             self.ssh_client.close()
-            try:
-                self.util.update_layered_json(self.config_path, [self.name, "status"], "closed")
-            except Exception as e:
-                pass
+            
             print(f"closed {self.name}")
         except Exception as e:
             print(f"There was no connection: {e}")

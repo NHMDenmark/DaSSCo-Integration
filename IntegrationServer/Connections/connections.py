@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 """
 Creates ssh connections from a _connection_config.json file.
 Connection username and connection passwords must be called {NAME}_USER and {NAME}_PWD in the environment
-variables.
+variables. Where NAME is the connection name set in the config file.
 Includes functions for creating, getting and shutting down connection(s).  
 """
 class Connections:
@@ -23,41 +23,41 @@ class Connections:
         self.msg = None
         self.exc = None
     """
-    Creates a ssh connection and sets a number of attributes for that connection. Retrieves the information for the
-    connection from a xxx_connection_config.json file. 
+    Creates a ssh connection. Retrieves the information for the
+    connection from a ssh_connections_config.json file.
+    Takes the name of the connection as parameter. 
     """
-    def create_ssh_connection(self, ssh_file_path):
-        config = self.util.read_json(ssh_file_path)
-
-        for connection_name, connection_details in config.items():
-            con_user = connection_name + "_USER"
-            con_user = con_user.upper()
-            con_pwd = connection_name + "_PWD"
-            con_pwd = con_pwd.upper()
+    def create_ssh_connection(self, ssh_name):
+        config = self.util.get_value(self.ssh_config_path, ssh_name)
+        
+        con_user = ssh_name + "_USER"
+        con_user = con_user.upper()
+        con_pwd = ssh_name + "_PWD"
+        con_pwd = con_pwd.upper()
             
-            username = os.getenv(con_user)
-            password = os.getenv(con_pwd)
+        username = os.getenv(con_user)
+        password = os.getenv(con_pwd)
 
-            if username == None:
-                username = os.environ.get(con_user)
-            print("attempt: ", username, connection_name)
+        if username == None:
+            username = os.environ.get(con_user)
+        print("attempt: ", username, ssh_name)
+        try:
             connection = SSHConnection(
-                connection_name,
-                connection_details['host'],
-                connection_details['port'],
+                ssh_name,
+                config['host'],
+                config['port'],
                 username,
                 password
-            )
-            updated_connection = self.util.get_value(ssh_file_path, connection_name)
-            connection.__setattr__("status", updated_connection.get("status"))
-            connection.__setattr__("export_directory_path", updated_connection.get("export_directory_path"))
-            connection.__setattr__("is_slurm", updated_connection.get("is_slurm"))
+                )
+                
+            test_connection = True
 
-            if updated_connection.get("status") == "open":
-                self.connection = connection
-            else:
-                self.msg = connection.msg
-                self.exc = connection.exc
+        except Exception as e:
+            self.exc = e
+            self.msg = "Failed to establish the ssh connection."
+
+        if test_connection:
+            self.connection = connection        
 
     def create_ssh_connection_by_name(self, connection_name):
 

@@ -26,7 +26,7 @@ class HPCJobCaller():
         self.service_name = "HPC job caller"
         self.prefix_id = "Hjc"
 
-        self.ssh_config_path = f"{project_root}/ConfigFiles/ucloud_connection_config.json"
+        self.ssh_config_name = "ucloud"
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
         
         self.mongo_track = track_repository.TrackRepository()
@@ -62,7 +62,7 @@ class HPCJobCaller():
             self.close_db_connections()
 
     def create_ssh_connection(self):
-        self.cons.create_ssh_connection(self.ssh_config_path)
+        self.cons.create_ssh_connection(self.ssh_config_name)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
             entry = self.run_util.log_exc(self.prefix_id, self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
