@@ -37,7 +37,8 @@ class TestTrackRepository(unittest.TestCase):
         }
         self.guidTwo = "test_mongo"
         self.pipelineTwo = "EXAMPLE"
-        self.track.create_track_entry(self.guidTwo, self.pipelineTwo)
+        self.metadata_origin = "track_testing"
+        self.track.create_track_entry(self.guidTwo, self.pipelineTwo, self.metadata_origin)
     
     @classmethod
     def tearDownClass(self):

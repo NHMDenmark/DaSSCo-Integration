@@ -44,7 +44,7 @@ class StorageService():
         self.api_metadata.date_asset_taken = self.convert_str_to_datetime(entry["date_asset_taken"])
         self.api_metadata.date_metadata_ingested = self.convert_str_to_datetime(entry["date_metadata_ingested"])
         self.api_metadata.digitiser = entry["digitiser"]
-        self.api_metadata.external_publisher = entry["external_publisher"]
+        self.api_metadata.external_publishers = entry["external_publishers"]
         # ingestion/integration has file format as a single string entry
         self.api_metadata.file_formats.append(entry["file_format"].upper())
         self.api_metadata.funding = entry["funding"]

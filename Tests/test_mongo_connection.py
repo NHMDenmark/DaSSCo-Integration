@@ -20,6 +20,7 @@ class TestMongoConnection(unittest.TestCase):
         self.bogus = "bogus"
         self.guid = "test_mongo"
         self.pipeline = "EXAMPLE"
+        self.metadata_origin = "testing_track"
         self.job = "test"
         self.batch_list = "testy_listy"
 
@@ -27,7 +28,7 @@ class TestMongoConnection(unittest.TestCase):
                                    "check_sum": 3247235, "file_size": 100, "ars_link": "fake/link", "erda_sync": False, "deleted":False}
 
 
-        self.track.create_track_entry(self.guid, self.pipeline)
+        self.track.create_track_entry(self.guid, self.pipeline, self.metadata_origin)
         
     @classmethod
     def tearDownClass(self):
@@ -42,7 +43,7 @@ class TestMongoConnection(unittest.TestCase):
 
     def test_create_track_entry(self):
         
-        created = self.track.create_track_entry(self.guid, self.pipeline)
+        created = self.track.create_track_entry(self.guid, self.pipeline, self.metadata_origin)
         
         self.assertEqual(created, False, f"Track entry should already have been created. A new entry was created with guid {self.guid}")
 
@@ -52,7 +53,7 @@ class TestMongoConnection(unittest.TestCase):
 
         self.assertEqual(deleted, True, f"Failed to delete the entry with guid {self.guid}")
 
-        self.track.create_track_entry(self.guid, self.pipeline)
+        self.track.create_track_entry(self.guid, self.pipeline, self.metadata_origin)
 
     def test_get_entry(self):
 

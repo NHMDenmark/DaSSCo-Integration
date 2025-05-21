@@ -16,7 +16,7 @@ class TestUtility(unittest.TestCase):
     def setUp(self):
         self.check_sum_content = "Random long checksum sentence"
         self.check_sum_file_path = "Tests/checksum.txt"
-        self.json_file_path = "Tests/TestConfigFiles/test_pipeline_job_config.json"
+        self.json_file_path = project_root + "/Tests/TestConfigFiles/test_pipeline_job_config.json"
 
     # for after test_ methods have run
     def tearDown(self):

@@ -522,16 +522,16 @@ class HPCService():
         
         if track_data is not None:
 
-            file_model = file_model.FileModel()
+            file_info_model = file_model.FileModel()
 
-            file_model.file_size = file_size
-            file_model.check_sum = check_sum
-            file_model.erda_sync = self.validate.NO.value
-            file_model.name = file_name
-            file_model.type = type
-            file_model.deleted = False
+            file_info_model.file_size = file_size
+            file_info_model.check_sum = check_sum
+            file_info_model.erda_sync = self.validate.NO.value
+            file_info_model.name = file_name
+            file_info_model.type = type
+            file_info_model.deleted = False
                             
-            file_data = file_model.model_dump_json()
+            file_data = file_info_model.model_dump_json()
 
             file_data = json.loads(file_data)
 
