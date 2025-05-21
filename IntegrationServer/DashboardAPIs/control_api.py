@@ -133,7 +133,7 @@ async def get_critical_error_lists():
     
     return msg
 
-@control.get("/control/search_in_metadata")
+@control.post("/control/search_in_metadata")
 async def search_in_metadata(search_model: search_model):
 
     found, data_list, msg = service.search_metadata_db(search_model)
@@ -149,7 +149,7 @@ async def search_in_metadata(search_model: search_model):
 
     return data_list
 
-@control.get("/control/search_in_track")
+@control.post("/control/search_in_track")
 async def search_in_metadata(search_model: search_model):
 
     found, data_list, msg = service.search_track_db(search_model)
@@ -165,7 +165,7 @@ async def search_in_metadata(search_model: search_model):
 
     return data_list
 
-@control.get("/control/search_in_health")
+@control.post("/control/search_in_health")
 async def search_in_metadata(search_model: search_model):
 
     found, data_list, msg = service.search_health_db(search_model)

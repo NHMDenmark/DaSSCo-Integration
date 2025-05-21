@@ -335,6 +335,14 @@ class ControlService():
         if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
             return False, "Wrong input for asset_guids."
         
+        missing_guids = []
+        for guid in asset_list:
+            a = self.mongo_track.get_entry("_id", guid)
+            if a is None:
+                missing_guids.append(guid)
+        if len(missing_guids) != 0:
+            return False, f"Failed to find assets: {missing_guids}"
+        
         job_name = update_model.job_name
         job_key_values = update_model.job_key_values
 
@@ -364,6 +372,14 @@ class ControlService():
 
         if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
             return False, "Wrong input for asset_guids."
+
+        missing_guids = []
+        for guid in asset_list:
+            a = self.mongo_track.get_entry("_id", guid)
+            if a is None:
+                missing_guids.append(guid)
+        if len(missing_guids) != 0:
+            return False, f"Failed to find assets: {missing_guids}"
 
         key_values = update_model.key_values
 
@@ -403,10 +419,13 @@ class ControlService():
         if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
             return False, "Wrong input for asset_guids."
         
+        missing_guids = []
         for guid in asset_list:
             a = self.mongo_track.get_entry("_id", guid)
             if a is None:
-                return False, f"Failed to find asset: {guid}"
+                missing_guids.append(guid)
+        if len(missing_guids) != 0:
+            return False, f"Failed to find assets: {missing_guids}"
         
         issue = append_issue_model.issue
 
@@ -460,10 +479,13 @@ class ControlService():
         if len(asset_list) == 0 or asset_list is None or type(asset_list) is not list:
             return False, "Wrong input for asset_guids. Should be a list with asset guid(s)."
         
+        missing_guids = []
         for guid in asset_list:
             a = self.mongo_track.get_entry("_id", guid)
             if a is None:
-                return False, f"Failed to find asset: {guid}"
+                missing_guids.append(guid)
+        if len(missing_guids) != 0:
+            return False, f"Failed to find asseta: {missing_guids}"
 
         for key, value in update_issue_model.key_values.items():    
 
