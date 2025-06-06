@@ -28,7 +28,7 @@
 | [file_format](Metadata_field_descriptions/file_format.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration creation / Upon ARS call | |
 | [funding](Metadata_field_descriptions/funding.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration creation / Upon ARS call | |
 | [institution](Metadata_field_descriptions/institution.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration creation / Upon ARS call | |
-| [issues](Metadata_field_descriptions/date_issues.md) | TBD | | | | |
+| [issues](Metadata_field_descriptions/issues.md) | TBD | | | | |
 | [legality](Metadata_field_descriptions/legality.md) | TBD | | | | |
 | [make_public](Metadata_field_descriptions/make_public.md) | TBD | | | | |
 | [metadata_created_by](Metadata_field_descriptions/metadata_created_by.md) | IngestionClient for uploaded assets; pipeline for derivatives | Running IngestionClient/pipeline | Metadata file / Integration / ARS | Upon creation / Upon integration creation / Upon ARS call | |

@@ -62,7 +62,7 @@ class MetadataModel(BaseModel):
     parent_guids: List[str] = []
     payload_type: Optional[str] = None
     pipeline_name: str
-    preparation_type: Optional[str] = None
+    preparation_type: List[str] = []
     push_to_specify: bool = False
     restricted_access: List[str] = []
     session_id: Optional[str] = None # this only exist in integration and ingestion client. ARS does not have this field.

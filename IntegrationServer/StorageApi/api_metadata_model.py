@@ -27,7 +27,8 @@ class Specimen(BaseModel):
     collection: str = ""
     barcode: str = ""
     specimen_pid: str = ""
-    preparation_type: str = ""
+    preparation_types: list[str] = []
+    asset_preparation_type: str
 
 class ExternalPublisherModel(BaseModel):
     name: str
