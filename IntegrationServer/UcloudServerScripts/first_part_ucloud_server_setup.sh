@@ -2,7 +2,9 @@
 
 # chmod +x path/to/script
 # must use explicit paths in script
-# run with sudo, further steps that require root user should be in this script and not in part two
+# run with sudo
+# must have a .env file available with all necessary fields set
+# further steps that require root user should be in this script and not in part two
 
 # Exit on error
 set -e
@@ -16,6 +18,8 @@ HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
 INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
+
+source $INT_PATH/.env
 
 echo "Starting first part of server setup ---"
 
@@ -75,6 +79,18 @@ upstream control {
 
 service nginx start
 echo "Nginx installed and running"
+
+# Step 5: Install, setup user and run rabbitmq. Makes use of the .env file.
+echo "Installing erlang and rabbitmq"
+sudo apt install -y erlang
+sudo apt install -y rabbitmq-server
+echo "Run rabbitmq, enable UI and create user"
+sudo service rabbitmq-server start
+sudo rabbitmq-plugins enable rabbitmq_management
+sudo rabbitmqctl add_user $rabbit_user $rabbit_pw
+sudo rabbitmqctl set_user_tags $rabbit_user administrator
+sudo rabbitmqctl set_permissions -p / $rabbit_user ".*" ".*" ".*"
+echo "Created user $rabbit_user as administrator for rabbitmq. Rabbitmq is running on port 15672."
 
 echo "Part one has finished."
 echo "Before running the second part of the setup run the command: source $HOMEPATH/.bashrc"
