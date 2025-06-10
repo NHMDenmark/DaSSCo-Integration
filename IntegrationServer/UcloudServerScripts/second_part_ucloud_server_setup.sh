@@ -25,15 +25,14 @@ echo "Starting second part of the server setup ---"
 
 # Step 4:
 echo "Running the database"
-
 nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
 sudo chown -R ucloud:ucloud $DB_PATH/$HOSTNAME.log
 chmod 755 $DB_PATH/$HOSTNAME.log
 
 
-# Step 5: Generate ssh key for slurm usage
+# Step 5: Generate ssh key for slurm usage (add for specific filename: -f "$HOMEPATH/.ssh/slurm")
 echo "Generating ssh key for slurm in ~/.ssh"
-ssh-keygen -t ed25519 -N "" -f "$HOMEPATH/.ssh/slurm"
+ssh-keygen -t ed25519 -N ""
 
 # Step 6: Update venv
 echo "Activate and update python venv"
