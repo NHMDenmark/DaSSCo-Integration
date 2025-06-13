@@ -204,7 +204,7 @@ if __name__ == '__main__':
     u = utility.Utility()
     
     c = mongo_connection.MongoConnection("micro_service")
-    print(c.ping_connection())
+    print(c.ping_connection(), "its working")
     c.close_mdb()
 
     """
