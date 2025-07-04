@@ -10,7 +10,7 @@ from datetime import datetime
 from validator_collection import validators, checkers
 from typing import Union
 
-# TODO needs updating to 3.0.2
+# TODO needs updating to 3.0.3
 class FieldValidation:
     def __init__(self):
         self.util = utility.Utility()

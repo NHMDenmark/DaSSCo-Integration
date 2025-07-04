@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, Json
 from Enums import asset_status_nt
 
-# metadata v3.0.2
+# metadata v3.0.3
 class Tag(BaseModel):
     key: str
     value: str
@@ -68,6 +68,7 @@ class ApiMetadataModel(BaseModel):
     metadata_source: Optional[str] = None
     metadata_updated_by: Optional[str] = None
     metadata_version: Optional[str] = None
+    mime_type: Optional[str] = None
     mos_id: Optional[str] = None
     multi_specimen: bool = False
     parent_guids: List[str] = []
