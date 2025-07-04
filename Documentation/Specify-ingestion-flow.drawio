@@ -1,0 +1,192 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" version="27.2.0">
+  <diagram name="Page-1" id="j6VzkHGGeD9ljGtB2cDt">
+    <mxGraphModel dx="1031" dy="692" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2lb5gIED8o2uExBMftcw-15" value="Ingestion Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="300" y="60" width="100" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-16" value="Integration Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="500" y="60" width="100" height="710" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-17" value="ARS" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="830" y="60" width="100" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-18" value="ERDA" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="980" y="60" width="100" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-19" value="publish metadata" style="html=1;verticalAlign=bottom;startArrow=none;startFill=0;endArrow=block;startSize=8;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.5562" width="60" relative="1" as="geometry">
+            <mxPoint x="350" y="400" as="sourcePoint" />
+            <mxPoint x="550" y="400" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="350" y="400" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-20" value="req: create metadata -&amp;gt; res: fileproxy link" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.3333" width="80" relative="1" as="geometry">
+            <mxPoint x="550" y="460" as="sourcePoint" />
+            <mxPoint x="880" y="460" as="targetPoint" />
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="720" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-21" value="upload file" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.8419" width="80" relative="1" as="geometry">
+            <mxPoint x="179.81034482758628" y="510" as="sourcePoint" />
+            <mxPoint x="729.5" y="510" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-22" value="sync w. erda" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.7576" width="80" relative="1" as="geometry">
+            <mxPoint x="550" y="584" as="sourcePoint" />
+            <mxPoint x="880" y="584" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-23" value="sync asset" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.4723" width="80" relative="1" as="geometry">
+            <mxPoint x="879.5" y="620" as="sourcePoint" />
+            <mxPoint x="1030" y="620" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="930" y="620" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-24" value="sync check" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.7576" width="80" relative="1" as="geometry">
+            <mxPoint x="550" y="640" as="sourcePoint" />
+            <mxPoint x="880" y="640" as="targetPoint" />
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="680.5" y="640" />
+              <mxPoint x="760.5" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-25" value="new attachment/file" style="html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=open;startSize=11;endSize=8;curved=0;rounded=0;" edge="1" parent="1" target="2lb5gIED8o2uExBMftcw-27">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="80" y="120" as="sourcePoint" />
+            <mxPoint x="200" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-26" value="processing" style="html=1;verticalAlign=bottom;startArrow=none;startFill=0;endArrow=oval;startSize=6;endSize=11;curved=0;rounded=0;endFill=1;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="549.5" y="720" as="sourcePoint" />
+            <mxPoint x="670" y="720" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="610" y="720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-27" value="Specify Adapter" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="130" y="60" width="100" height="710" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-28" value="internal creation" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.7569" y="10" relative="1" as="geometry">
+            <mxPoint x="551" y="420" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="550" y="420" />
+              <mxPoint x="590" y="420" />
+              <mxPoint x="590" y="430" />
+            </Array>
+            <mxPoint x="550.5" y="430" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-30" value="publish link" style="html=1;verticalAlign=bottom;endArrow=none;curved=0;rounded=0;startArrow=block;startFill=1;endFill=0;" edge="1" parent="1" source="2lb5gIED8o2uExBMftcw-27">
+          <mxGeometry x="0.5038" width="80" relative="1" as="geometry">
+            <mxPoint x="350" y="480" as="sourcePoint" />
+            <mxPoint x="549.5" y="480" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-31" value="publish upload file" style="html=1;verticalAlign=bottom;startArrow=none;startFill=0;endArrow=block;startSize=8;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.1852" width="60" relative="1" as="geometry">
+            <mxPoint x="350" y="550" as="sourcePoint" />
+            <mxPoint x="550" y="550" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="180" y="550" />
+              <mxPoint x="350" y="550" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-32" value="publish synced" style="html=1;verticalAlign=bottom;endArrow=none;curved=0;rounded=0;startArrow=block;startFill=1;endFill=0;" edge="1" parent="1" source="2lb5gIED8o2uExBMftcw-27">
+          <mxGeometry x="0.5012" width="80" relative="1" as="geometry">
+            <mxPoint x="350" y="650" as="sourcePoint" />
+            <mxPoint x="550.5" y="650" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450.5" y="650" />
+            </Array>
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-33" value="delete files" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.3164" relative="1" as="geometry">
+            <mxPoint x="180.97" y="700" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="179.97" y="700" />
+              <mxPoint x="219.97" y="700" />
+              <mxPoint x="219.97" y="710" />
+            </Array>
+            <mxPoint x="180.47" y="710" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-34" value="publish attachment data" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1" target="2lb5gIED8o2uExBMftcw-16">
+          <mxGeometry x="-0.6211" width="80" relative="1" as="geometry">
+            <mxPoint x="180" y="140" as="sourcePoint" />
+            <mxPoint x="349.5" y="140" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-36" value="download attachment files" style="html=1;verticalAlign=bottom;endArrow=none;curved=0;rounded=0;startArrow=block;startFill=1;endFill=0;" edge="1" parent="1">
+          <mxGeometry x="-0.2903" y="10" width="80" relative="1" as="geometry">
+            <mxPoint x="830" y="30" as="sourcePoint" />
+            <mxPoint x="1000.5" y="30" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-37" value="create metadata" style="html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.5351" y="10" relative="1" as="geometry">
+            <mxPoint x="351" y="200" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="350" y="200" />
+              <mxPoint x="390" y="200" />
+              <mxPoint x="390" y="210" />
+            </Array>
+            <mxPoint x="350.5" y="210" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-38" value="Fileproxy" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="680" y="60" width="100" height="710" as="geometry" />
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-40" value="delete file" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1">
+          <mxGeometry x="-0.8908" width="80" relative="1" as="geometry">
+            <mxPoint x="180" y="680" as="sourcePoint" />
+            <mxPoint x="729.5" y="680" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="360" y="680" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2lb5gIED8o2uExBMftcw-41" value="publish attachment data" style="html=1;verticalAlign=bottom;endArrow=none;curved=0;rounded=0;startArrow=classic;startFill=1;endFill=0;" edge="1" parent="1" source="2lb5gIED8o2uExBMftcw-15">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="470" y="170" as="sourcePoint" />
+            <mxPoint x="550" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
