@@ -28,7 +28,7 @@ def create_markdown_from_dataframe(df, output_directory):
                     file.write(f"**{column}**  \n{value}\n\n")
 
 # Edit these two to fit the needs, file name is file to read from and directory name is the directory to put the files into.
-file_name = 'v3.0.2_metadata_info_01_05_2025.xlsx'
+file_name = 'v3.0.3_metadata_info_04_07_2025.xlsx'
 directory_name = 'TEST_field_descriptions'
 
 # Load the Excel file into a DataFrame

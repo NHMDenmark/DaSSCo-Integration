@@ -35,6 +35,7 @@
 | [metadata_source](Metadata_field_descriptions/metadata_source.md) | TBD | | | | |
 | [metadata_updated_by](Metadata_field_descriptions/metadata_updated_by.md) | TBD | | | | |
 | [metadata_version](Metadata_field_descriptions/metadata_version.md) | TBD | | | | |
+| [mime_type](Metadata_field_descriptions/mime_type.md) | TBD | | | | |
 | [mos_id](Metadata_field_descriptions/mos_id.md) | TBD | | | | |
 | [multi_specimen](Metadata_field_descriptions/multi_specimen.md) | Pipeline | Running pipeline | ARS / Integration | Upon ARS call / Upon integration call | |
 | [parent_guids](Metadata_field_descriptions/parent_guids.md) | Pipeline | Running pipeline | Integration / ARS | Upon integration creation / Upon ARS call | |

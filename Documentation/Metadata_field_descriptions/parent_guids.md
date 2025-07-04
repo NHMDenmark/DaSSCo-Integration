@@ -25,5 +25,5 @@ parent_guid
 None
 
 **Notes and issues:**  
-Name mapping issue, ARS correctly names this "parent_guids".
+None
 

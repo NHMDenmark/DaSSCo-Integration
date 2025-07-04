@@ -4,7 +4,7 @@
 String  
 
 **Value:**  
-Examples: tif, jpeg, raf, doc, xlsx, txt, pdf, zip
+The file extension of the asset file. Example "tif".
 
 **Description of metadata field:**  
 The format of the main asset file(s). This means that it is possible for an asset to have a minor text file attached to it that will not be part of this. 
