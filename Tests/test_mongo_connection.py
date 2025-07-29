@@ -1,9 +1,11 @@
 import unittest
 import os
 import sys
-
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
+
+from datetime import datetime
+import pytz
 
 from IntegrationServer.MongoDB import track_repository, metadata_repository, batch_repository
 from IntegrationServer.Enums.status_enum import StatusEnum
@@ -26,7 +28,11 @@ class TestMongoConnection(unittest.TestCase):
 
         self.file_for_filelist = {"name": "crazy_frog.png", "type": "png", "time_added": "2002-02-22T10:59:09.870+00:00",
                                    "check_sum": 3247235, "file_size": 100, "ars_link": "fake/link", "erda_sync": False, "deleted":False}
+        
+        set_time = datetime.now(pytz.utc).isoformat()
 
+        self.issues_list = [{"category": "spoof", "name": "jingle", "timestamp": set_time, "status": "PROCESSING", "description": "nothing", "note": "yeah right", "solved": False},
+                             {"category": "spif", "name": "space man", "timestamp": set_time, "status": "PRE_PROCESSING", "description": "Alien atack", "note": "Outer space", "solved": False}]
 
         self.track.create_track_entry(self.guid, self.pipeline, self.metadata_origin)
         
@@ -94,6 +100,7 @@ class TestMongoConnection(unittest.TestCase):
 
         self.assertEqual(updated, False, f"Should have failed to update metadata entry with guid {self.bogus} and key {key} and value {value}")
 
+
     def test_update_track_job_status(self):
 
         updated = self.track.update_track_job_status(self.guid, self.job, StatusEnum.RUNNING.value)
@@ -146,6 +153,29 @@ class TestMongoConnection(unittest.TestCase):
         value = self.metadata.get_value_for_key(self.bogus, "digitiser")
 
         self.assertIsNone(value, f"Failed to return none for the guid: {self.bogus}")
+
+    def test_update_issues(self):
+
+        key = "issues"
+        value = self.issues_list
+
+        self.metadata.update_entry(self.guid, key, value)
+
+        value = self.metadata.get_value_for_key(self.guid, key)
+
+        self.assertIsNotNone(value, f"Failed to find issues for guid: {self.guid}")
+
+        self.assertEqual(value, self.issues_list, f"Failed to find issues list for guid: {self.guid}. Found {value} instead.")
+
+        update_pair = {"description": "something"}
+
+        updated = self.metadata.update_issue_data(self.guid, {"name":"jingle"}, update_pair)
+
+        value = self.metadata.get_value_for_key(self.guid, key)
+
+        self.assertTrue(updated, f"Failed to update issue for guid: {self.guid}")
+
+        self.assertEqual(value[0]["description"], update_pair["description"], f"Failed to update issue for guid: {self.guid}. Found {value} instead.")
 
     def test_add_entry_to_list(self):
 

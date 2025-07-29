@@ -26,10 +26,14 @@ class AllRepository:
             return False
 
         query = {"_id": guid}
-        update_data = {"$set": {key: value}}
-
+        
+        # handle that issues should be appended to an existing list
+        if key != "issues":
+            update_data = {"$set": {key: value}}            
+        else:
+            update_data = {"$push": {key: {"$each": value}}}
+            
         self.collection.update_one(query, update_data)
-
         return True
     
     def get_entry(self, key, value):

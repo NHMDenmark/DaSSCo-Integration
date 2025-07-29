@@ -207,6 +207,8 @@ if __name__ == '__main__':
     print(c.ping_connection(), "its working")
     c.close_mdb()
 
+    print(project_root)
+
     """
     load_dotenv()
     user = os.getenv("rabbit_user")
