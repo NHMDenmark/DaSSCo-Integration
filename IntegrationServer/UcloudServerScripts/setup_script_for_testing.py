@@ -13,7 +13,8 @@ import shutil
 import sys
 import json
 
-def copy_files(folder_path, output_folder, test_number, guid_number):
+
+def copy_files(folder_path, output_folder, test_number, guid_number, txt_file, base_folder):
     # Ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
 
@@ -46,17 +47,31 @@ def copy_files(folder_path, output_folder, test_number, guid_number):
 
         guid_number += 1
 
-    with open("/work/data/Ndrive/test-guid-number.txt", "w") as f:
+    with open(txt_file, "w") as f:
         f.write(str(guid_number))
     old_guid_number = guid_number - test_number
-    os.rename(output_folder, f"/work/data/Ndrive/nhmd-ws-01/{old_guid_number}/")
+    os.rename(output_folder, f"{base_folder}/{old_guid_number}/")
 
 if __name__ == "__main__":
 
     test_number = int(sys.argv[1])
-    with open("/work/data/Ndrive/test-guid-number.txt", "r+") as f:
-        guid_number = int(f.read())
-    folder_path = "/work/data/Ndrive/nhmd-ws-01/imported_test/"
-    output_folder = f"/work/data/Ndrive/nhmd-ws-01/{guid_number}/"
 
-    copy_files(folder_path, output_folder, test_number, guid_number)
+    # Set the base folder where the assets will be copied to
+    base_folder = "/work/data/Ndrive/nhmd-ws-01"
+
+    # Can be set to any folder with the asset files to copy - "imported_" prefix is important if using the base folder
+    copy_from_folder_path = base_folder + "/imported_test/" 
+
+    # Path to txt file with a number starting the count of copies
+    txt_file = "/work/data/Ndrive/test-guid-number.txt"
+
+    if not os.path.exists(txt_file):
+        with open(txt_file, "w") as f:
+            f.write("1")
+
+    with open(txt_file, "r+") as f:
+        guid_number = int(f.read())
+    
+    output_folder = f"{base_folder}/{guid_number}/"
+
+    copy_files(copy_from_folder_path, output_folder, test_number, guid_number, txt_file, base_folder)

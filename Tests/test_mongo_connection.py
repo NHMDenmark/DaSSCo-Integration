@@ -25,14 +25,13 @@ class TestMongoConnection(unittest.TestCase):
         self.metadata_origin = "testing_track"
         self.job = "test"
         self.batch_list = "testy_listy"
+        self.set_time = datetime.now(pytz.utc).isoformat()
 
-        self.file_for_filelist = {"name": "crazy_frog.png", "type": "png", "time_added": "2002-02-22T10:59:09.870+00:00",
+        self.file_for_filelist = {"name": "crazy_frog.png", "type": "png", "time_added": self.set_time,
                                    "check_sum": 3247235, "file_size": 100, "ars_link": "fake/link", "erda_sync": False, "deleted":False}
-        
-        set_time = datetime.now(pytz.utc).isoformat()
 
-        self.issues_list = [{"category": "spoof", "name": "jingle", "timestamp": set_time, "status": "PROCESSING", "description": "nothing", "note": "yeah right", "solved": False},
-                             {"category": "spif", "name": "space man", "timestamp": set_time, "status": "PRE_PROCESSING", "description": "Alien atack", "note": "Outer space", "solved": False}]
+        self.issues_list = [{"category": "spoof", "name": "jingle", "timestamp": self.set_time, "status": "PROCESSING", "description": "nothing", "note": "yeah right", "solved": False},
+                             {"category": "spif", "name": "space man", "timestamp": self.set_time, "status": "PRE_PROCESSING", "description": "Alien atack", "note": "Outer space", "solved": False}]
 
         self.track.create_track_entry(self.guid, self.pipeline, self.metadata_origin)
         
