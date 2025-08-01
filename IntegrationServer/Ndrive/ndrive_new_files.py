@@ -59,10 +59,10 @@ class NdriveNewFilesFinder():
 
     def loop(self):
 
+        # in case of a crash its possible there will be leftover folders in NewFiles directory. They should be deleted before running main part of loop.
+        self.delete_any_wait_prefix()
+
         while self.run == self.status_enum.RUNNING.value:
-            
-            # in case of a crash its possible there will be leftover folders in NewFiles directory. They should be deleted before running main part of loop.
-            self.delete_any_wait_prefix()
 
             self.copy_from_ndrive_and_update_ndrive_dirs(self.ndrive_import_path, self.new_files_path)
 

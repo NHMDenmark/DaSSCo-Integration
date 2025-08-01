@@ -11,7 +11,7 @@ class IssueModel(BaseModel):
     timestamp: Optional[datetime] = None
     status: Optional[str] = None
     description: Optional[str] = None
-    note: Optional[str] = None
+    notes: Optional[str] = None
     solved: bool = False
 
 class LegalityModel(BaseModel):

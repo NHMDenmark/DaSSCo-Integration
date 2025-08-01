@@ -5,7 +5,7 @@ update the logic in the code.
 ALso requires a text file with a number. Start the number at 1.
 Change the paths in the script to desired paths.
 Script runs form terminal and takes a number(x) as an argument. It then creates x copies of the asset,
-changes the assets guid to the number in the text file and updates the file with +1. Copies are put in the output folder, 
+changes the assets guid, asset pid and specimen pid to the ucloud-test + number in the text file and updates the file with +1. Copies are put in the output folder, 
 which should have a workstation name. 
 """
 import os
@@ -38,6 +38,8 @@ def copy_files(folder_path, output_folder, test_number, guid_number, txt_file, b
                 with open(file_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     data["asset_guid"] = new_file_name[:-5]
+                    data["asset_pid"] = new_file_name[:-5]
+                    data["specimen_pid"] = new_file_name[:-5]
 
                 with open(file_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=4)

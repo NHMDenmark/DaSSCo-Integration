@@ -14,7 +14,7 @@ The fields in the issue object:
 - timestamp : the timestamp for when the issue was noted
 - status : the assets status when the issue was discovered
 - description : the description of the issue
-- note : any further information about the issue that isnt covered by description
+- notes : any further information about the issue that isnt covered by description
 - solved : flag noting if the issue has been taken care of, it is not a problem to have unsolved issues
 
 **Populated by whom and when:**  

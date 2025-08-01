@@ -261,7 +261,7 @@ class AssetCreator():
             if asset is not None:
                 print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]                
-                
+                print(guid)
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
@@ -552,7 +552,7 @@ class AssetCreator():
         time_difference = current_time - self.auth_timestamp
             
         if time_difference > timedelta(minutes=4):
-            self.storage_api.service.metadata_db.close_mdb()
+            self.storage_api.service.metadata_db.close_connection()
             print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
         if self.storage_api.client is None:
