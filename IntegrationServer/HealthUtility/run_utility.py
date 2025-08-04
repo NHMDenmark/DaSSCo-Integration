@@ -33,7 +33,10 @@ class RunUtility(LogClass, Status):
         self.service_name = service_name
         self.prefix_id = prefix_id
         self.pid = pid
-        
+
+        if self.pid is not None:
+            self.service_starting_updates()
+
         # flag for the all run status
         self.all_run_status = self.get_all_run()
         # flag for the specific service
@@ -41,9 +44,6 @@ class RunUtility(LogClass, Status):
 
         # combined run flag
         self.service_run = self.get_service_run_status()
-
-        if self.pid is not None:
-            self.service_starting_updates()
 
     """
     Loop for services that have their status set to paused. 

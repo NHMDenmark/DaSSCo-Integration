@@ -104,7 +104,7 @@ class AssetErrorStatusHandler():
         try:
             self.service_mongo.close_connection()
             self.track_mongo.close_connection()
-            self.metadata_mongo.check_connection()
+            self.metadata_mongo.close_connection()
             self.mos_mongo.close_connection()
             self.health_mongo.close_connection()
             self.throttle_mongo.close_connection()

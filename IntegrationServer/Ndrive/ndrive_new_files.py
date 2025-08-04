@@ -38,11 +38,11 @@ class NdriveNewFilesFinder():
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
-
+        
         self.run_util.service_starting_updates()        
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
-
+        
         self.run = self.run_util.get_service_run_status()
         
         try:
