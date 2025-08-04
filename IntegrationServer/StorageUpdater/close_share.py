@@ -105,10 +105,9 @@ class CloseShare(LogClass):
 
             self.end_of_loop_checks()
 
-        # outside main while loop        
+        # outside main while loop
+        self.run_util.service_stopping_updates()        
         self.close_db_connections()
-
-        self.run_util.service_stopping_updates()
 
         print("service stopped")
 
