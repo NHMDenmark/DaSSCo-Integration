@@ -12,6 +12,7 @@ from StorageApi import storage_client, ars_health_check, storage_service
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
+from dassco_utils.guid import main
 from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
@@ -203,9 +204,29 @@ if __name__ == '__main__':
     """
     u = utility.Utility()
     
-    ds = storage_client.StorageClient()
-    ds.test()
+    guid = main.create_guid({
+            "institution": {
+                "NHMD": 0,
+                "AU": 1,
+            },
+            "collection": {
+                "Vascular plants": 0,
+                "Entomology": 1
+            },
+            "workstation": {
+                "WORKHERB0001": 0,
+                "WORKHERB0002": 1,
+            },
+        }, "2025-01-21-12-60-12", "AU", "Entomology", "WORKHERB0002")
     
+    print(guid)
+    a = hex(999999)
+
+    print(a)
+
+    a = a[2:].zfill(5)
+
+    print(a)
 
     """
     load_dotenv()
