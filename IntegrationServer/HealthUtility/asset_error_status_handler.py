@@ -74,7 +74,7 @@ class AssetErrorStatusHandler():
             assets = self.track_mongo.get_error_entries()
 
             if assets is None:
-                time.sleep(600)
+                time.sleep(60)
             else:
                 errors_found = 0
                 for asset in assets:
@@ -86,7 +86,7 @@ class AssetErrorStatusHandler():
                         self.handle_erda_sync_error(asset, guid)
 
                 print(f"Assets with errors found: {errors_found}")
-                time.sleep(600)
+                time.sleep(60)
 
             #checks if service should keep running           
             self.run = self.run_util.check_run_changes()

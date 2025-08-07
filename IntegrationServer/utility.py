@@ -11,6 +11,7 @@ import uuid
 import hashlib
 import binascii
 from datetime import datetime
+import pytz
 import chardet
 import subprocess
 from typing import get_origin, get_args, Union
@@ -301,3 +302,11 @@ class Utility:
             return isinstance(value, expected_type)
         except TypeError:
             return False
+    
+    def get_current_timestamp(self):
+        # Set your desired timezone, e.g. Europe/Copenhagen (UTC+2 or +1 depending on DST)
+        timezone = pytz.timezone("Europe/Copenhagen")
+
+        timestamp = datetime.now(timezone).isoformat()
+
+        return timestamp

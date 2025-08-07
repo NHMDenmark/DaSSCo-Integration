@@ -7,9 +7,11 @@ sys.path.append(project_root)
 import shutil
 import utility
 from AssetFileHandler import job_assigner
+from HealthUtility import health_caller
 from MongoDB import file_model, track_repository, metadata_repository, batch_repository
-from Enums import status_enum, validate_enum, metadata_origin
+from Enums import status_enum, validate_enum, metadata_origin, log_enum
 import json
+from datetime import datetime
 
 """
 Responsible for the processing/creation of assets coming from the Ndrive. 
@@ -17,11 +19,12 @@ Responsible for the processing/creation of assets coming from the Ndrive.
 
 class AssetHandler:
 
-    def __init__(self):
+    def __init__(self, run_util):
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
         self.validate = validate_enum.ValidateEnum
+        self.log_enum = log_enum.LogEnum
         self.origin = metadata_origin.MetadataOriginEnum
         self.file_model = file_model.FileModel()
 
@@ -34,6 +37,9 @@ class AssetHandler:
         self.mongo_track = track_repository.TrackRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_batchlist = batch_repository.BatchRepository()
+
+        self.health_caller = health_caller.HealthCaller()
+        self.run_util = run_util
 
     """
     Creates the pipeline folder and moves the assets into it based on the date the asset was taken.
@@ -183,9 +189,29 @@ class AssetHandler:
                         shutil.move(subdirectory_path, new_directory_path)
                     print(guid)
                     import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
-                    print(import_directory)
-                    self.mongo_track.update_entry(guid, "temporary_files_ndrive", self.validate.YES.value)
-                    self.mongo_track.update_entry(guid, "temporary_path_ndrive", f"{self.ndrive_path}/{workstation_name}/{import_directory}")
+                    
+                    # fail to find import directory
+                    if import_directory is None:
+                        print(f"Import directory for {guid} not found probably cause is a mismatch between the workstation name in the metadata and the actual workstation name in the ndrive path.")
+                        
+                        # TODO change category to "processing_pipeline"
+                        issue = {
+                            "category": "test",
+                            "name": f"Ndrive workstation mismatch",
+                            "timestamp": self.util.get_current_timestamp(),
+                            "status": self.mongo_metadata.get_value_for_key(guid, "status"),
+                            "description": f"A mismatch between the workstation name in the metadata and the workstation name in the ndrive path.",
+                            "notes":"This means the automatic deletion of the asset files on the ndrive will not work.",
+                            "solved": False
+                        }
+
+                        self.mongo_metadata.append_existing_list(guid, "issues", issue)
+                        entry = self.run_util.log_msg(self.run_util.prefix_id, f"Import directory for {guid} not found. Cause is a mismatch between the workstation name in the metadata and the actual workstation name in the ndrive path. Issue added to metadata.", self.log_enum.WARNING.value)
+                        self.health_caller.warning(self.run_util.service_name, entry, guid)
+                    # found import directory
+                    else:
+                        self.mongo_track.update_entry(guid, "temporary_files_ndrive", self.validate.YES.value)
+                        self.mongo_track.update_entry(guid, "temporary_path_ndrive", f"{self.ndrive_path}/{workstation_name}/{import_directory}")
                     
                     self.mongo_track.update_entry(guid, "temporary_files_local", self.validate.YES.value)
                     self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)

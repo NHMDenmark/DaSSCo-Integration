@@ -204,29 +204,7 @@ if __name__ == '__main__':
     """
     u = utility.Utility()
     
-    guid = main.create_guid({
-            "institution": {
-                "NHMD": 0,
-                "AU": 1,
-            },
-            "collection": {
-                "Vascular plants": 0,
-                "Entomology": 1
-            },
-            "workstation": {
-                "WORKHERB0001": 0,
-                "WORKHERB0002": 1,
-            },
-        }, "2025-01-21-12-60-12", "AU", "Entomology", "WORKHERB0002")
-    
-    print(guid)
-    a = hex(999999)
-
-    print(a)
-
-    a = a[2:].zfill(5)
-
-    print(a)
+    print(u.get_current_timestamp())
 
     """
     load_dotenv()

@@ -29,13 +29,14 @@ class ProcessNewFiles():
         self.service_name = "Process new files (Ndrive)"
         self.prefix_id = "Pnf(N)"
 
-        self.asset_handler = asset_handler.AssetHandler()
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        
+        self.asset_handler = asset_handler.AssetHandler(self.run_util)
 
         self.run_util.service_starting_updates()        
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
