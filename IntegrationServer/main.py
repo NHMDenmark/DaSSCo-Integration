@@ -205,7 +205,7 @@ if __name__ == '__main__':
     u = utility.Utility()
     
     print(u.get_current_timestamp())
-
+    print(hex(15999999))
     """
     load_dotenv()
     user = os.getenv("rabbit_user")
