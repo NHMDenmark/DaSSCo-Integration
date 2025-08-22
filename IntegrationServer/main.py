@@ -203,9 +203,9 @@ if __name__ == '__main__':
     track.close_connection()
     """
     u = utility.Utility()
+    email = email_sender.EmailSender("gmail")
+    email.send_error_mail("abc", service_name="Test health api")
     
-    print(u.get_current_timestamp())
-    print(hex(15999999))
     """
     load_dotenv()
     user = os.getenv("rabbit_user")

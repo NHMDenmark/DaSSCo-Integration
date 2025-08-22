@@ -4,7 +4,7 @@
 # must use explicit paths in script
 # run with sudo
 # must have a .env file available with all necessary fields set
-# further steps that require root user should be in this script and not in part two
+# future steps that require root user should be in this script and not in part two
 
 # Exit on error
 set -e

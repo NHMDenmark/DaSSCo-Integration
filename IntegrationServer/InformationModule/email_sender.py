@@ -37,9 +37,10 @@ class EmailSender:
         self.mail_server_pass = os.getenv(f"mail_server_pass_{mail}")
 
     """
-    This requires sendmail to be installed on the system. Also requires the system to be linux.
-    Returns true.
-    """
+    
+    #This requires sendmail to be installed on the system. Also requires the system to be linux.
+    #Returns true.
+    
         
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
@@ -60,10 +61,10 @@ class EmailSender:
         
         return True
     
-    """
-    This requires sendmail to be installed on the system. Also requires the system to be linux.
-    Returns true.
-    """
+    
+    #This requires sendmail to be installed on the system. Also requires the system to be linux.
+    #Returns true.
+    
     
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
         
@@ -133,7 +134,7 @@ class EmailSender:
         server.quit()
         
         return True
-    """
+    
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
         
@@ -204,22 +205,19 @@ TIMESTAMP: {timestamp}
     
     def create_mail_happiness(self):
 
-        noun = ["A penguin", "A lion", "A tiger", "A biologist", "A clown", "The primeminister", "A goldfish", "A martian", "The sun", "A boat", "A ghost", "A dragon", "A god", "A student", "A professor", "A rabbit", "A bumble-bee"]
+        noun = ["A dolphin", "A penguin", "A lion", "A tiger", "A biologist", "A clown", "The primeminister", "A goldfish", "A martian", "The sun", "A boat", "A ghost", "A dragon", "A god", "A student", "A professor", "A rabbit", "A bumble-bee", "A snail", "A cat", "A dog", "A bird", "A fish", "A monkey", "A bear", "A fox", "A wolf", "A horse", "An octopus"]
 
-        verb = ["dances with", "swings", "adjusts", "holds onto", "laughs at", "kisses", "praises", "roars towards", "handles", "makes", "loves", "creates", "carries", "bends", "dashes after", "apologises to"]
+        verb = ["eyes", "dances with", "swings", "adjusts", "holds onto", "laughs at", "kisses", "praises", "roars towards", "handles", "makes", "loves", "creates", "carries", "bends", "dashes after", "apologises to", "sings of", "dreams of", "fights with", "plays with", "jumps over", "runs around", "yells at"]
 
-        adjective = ["a blue", "a spotted", "an orange", "a smelly", "a dangerous", "a lovely", "a striped", "a hungry", "a pretentious", "a green", "a serious", "a golden", "a basking"]
+        adjective = ["a blue", "a spotted", "an orange", "a smelly", "a dangerous", "a lovely", "a striped", "a hungry", "a pretentious", "a green", "a serious", "a golden", "a basking", "a happy", "a sad", "a funny", "a curious", "a sleepy", "a tired", "a grumpy", "a cheerful"]
 
-        object = ["computer", "pencil", "car", "cow", "beer can", "apple tree", "model", "painting", "song", "cat", "guitar", "mask", "teapot", "tentacle", "soap bubble", "radiator", "cake"]
-
-        time_desc = ["at noon", "during a hot summer", "once a blue moon", "in the afternoon", "when the first snow falls" "everytime", "early mornings", "late evenings", "has never happened", "could be", "is not happening", "in a good mood", "happily"]
+        object = ["computer", "pencil", "car", "cow", "beer can", "apple tree", "model", "painting", "song", "cat", "guitar", "mask", "teapot", "tentacle", "soap bubble", "radiator", "cake", "book", "shoe", "towel", "pillow", "chair", "table", "window", "door", "phone", "keyboard"]
 
         n = noun[random.randint(0,len(noun)-1)]
         v = verb[random.randint(0,len(verb)-1)]
         a = adjective[random.randint(0,len(adjective)-1)]
         o = object[random.randint(0,len(object)-1)]
-        t = time_desc[random.randint(0,len(time_desc)-1)]
 
-        poetry = f"{n} {v} {a} {o} {t}."
+        poetry = f"{n} {v} {a} {o}."
 
         return poetry

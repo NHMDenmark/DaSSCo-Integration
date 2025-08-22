@@ -23,7 +23,7 @@ class HealthService():
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         
         self.util = utility.Utility()
-        self.mail = email_sender.EmailSender("test")
+        self.mail = email_sender.EmailSender("gmail")
         self.slack = slack_webhook.SlackWebhook()
         self.track = track_repository.TrackRepository()
         self.health = health_repository.HealthRepository()
