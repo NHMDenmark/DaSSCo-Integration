@@ -168,7 +168,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 guid = asset["_id"]
 
                 # bool(True if status 200, False otherwise), status code from api(set to -1 if the call failed completely), 
-                # asset status(COMPLETED, ASSET_RECEIVED, ERDA_ERROR), asset share size(should be none/null for a success), note(any description if one is needed from the api call)
+                # asset status(ERDA_SYNCHRONISED, ASSET_RECEIVED, ERDA_ERROR), asset share size(should be none/null for a success), note(any description if one is needed from the api call)
                 attempted, status_code, asset_status, asset_share_size, note = self.storage_api.get_asset_sharesize_and_status(guid)
                 
                 # main area for errors
@@ -183,9 +183,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         self.update_throttle_count()
                         continue
 
-                # check the case of a COMPLETED sync happens without the fileshare being closed
+                # check the case of a ERDA_SYNCHRONISED sync happens without the fileshare being closed
                 # TODO handle what happens if this triggers, for now retry once and if still getting the same result -> error status
-                if asset_status == self.COMPLETED and asset_share_size is not None:
+                if asset_status == self.ERDA_SYNCHRONISED and asset_share_size is not None:
                     print(f"guid: {guid} asset status: {asset_status} asset size: {asset_share_size}, sleeping for 5 secs before asking again, asset size should be null")
                     time.sleep(5)
                     second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = self.storage_api.get_asset_sharesize_and_status(guid)
@@ -200,11 +200,11 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                             self.update_throttle_count()
                             continue
                     print(f"asset status: {second_asset_status} asset size: {second_asset_share_size}, second try gave these values, should be completed and none")
-                    if second_asset_status == self.COMPLETED and second_asset_share_size is not None:
+                    if second_asset_status == self.ERDA_SYNCHRONISED and second_asset_share_size is not None:
                         self.completed_sync_share_still_open(guid, asset)
 
                 # success scenario for an asset
-                if asset_status == self.COMPLETED and asset_share_size is None:
+                if asset_status == self.ERDA_SYNCHRONISED and asset_share_size is None:
                     self.asset_validated(guid, asset)
 
                 # asset is still waiting to be synced

@@ -202,20 +202,22 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
+    """
     u = utility.Utility()
     email = email_sender.EmailSender("gmail")
     email.send_error_mail("abc", service_name="Test health api")
-    
     """
+    
     load_dotenv()
     user = os.getenv("rabbit_user")
     pw = os.getenv("rabbit_pw")
 
-    rmc = rmq(host_name="localhost", port=5672, credentials={"username":user, "password":pw})
+    rmc = rmq(host_name="130.225.164.138", port=5672, credentials={"username":user, "password":pw})
     
     #rmc.add_handler("first_test", print_something)
 
     rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})
+    """
     """
     #rmc.publish("first_test", {"asd":4})
 

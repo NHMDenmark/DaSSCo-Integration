@@ -5,6 +5,7 @@ class ErdaStatusEnum(Enum):
     ASSET_RECEIVED = "ASSET_RECEIVED"
     METADATA_RECEIVED = "METADATA_RECEIVED"
     ERDA_ERROR = "ERDA_ERROR"
+    ERDA_SYNCHRONISED = "ERDA_SYNCHRONISED"
 
 class ErdaStatus:
     def __init__(self):
@@ -12,3 +13,4 @@ class ErdaStatus:
         self.ASSET_RECEIVED = ErdaStatusEnum.ASSET_RECEIVED.value
         self.METADATA_RECEIVED = ErdaStatusEnum.METADATA_RECEIVED.value
         self.ERDA_ERROR = ErdaStatusEnum.ERDA_ERROR.value
+        self.ERDA_SYNCHRONISED = ErdaStatusEnum.ERDA_SYNCHRONISED.value
