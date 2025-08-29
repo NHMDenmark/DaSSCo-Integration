@@ -55,8 +55,17 @@ class StorageClient():
                data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
+          
+          # TODO fix mismatch between pydantic model and dassco-storage-client model
+          if isinstance(data_dict["asset_pid"], list):
+               data_dict["asset_pid"] = data_dict["asset_pid"][0]
 
-          print(allocation_size, data_dict)
+          data_dict["date_asset_taken"] = self.service.restore_copenhagen_time(data_dict["date_asset_taken"])
+          data_dict["date_metadata_ingested"] = self.service.restore_copenhagen_time(data_dict["date_metadata_ingested"])
+
+          for entry in data_dict["issues"]:
+               entry["timestamp"] = self.service.restore_copenhagen_time(entry["timestamp"])
+               print(f"issue timestamp: {entry['timestamp']}")
 
           try:
                response = self.client.assets.create(data_dict, allocation_size)
@@ -77,7 +86,7 @@ class StorageClient():
                          return False, self.note, exc, status_code
 
                     if 400 <= status_code <= 499:
-                         return False, "ARS api failed to create asset.", exc, status_code
+                         return False, f"ARS api failed to create asset. {exc}", exc, status_code
                     
                     if 500 <= status_code <= 599:
                          return False, "ARS api, keycloak or dassco sdk failure", exc, status_code
@@ -97,6 +106,13 @@ class StorageClient():
                data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
+
+          # TODO fix mismatch between pydantic model and dassco-storage-client model
+          if isinstance(data_dict["asset_pid"], list):
+               data_dict["asset_pid"] = data_dict["asset_pid"][0]
+          
+          data_dict["date_asset_taken"] = self.service.restore_copenhagen_time(data_dict["date_asset_taken"])
+          data_dict["date_metadata_ingested"] = self.service.restore_copenhagen_time(data_dict["date_metadata_ingested"])
 
           try:
                response = self.client.assets.update(guid, data_dict)

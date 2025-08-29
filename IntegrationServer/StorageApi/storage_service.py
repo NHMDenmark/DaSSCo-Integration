@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import utility
 from datetime import datetime
+from dateutil import tz
 from MongoDB import metadata_repository
 from IntegrationServer.StorageApi import api_metadata_model
 from Enums import asset_status_nt
@@ -92,14 +93,21 @@ class StorageService():
                 new_specimen.collection = self.api_metadata.collection
                 new_specimen.institution = self.api_metadata.institution
                 # TODO need to figure out this exactly, what can and what cant be lists
-                new_specimen.preparation_type = entry["preparation_type"]
-                if new_specimen.preparation_type == []:
-                    new_specimen.preparation_type = ""
-                    
+                new_specimen.preparation_types = entry["preparation_type"]
+                if len(new_specimen.preparation_types) == 0 or new_specimen.preparation_types == "" or new_specimen.preparation_types is None:
+                    print(True)
+                    new_specimen.preparation_types = ["UNKNOWN"]
+                    new_specimen.asset_preparation_type = None
+                else:
+                    new_specimen.asset_preparation_type = new_specimen.preparation_types[0]
+
                 # TODO again issue with something potentially being a list
                 new_specimen.specimen_pid = entry["specimen_pid"]
                 if new_specimen.specimen_pid == []:
                         new_specimen.specimen_pid = ""
+                # TODO again issue with something potentially being a list - remove when ARS / slurm is synced
+                if isinstance(new_specimen.specimen_pid , list):
+                    new_specimen.specimen_pid = new_specimen.specimen_pid[0]
 
                 self.api_metadata.specimens.append(new_specimen)
             
@@ -128,3 +136,14 @@ class StorageService():
                 return timestring
         else:
             return timestring
+        
+    def restore_copenhagen_time(self, time):
+
+        dt = datetime.fromisoformat(time)
+
+        if dt.tzinfo is None:
+            # attach Copenhagen timezone (handles DST correctly)
+            dt = dt.replace(tzinfo=tz.gettz("Europe/Copenhagen"))
+        else:
+            dt = dt.astimezone(tz.gettz("Europe/Copenhagen"))
+        return dt.isoformat()

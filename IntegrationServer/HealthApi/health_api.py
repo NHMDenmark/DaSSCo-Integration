@@ -35,7 +35,7 @@ async def receive_warning(warning: message_model):
     handled = service.receive_warning(warning)
 
     if handled is False:
-        return JSONResponse(content={"error": "failed to handle warning"}, status_code=422)
+        return JSONResponse(content={"error": "failed to handle warning."}, status_code=422)
 
     #print(handled)
     return handled
