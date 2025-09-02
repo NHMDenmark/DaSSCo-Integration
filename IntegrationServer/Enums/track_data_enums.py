@@ -19,6 +19,7 @@ class TrackFieldsEnum(Enum):
     HAS_NEW_FILE = "has_new_file"
     HAS_OPEN_SHARE = "has_open_share"
     ERDA_SYNC = "erda_sync"
+    SPECIFY_SYNC = "specify_sync"
     UPDATE_METADATA = "update_metadata"
     TEMPORARY_FILES_NDRIVE = "temporary_files_ndrive"
     TEMPORARY_PATH_NDRIVE = "temporary_path_ndrive"

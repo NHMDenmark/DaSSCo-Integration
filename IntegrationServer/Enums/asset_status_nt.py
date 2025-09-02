@@ -8,7 +8,7 @@ class AssetStatusNT(Enum):
     PROCESSING_HALTED = "PROCESSING_HALTED"
     BEING_PROCESSED = "BEING_PROCESSED"
     ISSUE_WITH_METADATA = "ISSUE_WITH_METADATA"
-
+    
 class AssetStatus:
     def __init__(self):
         self.WORKING_COPY = AssetStatusNT.WORKING_COPY.value

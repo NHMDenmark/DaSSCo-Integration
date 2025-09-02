@@ -6,6 +6,7 @@ class ValidateEnum(Enum):
     UPLOADING = "UPLOADING"
     NO = "NO"
     PAUSED = "PAUSED"
+    PREPARE = "PREPARE"
     ERROR = "ERROR"
     CRITICAL_ERROR = "CRITICAL_ERROR"
 
@@ -16,5 +17,6 @@ class Validate:
         self.UPLOADING = ValidateEnum.UPLOADING.value
         self.NO = ValidateEnum.NO.value
         self.PAUSED = ValidateEnum.PAUSED.value
+        self.PREPARE = ValidateEnum.PREPARE.value
         self.ERROR = ValidateEnum.ERROR.value
         self.CRITICAL_ERROR = ValidateEnum.CRITICAL_ERROR.value

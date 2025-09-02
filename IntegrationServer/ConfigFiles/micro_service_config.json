@@ -220,6 +220,47 @@
     "mail_wait_time": 30,
     "max_sync_erda_attempt_wait_time": 900
   },
+  "Validate specify sync ARS": {
+    "module": "storage updater",
+    "run_service":true,
+    "pause_time": 13,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
+    "error_tolerance": 2,
+    "error_time_span": 3,
+    "mail_wait_time": 30,
+    "max_sync_specify_attempt_wait_time": 3600
+  },
+  "Specify sync ARS": {
+    "module": "storage updater",
+    "run_service":true,
+    "pause_time": 13,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
+    "error_tolerance": 2,
+    "error_time_span": 3,
+    "mail_wait_time": 30
+  },
+  "Specify close share ARS": {
+    "module": "storage updater",
+    "run_service":true,
+    "pause_time": 13,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
+    "error_tolerance": 2,
+    "error_time_span": 3,
+    "mail_wait_time": 30
+  },
+  "Specify open share ARS": {
+    "module": "storage updater",
+    "run_service":true,
+    "pause_time": 13,
+    "pause_check_list": [2, 5, 7],
+    "pause_loop_count": 99,
+    "error_tolerance": 2,
+    "error_time_span": 3,
+    "mail_wait_time": 30
+  },
   "ING Receive metadata": {
     "module": "ingestion interface",
     "run_service":true,

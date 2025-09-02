@@ -42,6 +42,7 @@ class TrackModel:
         self.has_new_file = validate_enum.ValidateEnum.NO.value
         self.has_open_share = validate_enum.ValidateEnum.NO.value
         self.erda_sync = validate_enum.ValidateEnum.NO.value
+        self.specify_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
         self.available_for_services = validate_enum.ValidateEnum.YES.value
         self.available_for_services_timestamp = None
@@ -85,6 +86,7 @@ class TrackModel:
             "has_new_file": self.has_new_file,
             "has_open_share": self.has_open_share,
             "erda_sync": self.erda_sync,
+            "specify_sync": self.specify_sync,
             "update_metadata": self.update_metadata,
             "available_for_services": self.available_for_services,
             "available_for_services_timestamp": self.available_for_services_timestamp,

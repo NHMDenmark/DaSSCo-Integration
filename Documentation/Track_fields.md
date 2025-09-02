@@ -34,6 +34,7 @@
 | [has_new_file](Track_field_descriptions/has_new_file.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call |  |
 | [has_open_share](Track_field_descriptions/has_open_share.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon ARS call |  |
 | [erda_sync](Track_field_descriptions/erda_sync.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon ARS call |  |
+| [specify_sync](Track_field_descriptions/specify_sync.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon ARS call |  |
 | [update_metadata](Track_field_descriptions/update_metadata.md) | Integration | Receiving metadata | Integration | Receiving metadata / Upon integration call / Upon ARS call |  |
 | [temporary_files_ndrive](Track_field_descriptions/temporary_files_ndrive.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Temporary field that gets deleted at the end of the pipeline |
 | [temporary_path_ndrive](Track_field_descriptions/temporary_path_ndrive.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Temporary field that gets deleted at the end of the pipeline |

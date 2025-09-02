@@ -30,6 +30,7 @@ class StorageService():
             return None
 
         self.api_metadata.asset_guid = guid
+        self.api_metadata.asset_locked = entry["asset_locked"]
         self.api_metadata.asset_pid = entry["asset_pid"]
         self.api_metadata.asset_subject = entry["asset_subject"]
         self.api_metadata.audited = entry["audited"]
@@ -60,8 +61,10 @@ class StorageService():
             self.api_metadata.legality = legality
 
         self.api_metadata.make_public = entry["make_public"]
+        self.api_metadata.make_public = entry["make_public"]
         self.api_metadata.metadata_source = entry["metadata_source"]
         self.api_metadata.metadata_version = entry["metadata_version"]
+        # self.api_metadata.mime_type = entry["mime_type"]
         self.api_metadata.mos_id = entry["mos_id"]
         self.api_metadata.multi_specimen = entry["multi_specimen"]
         self.api_metadata.parent_guids = entry["parent_guids"]     
@@ -76,7 +79,10 @@ class StorageService():
             self.api_metadata.payload_type = entry["payload_type"]
 
         self.api_metadata.pipeline = entry["pipeline_name"]
-        self.api_metadata.restricted_access = entry["restricted_access"]             
+        self.api_metadata.push_to_specify = entry["push_to_specify"]
+        self.api_metadata.restricted_access = entry["restricted_access"]
+        self.api_metadata.specify_attachment_remarks = entry["specify_attachment_remarks"]
+        self.api_metadata.specify_attachment_title = entry["specify_attachment_title"]             
         self.api_metadata.status = entry["status"]
         self.api_metadata.tags = entry["tags"]
         self.api_metadata.workstation = entry["workstation_name"] 
@@ -139,7 +145,10 @@ class StorageService():
         
     def restore_copenhagen_time(self, time):
 
-        dt = datetime.fromisoformat(time)
+        if isinstance(time, str):
+            dt = datetime.fromisoformat(time)
+        else:
+            return time
 
         if dt.tzinfo is None:
             # attach Copenhagen timezone (handles DST correctly)
