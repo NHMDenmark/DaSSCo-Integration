@@ -198,11 +198,12 @@ class ValidateSpecifySync():
                     
                 if asset_status == self.erda_enum.SPECIFY_SYNC_FAILED.value:
                     # TODO figure out how to handle this situation further.
-                    # currently resetting sync status to "PREPARE" attempts a new sync 
-                    self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.PREPARE.value)
+                    # currently setting sync status to "ERROR" for testing
+                    self.update_throttle_count() 
+                    self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
 
                 # wait time between calling ARS for asset status
-                time.sleep(2)
+                time.sleep(1)
 
             # total delay after one run
             time.sleep(10)

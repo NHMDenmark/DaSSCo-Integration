@@ -20,6 +20,8 @@ class StorageService():
         self.api_metadata = api_metadata_model.ApiMetadataModel()
         self.asset_status_nt_enum = asset_status_nt.AssetStatusNT
 
+        self.COPENHAGEN_TZ = tz.gettz("Europe/Copenhagen")
+
     def get_metadata_creation_body(self, guid):
         
         self.api_metadata = api_metadata_model.ApiMetadataModel()
@@ -52,6 +54,10 @@ class StorageService():
         self.api_metadata.funding = entry["funding"]
         self.api_metadata.institution = entry["institution"]
         self.api_metadata.issues = entry["issues"]
+
+        if self.api_metadata.issues is not None and len(self.api_metadata.issues) > 0:
+            for issue in self.api_metadata.issues:
+                issue["timestamp"] = self.convert_times_for_api(issue["timestamp"])
 
         if entry["legality"] is not None:
             legality = api_metadata_model.LegalityModel()
@@ -94,14 +100,15 @@ class StorageService():
         if len(barcode) != 0:
             for b in barcode:
                 # Create a new instance of Specimen
-                new_specimen = api_metadata_model.Specimen()  
+                new_specimen = api_metadata_model.Specimen()
+                if len(b) != 9:
+                    b = b.zfill(9)  # Pad with leading zeros to ensure length of 9  
                 new_specimen.barcode = b
                 new_specimen.collection = self.api_metadata.collection
                 new_specimen.institution = self.api_metadata.institution
-                # TODO need to figure out this exactly, what can and what cant be lists
+                
                 new_specimen.preparation_types = entry["preparation_type"]
                 if len(new_specimen.preparation_types) == 0 or new_specimen.preparation_types == "" or new_specimen.preparation_types is None:
-                    print(True)
                     new_specimen.preparation_types = ["UNKNOWN"]
                     new_specimen.asset_preparation_type = None
                 else:
@@ -156,3 +163,41 @@ class StorageService():
         else:
             dt = dt.astimezone(tz.gettz("Europe/Copenhagen"))
         return dt.isoformat()
+
+    def ensure_copenhagen_timezone(self, timestring):
+        """
+        Convert a string or datetime to timezone-aware datetime in Copenhagen TZ.
+        """
+        if isinstance(timestring, str):
+            try:
+                dt = datetime.fromisoformat(timestring)
+            except ValueError:
+                # fallback for formats without offset
+                dt = datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S")
+
+        elif isinstance(timestring, datetime):
+            dt = timestring
+        else:
+            return timestring  # unknown type, leave as-is
+
+        # attach Copenhagen timezone if naive
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=self.COPENHAGEN_TZ)
+        else:
+            dt = dt.astimezone(self.COPENHAGEN_TZ)
+
+        return dt
+
+    def to_utc_iso(self, timestring):
+        """
+        Convert any string/datetime to UTC ISO 8601 string for API.
+        """
+        dt = self.ensure_copenhagen_timezone(timestring)
+        dt_utc = dt.astimezone(tz.UTC)
+        return dt_utc.isoformat()
+
+    def convert_times_for_api(self, timestring_or_dt):
+        """
+        Wrapper to get safe timestamp for API submission.
+        """
+        return self.to_utc_iso(timestring_or_dt)

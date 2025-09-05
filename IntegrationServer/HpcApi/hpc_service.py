@@ -605,6 +605,8 @@ class HPCService():
                 
                 self.mongo_throttle.subtract_one_from_count("assets_in_flight", "value")
 
+            self.mongo_track.update_entry(guid, "specify_sync", self.validate.PREPARE.value)
+
             return True
         else:
             return False

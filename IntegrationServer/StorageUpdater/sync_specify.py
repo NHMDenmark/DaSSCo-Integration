@@ -175,7 +175,7 @@ class SyncSpecify():
 
                 except Exception as e:
                     print(f"Failed for asset {guid}: {e}")
-
+                time.sleep(10)
             if asset is None:
                 time.sleep(10)
 

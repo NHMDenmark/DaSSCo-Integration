@@ -74,6 +74,8 @@ if __name__ == "__main__":
     with open(txt_file, "r+") as f:
         guid_number = int(f.read())
     
-    output_folder = f"{base_folder}/{guid_number}/"
+    output_folder = f"{base_folder}/new_{guid_number}/"
 
     copy_files(copy_from_folder_path, output_folder, test_number, guid_number, txt_file, base_folder)
+
+    

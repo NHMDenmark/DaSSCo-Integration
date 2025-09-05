@@ -86,7 +86,7 @@ class AssetHandler:
                     # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
-                    parent = self.util.get_value(json_file_path, "parent_guid")
+                    parent = self.util.get_value(json_file_path, "parent_guids")
 
                     # TODO have this resolved
                     # hacking with the institution check since NHMA is using the PIPEPIOF0001 pipeline which belongs to NHMD
@@ -171,7 +171,7 @@ class AssetHandler:
                         
                         if parent != None and parent != "":                            
                             parent = [parent]
-                            self.util.update_json(json_file_path, "parent_guid", parent)
+                            self.util.update_json(json_file_path, "parent_guids", parent)
                             print(f"parent_guid for {guid} was not nothing and also not a list, and has been appended into a list.")
                         else:
                             print(f"parent_guid for {guid} was not a list and a empty list has been created.")

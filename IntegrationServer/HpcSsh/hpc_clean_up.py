@@ -81,7 +81,7 @@ class HPCCleanUp():
             asset = None
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
-                                                                           self.flag_enum.AVAILABLE_FOR_SERVICES.value: validate_enum.ValidateEnum.YES.value}])
+                                                                           "specify_sync":self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: validate_enum.ValidateEnum.YES.value}])
             if asset is None:
                 #print("No asset found")
                 time.sleep(10)        

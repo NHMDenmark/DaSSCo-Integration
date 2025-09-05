@@ -113,7 +113,7 @@ class StorageClient():
           
           data_dict["date_asset_taken"] = self.service.restore_copenhagen_time(data_dict["date_asset_taken"])
           data_dict["date_metadata_ingested"] = self.service.restore_copenhagen_time(data_dict["date_metadata_ingested"])
-
+          print(data_dict)
           try:
                response = self.client.assets.update(guid, data_dict)
 
