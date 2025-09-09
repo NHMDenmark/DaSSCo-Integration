@@ -12,7 +12,7 @@ class MicroServicePaths():
     def __init__(self):
         self.util = utility.Utility()
 
-    # TODO move the paths into the microservice part of the configuration
+    # TODO move the paths into the microservice part of the configuration + update the documentation
     def get_path_from_name(self, service_name):
         
         service_paths = {
