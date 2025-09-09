@@ -43,4 +43,5 @@
 | [available_for_services](Track_field_descriptions/available_for_services.md) | Integration | Receiving asset from ndrive | Integration | Processing asset files  | Flag set by any service and then handled by asset_paused_status_handler. Can be YES, PAUSED or ERROR. |
 | [available_for_services_timestamp](Track_field_descriptions/available_for_services_timestamp.md) | Integration | Receiving asset from ndrive | Integration | When an asset is paused. | Gets reset to null once pause status is changed. |
 | [available_for_services_wait_time](Track_field_descriptions/available_for_services_wait_time.md) | Integration | Receiving asset from ndrive | Integration | When an asset is paused. | Gets reset once an asset is no longer paused. |
+| [process_time](Track_field_descriptions/process_time.md) | Integration | Asset has been synced with specify | Integration | Asset has been synced with specify | Saved as seconds. |
 | t | h | e | e | n | d |

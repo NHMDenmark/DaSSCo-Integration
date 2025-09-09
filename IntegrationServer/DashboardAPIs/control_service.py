@@ -328,6 +328,9 @@ class ControlService():
         
     def get_process_time_stat(self, max, min):
         try:
+            if min >= max:
+                return False, None, "min_value should be smaller than max_value."
+
             max = max * 60
             min = min * 60
             entries = self.mongo_track.get_entries_with_values_between("process_time", min, max)
@@ -343,6 +346,8 @@ class ControlService():
 
             average_time = int(total_time / count)
             average_time = str(timedelta(seconds = average_time))
+
+            
 
             return True, average_time, None
             
