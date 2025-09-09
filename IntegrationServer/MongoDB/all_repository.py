@@ -304,3 +304,22 @@ class AllRepository:
         except Exception as e:
             print(f"Error in get_entries_with_value_less_than: {e}")
             return False
+        
+    def get_entries_with_values_between(self, key, min_value, max_value):
+        """
+        Retrieve entries from the MongoDB collection where the given key's value
+        is between min_value and max_value (inclusive).
+
+        :param key: The key (field name in the MongoDB documents)
+        :param min_value: The lower bound
+        :param max_value: The upper bound
+        :return: List of matching entries, or [] if none found, or False if error
+        """
+        try:
+            query = {key: {"$gte": min_value, "$lte": max_value}}
+            entries = list(self.collection.find(query))
+            return entries
+
+        except Exception as e:
+            print(f"Error in get_entries_with_values_between: {e}")
+            return False

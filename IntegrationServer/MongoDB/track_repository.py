@@ -105,7 +105,7 @@ class TrackRepository:
         """
         return self.all.get_entries_from_multiple_key_pairs(key_value_pairs)
     
-    
+
     def get_entries_with_value_less_than(self, key, value):
         """
         Retrieve entries from the MongoDB collection where the given key's value
@@ -116,6 +116,18 @@ class TrackRepository:
         :return: List of matching entries, or [] if none found, or False if error
         """
         return self.all.get_entries_with_value_less_than(key, value)
+    
+    def get_entries_with_values_between(self, key, min_value, max_value):
+        """
+        Retrieve entries from the MongoDB collection where the given key's value
+        is between the provided values.
+
+        :param key: The key (field name in the MongoDB documents)
+        :param min_value: The threshold value
+        :param max_value: The threshold value
+        :return: List of matching entries, or [] if none found, or False if error
+        """
+        return self.all.get_entries_with_values_between(key, min_value, max_value)
 
 
     def get_time_based_multiple_key_list(self, key_value_pairs, time_key=None, after=None, before=None):

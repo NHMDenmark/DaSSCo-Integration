@@ -166,9 +166,9 @@ async def search_in_track(search_model: search_model):
     return data_list
 
 @control.get("/control/get_process_time_stat")
-async def get_process_time_stat(time_limit: int):
+async def get_process_time_stat(max_value: int, min_value: int):
 
-    found, average_time, msg = service.get_process_time_stat(time_limit)
+    found, average_time, msg = service.get_process_time_stat(max_value, min_value)
 
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
