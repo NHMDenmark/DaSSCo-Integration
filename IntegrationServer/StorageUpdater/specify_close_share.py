@@ -97,6 +97,7 @@ class SpecifyCloseShare(LogClass):
                 if closed is True:
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
                     self.update_throttle(asset)
+                    self.add_process_time(guid, asset)
                     print(f"closed share: {guid}")
             
             if asset is None:
@@ -118,6 +119,13 @@ class SpecifyCloseShare(LogClass):
         # Pause loop
         if self.run == self.validate_enum.PAUSED.value:
             self.run = self.run_util.pause_loop()
+
+    def add_process_time(self, guid, asset):
+        end_process_time = datetime.now()
+        total_process_time = end_process_time - asset["created_timestamp"]
+        total_process_time = total_process_time.total_seconds()
+        self.track_mongo.update_entry(guid, "process_time", str(total_process_time))
+        print(f"Process time for {guid} was {total_process_time}")
 
     def update_throttle(self, asset):
         self.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])

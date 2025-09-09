@@ -11,7 +11,7 @@ from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository
 from DashboardAPIs import micro_service_paths
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class ControlService():
 
@@ -325,6 +325,29 @@ class ControlService():
         except Exception as e:
             print(e)
             return False, None, ("Something went wrong while searching for health data.")
+        
+    def get_process_time_stat(self, time_limit):
+        try:
+            
+            entries = self.mongo_track.get_entries_with_value_less_than("process_time", (time_limit*60))
+            
+            if entries is None or entries == []:
+                return True, None, "No entries found"
+            
+            count = 0
+            total_time = 0
+            for entry in entries:
+                count += 1
+                total_time += entry["process_time"]
+
+            average_time = total_time / count
+            average_time = timedelta(seconds = average_time)
+
+            return True, average_time, None
+            
+        except Exception as e:
+            print(e)
+            return False, None, ("Something went wrong while calculating average process time.")
 
     def update_track_data(self, update_model):
         # TODO verify that keys are actual fields before updating, not sure if want a different endpoint for adding new fields/appending files or jobs to the lists.

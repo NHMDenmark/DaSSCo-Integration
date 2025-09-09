@@ -286,3 +286,21 @@ class AllRepository:
         except Exception as e:
             print(e)
             return False
+        
+    def get_entries_with_value_less_than(self, key, value):
+        """
+        Retrieve entries from the MongoDB collection where the given key's value
+        is less than the provided value.
+
+        :param key: The key (field name in the MongoDB documents)
+        :param value: The threshold value
+        :return: List of matching entries, or [] if none found, or False if error
+        """
+        try:
+            query = {key: {"$lt": value}}
+            entries = list(self.collection.find(query))
+            return entries
+
+        except Exception as e:
+            print(f"Error in get_entries_with_value_less_than: {e}")
+            return False

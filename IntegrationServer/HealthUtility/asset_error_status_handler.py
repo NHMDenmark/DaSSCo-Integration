@@ -74,7 +74,7 @@ class AssetErrorStatusHandler():
             assets = self.track_mongo.get_error_entries()
 
             if assets is None:
-                time.sleep(60)
+                time.sleep(180)
             else:
                 errors_found = 0
                 for asset in assets:
@@ -84,6 +84,10 @@ class AssetErrorStatusHandler():
                     # erda_sync error
                     if asset[self.flag_enum.ERDA_SYNC.value] == self.status_enum.ERROR.value:
                         self.handle_erda_sync_error(asset, guid)
+
+                    # has_open_share error
+                    if asset[self.flag_enum.HAS_OPEN_SHARE.value] == self.status_enum.ERROR.value:
+                        self.handle_has_open_share_error(asset, guid)
 
                 print(f"Assets with errors found: {errors_found}")
                 time.sleep(60)
@@ -173,6 +177,54 @@ class AssetErrorStatusHandler():
             print(f"unable to handle {guid} - set to critical error")
             message = self.run_util.log_msg(self.prefix_id, f"Tried handling erda_sync error for {guid}. Could not determine the issue. Will need manual handling. erda_sync set to {self.status_enum.CRITICAL_ERROR.value}")
             self.health_caller.error(self.service_name, message, guid, "erda_sync", self.status_enum.CRITICAL_ERROR.value)
+
+    def handle_has_open_share_error(self, asset, guid):
+        
+        self.authorization_check()
+
+        ars_status = self.storage_api.get_full_asset_status(guid)
+
+        if ars_status is False:
+            print(f"unable to handle {guid} - set to critical error")
+            self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
+            message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Could not determine the issue. Failed to get information about asset from ARS. has_open_share set to {self.status_enum.CRITICAL_ERROR.value}")
+            self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+            return
+        
+        status = ars_status["data"].status
+        share_allocation = ars_status["data"].share_allocation_mb
+        error_message = ars_status["data"].error_message
+        asset_available = asset[self.flag_enum.AVAILABLE_FOR_SERVICES.value]
+        asset_erda_sync = asset[self.flag_enum.ERDA_SYNC.value]
+        asset_size = asset["asset_size"]
+        asset_specify_sync = asset[self.flag_enum.SPECIFY_SYNC.value]
+        institution = self.metadata_mongo.get_value_for_key(guid, "institution")
+        collection = self.metadata_mongo.get_value_for_key(guid, "collection")
+
+        # asset share was opened despite the status being sent back saying otherwise
+        if share_allocation is not None and share_allocation == asset_size:
+                    # asset has files available and share allocation exists - should be fine to move on
+                    files = self.storage_api.get_files_available(guid, institution, collection)
+                    if files is not False:
+                        self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
+                        message = self.run_util.log_msg(self.prefix_id, f"Successfully handled has_open_share error for {guid}. Asset had share allocation match asset size. Asset files were found to be available in ARS. has_open_share set to {self.validate_enum.YES.value}")
+                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.validate_enum.YES.value)
+                        return
+
+        # specify open share fails
+        if status == self.erda_enum.ERDA_SYNCHRONISED.value:
+            
+            if asset_specify_sync == self.validate_enum.PREPARE.value:
+
+                pass
+                    
+
+        if status == self.erda_enum.METADATA_RECEIVED.value:
+            pass
+
+        if status == self.erda_enum.ASSET_RECEIVED.value:
+            pass
+        
 
 
 if __name__ == '__main__':

@@ -104,6 +104,18 @@ class TrackRepository:
         :return: A list of entries that match all the specified key-value pairs.
         """
         return self.all.get_entries_from_multiple_key_pairs(key_value_pairs)
+    
+    
+    def get_entries_with_value_less_than(self, key, value):
+        """
+        Retrieve entries from the MongoDB collection where the given key's value
+        is less than the provided value.
+
+        :param key: The key (field name in the MongoDB documents)
+        :param value: The threshold value
+        :return: List of matching entries, or [] if none found, or False if error
+        """
+        return self.all.get_entries_with_value_less_than(key, value)
 
 
     def get_time_based_multiple_key_list(self, key_value_pairs, time_key=None, after=None, before=None):

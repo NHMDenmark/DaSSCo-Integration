@@ -150,7 +150,7 @@ async def search_in_metadata(search_model: search_model):
     return data_list
 
 @control.post("/control/search_in_track")
-async def search_in_metadata(search_model: search_model):
+async def search_in_track(search_model: search_model):
 
     found, data_list, msg = service.search_track_db(search_model)
 
@@ -165,8 +165,21 @@ async def search_in_metadata(search_model: search_model):
 
     return data_list
 
+@control.get("/control/get_process_time_stat")
+async def get_process_time_stat(time_limit: int):
+
+    found, average_time, msg = service.get_process_time_stat(time_limit)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    if average_time == None:
+        return JSONResponse(content={"message": "failed to find any assets with these criteria"}, status_code=200)
+
+    return average_time
+
 @control.post("/control/search_in_health")
-async def search_in_metadata(search_model: search_model):
+async def search_in_health(search_model: search_model):
 
     found, data_list, msg = service.search_health_db(search_model)
 
