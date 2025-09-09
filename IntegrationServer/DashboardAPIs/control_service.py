@@ -328,8 +328,8 @@ class ControlService():
         
     def get_process_time_stat(self, time_limit):
         try:
-            
-            entries = self.mongo_track.get_entries_with_value_less_than("process_time", (time_limit*60))
+            time_limit = time_limit * 60
+            entries = self.mongo_track.get_entries_with_value_less_than("process_time", time_limit)
             
             if entries is None or entries == []:
                 return True, None, "No entries found"

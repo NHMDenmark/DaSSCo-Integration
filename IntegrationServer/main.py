@@ -15,7 +15,7 @@ import time
 from dassco_utils.guid import main
 from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
-from rabbitmq_client import RabbitMqClient as rmq
+#from rabbitmq_client import RabbitMqClient as rmq
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -207,8 +207,10 @@ if __name__ == '__main__':
     email = email_sender.EmailSender("gmail")
     email.send_error_mail("abc", service_name="Test health api")
     """
-    ss = storage_service.StorageService()
-    print(ss.restore_copenhagen_time("2000-01-29T23:02:03"))
+    track = track_repository.TrackRepository()
+    entries = track.get_entries_with_value_less_than("process_time", 90000)
+    print(len(entries))
+    track.close_connection()
     #user = os.getenv("rabbit_user")
     #pw = os.getenv("rabbit_pw")
 

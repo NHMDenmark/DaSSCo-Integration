@@ -123,8 +123,8 @@ class SpecifyCloseShare(LogClass):
     def add_process_time(self, guid, asset):
         end_process_time = datetime.now()
         total_process_time = end_process_time - asset["created_timestamp"]
-        total_process_time = total_process_time.total_seconds()
-        self.track_mongo.update_entry(guid, "process_time", str(total_process_time))
+        total_process_time = round(total_process_time.total_seconds(), 0)
+        self.track_mongo.update_entry(guid, "process_time", int(total_process_time))
         print(f"Process time for {guid} was {total_process_time}")
 
     def update_throttle(self, asset):

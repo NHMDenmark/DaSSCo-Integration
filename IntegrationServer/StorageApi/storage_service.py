@@ -32,7 +32,10 @@ class StorageService():
             return None
 
         self.api_metadata.asset_guid = guid
-        self.api_metadata.asset_locked = entry["asset_locked"]
+        try:
+            self.api_metadata.asset_locked = entry["asset_locked"]
+        except KeyError:
+            self.api_metadata.asset_locked = False
         self.api_metadata.asset_pid = entry["asset_pid"]
         self.api_metadata.asset_subject = entry["asset_subject"]
         self.api_metadata.audited = entry["audited"]

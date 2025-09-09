@@ -26,7 +26,7 @@ nohup python "$root/StorageUpdater/update_metadata.py" > "$root/StorageUpdater/u
 nohup python "$root/StorageUpdater/validate_erda_sync.py" > "$root/StorageUpdater/validate_erda.out" 2>&1 &
 nohup python "$root/StorageUpdater/open_share.py" > "$root/StorageUpdater/open_share.out" 2>&1 &
 nohup python "$root/StorageUpdater/close_share.py" > "$root/StorageUpdater/close_share.out" 2>&1 &
-nohup python "$root/StorageUpdater/spcify_close_share.py" > "$root/StorageUpdater/specify_close_share.out" 2>&1 &
+nohup python "$root/StorageUpdater/specify_close_share.py" > "$root/StorageUpdater/specify_close_share.out" 2>&1 &
 nohup python "$root/StorageUpdater/specify_open_share.py" > "$root/StorageUpdater/specify_open_share.out" 2>&1 &
 nohup python "$root/StorageUpdater/sync_specify.py" > "$root/StorageUpdater/sync_specify.out" 2>&1 &
 nohup python "$root/StorageUpdater/validate_specify_sync.py" > "$root/StorageUpdater/validate_specify.out" 2>&1 &
