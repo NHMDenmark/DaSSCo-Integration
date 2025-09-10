@@ -211,13 +211,40 @@ class AssetErrorStatusHandler():
                         self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.validate_enum.YES.value)
                         return
 
-        # specify open share fails
+        # specify open share fails -> retry opening the share
         if status == self.erda_enum.ERDA_SYNCHRONISED.value:
             
             if asset_specify_sync == self.validate_enum.PREPARE.value:
+                
+                try:
+                    proxy_path, status_code = self.storage_api.open_share(guid, institution, collection, asset_size)
+                
+                    if proxy_path is not False:
 
-                pass
-                    
+                        self.track_mongo.update_entry(guid, "proxy_path", proxy_path)
+                        
+                        # create links for all files in the asset
+                        files = asset["file_list"]
+
+                        for file in files:
+                            if file["deleted"] is not True:
+                                name = file["name"]
+                                link = proxy_path + name
+                                self.track_mongo.update_track_file_list(guid, name, "ars_link", link)
+
+                        self.update_throttle_size(asset)
+                        self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
+
+                    elif proxy_path is False:                        
+                        message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", self.status_enum.CRITICAL_ERROR.value)
+                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                        return
+                except Exception as e:
+                    print(e)
+                    message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", e, self.status_enum.CRITICAL_ERROR.value)
+                    self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                    return
+
 
         if status == self.erda_enum.METADATA_RECEIVED.value:
             pass
@@ -225,7 +252,13 @@ class AssetErrorStatusHandler():
         if status == self.erda_enum.ASSET_RECEIVED.value:
             pass
         
+        return
 
+    def update_throttle_size(self, asset):
+        self.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
+        # TODO decide if this belongs here. But seems natural enough to include it. 
+        self.track_mongo.update_entry(asset["_id"], "temporary_reopened_share_status", True)
 
 if __name__ == '__main__':
     AssetErrorStatusHandler()
