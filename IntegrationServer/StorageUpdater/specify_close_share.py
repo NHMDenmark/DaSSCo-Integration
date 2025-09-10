@@ -130,6 +130,7 @@ class SpecifyCloseShare(LogClass):
     def update_throttle(self, asset):
         self.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.throttle_mongo.subtract_from_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
+        self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
 
         # TODO decide if this belongs here - its kind of natural to have the removal of the temp tag here though
         if "temporary_reopened_share_status" in asset:

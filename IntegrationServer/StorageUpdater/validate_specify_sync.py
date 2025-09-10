@@ -229,7 +229,8 @@ class ValidateSpecifySync():
         # remove the temp time out status if it exist                    
         self.track_mongo.delete_field(guid, "temporary_time_out_sync_specify_attempt")    
 
-        self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.YES.value)        
+        self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.YES.value)
+        self.update_throttle_count()        
         print(f"Validated specify sync for asset: {guid}")
 
     def check_timeout(self, guid):
