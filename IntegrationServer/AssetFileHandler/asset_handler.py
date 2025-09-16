@@ -9,7 +9,7 @@ import utility
 from AssetFileHandler import job_assigner
 from HealthUtility import health_caller
 from MongoDB import file_model, track_repository, metadata_repository, batch_repository
-from Enums import status_enum, validate_enum, metadata_origin, log_enum
+from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt
 import json
 from datetime import datetime
 
@@ -26,6 +26,7 @@ class AssetHandler:
         self.validate = validate_enum.ValidateEnum
         self.log_enum = log_enum.LogEnum
         self.origin = metadata_origin.MetadataOriginEnum
+        self.asset_status_nt = asset_status_nt.AssetStatusNT
         self.file_model = file_model.FileModel()
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
@@ -87,6 +88,7 @@ class AssetHandler:
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guids")
+                    collection = self.util.get_value(json_file_path, "collection")
 
                     # TODO have this resolved
                     # hacking with the institution check since NHMA is using the PIPEPIOF0001 pipeline which belongs to NHMD
@@ -95,6 +97,11 @@ class AssetHandler:
                     if institution == "NHMA":
                         pipeline_name = "PIPEPIOF0002"
                         self.util.update_json(json_file_path, "pipeline_name", pipeline_name)
+
+                    # TODO hacking the collection to fit with what is in SPECIFY - Vascular Plants to NHMD Vascular Plants
+                    if collection == "Vascular Plants":
+                        collection = "NHMD Vascular Plants"
+                        self.util.update_json(json_file_path, "collection", collection)
 
                     # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
                     #image_extension = []
@@ -190,6 +197,10 @@ class AssetHandler:
                     print(guid)
                     import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
                     
+
+
+                    self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.BEING_PROCESSED.value)
+
                     # fail to find import directory
                     if import_directory is None:
                         print(f"Import directory for {guid} not found probably cause is a mismatch between the workstation name in the metadata and the actual workstation name in the ndrive path.")

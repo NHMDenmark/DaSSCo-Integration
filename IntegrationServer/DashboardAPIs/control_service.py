@@ -326,27 +326,34 @@ class ControlService():
             print(e)
             return False, None, ("Something went wrong while searching for health data.")
         
-    def get_process_time_stat(self, max, min):
+    def get_process_time_stat(self, process_time_model):
         try:
+            """
             if min >= max:
                 return False, None, "min_value should be smaller than max_value."
 
             max = max * 60
             min = min * 60
             entries = self.mongo_track.get_entries_with_values_between("process_time", min, max)
-            
-            if entries is None or entries == []:
+            """
+
+            entries = self.mongo_track.query_process_times(process_time_model)
+
+            if entries is None or entries == [] or entries is False:
                 return True, None, "No entries found."
             
             count = 0
             total_time = 0
             for entry in entries:
-                count += 1
-                total_time += entry["process_time"]
+                try:
+                    if entry["process_time"]:
+                        count += 1
+                        total_time += entry["process_time"]
+                except:
+                    pass
 
             average_time = int(total_time / count)
             average_time = str(timedelta(seconds = average_time))
-
             
 
             return True, average_time, None

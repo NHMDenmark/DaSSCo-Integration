@@ -15,7 +15,7 @@ import time
 from dassco_utils.guid import main
 from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
-#from rabbitmq_client import RabbitMqClient as rmq
+from rabbitmq_client import RabbitMqClient as rmq
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -207,15 +207,14 @@ if __name__ == '__main__':
     email = email_sender.EmailSender("gmail")
     email.send_error_mail("abc", service_name="Test health api")
     """
-    track = track_repository.TrackRepository()
-    entries = track.get_entries_with_value_less_than("process_time", 90000)
-    print(len(entries))
-    track.close_connection()
-    #user = os.getenv("rabbit_user")
-    #pw = os.getenv("rabbit_pw")
-
-    #rmc = rmq(host_name="130.225.164.138", port=5672, credentials={"username":user, "password":pw})
+    load_dotenv()
+    user = os.getenv("rabbit_user")
+    pw = os.getenv("rabbit_pw")
     
+    rmc = rmq(host_name="biovault.bhsi.xyz", port=5671, credentials={"username":user, "password":pw})
+    
+    rmc.publish("my_queue", "yolo")
+
     #rmc.add_handler("first_test", print_something)
 
     #rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})

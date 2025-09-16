@@ -4,16 +4,21 @@ import pika
 import json
 import signal
 import logging
+import ssl
 
 class RabbitMqClient:
 
     def __init__(
         self,
-        host_name: str = 'localhost',
+        host_name: str = 'biovault.bhsi.xyz',
         port: int = 5672,
         run_async: bool = False,
         credentials: Optional[Dict[str, str]] = None,
-    ):
+    ):  
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        self.ssl_options = pika.SSLOptions(context)
         self.host_name = host_name
         self.port = port
         self.run_async = run_async
@@ -24,12 +29,14 @@ class RabbitMqClient:
         self._consumer_channel = None
         self._exit_event = threading.Event()
 
+
+
     def _create_connection(self):
         """
         Creates a connection to the RabbitMQ server
         :return: a blocking connection
         """
-        params_kwargs = {"host": self.host_name, "port": self.port}
+        params_kwargs = {"host": self.host_name, "port": self.port, "virtual_host": "/", "ssl_options": self.ssl_options}
         credentials = self._get_credentials()
 
         if credentials is not None:

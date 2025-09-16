@@ -568,3 +568,41 @@ class TrackRepository:
             return result
         
         return None
+    
+    def query_process_times(self, process_time_model):
+        """
+        Query the MongoDB collection based on filters from ProcessTimeModel.
+        """
+        query = {}
+
+        # Match metadata_origin if provided
+        if process_time_model.metadata_origin:
+            query["metadata_origin"] = {"$in": process_time_model.metadata_origin}
+
+        # Date range filters (assumes stored as ISODate in Mongo)
+        if process_time_model.before_date:
+            before = datetime.strptime(process_time_model.before_date, '%Y-%m-%d')
+            query.setdefault("created_timestamp", {})["$lt"] = before
+        if process_time_model.after_date:
+            after = datetime.strptime(process_time_model.after_date, '%Y-%m-%d')
+            query.setdefault("created_timestamp", {})["$gt"] = after
+
+        # Process time (assuming stored in seconds in DB)
+        if process_time_model.min_seconds is not None:
+            query.setdefault("process_time", {})["$gte"] = process_time_model.min_seconds
+        if process_time_model.max_seconds is not None:
+            query.setdefault("process_time", {})["$lte"] = process_time_model.max_seconds
+
+        # Filter by asset GUIDs if provided
+        if process_time_model.asset_guids:
+            query["_id"] = {"$in": process_time_model.asset_guids}
+
+        if query == {}:
+            return False
+
+        try:
+            results = list(self.collection.find(query))
+            return results
+        except Exception as e:
+            print(f"Error querying MongoDB: {e}")
+            return False

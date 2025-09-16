@@ -16,6 +16,7 @@ from DashboardAPIs.update_track_model import UpdateTrackhModel
 from DashboardAPIs.update_metadata_model import UpdateMetadataModel
 from DashboardAPIs.append_issue_model import AppendIssueModel
 from DashboardAPIs.update_issue_model import UpdateIssueModel
+from DashboardAPIs.process_time_model import ProcessTimeModel
 
 control = FastAPI()
 util = utility.Utility()
@@ -25,6 +26,7 @@ update_track_model = UpdateTrackhModel
 update_metadata_model = UpdateMetadataModel
 append_issue_model = AppendIssueModel
 update_issue_model = UpdateIssueModel
+process_time_model = ProcessTimeModel
 
 @control.get("/control/check")
 def index():
@@ -166,9 +168,9 @@ async def search_in_track(search_model: search_model):
     return data_list
 
 @control.get("/control/get_process_time_stat")
-async def get_process_time_stat(max_value: int, min_value: int):
+async def get_process_time_stat(process_time_model: process_time_model):
 
-    found, average_time, msg = service.get_process_time_stat(max_value, min_value)
+    found, average_time, msg = service.get_process_time_stat(process_time_model)
 
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
