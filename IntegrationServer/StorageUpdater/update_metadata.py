@@ -138,13 +138,19 @@ class UpdateMetadata():
 
                     guid = asset["_id"]
                     
-                    updated = self.storage_api.update_metadata(guid)
+                    try:
+                        updated = self.storage_api.update_metadata(guid)
 
-                    if updated is True:
-                        print(f"{guid} was updated by Starfish")
-                        self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
-                
-                # TODO handle false better than ignoring it
+                        if updated is True:
+                            # print(f"{guid} was updated by Starfish")
+                            self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
+                        else:
+                            entry = self.run_util.log_msg(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", self.run_util.log_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+
+                    except Exception as e:
+                        entry = self.run_util.log_exc(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", e, self.run_util.log_enum.ERROR.value)
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
 
                     time.sleep(1)
 
