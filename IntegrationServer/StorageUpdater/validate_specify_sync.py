@@ -197,10 +197,12 @@ class ValidateSpecifySync():
                         print(f"Waiting on specify sync for asset: {guid}")
                     
                 if asset_status == self.erda_enum.SPECIFY_SYNC_FAILED.value:
-                    # TODO figure out how to handle this situation further.
-                    # currently setting sync status to "ERROR" for testing
+                    
                     self.update_throttle_count() 
                     self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
+
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset failed to sync with specify in ARS. {guid}. Will set specify_sync to ERROR. {note}")
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
 
                 # wait time between calling ARS for asset status
                 time.sleep(1)

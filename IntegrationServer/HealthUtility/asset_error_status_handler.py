@@ -89,6 +89,10 @@ class AssetErrorStatusHandler():
                     if asset[self.flag_enum.HAS_OPEN_SHARE.value] == self.status_enum.ERROR.value:
                         self.handle_has_open_share_error(asset, guid)
 
+                    # specify_sync error
+                    if asset[self.flag_enum.SPECIFY_SYNC.value] == self.status_enum.ERROR.value:
+                        self.handle_specify_sync_error(asset, guid)
+
                 print(f"Assets with errors found: {errors_found}")
                 time.sleep(60)
 
@@ -232,7 +236,7 @@ class AssetErrorStatusHandler():
                                 link = proxy_path + name
                                 self.track_mongo.update_track_file_list(guid, name, "ars_link", link)
 
-                        self.update_throttle_size(asset)
+                        self.update_throttle_plus_size(asset)
                         self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
 
                     elif proxy_path is False:                        
@@ -253,8 +257,49 @@ class AssetErrorStatusHandler():
             pass
         
         return
+    
+    def handle_specify_sync_error(self, asset, guid):
 
-    def update_throttle_size(self, asset):
+        self.authorization_check()
+
+        ars_status = self.storage_api.get_full_asset_status(guid)
+
+        error_message = ars_status["data"].error_message
+        
+        if "SPECIMEN_NOT_FOUND_ERROR" in error_message:
+
+            metadata = self.metadata_mongo.get_entry(guid)
+
+            # TODO implement specify api calls to check for specimen existence
+            specimens = metadata["barcode"]
+
+            try:
+                closed = self.storage_api.close_share(guid)
+            except Exception as e:
+                entry = self.run_util.log_exc(self.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for SPECIMEN_NOT_FOUND_ERROR. One or more of the specimen(s) {specimens} not found in Specify. specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", e, self.status_enum.CRITICAL_ERROR.value)
+                self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
+                self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+                self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
+                return
+
+            if closed is True:
+                self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+            else:
+                entry = self.run_util.log_msg(self.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for SPECIMEN_NOT_FOUND_ERROR. One or more of the specimen(s) {specimens} not found in Specify. specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", self.status_enum.CRITICAL_ERROR.value)
+                self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
+                self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+                self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
+                return
+
+            self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
+            self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+            
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} failed to sync with specify in ARS. One or more of the specimen(s) {specimens} not found in Specify. Fileproxy share has been deleted and the asset removed throttle procedures. Asset file is still in ERDA and metadata in ARS. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO.")
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.CRITICAL_ERROR.value)
+            
+            return
+
+    def update_throttle_plus_size(self, asset):
         self.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
         # TODO decide if this belongs here. But seems natural enough to include it. 
