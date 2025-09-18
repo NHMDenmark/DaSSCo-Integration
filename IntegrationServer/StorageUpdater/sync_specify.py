@@ -152,6 +152,11 @@ class SyncSpecify():
                 
                 guid = asset["_id"]
 
+                if asset["asset_type"] == "DEVICE_TARGET":
+                    print(f"Asset {guid} is a device target, skipping specify sync.")
+                    self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.YES.value)
+                    continue
+
                 try:
                     self.metadata_mongo.update_entry(guid, "push_to_specify", True)
                     self.metadata_mongo.update_entry(guid, "asset_locked", True)

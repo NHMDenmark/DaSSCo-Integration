@@ -96,8 +96,13 @@ class SpecifyCloseShare(LogClass):
 
                 if closed is True:
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+                    
+                    if asset["asset_type"] == "DEVICE_TARGET":
+                        self.track_mongo.update_entry(guid, "specify_sync", self.validate_enum.NO.value)
+
                     self.update_throttle(asset)
                     self.add_process_time(guid, asset)
+
                     print(f"closed share: {guid}")
             
             if asset is None:

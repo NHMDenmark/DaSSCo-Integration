@@ -179,33 +179,17 @@ def test_exception():
     except:
         raise Exception("fun")
 
-def print_something(input):
-    print(input["asd"])
-
 if __name__ == '__main__':
-    """
-    d = datetime
-    after = d.datetime(2025, 2, 4)
-    #before = d.datetime(2025, 2, 4)
-    before = None
+    
+    md = metadata_repository.MetadataRepository()
 
-    track = track_repository.TrackRepository()
-    print(after, before)
-    list = track.get_time_based_multiple_key_list([{"jobs_status": "DONE"}], time_key="created_timestamp", after=after, before=before)
-    #list = track.get_entries_from_multiple_key_pairs([{"batch_list_name":"WORKHERB0003_2024-10-05", "jobs_status": "DONE"}])
-    f = 0
-    for l in list:
-        guid = l["_id"]
-        #print(guid)
-        f += 1
-    print(f)
+    assets = ["040ck2b867e980e0e211f02b5eb404"]
 
-    track.close_connection()
-    """
-    """
-    u = utility.Utility()
-    email = email_sender.EmailSender("gmail")
-    email.send_error_mail("abc", service_name="Test health api")
+    for asset in assets:
+        md.update_entry(asset, "asset_pid", ("ADDED_" + asset))
+
+    md.close_connection()
+
     """
     load_dotenv()
     user = os.getenv("rabbit_user")
@@ -214,14 +198,13 @@ if __name__ == '__main__':
     rmc = rmq(host_name="biovault.bhsi.xyz", port=5671, credentials={"username":user, "password":pw})
     
     rmc.publish("my_queue", "yolo")
-
+    """
     #rmc.add_handler("first_test", print_something)
 
     #rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})
     """
     """
     #rmc.publish("first_test", {"asd":4})
-
 
     #rmc.start_consuming()
 
@@ -234,112 +217,4 @@ if __name__ == '__main__':
     #print(type(m))
     #print(m["asset"])
 
-    """
-    u = utility.Utility()
-
-    track = track_repository.TrackRepository()
-
-    h = {"hit":"YES", "gold":{"y":1, "b":34}}
-
-    print(track.delete_entry("yuppi"))
-
-    track.close_connection()
-    """
-    """
-    track = track_repository.TrackRepository()
-    meta = metadata_repository.MetadataRepository()
-    throttle  = throttle_repository.ThrottleRepository()
-    dt = datetime
-
-    #throttle.reset_throttle()
     
-    #guid = "dev-ucloud-926"
-    #a = u.convert_json_to_utf8("\u00c3\u00b8")
-    #print(a)
-    #track.update_track_job_status(guid, "uploader", "DONE")
-    #track.update_entry(guid, "jobs_status", "DONE")
-    #track.update_entry(guid, "has_open_share", "NO")
-    #track.update_entry(guid, "hpc_ready", "NO")
-    #track.update_track_job_data_point(guid, "priority", 2, "status", "DONE")
-
-    #[{key: value, key: value}]
-    #list = track.get_entries_from_multiple_key_pairs([{"update_metadata":"YES", "available_for_services":"YES", "is_in_ars":"ERROR"}])
-    list = track.get_entries_from_multiple_key_pairs([{"jobs_status":"WAITING"}])
-    #list = track.get_entries("_id", "7e7-a-04-0d-1b-0c-1-001-01-000-0d4d5b-00000_400")
-
-    after = dt.datetime(2025, 2, 2)
-    #before = dt.datetime(2025, 2, 4)
-    before = None
-    #after = dt.datetime.strptime("2022-10-20", "%Y-%m-%d")
-    #list = track.get_time_based_multiple_key_list([{"has_new_file": "ERROR"}], time_key="created_timestamp", after=after, before=before)
-    #list = meta.get_time_based_multiple_key_list([{'digitiser': 'Rebekka Lesske', 'workstation_name': 'WORKHERB0003'}], "date_asset_taken", after, None)
-    #list = track.get_time_based_multiple_key_list([{"hpc_ready":"YES"}], "created_timestamp", after, None)
-
-    #track.update_entry(guid, "available_for_services", "YES")
-    #track.update_entry(guid, "available_for_services_timestamp", None)
-    #track.update_entry(guid, "available_for_services_wait_time", None)
-
-    #track.update_track_job_status("7e6-8-13-01-06-18-0-001-00-000-0ec096-00000", "barcode", "WAITING")
-    #track.update_entry("7e7-6-02-0e-06-27-0-001-00-000-08d944-00000", "jobs_status", "CRITICAL_ERROR")
-    
-    #list = track.get_error_entries()
-    
-    #sc = storage_client.StorageClient()
-    #hpc_caller = caller_hpc_api.CallerHPCApi()
-    #p = hpc_caller.say_hi()
-    #print(p)
-    #h = 0
-    #second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = sc.get_asset_sharesize_and_status(guid)
-    #print(second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note)
-    
-    #list = meta.get_entries_from_multiple_key_pairs([{"workstation_name": "WORKHERB0003", "digitiser":"Rebekka Lesske"}])
-
-    f = 0
-    error_counts = {}
-    for l in list:
-        guid = l["_id"]
-        
-        #jinfo = track.get_job_info(guid, "uploader")
-        #jinfo = track.get_job_from_key_value(guid, "name", "uploader")
-        s = None
-        try:
-            s = l["available_for_services"]
-        except:
-            pass
-    
-
-        if s is None:
-            #if jinfo["status"] == "ERROR":
-                #track.update_entry(guid, "has_new_file", "YES")
-            #track.update_entry(guid, "has_new_file", "YES")
-            #track.update_track_job_status(guid, jinfo["name"], "RETRY")
-                #print(guid)
-            #track.update_entry(guid, "available_for_services", "YES")
-            #track.update_entry(guid, "available_for_services_timestamp", None)
-            #track.update_entry(guid, "available_for_services_wait_time", None)
-            print(guid)
-                 
-            f += 1
-        #for key, value in l.items():
-            #if value == "ERROR":
-                #print(guid, key)
-                #error_counts[key] = error_counts.get(key, 0) + 1  # Increment count for the key
-        
-    # Print results
-    for key, count in error_counts.items():
-        print(f"{key}: {count}")
-        #print(guid, l["created_timestamp"])
-        #hpc_caller.asset_clean_up(guid)
-        #track.update_entry(guid, "temporary_files_ndrive", "YES")
-        #track.update_entry(l["_id"], "temporary_path_ndrive", "/work/data/Ndrive/WORKHERB0001/imported_2024-7-4")
-        #track.update_track_job_status(l["_id"], "temporary_path_ndrive", x)
-        
-    print(f)
-    
-    throttle.close_connection()
-    track.close_connection()
-    meta.close_connection()
-    """
-    #i = IntegrationServer()
-    #test()
-    #x()

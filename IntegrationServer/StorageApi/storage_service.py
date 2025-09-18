@@ -120,10 +120,13 @@ class StorageService():
                 # TODO again issue with something potentially being a list
                 new_specimen.specimen_pid = entry["specimen_pid"]
                 if new_specimen.specimen_pid == []:
-                        new_specimen.specimen_pid = ""
+                        new_specimen.specimen_pid = "SPID_" + b
                 # TODO again issue with something potentially being a list - remove when ARS / slurm is synced
                 if isinstance(new_specimen.specimen_pid , list):
                     new_specimen.specimen_pid = new_specimen.specimen_pid[0]
+
+                if entry["specimen_pid"] is None:
+                    new_specimen.specimen_pid = "SPID_" + b
 
                 self.api_metadata.specimens.append(new_specimen)
             

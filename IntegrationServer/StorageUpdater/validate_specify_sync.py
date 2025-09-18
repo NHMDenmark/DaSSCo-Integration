@@ -191,7 +191,7 @@ class ValidateSpecifySync():
                     timed_out = self.check_timeout(guid)
 
                     if timed_out is True:                            
-                            self.timeout_handling(guid, asset)
+                            self.timeout_handling(guid)
                     else:
                         # no action needed here since asset is queued to be synced and just waiting for that to happen
                         print(f"Waiting on specify sync for asset: {guid}")

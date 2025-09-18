@@ -103,6 +103,12 @@ class AssetHandler:
                         collection = "NHMD Vascular Plants"
                         self.util.update_json(json_file_path, "collection", collection)
 
+                    # TODO hacking the asset_pid to fit with what is in ARS - ADDED_ + guid
+                    asset_pid = self.util.get_value(json_file_path, "asset_pid")
+                    if asset_pid is None or asset_pid == "":
+                        asset_pid = "ADDED_" + guid
+                        self.util.update_json(json_file_path, "asset_pid", asset_pid)
+
                     # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
                     #image_extension = []
                     #for format in self.util.get_value(json_file_path, "file_format"):
