@@ -62,6 +62,10 @@ class LogClass:
             self.logger.error(msg)
             entry = entry_handler.log_entry
 
+        if level == self.log_enum.CRITICAL_ERROR.value:
+            self.logger.error(msg)
+            entry = entry_handler.log_entry
+
         self.logger.removeHandler(message_handler)
         self.logger.removeHandler(entry_handler)
 
@@ -94,6 +98,10 @@ class LogClass:
             entry = entry_handler.log_entry
 
         if level == self.log_enum.ERROR.value:
+            self.logger.error(msg, exc_info= exc)
+            entry = entry_handler.log_entry
+
+        if level == self.log_enum.CRITICAL_ERROR.value:
             self.logger.error(msg, exc_info= exc)
             entry = entry_handler.log_entry
 

@@ -8,7 +8,7 @@ class LogEnum(Enum):
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
-    CRITICAL = "CRITICAL"
+    CRITICAL_ERROR = "CRITICAL_ERROR"
     TESTING = "TESTING"
 
 class Log:
@@ -17,5 +17,5 @@ class Log:
         self.INFO = LogEnum.INFO.value
         self.WARNING = LogEnum.WARNING.value
         self.ERROR = LogEnum.ERROR.value
-        self.CRITICAL = LogEnum.CRITICAL.value
+        self.CRITICAL_ERROR = LogEnum.CRITICAL_ERROR.value
         self.TESTING = LogEnum.TESTING.value
