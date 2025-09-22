@@ -304,7 +304,7 @@ class AssetErrorStatusHandler():
         
         if "SPECIMEN_NOT_FOUND_ERROR" in error_message:
 
-            metadata = self.metadata_mongo.get_entry(guid)
+            metadata = self.metadata_mongo.get_entry("_id", guid)
 
             # TODO implement specify api calls to check for specimen existence
             specimens = metadata["barcode"]
