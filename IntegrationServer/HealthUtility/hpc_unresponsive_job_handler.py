@@ -112,8 +112,12 @@ class HPCUnresponsiveJobHandler():
 
                 if current_asset_job is None:
                     current_asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.QUEUED.value)
-
-                current_job_name = current_asset_job["name"]
+                
+                if current_asset_job is not None:
+                    current_job_name = current_asset_job["name"]
+                else:
+                    continue
+                
                 if asset[self.flag_enum.JOBS_STATUS.value] == self.status_enum.STARTING.value and job_name == current_job_name:
                     unresponsive_starting_list.append(asset_tuple)
 
@@ -121,7 +125,12 @@ class HPCUnresponsiveJobHandler():
                 asset, guid, job_name, hpc_job_id = asset_tuple
 
                 current_asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.RUNNING.value)
-                current_job_name = current_asset_job["name"]
+                
+                if current_asset_job is not None:
+                    current_job_name = current_asset_job["name"]
+                else:
+                    continue
+
                 if asset[self.flag_enum.JOBS_STATUS.value] == self.status_enum.RUNNING.value and job_name == current_job_name:
                     unresponsive_running_list.append(asset_tuple)
 
