@@ -78,6 +78,11 @@ class AssetErrorStatusHandler():
             else:
                 errors_found = 0
                 for asset in assets:
+
+                    # let asset_job_error_handler handle jobs_status errors
+                    if asset["jobs_status"] == self.status_enum.ERROR.value:
+                        continue
+
                     errors_found += 1
                     guid = asset["_id"]
                     

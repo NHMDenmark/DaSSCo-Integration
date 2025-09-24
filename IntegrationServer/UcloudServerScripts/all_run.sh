@@ -13,6 +13,7 @@ nohup python "$root/HealthUtility/flag_paused_status_handler.py" > "$root/Health
 nohup python "$root/HealthUtility/asset_paused_status_handler.py" > "$root/HealthUtility/asset_paused_status_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/asset_error_status_handler.py" > "$root/HealthUtility/asset_error_status_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/hpc_unresponsive_job_handler.py" > "$root/HealthUtility/hpc_unresponsive_job_handler.out" 2>&1 &
+nohup python "$root/HealthUtility/asset_job_error_handler.py" > "$root/HealthUtility/asset_job_error_handler.out" 2>&1 &
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/job_caller.out" 2>&1 &

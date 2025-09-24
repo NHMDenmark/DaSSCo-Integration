@@ -9,6 +9,16 @@
     "error_time_span": 10,
     "mail_wait_time": 20
   },
+  "Asset job error handler": {
+    "module": "health utility",
+    "run_service":true,
+    "pause_time": 5,
+    "pause_check_list": [2, 7],
+    "pause_loop_count": 4,
+    "error_tolerance": 20,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
   "Throttle service": {
     "module": "health utility",
     "run_service":true,
