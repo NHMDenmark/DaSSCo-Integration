@@ -222,7 +222,7 @@ class TestControlApi(unittest.TestCase):
                 "timestamp": datetime(2010, 10, 10, 10, 10, 10).isoformat(),
                 "status": "CHAOS",
                 "description": "automated test issue",
-                "note": "unit test note",
+                "notes": "unit test note",
                 "solved": False
             },
             "update_ars": False,
@@ -244,7 +244,7 @@ class TestControlApi(unittest.TestCase):
         update_payload = {
             "issue_category": "star trek",
             "issue_name":"mars expedition",
-            "key_values":{"note":"green cheese", "description":"its made of cheese"},
+            "key_values":{"notes":"green cheese", "description":"its made of cheese"},
             "update_ars": False,
             "asset_guids":[self.entry_id]
         }
@@ -258,13 +258,13 @@ class TestControlApi(unittest.TestCase):
         response = self.client.get("/control/get_metadata", params={"guid":self.entry_id})
         m_response_data = response.json()
         
-        self.assertEqual(m_response_data["issues"][0]["note"], "green cheese")
+        self.assertEqual(m_response_data["issues"][0]["notes"], "green cheese")
         self.assertEqual(m_response_data["issues"][0]["description"], "its made of cheese")
 
         update_payload = {
             "issue_category": "mixed up",
             "issue_name":"mars expedition",
-            "key_values":{"note":"green cheese", "description":"its made of cheese"},
+            "key_values":{"notes":"green cheese", "description":"its made of cheese"},
             "update_ars": False,
             "asset_guids":[self.entry_id]
         }
@@ -330,7 +330,7 @@ class TestControlApi(unittest.TestCase):
                         "file_format":"tif",
                         "funding":["Easter bunny"],
                         "institution":"Mars",
-                        "issues":[{"category":"star trek", "name":"mars expedition", "status":"CHAOS", "timestamp":None, "description":"meteoritic interference", "note":"big meteors", "solved":False}],
+                        "issues":[{"category":"star trek", "name":"mars expedition", "status":"CHAOS", "timestamp":None, "description":"meteoritic interference", "notes":"big meteors", "solved":False}],
                         "legality":{"copyright":"Green men", "license":None, "credit":None},
                         "make_public":False,
                         "metadata_created_by":None,

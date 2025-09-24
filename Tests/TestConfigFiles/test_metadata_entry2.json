@@ -42,6 +42,8 @@
     "push_to_specify": false,
     "restricted_access": [],
     "session_id": null,
+    "specify_attachment_remarks": null,
+    "specify_attachment_title": null,
     "specimen_pid": null,
     "status": "WORKING_COPY",
     "tags": {},

@@ -66,6 +66,7 @@ class LogClass:
             self.logger.error(msg)
             entry = entry_handler.log_entry
 
+        message_handler.close()
         self.logger.removeHandler(message_handler)
         self.logger.removeHandler(entry_handler)
 
@@ -105,6 +106,7 @@ class LogClass:
             self.logger.error(msg, exc_info= exc)
             entry = entry_handler.log_entry
 
+        exception_handler.close()
         self.logger.removeHandler(exception_handler)
         self.logger.removeHandler(entry_handler)
 

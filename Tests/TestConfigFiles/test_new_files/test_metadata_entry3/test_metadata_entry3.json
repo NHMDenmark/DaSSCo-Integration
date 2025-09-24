@@ -2,7 +2,7 @@
   "asset_created_by": null,
   "asset_deleted_by": null,
   "asset_guid": "test_metadata_entry3",
-  "asset_pid": null,
+  "asset_pid": "ADDED_test_metadata_entry3",
   "asset_subject": null,
   "asset_updated_by": null,
   "audited": false,
@@ -24,7 +24,9 @@
   "digitiser": "Testy McTest",
   "external_publisher": [],
   "file_format": "tif",
-  "funding": ["TEST"],
+  "funding": [
+    "TEST"
+  ],
   "institution": "test-institution",
   "issues": [],
   "legality": null,
