@@ -142,8 +142,10 @@ class HPCCleanUp():
         if clean_up_job is not None:
             self.mongo_track.update_track_job_list(guid, "clean_up", "status", self.status_enum.FAILED.value)
             self.mongo_track.update_track_job_list(guid, "clean_up", "name", "attempted_clean_up")
-
-        priority = len(asset["job_list"])
+            priority = clean_up_job["priority"]
+        else:
+            priority = len(asset["job_list"])
+        
         job = {
             "name": "clean_up",
             "status": status_enum.StatusEnum.STARTING.value,

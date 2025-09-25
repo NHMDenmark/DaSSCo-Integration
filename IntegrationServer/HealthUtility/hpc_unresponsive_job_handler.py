@@ -155,6 +155,8 @@ class HPCUnresponsiveJobHandler():
                     
                     asset, guid, job_name, hpc_job_id = asset_tuple
 
+                    print(f"Handling {guid} with job {job_name} and hpc job id {hpc_job_id}")
+
                     self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.RETRY.value)
 
                     entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name}, hpc job id : {hpc_job_id}, not respond for more than {wait_time} seconds while status was {self.status_enum.RUNNING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")

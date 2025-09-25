@@ -54,6 +54,9 @@ class MetadataRepository:
     def delete_entry(self, guid):
         return self.all.delete_entry(guid)
     
+    def delete_field(self, guid, key):
+        return self.all.delete_field(guid, key)
+    
     def append_existing_list(self, guid, list_key, value):
         return self.all.append_existing_list(guid, list_key, value)
 

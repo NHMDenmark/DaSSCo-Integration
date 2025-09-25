@@ -159,24 +159,26 @@ class AssetJobErrorHandler():
         
         ars_status = self.storage_api.get_full_asset_status(guid)
         ars_file_list = self.storage_api.get_files_available(guid, institution, collection)
-
+        
         if ars_status is False or ars_file_list is False:
             return
+        
+        ars_file_list = ars_file_list.json()
 
         # set retry status if no file found in ARS
-        if ars_status["data"].status == self.erda_enum.METADATA_RECEIVED.value and len(ars_file_list["data"]) == 1 and ars_status["data"].share_allocation == asset["asset_size"] and ars_status["data"].error_message is None:
+        if ars_status["data"].status == self.erda_enum.METADATA_RECEIVED.value and len(ars_file_list) == 1 and ars_status["data"].share_allocation_mb == asset["asset_size"] and ars_status["data"].error_message is None:
             self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
             self.track_mongo.update_track_job_status(guid, error_job["name"], self.status_enum.RETRY.value)
             return
         
         # return asset to normal flow if fully uploaded to ARS
-        if ars_status["data"].status == self.erda_enum.METADATA_RECEIVED.value and len(ars_file_list["data"]) == 2 and ars_status["data"].share_allocation == asset["asset_size"] and ars_status["data"].error_message is None:
+        if ars_status["data"].status == self.erda_enum.METADATA_RECEIVED.value and len(ars_file_list) == 2 and ars_status["data"].share_allocation_mb == asset["asset_size"] and ars_status["data"].error_message is None:
             self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
-            self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.WAITING.value)
+            self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.DONE.value)
             self.track_mongo.update_track_job_status(guid, error_job["name"], self.status_enum.DONE.value)
             self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.AWAIT.value)
 
-            for file in ars_file_list["data"]:
+            for file in ars_file_list:
                 for ext in [".tif", ".jpeg"]:
                     expected_name = guid + ext
                     if expected_name in file:

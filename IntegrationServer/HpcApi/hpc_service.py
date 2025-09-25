@@ -599,11 +599,14 @@ class HPCService():
             self.mongo_track.update_entry(guid, "hpc_ready", self.validate.NO.value)
             self.jobs_status_update(guid, "clean_up", "DONE")
             
+            """
+            # TODO Trying wihtout this to see if this is where the asset in flight count goes wrong
             # If asset is derivative -1 from assets in flight
             parent_guid = self.mongo_metadata.get_value_for_key(guid, "parent_guid")
             if parent_guid is not None and parent_guid != "":
                 
                 self.mongo_throttle.subtract_one_from_count("assets_in_flight", "value")
+            """
 
             self.mongo_track.update_entry(guid, "specify_sync", self.validate.PREPARE.value)
 

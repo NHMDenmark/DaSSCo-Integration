@@ -119,7 +119,7 @@ class ControlService():
             
         except Exception as e:
             print(f"get metadata asset data: {e}")
-            return False, "Things went wrong"
+            return False, "Things went wrong."
         
     def get_health_asset_data(self, key, value):
 
@@ -133,7 +133,7 @@ class ControlService():
             
         except Exception as e:
             print(f"get health asset data: {e}")
-            return False, "Things went wrong"
+            return False, "Things went wrong."
         
     def get_throttle_data(self):
 

@@ -183,13 +183,13 @@ if __name__ == '__main__':
     
     md = metadata_repository.MetadataRepository()
 
-    assets = ["040ck2b867e980e0e211f02b5eb404"]
+    assets = ["040ck2b867e980d0e010f158692c95", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
 
     for asset in assets:
-        md.update_entry(asset, "asset_pid", ("ADDED_" + asset))
+        md.delete_field(asset, "issues")
 
     md.close_connection()
-
+    
     """
     load_dotenv()
     user = os.getenv("rabbit_user")

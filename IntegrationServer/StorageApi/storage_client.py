@@ -329,7 +329,7 @@ class StorageClient():
      def get_files_available(self, guid, institution, collection):
           try:
                response = self.client.file_proxy.list_available_files(guid, institution, collection)
-
+               
                status_code = response.status_code
 
                if status_code == 200:

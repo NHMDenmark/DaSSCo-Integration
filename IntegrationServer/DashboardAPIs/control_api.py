@@ -30,7 +30,7 @@ process_time_model = ProcessTimeModel
 
 @control.get("/control/check")
 def index():
-    return "check it out"
+    return "check it out!"
 
 @control.post("/control/start_all")
 async def start_all():
@@ -61,7 +61,7 @@ async def service_start(service_name: str):
     started = service.start_service(service_name)
     
     if started is False:
-        return JSONResponse(content={"status": f"Failed to start {service_name}"}, status_code=500)
+        return JSONResponse(content={"status": f"Failed to start: {service_name}"}, status_code=500)
 
     return JSONResponse(content={"status": f"Started {service_name}"}, status_code=200)
 

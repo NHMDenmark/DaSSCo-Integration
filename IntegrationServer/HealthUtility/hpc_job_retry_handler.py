@@ -116,18 +116,19 @@ class HPCJobRetryHandler():
 
             self.track_mongo.append_existing_list(guid, "job_list", job)
 
-            self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.WAITING.value)
+            if job["name"] in ["uploader", "clean_up"]:
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
+            else:
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.WAITING.value)
 
             # set additional flags depending on which job we are dealing with
             if job["name"] == "assetLoader":
                 self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.NO.value)
 
             if job["name"] == "clean_up":
-                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
                 self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.YES.value)
 
             if job["name"] == "uploader":
-                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
                 self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.YES.value)
 
             # Notification of event
