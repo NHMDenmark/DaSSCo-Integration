@@ -250,7 +250,7 @@ class ControlService():
         
         except Exception as e:
             print(e)
-            return False, None, ("Something went wrong while searching for metadata.")
+            return False, None, ("Something went wrong while searching for metadata")
         
     def search_track_db(self, criteria):
 

@@ -108,28 +108,48 @@ class AllRepository:
         entries = list(self.collection.find(query))
         return entries
 
-    def get_time_based_multiple_key(self, key_value_pairs, time_key = None, after = None, before = None):
+    def get_time_based_multiple_key(self, key_value_pairs, time_key=None, after=None, before=None):
+        
+        kvp = list(key_value_pairs)  # copy so we don’t mutate caller’s list
 
+        # --- detect field type ---
+        sample_doc = self.collection.find_one({time_key: {"$exists": True}}, {time_key: 1})
+        field_is_datetime = False
+        if sample_doc and isinstance(sample_doc.get(time_key), datetime.datetime):
+            field_is_datetime = True
+
+        # --- build query depending on type ---
         if time_key is not None:
-            
             time_query = {time_key: {}}
 
             if after is not None:
-            # Convert "after" into a datetime if it isn't one already.
-                if not isinstance(after, datetime.datetime):
-                    after = datetime.datetime(after)
-                time_query[time_key].update({"$gte": after})
-        
+                if field_is_datetime:
+                    # ensure proper datetime
+                    if not isinstance(after, datetime.datetime):
+                        after = datetime.datetime.fromisoformat(str(after))
+                    time_query[time_key].update({"$gte": after})
+                else:
+                    # ensure string in ISO8601 format
+                    if isinstance(after, datetime.datetime):
+                        after = after.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+                    time_query[time_key].update({"$gte": after})
+
             if before is not None:
-                if not isinstance(before, datetime.datetime):
-                    before = datetime.datetime(before)
-                time_query[time_key].update({"$lte": before})
+                if field_is_datetime:
+                    if not isinstance(before, datetime.datetime):
+                        before = datetime.datetime.fromisoformat(str(before))
+                    time_query[time_key].update({"$lte": before})
+                else:
+                    if isinstance(before, datetime.datetime):
+                        before = before.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+                    time_query[time_key].update({"$lte": before})
 
-            key_value_pairs.append(time_query)
+            kvp.append(time_query)
 
-        query = {"$and": key_value_pairs}
-        
+        query = {"$and": kvp}
+
         entries = list(self.collection.find(query))
+
         return entries
 
     def insert_entry(self, id, data):

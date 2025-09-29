@@ -1,9 +1,9 @@
 {   
     "assets_in_flight": 30,
-    "await_sync_asset_count": 20,
+    "await_sync_asset_count": 50,
     "await_specify_sync_count": 20,
-    "total_asset_size_mb": 60000,
-    "total_new_asset_size_mb": 6000,
-    "total_derivative_size_mb": 20000,
+    "total_asset_size_mb": 100000,
+    "total_new_asset_size_mb": 50000,
+    "total_derivative_size_mb": 50000,
     "total_reopened_share_size_mb": 20000
 }
