@@ -222,10 +222,10 @@
   "Validate erda sync ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 13,
+    "pause_time": 60,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
-    "error_tolerance": 2,
+    "error_tolerance": 20,
     "error_time_span": 3,
     "mail_wait_time": 30,
     "max_sync_erda_attempt_wait_time": 900
@@ -233,7 +233,7 @@
   "Validate specify sync ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 13,
+    "pause_time": 60,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
     "error_tolerance": 2,
@@ -244,7 +244,7 @@
   "Specify sync ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 13,
+    "pause_time": 60,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
     "error_tolerance": 2,
@@ -254,7 +254,7 @@
   "Specify close share ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 13,
+    "pause_time": 60,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
     "error_tolerance": 2,
@@ -264,12 +264,12 @@
   "Specify open share ARS": {
     "module": "storage updater",
     "run_service":true,
-    "pause_time": 13,
-    "pause_check_list": [2, 5, 7],
-    "pause_loop_count": 99,
-    "error_tolerance": 2,
-    "error_time_span": 3,
-    "mail_wait_time": 30
+    "pause_time": 60,
+    "pause_check_list": [2, 5, 15],
+    "pause_loop_count": 60,
+    "error_tolerance": 5,
+    "error_time_span": 10,
+    "mail_wait_time": 60
   },
   "ING Receive metadata": {
     "module": "ingestion interface",

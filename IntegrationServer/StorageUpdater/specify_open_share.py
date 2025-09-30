@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, metadata_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, erda_status
 from Enums.status_enum import Status
 from Enums.validate_enum import Validate
 import utility
@@ -42,6 +42,7 @@ class SpecifyOpenShare(Status, Validate):
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
         self.validate_enum = validate_enum.ValidateEnum
+        self.erda_status_enum = erda_status.ErdaStatusEnum
         
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
 
@@ -65,7 +66,7 @@ class SpecifyOpenShare(Status, Validate):
         except Exception as e:
             print("service crashed", e)
             try:
-                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e, self.status_enum.CRITICAL_ERROR.value)
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
@@ -220,9 +221,15 @@ class SpecifyOpenShare(Status, Validate):
     def handle_status_504(self, guid, status_code):
         
         try:
+            self.authorization_check()
+            if self.storage_api is None:
+                entry = self.run_util.log_msg(self.prefix_id, f"Failed to reauthorize when checking status of asset {guid} after receiving status {status_code}.", self.ERROR)
+                self.health_caller.error(self.service_name, entry, guid)
+                return False
+            
             full_status = self.storage_api.get_full_asset_status(guid)
 
-            if full_status["data"].status == "COMPLETED" and full_status["data"].share_allocation_mb != 0:
+            if full_status["data"].status == self.erda_status_enum.ERDA_SYNCHRONISED.value and full_status["data"].share_allocation_mb != 0:
                 entry = self.run_util.log_msg(self.prefix_id, f"Received status {status_code} for {guid}. Checked and the share was opened anyway.", self.run_util.log_enum.WARNING.value)
                 self.health_caller.warning(self.service_name, entry, guid)
                 return True

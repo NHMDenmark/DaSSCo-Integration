@@ -54,7 +54,7 @@ class HPCJobCaller():
         except Exception as e:
             print("service crashed", e)
             try:
-                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e, self.status_enum.CRITICAL_ERROR.value)
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
@@ -84,6 +84,9 @@ class HPCJobCaller():
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
+                if guid is None or jobs is None:
+                    continue
+
                 for job in jobs:
                     
                     try:
@@ -133,27 +136,35 @@ class HPCJobCaller():
             print(f"Failed to close connections: {e}")
 
     def get_guid_and_jobs(self, asset):
-
-        jobs = []    
-
         guid = asset["_id"]
+        try:
+            jobs = []    
 
-        all_jobs = asset["job_list"]
-        waiting_jobs = []
+            all_jobs = asset["job_list"]
+            waiting_jobs = []
 
-        for job in all_jobs:
+            for job in all_jobs:
 
-            if job["status"] == status_enum.StatusEnum.WAITING.value:
-                waiting_jobs.append(job)
+                if job["status"] == status_enum.StatusEnum.WAITING.value:
+                    waiting_jobs.append(job)
 
-        # Specify the field for which you want to find the lowest value
-        field_to_check = "priority"
+            # Specify the field for which you want to find the lowest value
+            field_to_check = "priority"
 
-        # Find the lowest value
-        lowest_value = min(job[field_to_check] for job in waiting_jobs)
+            # Find the lowest value
+            lowest_value = min(job[field_to_check] for job in waiting_jobs)
 
-        # Collect entries with the lowest value
-        jobs = [job for job in waiting_jobs if job[field_to_check] == lowest_value]
+            # Collect entries with the lowest value
+            jobs = [job for job in waiting_jobs if job[field_to_check] == lowest_value]
+        
+        except Exception as e:
+            print(f"Failed for {guid}: {e}")
+            entry = self.run_util.log_exc(self.prefix_id, f"Failed to get_guid_and_jobs for asset {guid}. Setting jobs_status to {self.status_enum.CRITICAL_ERROR.value} and available_for_services to {self.validate_enum.NO.value}.", e, self.status_enum.CRITICAL_ERROR.value)
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+            self.mongo_track.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+            self.mongo_track.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+
+            return None, None
 
         return guid, jobs
 

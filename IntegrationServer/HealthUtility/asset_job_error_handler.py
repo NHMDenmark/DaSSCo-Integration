@@ -55,7 +55,7 @@ class AssetJobErrorHandler():
         except Exception as e:
             print("service crashed", e)
             try:
-                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e)
+                entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e, self.status_enum.CRITICAL_ERROR.value)
                 self.health_caller.unexpected_error(self.service_name, entry)
             except:
                 print(f"failed to inform about crash")
@@ -185,8 +185,14 @@ class AssetJobErrorHandler():
                         self.track_mongo.update_track_file_list(guid, expected_name, "ars_link", file)
                         self.track_mongo.update_entry(guid, "proxy_path", file)
 
-            entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job {error_job['name']} in error state. However the asset is fully uploaded to ARS. Setting jobs_status to {self.status_enum.WAITING.value} and has_new_file to {self.validate_enum.AWAIT.value}.")
-            self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.WAITING.value)
+            is_derivative = self.is_asset_derivative(guid)
+            if is_derivative is True:
+                new_status = self.status_enum.DONE.value
+            else:
+                new_status = self.status_enum.WAITING.value
+
+            entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job {error_job['name']} in error state. However the asset is fully uploaded to ARS. Setting jobs_status to {new_status} and has_new_file to {self.validate_enum.AWAIT.value}.")
+            self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, new_status)
             self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.YES.value)
             return
 
@@ -249,6 +255,14 @@ class AssetJobErrorHandler():
     def subtract_asset_total_size(self, asset):
         size = asset["total_size"]
         self.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", size)
+
+    #check if an asset is a derivative by checking if it has a parent
+    def is_asset_derivative(self, guid):
+        value = self.metadata_mongo.get_value_for_key(guid, "parent_guids")
+        if value is None or value == "" or value == []:
+            return False
+        else:
+            return True
         
     def close_connections(self):
         try:
