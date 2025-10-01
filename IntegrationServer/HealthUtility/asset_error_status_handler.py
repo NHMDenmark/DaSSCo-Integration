@@ -222,6 +222,7 @@ class AssetErrorStatusHandler():
                         return
 
         if status == self.erda_enum.ERDA_SYNCHRONISED.value:
+
             # specify open share fails -> retry opening the share
             if asset_specify_sync == self.validate_enum.PREPARE.value:
                 
@@ -276,18 +277,18 @@ class AssetErrorStatusHandler():
                                 self.track_mongo.update_track_file_list(guid, name, "ars_link", link)
 
                         self.update_throttle_plus_size(asset)
-                        self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
+                        self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
                         message = self.run_util.log_msg(self.prefix_id, f"Successfully handled has_open_share error for {guid}. has_open_share set to {self.validate_enum.YES.value}")
-                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.validate_enum.YES.value)
+                        self.health_caller.warning(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
 
                     elif proxy_path is False:                        
-                        message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", self.status_enum.CRITICAL_ERROR.value)
-                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                        message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS got status {status_code}.", self.status_enum.CRITICAL_ERROR.value)
+                        self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)            
                         return
                 except Exception as e:
                     print(e)
-                    message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", e, self.status_enum.CRITICAL_ERROR.value)
-                    self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                    message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Something else failed.", e, self.status_enum.CRITICAL_ERROR.value)
+                    self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)            
                     return
 
 
@@ -339,6 +340,28 @@ class AssetErrorStatusHandler():
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.CRITICAL_ERROR.value)
             
             return
+        """
+        # TODO add a temp variable to track data and have validate sync specify remove this - implement checks for it here to avoid looping the same errored asset
+        # TODO needs access to the direct sync with specify endpoint, cant resync without getting rid of the error by doing a fake update to the metadata
+        if "UNKNOWN_ERROR" in error_message:
+            
+            metadata = self.metadata_mongo.get_entry("_id", guid)
+
+            if asset["asset_size"] == ars_status["data"].share_allocation_mb:
+
+                files = self.storage_api.get_files_available(guid, metadata["institution"], metadata["collection"])
+                if files is not False:
+                    self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.PREPARE.value)
+                    entry = self.run_util.log_msg(self.prefix_id, f"Handled specify_sync error for {guid} with UNKNOWN_ERROR in status message from ARS. Asset had share allocation match asset size. Asset files were found to be available in ARS. specify_sync set to {self.validate_enum.PREPARE.value} and should return to normal flow.")
+                    self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.PREPARE.value)
+                    return
+        """
+        # others
+        self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
+        self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+        entry = self.run_util.log_msg(self.prefix_id, f"Tried handling specify_sync error for {guid}. Could not determine the issue. Will need manual handling. specify_sync set to {self.status_enum.CRITICAL_ERROR.value}")
+        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)            
+        return
 
     def update_throttle_plus_size(self, asset):
         self.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])

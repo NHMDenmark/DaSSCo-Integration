@@ -251,7 +251,7 @@ class AssetCreator():
 
             if new_asset is False:
                 asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.UCLOUD_HPC.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
-            if derivative_asset is False:
+            if derivative_asset is False and asset is None:
                 asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.NDRIVE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if new_asset and derivative_asset and asset is None:
