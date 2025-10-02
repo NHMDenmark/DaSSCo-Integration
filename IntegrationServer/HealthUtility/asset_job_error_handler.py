@@ -135,8 +135,40 @@ class AssetJobErrorHandler():
         pass
 
     def handle_barcode_error(self, asset, guid, error_job):
-        
-        pass
+        metadata = self.metadata_mongo.get_entry("_id", guid)
+        institution = metadata["institution"]
+        collection = metadata["collection"]
+
+        for issue in metadata["issues"]:
+            if issue["category"] == "barcode":
+
+                if issue["name"] == "No barcode":
+                    try:
+                        self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+                        time.sleep(1)
+                        if asset[self.flag_enum.UPDATE_METADATA.value] == self.validate_enum.YES.value:
+                            self.authorization_check()
+                            if self.storage_api is None:
+                                return
+                            self.storage_api.update_metadata(guid)
+
+                            if asset[self.flag_enum.HAS_OPEN_SHARE.value] == self.validate_enum.YES.value:
+                                closed = self.storage_api.close_share(guid, institution, collection)
+                                if closed is True:
+                                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.NO.value)
+
+                        self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+                        self.track_mongo.update_track_job_status(guid, "barcode", self.status_enum.CRITICAL_ERROR.value)
+                        self.subtract_from_assets_in_flight()
+                        # TODO maybe dont leave asset in hpc?
+                        entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job 'barcode' in error state due to 'No barcode' issue. Asset jobs_status and barcode job status set to CRITICAL_ERROR, available_for_services set to NO. Asset is removed from throttle count and fileproxy share is closed. Asset is still on HPC server.", self.status_enum.CRITICAL_ERROR.value)
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                        return
+                    except Exception as e:
+                        entry = self.run_util.log_exc(self.prefix_id, f"Asset {guid} had job 'barcode' in error state due to 'No barcode' issue. However, an exception was raised when trying to set the asset to CRITICAL_ERROR. Asset needs manual intervention. Exception: {e}", e, self.status_enum.CRITICAL_ERROR.value)
+                        self.health_caller.unexpected_error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                        return
+        return
 
     def handle_cropping_error(self, asset, guid, error_job):
         

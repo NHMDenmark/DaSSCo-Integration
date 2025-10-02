@@ -234,68 +234,6 @@ class AssetHandler:
                     self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)
 
                     self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
-                    
-    
-    """
-    Takes processed metadata files from slurm and updates job status for those files. 
-    Current status names used are: INPIPELINE, DONE, READY, WAITTING, ERROR
-
-    """
-    # Not in use - was used back when we moved files through ssh to and from slurm. 
-    def process_updated_directories(self):
-
-        input_dir = "./Files/UpdatedFiles"
-        in_process_dir = "./Files/InProcess"
-        error_path = "./Files/Error"
-
-        # Iterate over subdirectories in the input directory
-        for subdirectory in os.listdir(input_dir):
-            subdirectory_path = os.path.join(input_dir, subdirectory)
-
-            # Check if a directory with the same name exists in the error path
-            error_directory_path = os.path.join(error_path, subdirectory)
-            if os.path.exists(error_directory_path) and os.path.isdir(error_directory_path):
-                # TODO handle files if in error folder
-                print(f"Directory {error_directory_path} already exists in the error path.")
-                continue
-
-            jobs_json = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}_jobs.json"]
-            metadata_json = [f for f in os.listdir(subdirectory_path) if f == f"{subdirectory}.json"]
-
-            if len(jobs_json) != 1 and len(metadata_json) != 1:
-                # TODO move to error folder
-                continue
-
-            metadata_path = os.path.join(subdirectory_path, metadata_json[0])
-            jobs_path = os.path.join(subdirectory_path, f"{subdirectory}_jobs.json")
-
-            pipeline_name = self.util.get_value(metadata_path, "pipeline_name")
-
-            process_pipeline_path = os.path.join(in_process_dir, pipeline_name)
-
-            process_directory_path = os.path.join(process_pipeline_path, subdirectory)
-
-            process_jobs_path = os.path.join(process_directory_path, f"{subdirectory}_jobs.json")
-
-            process_jobs = self.util.read_json(process_jobs_path)
-            updated_jobs = self.util.read_json(jobs_path)
-
-            job_key_to_update = self.util.find_keys_with_value(process_jobs, self.status.INPIPELINE.value)
-            updated_job_keys = self.util.find_keys_with_value(updated_jobs, self.status.INPIPELINE.value)
-
-            if job_key_to_update == updated_job_keys:
-                self.util.update_json(process_jobs_path, updated_job_keys, self.status.DONE.value)
-            else:
-                # TODO move to error folder
-                continue
-
-            new_data = self.util.read_json(metadata_path)
-
-            process_data_path = os.path.join(process_directory_path, f"{subdirectory}.json")
-
-            self.util.write_full_json(process_data_path, new_data)
-
-            shutil.rmtree(subdirectory_path)
 
     def find_directory_name_with_file(self, parent_directory, filename):
         """

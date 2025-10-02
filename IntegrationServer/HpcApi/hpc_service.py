@@ -159,14 +159,14 @@ class HPCService():
     # updates the jobs_status field of the asset in the track database
     def jobs_status_update(self, guid, job, status):
         
-        # check if the job has already received an update about the job that changed its status to DONE, ERROR or RETRY already
+        # check if the job has already received an update about the job that changed its status to DONE, ERROR, CRITICAL_ERROR or RETRY already
         current_job_info = self.mongo_track.get_job_info(guid, job)
         if current_job_info is not None:
             current_job_status = current_job_info["status"]
         else:
             # TODO handle if current job info is none (some sort of error), just returning for now
             return            
-        if current_job_status in [StatusEnum.DONE.value, StatusEnum.ERROR.value, StatusEnum.RETRY.value]:
+        if current_job_status in [StatusEnum.DONE.value, StatusEnum.ERROR.value, StatusEnum.RETRY.value, StatusEnum.CRITICAL_ERROR.value]:
             # returns here to not overwrite the job status
             return
 
@@ -189,10 +189,18 @@ class HPCService():
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
         any_error = any(job["status"] == StatusEnum.ERROR.value for job in jobs)
+        any_critical_error = any(job["status"] == StatusEnum.CRITICAL_ERROR.value for job in jobs)
         any_waiting = any(job["status"] == StatusEnum.WAITING.value for job in jobs)
         any_retry = any(job["status"] == StatusEnum.RETRY.value for job in jobs)
         
         # checks the flags in a sensible order to determine what the overall jobs_status should be
+        if any_critical_error:
+            self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.CRITICAL_ERROR.value)
+            self.mongo_track.update_entry(guid, "available_for_services", self.validate.NO.value)
+            # TODO -1 to throttle count of assets in flight
+            return
+
+
         if any_error:
             # TODO handle error
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.ERROR.value)
@@ -276,6 +284,10 @@ class HPCService():
         if track_asset is None:
             return False
         
+        if len(barcode_list) == 0:
+            self.handle_no_barcode(guid)            
+            return True
+
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
 
         # Checks the job finished correctly. Gets the asset type from the enum list (returns false if still unknown) and updates it.
@@ -347,8 +359,12 @@ class HPCService():
 
             self.mongo_mos.create_mos_entry(guid, data)
 
-        return True       
-       
+        return True
+
+    def handle_no_barcode(self, guid):
+        self.jobs_status_update(guid, "barcode", StatusEnum.ERROR.value)
+        msg = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had no barcode returned by barcode job. Asset jobs_status and barcode job status set to ERROR.", StatusEnum.ERROR.value)
+        self.health_caller.error(self.service_name, msg, guid, "jobs_status", StatusEnum.ERROR.value)
 
     # update track database that a job has queued
     # TODO figure out if this needs to call the jobs_status_update local function 
