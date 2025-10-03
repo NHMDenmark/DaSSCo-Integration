@@ -341,3 +341,18 @@ class StorageClient():
                e = f"Api or wrapper fail: {e}"
                print(e)
                return False
+          
+     def sync_specify(self, guid):
+          try:
+               response = self.client.assets.sync_specify(guid)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    return True, status_code, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note

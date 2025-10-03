@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 import utility
-from MongoDB import track_repository, throttle_repository
+from MongoDB import track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
@@ -25,7 +25,6 @@ class DeleteFilesNdrive():
         
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.track_mongo = track_repository.TrackRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
@@ -89,8 +88,6 @@ class DeleteFilesNdrive():
                         entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. This directory was not found. Setting temporary_files_ndrive to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
                         self.health_caller.error(self.service_name, entry, guid)
                         print(f"{ndrive_path} is not a directory.")
-                        # TODO remove this for bigger tests, it prevents the test assets from clogging up the in flight assets count
-                        self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
                         time.sleep(10)
 
                 except Exception as e:
@@ -111,7 +108,6 @@ class DeleteFilesNdrive():
 
     def close_db_connections(self):
         try:
-            self.throttle_mongo.close_connection()
             self.track_mongo.close_connection()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
@@ -128,9 +124,7 @@ class DeleteFilesNdrive():
                 print(f"Deleted files: {guid}")
                 # update track
                 self.track_mongo.delete_field(guid, "temporary_path_ndrive")
-                self.track_mongo.delete_field(guid, "temporary_files_ndrive")
-            # subtract one from assets in flight
-            self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")      
+                self.track_mongo.delete_field(guid, "temporary_files_ndrive")      
         else:
             print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
