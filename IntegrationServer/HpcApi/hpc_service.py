@@ -284,6 +284,7 @@ class HPCService():
         if track_asset is None:
             return False
         
+        # set jobs status to error and barcode job status to error if no barcode found but job has finished as expected.
         if len(barcode_list) == 0:
             self.handle_no_barcode(guid)            
             return True
