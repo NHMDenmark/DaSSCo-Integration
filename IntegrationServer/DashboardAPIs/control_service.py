@@ -148,6 +148,36 @@ class ControlService():
         except Exception as e:
             print(f"get throttle data: {e}")
             return False, "Things went wrong"
+        
+    def reset_throttle_data(self):
+        reset_keys = ["assets_in_flight", "await_specify_sync_count", "await_sync_asset_count", "total_asset_size_mb", "total_reopened_share_size_mb", "total_new_asset_size_mb", "total_derivative_size_mb"]
+
+        for key in reset_keys:
+
+            reset = self.mongo_throttle.update_entry(key, "value", 0)
+
+            if reset is False:
+                return False, f"Failed to reset {key}"
+
+        return True, "Reset success"
+
+    def update_throttle_data(self, update_model):
+        
+        key_values = update_model.model_dump()
+
+        for key, value in key_values.items():
+
+            if value != 0 and value is not None:
+                
+                if value > 0:
+                    updated = self.mongo_throttle.add_to_amount(key, "value", value)
+                else:
+                    updated = self.mongo_throttle.subtract_from_amount(key, "value", abs(value))
+
+                if updated is False:
+                    return False, f"Failed to update {key} with value {value}"
+
+        return True, "Update success"
     
     def get_list_of_guids_with_error_flag(self):
 

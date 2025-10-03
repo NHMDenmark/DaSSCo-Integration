@@ -17,6 +17,7 @@ from DashboardAPIs.update_metadata_model import UpdateMetadataModel
 from DashboardAPIs.append_issue_model import AppendIssueModel
 from DashboardAPIs.update_issue_model import UpdateIssueModel
 from DashboardAPIs.process_time_model import ProcessTimeModel
+from DashboardAPIs.update_throttle_model import UpdateThrottleModel
 
 control = FastAPI()
 util = utility.Utility()
@@ -27,6 +28,7 @@ update_metadata_model = UpdateMetadataModel
 append_issue_model = AppendIssueModel
 update_issue_model = UpdateIssueModel
 process_time_model = ProcessTimeModel
+update_throttle_model = UpdateThrottleModel
 
 @control.get("/control/check")
 def index():
@@ -99,16 +101,6 @@ async def get_track_data(guid: str):
 async def get_track_data(key: str, value: str):
 
     found, msg = service.get_health_asset_data(key, value)
-
-    if found is False:
-        return JSONResponse(content={"status": msg}, status_code=500)
-    
-    return msg
-
-@control.get("/control/get_throttle_data")
-async def get_track_data():
-
-    found, msg = service.get_throttle_data()
 
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
@@ -250,6 +242,36 @@ async def append_issue(append_issue_model: append_issue_model):
 async def update_issue(update_issue_model: update_issue_model):
 
     updated, msg = service.update_issue(update_issue_model)
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+
+@control.get("/control/get_throttle_data")
+async def get_track_data():
+
+    found, msg = service.get_throttle_data()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.post("/control/reset_throttle_data")
+async def reset_throttle_data():
+
+    reset, msg = service.reset_throttle_data()
+
+    if reset is False:
+        return JSONResponse(content={"reset_status": reset, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"reset_status": reset, "message": msg}, status_code=200)
+
+@control.put("/control/update_throttle_data")
+async def update_throttle_data(update_throttle_model: update_throttle_model):
+
+    updated, msg = service.update_throttle_data(update_throttle_model)
 
     if updated is False:
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
