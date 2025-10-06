@@ -181,7 +181,7 @@ async def search_in_health(search_model: search_model):
         return JSONResponse(content={"status": msg}, status_code=500)
     
     if data_list == []:
-        return JSONResponse(content={"message": "failed to find any entries with these criteria"}, status_code=200)
+        return JSONResponse(content={"message": "failed to find any entries with these criteria."}, status_code=200)
     
     if data_list is None:
         return JSONResponse(content={"message": msg}, status_code=422)

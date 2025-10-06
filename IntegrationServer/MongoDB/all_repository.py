@@ -112,14 +112,15 @@ class AllRepository:
         
         kvp = list(key_value_pairs)  # copy so we don’t mutate caller’s list
 
-        # --- detect field type ---
-        sample_doc = self.collection.find_one({time_key: {"$exists": True}}, {time_key: 1})
-        field_is_datetime = False
-        if sample_doc and isinstance(sample_doc.get(time_key), datetime.datetime):
-            field_is_datetime = True
-
         # --- build query depending on type ---
         if time_key is not None:
+            
+            # --- detect field type ---
+            sample_doc = self.collection.find_one({time_key: {"$exists": True}}, {time_key: 1})
+            field_is_datetime = False
+            if sample_doc and isinstance(sample_doc.get(time_key), datetime.datetime):
+                field_is_datetime = True
+
             time_query = {time_key: {}}
 
             if after is not None:

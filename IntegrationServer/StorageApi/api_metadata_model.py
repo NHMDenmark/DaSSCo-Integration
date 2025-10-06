@@ -81,4 +81,4 @@ class ApiMetadataModel(BaseModel):
     status: str = asset_status_nt.AssetStatusNT.WORKING_COPY.value # not optional must come from an enum list
     tags: Dict[str, str] = {}
     workstation: str = ""
-    specimens: List[Specimen] = [] # contains preparation_type, barcode, specimen_pid
+    asset_specimen: List[Specimen] = [] # contains preparation_type, barcode, specimen_pid
