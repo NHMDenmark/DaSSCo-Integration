@@ -8,7 +8,7 @@ from dassco_utils.metadata.models import MetadataModel, IssueModel
 import utility
 from Enums import status_enum, validate_enum, flag_enum
 from HealthUtility import health_caller, run_utility
-from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository
+from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository, batch_repository
 from DashboardAPIs import micro_service_paths
 import json
 from datetime import datetime, timedelta
@@ -32,6 +32,7 @@ class ControlService():
         self.mongo_health = health_repository.HealthRepository()
         self.mongo_metadata = metadata_repository.MetadataRepository()
         self.mongo_throttle = throttle_repository.ThrottleRepository()
+        self.mongo_batch = batch_repository.BatchRepository()
 
         self.micro_paths = micro_service_paths.MicroServicePaths()
         self.validate_enum = validate_enum.ValidateEnum
@@ -40,7 +41,6 @@ class ControlService():
 
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
-    
 
     def all_run(self):
 
@@ -654,7 +654,40 @@ class ControlService():
             
         except Exception as e:
             print(f"get service data: {e}")
-            return False, "Things went wrong"   
+            return False, "Things went wrong"
+    
+    def get_batch_names_list(self):
+        try:
+            entries = self.mongo_batch.get_all_entries()
+
+            if entries is None or entries == []:
+                return True, "No entries found"
+            else:                
+                batch_names = []
+                for entry in entries:
+                    batch_names.append(entry["_id"])
+
+                return True, batch_names
+            
+        except Exception as e:
+            print(f"get batch names list: {e}")
+            return False, "Things went wrong"
+
+    def get_batch_info(self, batch_name):
+        try:
+            entry = self.mongo_batch.get_entry("_id", batch_name)
+
+            if entry is None:
+                return True, "Batch does not exist"
+            else:
+                count = len(entry["guids"])
+                response = {f"count": count, "guids": entry["guids"]}
+                               
+                return True, response
+            
+        except Exception as e:
+            print(f"get batch info: {e}")
+            return False, "Things went wrong"
 
     def is_process_running(self, pid):
         """Check if a process with given PID is still running."""

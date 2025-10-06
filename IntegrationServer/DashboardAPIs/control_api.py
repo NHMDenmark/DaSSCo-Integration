@@ -277,3 +277,23 @@ async def update_throttle_data(update_throttle_model: update_throttle_model):
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
     
     return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+
+@control.get("/control/get_batch_info")
+async def get_batch_number(batch_name: str):
+
+    found, msg = service.get_batch_info(batch_name)
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
+
+@control.get("/control/get_batch_names")
+async def get_batch_names():
+
+    found, msg = service.get_batch_names_list()
+
+    if found is False:
+        return JSONResponse(content={"status": msg}, status_code=500)
+    
+    return msg
