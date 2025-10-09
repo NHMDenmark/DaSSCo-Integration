@@ -356,3 +356,54 @@ class StorageClient():
                status_code, note = self.get_status_code_from_exc(e)
                print(f"Api or wrapper fail: {e}")
                return False, status_code, note
+     
+     def get_specimen(self, specimen_pid):
+
+          try:
+               response = self.client.specimens.get_specimen(specimen_pid)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    return True, response, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note
+
+     def create_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+          
+          try:
+               response = self.client.specimens.create_or_update(specimen_pid, specimen_model)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    return True, response, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note
+
+
+     def update_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+
+          try:
+               response = self.client.specimens.create_or_update(specimen_pid, specimen_model)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    return True, response, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note

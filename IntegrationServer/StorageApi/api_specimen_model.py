@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 from pydantic import BaseModel
 
-class Specimen(BaseModel):
+class SpecimenModel(BaseModel):
     institution: str
     collection: str
     barcode: str

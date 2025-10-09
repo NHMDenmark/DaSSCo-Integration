@@ -8,7 +8,7 @@ import utility
 from datetime import datetime
 from dateutil import tz
 from MongoDB import metadata_repository
-from IntegrationServer.StorageApi import api_metadata_model
+from IntegrationServer.StorageApi import api_metadata_model, api_specimen_model
 from Enums import asset_status_nt
 from pydantic import BaseModel, Field, Json
 
@@ -143,6 +143,12 @@ class StorageService():
         data = data.model_dump_json()
 
         return data
+    
+    def create_specimen_model(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id = None, role_restrictions = []):
+
+        specimen_model = api_specimen_model.SpecimenModel(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+
+        return specimen_model
     
     def convert_str_to_datetime(self, timestring):
 

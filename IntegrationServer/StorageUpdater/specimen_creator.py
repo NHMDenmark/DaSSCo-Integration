@@ -74,31 +74,37 @@ class SpecimenCreator():
                 time.sleep(5)
             else:
                 guid = asset["_id"]
-                # get/check/construct specimen data from mos db + metadata
 
                 metadata = self.metadata_mongo.get_entry("_id", guid)
                 institution = metadata["institution"]
                 collection = metadata["collection"]
-                preparation_type = metadata["preparation_type"][0]
                 barcodes = metadata["barcode"]
 
                 for barcode in barcodes:
 
                     specimen_pid = f"SPID_{barcode}"
 
-                    self.storage_api.get_specimen()
+                    specimen = self.storage_api.get_specimen(specimen_pid)
 
+                    if specimen is not None:
 
+                        if specimen.data["preparation_types"] != metadata["preparation_type"]:
+                            new_preparation_types = metadata["preparation_type"]
+                            
+                            for item in specimen.data["preparation_types"]:
+                                if item not in new_preparation_types:
+                                    new_preparation_types.append(item)
+                            
+                            updated, response, msg = self.storage_api.update_specimen(institution, collection, barcode, specimen_pid, new_preparation_types, None, specimen.data["role_restrictions"])
+                            # TODO check update response
 
-                # create specimen in ars
+                        continue
+                    
+                    created, response, msg = self.storage_api.create_specimen(institution, collection, barcode, specimen_pid, metadata["preparation_type"], None, [])
+                    # TODO check create response
+
                 # update track entry
-                
-
-
-
                 self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
-
-                
 
             self.end_of_loop_checks()
 
