@@ -16,6 +16,7 @@ from dassco_utils.guid import main
 from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
+from dasscostorageclient import DaSSCoStorageClient
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -182,11 +183,31 @@ def test_exception():
 if __name__ == '__main__':
     
     md = metadata_repository.MetadataRepository()
+    ser = storage_service.StorageService()
+    sclient = storage_client.StorageClient()
 
-    assets = ["040ck2b867e980d0e010f158692c95", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
+    load_dotenv()
+    
+    client_id = os.getenv("client_id")
+    client_secret = os.getenv("client_secret")
 
-    for asset in assets:
-        md.delete_field(asset, "issues")
+    service_username = "STARFISH"
+
+          
+    client = DaSSCoStorageClient(client_id, client_secret)
+
+    assets = ["040ck2b867e98130e36160cf860ab8", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
+
+    # md.get_entry("_id", assets[0])
+
+    json_data = ser.get_metadata_json_format(assets[0])
+    data_dict = json.loads(json_data)
+
+    print(data_dict)
+
+    res = client.assets.create(data_dict, 1)
+    
+    print("hi", res.get("data"))
 
     md.close_connection()
     

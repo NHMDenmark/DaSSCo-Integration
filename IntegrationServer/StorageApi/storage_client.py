@@ -73,7 +73,7 @@ class StorageClient():
                status_code = response["status_code"]
 
                if status_code == 200:                    
-                    print(response["data"])
+                    # print(response["data"])
                     return True, None, None, status_code
                else:
                     return False, f"Received {status_code}, while creating asset.", None, status_code
@@ -113,7 +113,7 @@ class StorageClient():
           
           data_dict["date_asset_taken"] = self.service.restore_copenhagen_time(data_dict["date_asset_taken"])
           data_dict["date_metadata_ingested"] = self.service.restore_copenhagen_time(data_dict["date_metadata_ingested"])
-          print(data_dict)
+          # print(data_dict)
           try:
                response = self.client.assets.update(guid, data_dict)
 
@@ -130,7 +130,7 @@ class StorageClient():
 
      # helper function that extracts the status code from the exception received from dassco-storage-client 
      def get_status_code_from_exc(self, exc):
-
+          
           exc_str = exc.__str__()
           exc_split = exc_str.split(":")
           status_code = exc_split[0][-3:] if len(exc_split[0]) >= 3 else None

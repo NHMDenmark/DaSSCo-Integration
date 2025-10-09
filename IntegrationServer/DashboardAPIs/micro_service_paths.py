@@ -26,6 +26,7 @@ class MicroServicePaths():
         "Specify sync ARS":"StorageUpdater/sync_specify.py",
         "Specify open share ARS":"StorageUpdater/specify_open_share.py",
         "Specify close share ARS":"StorageUpdater/specify_close_share.py",
+        "Specimen creator ARS":"StorageUpdater/specimen_creator.py",
         "Validate specify sync ARS":"StorageUpdater/validate_specify_sync.py",
         "Asset creator HPC":"HpcSsh/hpc_asset_creator.py",
         "HPC clean up service":"HpcSsh/hpc_clean_up.py",

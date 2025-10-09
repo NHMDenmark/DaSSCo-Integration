@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import utility
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 ## other imports
 
 """
@@ -24,10 +24,10 @@ class ServiceSkeleton():
 
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
+        self.flag_enum = flag_enum.FlagEnum
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         # other initialisations, db connections, enums etc
-
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
         
@@ -55,21 +55,25 @@ class ServiceSkeleton():
             
             # main loop code here            
             
-            # checks if service should keep running           
-            self.run = self.run_util.check_run_changes()
-
-            # Pause loop
-            if self.run == self.status_enum.PAUSED.value:
-                self.run = self.run_util.pause_loop()
+            # check if while loop continues
+            self.end_of_loop_checks()
 
         # out of main loop
         self.run_util.service_stopping_updates()
         self.close_all_connections()
-        print("Service closed down")
+        print("Service shut down")
 
     def close_all_connections(self):
         # close any db connections here
         pass
+
+    def end_of_loop_checks(self):
+        # checks if service should keep running           
+        self.run = self.run_util.check_run_changes()
+
+        # Pause loop
+        if self.run == self.status_enum.PAUSED.value:
+            self.run = self.run_util.pause_loop()
 
 if __name__ == '__main__':
     ServiceSkeleton()

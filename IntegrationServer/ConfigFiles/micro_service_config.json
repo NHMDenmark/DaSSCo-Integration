@@ -271,6 +271,16 @@
     "error_time_span": 10,
     "mail_wait_time": 60
   },
+  "Specimen creator ARS": {
+    "module": "storage updater",
+    "run_service":true,
+    "pause_time": 5,
+    "pause_check_list": [2, 7],
+    "pause_loop_count": 100,
+    "error_tolerance": 2,
+    "error_time_span": 10,
+    "mail_wait_time": 20
+  },
   "ING Receive metadata": {
     "module": "ingestion interface",
     "run_service":true,
