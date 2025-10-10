@@ -102,6 +102,8 @@ class StorageService():
 
         if len(barcode) != 0:
             for b in barcode:
+
+                """
                 # Create a new instance of Specimen
                 new_specimen = api_metadata_model.Specimen()
                 if len(b) != 9:
@@ -127,8 +129,24 @@ class StorageService():
 
                 if entry["specimen_pid"] is None:
                     new_specimen.specimen_pid = "SPID_" + b
+                """
 
-                self.api_metadata.specimens.append(new_specimen)
+                if len(b) != 9:
+                    b = b.zfill(9)  # Pad with leading zeros to ensure length of 9
+
+                preparation_types = entry["preparation_type"]
+                if len(preparation_types) == 0 or preparation_types == "" or preparation_types is None:
+                    preparation_types = ["UNKNOWN"]
+
+                specimen_pid = "SPID_" + b
+
+                asset_specimen = api_metadata_model.AssetSpecimen()
+                
+                asset_specimen.asset_guid = guid
+                asset_specimen.specimen_pid = specimen_pid
+                asset_specimen.asset_preparation_type = preparation_types[0]
+
+                self.api_metadata.asset_specimen.append(asset_specimen)
             
         # This field cannot be empty # TODO there are other fields that must have values in order to update/create assets in ARS - make some check for this
         if self.api_metadata.status == "" or self.api_metadata.status is None:

@@ -80,6 +80,8 @@ class SpecimenCreator():
                 collection = metadata["collection"]
                 barcodes = metadata["barcode"]
 
+                barcodes = self.check_barcode_length(guid, barcodes)
+
                 for barcode in barcodes:
 
                     specimen_pid = f"SPID_{barcode}"
@@ -169,6 +171,21 @@ class SpecimenCreator():
             return storage_api
         
         return storage_api
+    
+    def check_barcode_length(self, guid, barcodes):
+
+        count = 0
+        update = False
+        for barcode in barcodes:                    
+            if len(barcode) != 9:
+                barcode = barcode.zfill(9) # Pad with leading zeros to ensure length of 9
+                barcodes[count] = barcode
+                update = True
+            count = count + 1
+        if update:
+            self.metadata_mongo.update_entry(guid, "barcode", barcodes)
+
+        return barcodes
 
     # check if new keycloak auth is needed, makes call to create the storage client
     def authorization_check(self):
