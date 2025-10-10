@@ -60,8 +60,11 @@ async def stop_all():
 @control.post("/control/start_service")
 async def service_start(service_name: str):
 
-    started = service.start_service(service_name)
-    
+    started, msg = service.start_service(service_name)
+
+    if msg is not None:
+        return JSONResponse(content={"status": msg}, status_code=200)
+
     if started is False:
         return JSONResponse(content={"status": f"Failed to start: {service_name}"}, status_code=500)
 

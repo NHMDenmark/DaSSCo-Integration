@@ -74,24 +74,26 @@ class ControlService():
     
     def start_service(self, service_name):
 
+        all_run = self.mongo_service.get_value_for_key("all_run", "run_status")
+        if all_run != "RUNNING":
+            return True, f"Failed to start {service_name} because all_run run status is {all_run}"
+
         start_service_path = self.util.get_value(self.control_service_config_path, "start_service")
 
         service_path = self.micro_paths.get_path_from_name(service_name)
 
         if service_path is False:
-            return False
-
-        # TODO check all_run status to determine if service can run
-
+            return False, None
+    
         # update database status
         updated = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)
 
         if updated is False:
-            return False
+            return False, None
 
         started = self.util.run_shell_script(start_service_path, arguments = [service_path])
 
-        return started
+        return started, None
 
     def get_track_asset_data(self, guid):
 
