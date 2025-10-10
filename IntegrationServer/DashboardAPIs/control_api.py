@@ -57,6 +57,21 @@ async def stop_all():
 
     return JSONResponse(content={"status": "ALL STOPPING"}, status_code=200)
 
+@control.put("/control/set_all_run_status")
+async def set_all_run_status(status: str):
+
+    try:
+        updated, msg = service.set_all_run_status(status)
+
+        if updated is not True:
+            return JSONResponse(content={"status": msg}, status_code=200)
+
+        return JSONResponse(content={"status": f"all run set to {status}"}, status_code=200)
+
+    except Exception as e:
+        print(f"set all run status fail: {e}")
+        return JSONResponse(content={"status": "Something went wrong."}, status_code=500)
+
 @control.post("/control/start_service")
 async def service_start(service_name: str):
 

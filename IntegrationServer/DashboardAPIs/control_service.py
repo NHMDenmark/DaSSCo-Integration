@@ -60,6 +60,19 @@ class ControlService():
 
         return running, False
     
+    def set_all_run_status(self, status_name):
+
+        if status_name not in [self.status_enum.RUNNING.value, self.status_enum.PAUSED.value, self.status_enum.STOPPED.value]:
+            return False, "Wrong status input (RUNNING, PAUSED, STOPPED)."
+
+        update = self.mongo_service.update_entry("all_run", "run_status", status_name)
+
+        if update is False:
+            return update, "Failed to update database"
+        
+        return update, None
+
+
     def stop_all(self):
 
         stopped = self.mongo_service.update_entry("all_run", "run_status", self.status_enum.STOPPED.value)
