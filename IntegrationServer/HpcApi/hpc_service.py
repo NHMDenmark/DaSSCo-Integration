@@ -243,6 +243,14 @@ class HPCService():
         
         self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
 
+    def update_metadata_new_barcode(self, guid, dictionary):
+        # Update MongoDB metadata with key-value pairs from the dictionary including one or more new barcodes
+        for key, value in dictionary.items():
+            self.mongo_metadata.update_entry(guid, key, value)
+        
+        # set track update metadata to PREPARE to trigger specimen creation before updating the metadata in ARS with the specimen
+        self.mongo_track.update_entry(guid, "update_metadata", self.validate.PREPARE.value)
+
     def update_metadata_json(self, guid, dictionary):
         # Extract pipeline name and batch date from MongoDB metadata
         pipeline = self.mongo_metadata.get_value_for_key(guid, "pipeline_name")
@@ -300,20 +308,20 @@ class HPCService():
                 return False
             self.mongo_track.update_asset_type(guid, enum_type)
 
-        self.update_mongo_metadata(guid, metadata_update)
+        self.update_metadata_new_barcode(guid, metadata_update)
         self.jobs_status_update(guid, job_name, status)
 
         # check if asset is part of a mos
         if MOS:
             
-            metadata_asset = self.mongo_metadata.get_entry("_id", guid)
+            #metadata_asset = self.mongo_metadata.get_entry("_id", guid)
 
             # build spid
-            institution = metadata_asset["institution"]
-            collection = metadata_asset["collection"]
+            #institution = metadata_asset["institution"]
+            #collection = metadata_asset["collection"]
             if len(barcode_list) > 0:
                 barcode = barcode_list[0]
-                spid = f"{institution}_{collection}_{barcode}" # TODO verify this is how the spid should look
+                spid = f"SPID_{barcode}" # TODO verify this is how the spid should look:: institution_collection_barcode ?
             else:
                 spid = "NOT_AVAILABLE"
                 barcode = None
@@ -343,7 +351,7 @@ class HPCService():
                     if mos["label"] is True:
                         if barcode is not None:
                             self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
-                        self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.YES.value)
+                        self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.PREPARE.value)
 
                     # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
                     if label is True:
