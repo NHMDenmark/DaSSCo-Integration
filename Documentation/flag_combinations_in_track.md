@@ -10,6 +10,7 @@
 | StorageUpdater\sync_specify | - | - | - | - | - | - | YES | - | PREPARE -> AWAIT | - | - | - | - | YES | - | - |
 | StorageUpdater\specify_close_share | - | - | - | - | - | NO | YES -> NO | YES | YES | - | - | - | - | YES | - | - |
 | StorageUpdater\specify_open_share | DONE | - | - | - | - | - | NO -> YES | YES | PREPARE | - | - | - | - | YES | - | - |
+| StorageUpdater\specimen_creator | - | - | - | - | - | - | - | - | - | PREPARE -> YES | - | - | - | YES | - | - |
 | StorageUpdater\validate_erda_sync | - | - | - | - | - | -> NO | YES -> NO | AWAIT -> YES | - | - | - | - | - | YES | - | - |
 | StorageUpdater\validate_specify_sync | - | - | - | - | - | - | YES | - | AWAIT -> YES | - | - | - | - | YES | - | - |
 | StorageUpdater\update_metadata | - | - | - | - | - | - | - | - | - | YES -> NO | - | - | - | YES | - | - |
@@ -18,7 +19,7 @@
 | HpcSsh\hpc_job_caller | WAITING -> STARTING | - | - | YES | - | - | - | - | - | - | not DEVICE_TARGET | - | - | YES | - | - |
 | HpcSsh\hpc_clean_up | DONE | - | - | YES | YES | - | - | YES | NO -> PREPARE | - | - | - | - | YES | - | - |
 | HpcSsh\hpc_uploader | DONE | - | - | NO | YES | YES -> UPLOADING | YES | NO | - | - | - | - | - | YES | - | - |
-| HpcApi\hpc_api barcode | -> relevant status | - | - | - | - | - | - | - | - | -> YES | UNKNOWN -> type status | - | - | - | - | - |
+| HpcApi\hpc_api barcode | -> relevant status | - | - | - | - | - | - | - | - | -> PREPARE | UNKNOWN -> type status | - | - | - | - | - |
 | HpcApi\hpc_api derivative | -> DONE | -> NONE | -> parent size + estimate size | -> YES | -> AWAIT -> NO | -> NO | -> NO | -> NO | -> NO | -> NO | - | - | - | - | - | - |
 | HpcApi\hpc_api update_asset | -> relevant status | - | - | - | - | - | - | - | - | -> YES | - | - | - | - | - | - |
 | HpcApi\hpc_api queue_job | -> QUEUED | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
