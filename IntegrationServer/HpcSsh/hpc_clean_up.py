@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, service_repository
 from Connections import connections
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -38,6 +38,7 @@ class HPCCleanUp():
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.validate_enum = validate_enum.ValidateEnum
         self.cons = connections.Connections()
 

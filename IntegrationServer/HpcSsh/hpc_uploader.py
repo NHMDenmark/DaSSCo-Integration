@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, metadata_repository, service_repository
 from Connections import connections
-from Enums import status_enum, validate_enum, flag_enum, metadata_origin
+from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -33,6 +33,7 @@ class HPCUploader():
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.validate_enum = validate_enum.ValidateEnum
         self.metadata_origin_enum = metadata_origin.MetadataOriginEnum
         self.cons = connections.Connections()
@@ -112,6 +113,7 @@ class HPCUploader():
                 except Exception as e:
                     
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     pass # TODO handle exception
                 
             # checks if service should keep running - configurable in ConfigFiles/run_config.json            

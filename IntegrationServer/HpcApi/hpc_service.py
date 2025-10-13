@@ -197,6 +197,7 @@ class HPCService():
         if any_critical_error:
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.CRITICAL_ERROR.value)
             self.mongo_track.update_entry(guid, "available_for_services", self.validate.NO.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_nt.ERROR.value)
             # TODO -1 to throttle count of assets in flight
             return
 
@@ -204,6 +205,7 @@ class HPCService():
         if any_error:
             # TODO handle error
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
             return
         
         if all_done:
@@ -374,6 +376,7 @@ class HPCService():
         self.jobs_status_update(guid, "barcode", StatusEnum.ERROR.value)
         msg = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had no barcode returned by barcode job. Asset jobs_status and barcode job status set to ERROR.", StatusEnum.ERROR.value)
         self.health_caller.error(self.service_name, msg, guid, "jobs_status", StatusEnum.ERROR.value)
+        self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
 
     # update track database that a job has queued
     # TODO figure out if this needs to call the jobs_status_update local function 
@@ -470,6 +473,7 @@ class HPCService():
                 msg = self.run_util.log_msg(self.prefix_id, f"HPC server job {job_name} failed for {guid} with job id {job_id} at {timestamp}. Job status will be set to ERROR. {note} {hpc_message} {hpc_exception}")
                 self.health_caller.error(self.service_name, msg, guid)
                 self.jobs_status_update(guid, job_name, self.status.ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
                 
             # hpc queue busy
             if fail_status == self.status.PAUSED.value:
@@ -583,6 +587,7 @@ class HPCService():
         else:
             return False
     
+    # TODO update to use issues instead of tags
     # not the same as job failed - derivatives can fail to be created without the job failing as such
     def fail_derivative_creation(self, info):
         
@@ -603,13 +608,12 @@ class HPCService():
                 tags["missing_derivative"] = f"No derivative for ppi {ppi}"
 
             self.mongo_metadata.update_entry(guid, "tags", tags)
-            self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.ISSUE_WITH_MEDIA.value)
-
+            
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} did not create a derivative with a ppi of {ppi}. {note}")
             self.health_caller.warning(self.service_name, entry, guid)
 
             self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
-
+            
             return True
         else:
             return False

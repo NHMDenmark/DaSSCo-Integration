@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import utility
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 ## other imports
 
 """
@@ -27,6 +27,7 @@ class ServiceSkeleton():
         self.flag_enum = flag_enum.FlagEnum
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         # other initialisations, db connections, enums etc
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)

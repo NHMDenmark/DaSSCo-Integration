@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from Connections import connections
 from MongoDB import track_repository, service_repository
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
@@ -34,6 +34,7 @@ class HPCJobCaller():
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.cons = connections.Connections()
@@ -163,6 +164,7 @@ class HPCJobCaller():
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
             self.mongo_track.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
             self.mongo_track.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
 
             return None, None
 
