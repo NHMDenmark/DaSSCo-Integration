@@ -165,7 +165,7 @@ class SyncSpecify():
                 except Exception as e:
                     print(f"Failed to update metadata for asset {guid}: {e}")
 
-                # update the ARS with the asset info
+                # update the ARS with the asset info which triggers the sync 
                 try:
                     updated = self.storage_api.update_metadata(guid)
 

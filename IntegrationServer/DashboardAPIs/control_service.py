@@ -72,7 +72,6 @@ class ControlService():
         
         return update, None
 
-
     def stop_all(self):
 
         stopped = self.mongo_service.update_entry("all_run", "run_status", self.status_enum.STOPPED.value)

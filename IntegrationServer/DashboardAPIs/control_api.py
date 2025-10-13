@@ -64,7 +64,7 @@ async def set_all_run_status(status: str):
         updated, msg = service.set_all_run_status(status)
 
         if updated is not True:
-            return JSONResponse(content={"status": msg}, status_code=200)
+            return JSONResponse(content={"status": msg}, status_code=422)
 
         return JSONResponse(content={"status": f"all run set to {status}"}, status_code=200)
 

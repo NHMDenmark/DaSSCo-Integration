@@ -9,6 +9,10 @@ class ValidateEnum(Enum):
     PREPARE = "PREPARE"
     ERROR = "ERROR"
     CRITICAL_ERROR = "CRITICAL_ERROR"
+    TRUE = "TRUE"
+    FALSE = "FALSE"
+    ACTIVATE = "ACTIVATE"
+    FORCE = "FORCE"
 
 class Validate:
     def __init__(self):
@@ -20,3 +24,7 @@ class Validate:
         self.PREPARE = ValidateEnum.PREPARE.value
         self.ERROR = ValidateEnum.ERROR.value
         self.CRITICAL_ERROR = ValidateEnum.CRITICAL_ERROR.value
+        self.TRUE = ValidateEnum.TRUE.value
+        self.FALSE = ValidateEnum.FALSE.value
+        self.ACTIVATE = ValidateEnum.ACTIVATE.value
+        self.FORCE = ValidateEnum.FORCE.value
