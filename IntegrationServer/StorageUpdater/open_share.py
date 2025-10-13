@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 from MongoDB import track_repository, metadata_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 from Enums.status_enum import Status
 from Enums.validate_enum import Validate
 import utility
@@ -41,6 +41,7 @@ class OpenShare(Status, Validate):
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.validate_enum = validate_enum.ValidateEnum
         
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
@@ -216,6 +217,7 @@ class OpenShare(Status, Validate):
         entry = self.run_util.log_msg(self.prefix_id, f"Failed opening share for guid: {guid} Received status: {status_code}", self.ERROR)
         self.health_caller.error(self.service_name, entry, guid, "has_open_share", self.ERROR)
         self.mongo_track.update_entry(guid, "has_open_share", self.ERROR)
+        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
     def handle_status_504(self, guid, status_code):
         

@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, service_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -33,6 +33,7 @@ class UpdateMetadata():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -147,10 +148,12 @@ class UpdateMetadata():
                         else:
                             entry = self.run_util.log_msg(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", self.run_util.log_enum.ERROR.value)
                             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+                            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     except Exception as e:
                         entry = self.run_util.log_exc(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", e, self.run_util.log_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     time.sleep(1)
 

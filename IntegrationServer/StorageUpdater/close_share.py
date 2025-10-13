@@ -7,7 +7,7 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller, run_utility
 import utility
@@ -38,6 +38,7 @@ class CloseShare(LogClass):
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.util = utility.Utility()
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -92,6 +93,7 @@ class CloseShare(LogClass):
                     entry = self.log_exc(f"Failed to close file proxy share for guid {guid}.", e, self.log_enum.ERROR.value)
                     self.health_caller.warning(self.service_name, entry)
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     closed = False
 
                 if closed is True:

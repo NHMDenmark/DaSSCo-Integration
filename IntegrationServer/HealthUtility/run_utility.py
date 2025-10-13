@@ -6,8 +6,9 @@ sys.path.append(project_root)
 
 import utility
 import time
-from MongoDB import service_repository
+from MongoDB import service_repository, metadata_repository, track_repository
 from Enums.status_enum import Status
+from Enums import flag_enum, asset_status_nt, validate_enum, status_enum
 from HealthUtility import health_caller
 from InformationModule.log_class import LogClass
 from StorageApi import storage_client, ars_health_check
@@ -28,6 +29,12 @@ class RunUtility(LogClass, Status):
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         self.util = utility.Utility()
         self.service_mongo = service_repository.ServiceRepository()
+        self.mongo_metadata = metadata_repository.MetadataRepository()
+        self.mongo_track = track_repository.TrackRepository()
+        self.status_enum = status_enum.StatusEnum
+        self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
+        self.validate_enum = validate_enum.ValidateEnum
         self.health_caller = health_caller.HealthCaller()
         self.ars_health_check = ars_health_check.ArsHealthCheck()
         self.service_name = service_name
@@ -283,3 +290,27 @@ class RunUtility(LogClass, Status):
     def service_stopping_updates(self):
         self.service_mongo.update_entry(self.service_name, "stop_time", datetime.now())
         self.service_mongo.update_entry(self.service_name, "run_status", self.STOPPED)
+
+    # updates metadata in track db and sets the update metadata flag to YES.
+    def update_metadata_status(self, guid, status):
+        check = True
+        msg = None
+        asset = self.mongo_track.get_entry("_id", guid)
+
+        if asset is None:
+            msg = "Asset not found in database." 
+            check = False
+
+        current_update_flag = asset[self.flag_enum.UPDATE_METADATA.value]
+
+        if current_update_flag != self.validate_enum.NO.value: 
+            msg = f"Asset had {current_update_flag} for {self.flag_enum.UPDATE_METADATA.value} when requesting status update."
+            check = False
+
+        if status in self.asset_status_enum:
+            self.mongo_metadata.update_entry(guid, "status", status)
+            self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+
+        if check is False:
+            entry = self.log_msg(self.prefix_id, f"Did not update metadata status in ARS. {msg}")
+            self.health_caller.warning(self.service_name, entry, guid)

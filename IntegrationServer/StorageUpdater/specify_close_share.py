@@ -7,14 +7,14 @@ sys.path.append(project_root)
 import time
 from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from InformationModule.log_class import LogClass
 from HealthUtility import health_caller, run_utility
 import utility
 from datetime import datetime, timedelta
 
 """
-Responsible for closing file shares once they hpc has downloaded files from it. 
+Responsible for closing file shares once specify has synced. 
 Logs warnings and errors from this process, and directs them to the health service. 
 """
 
@@ -38,6 +38,7 @@ class SpecifyCloseShare(LogClass):
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.util = utility.Utility()
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -78,9 +79,9 @@ class SpecifyCloseShare(LogClass):
             if self.storage_api is None:
                 continue
 
-            time.sleep(1)
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"has_new_file": self.validate_enum.NO.value, "erda_sync":self.validate_enum.YES.value, "specify_sync":self.validate_enum.YES.value,
-                                                                          "has_open_share":self.validate_enum.YES.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.HAS_NEW_FILE.value: self.validate_enum.NO.value, self.flag_enum.ERDA_SYNC.value: self.validate_enum.YES.value,
+                                                                          self.flag_enum.SPECIFY_SYNC.value: self.validate_enum.YES.value, self.flag_enum.HAS_OPEN_SHARE.value: self.validate_enum.YES.value,
+                                                                            self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if asset is not None:
                 guid = asset["_id"]
@@ -91,19 +92,21 @@ class SpecifyCloseShare(LogClass):
                 except Exception as e:
                     entry = self.log_exc(f"Failed to close file proxy share for guid {guid}.", e, self.log_enum.ERROR.value)
                     self.health_caller.warning(self.service_name, entry)
-                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.ERROR.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     closed = False
 
                 if closed is True:
-                    self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.NO.value)
                     
                     if asset["asset_type"] == "DEVICE_TARGET":
-                        self.track_mongo.update_entry(guid, "specify_sync", self.validate_enum.NO.value)
+                        self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.NO.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.ARCHIVE.value)
 
                     self.update_throttle(asset)
                     self.add_process_time(guid, asset)
 
-                    print(f"closed share: {guid}")
+                    #print(f"closed share: {guid}")
             
             if asset is None:
                 #print(f"failed to find assets")

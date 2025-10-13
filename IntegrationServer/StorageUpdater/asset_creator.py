@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import metadata_repository, track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, erda_status, flag_enum, metadata_origin
+from Enums import validate_enum, status_enum, erda_status, flag_enum, metadata_origin, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -117,6 +117,7 @@ class AssetCreator():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.metadata_origin = metadata_origin.MetadataOriginEnum
         self.util = utility.Utility()
@@ -279,6 +280,7 @@ class AssetCreator():
                     if status_code < 0: 
                         message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
                         self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     if 200 <= status_code <= 299:                    
                         message = self.run_util.log_msg(self.prefix_id, response)
@@ -297,12 +299,14 @@ class AssetCreator():
                     if 401 <= status_code <= 499:
                         message = self.run_util.log_exc(self.prefix_id, f"{response} Status: {status_code}", exc, self.run_util.log_enum.ERROR.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         time.sleep(1)
                     
                     if 500 <= status_code <= 502 or 505 <= status_code <= 599: 
                         message = self.run_util.log_exc(self.prefix_id, response, exc)
                         #self.track_mongo.update_entry(guid, "is_in_ars", self.validate_enum.PAUSED.value)
                         self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         time.sleep(1)
 
                     # handle status 503 - server unavaible. This can also happen if erda is connections are not working for any reason.
@@ -337,6 +341,7 @@ class AssetCreator():
                 if exists == False:                                
                     message = self.run_util.log_msg(self.prefix_id, f"Failed to find asset despite receiving this: {response}")
                     self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                 if exists == self.erda_status_enum.METADATA_RECEIVED.value:
                     # success anyway
@@ -349,10 +354,12 @@ class AssetCreator():
             except Exception as e:
                 message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
                 self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
         # handle other 400s
         else:
             message = self.run_util.log_msg(self.prefix_id, response)
-            self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)        
+            self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value) 
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)       
         
 
     def handle_status_503(self, guid, status_code, response = None):
@@ -366,6 +373,7 @@ class AssetCreator():
         
         message = self.run_util.log_msg(self.prefix_id, f"ARS not available (known cause could include erda being unavailable). {guid} will wait at least 10 minutes before trying to create again. Status: {status_code}. {response}")
         self.health_caller.warning(self.service_name, message, guid)
+        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
 
     def handle_status_504(self, guid, asset, status_code, response = None, exc = None):
@@ -384,6 +392,7 @@ class AssetCreator():
 
                 message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Asset will wait at least 10 minutes before trying to create again. Status: {status_code}. {response}")
                 self.health_caller.warning(self.service_name, message, guid)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTING.value)
 
             if exists == self.erda_status_enum.METADATA_RECEIVED.value:
                 # success anyway
@@ -395,7 +404,8 @@ class AssetCreator():
 
         except Exception as e:
             message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)                            
-            self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)       
+            self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)       
 
 
     def success_asset_created(self, guid, asset):

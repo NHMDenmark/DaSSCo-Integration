@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, service_repository, metadata_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -39,6 +39,7 @@ class SyncSpecify():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 

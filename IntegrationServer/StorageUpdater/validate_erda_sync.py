@@ -12,7 +12,7 @@ from Enums.status_enum import Status
 from Enums.flag_enum import Flag
 from Enums.validate_enum import Validate
 from Enums.erda_status import ErdaStatus
-from Enums import validate_enum, status_enum, flag_enum
+from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -42,6 +42,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
@@ -180,6 +181,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         # logs and sends a error message to the health api, subtracts from throttle count and moves on
                         entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set erda_sync to ERROR. {note}")
                         self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         self.update_throttle_count()
                         continue
 
@@ -197,6 +199,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         # logs and sends a error message to the health api
                             entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {second_status_code}. Will set erda_sync to ERROR. {second_note}")
                             self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                             self.update_throttle_count()
                             continue
                     print(f"asset status: {second_asset_status} asset size: {second_asset_share_size}, second try gave these values, should be completed and none")
@@ -289,12 +292,14 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                     info = self.storage_api.check_file_info_for_asset(guid)
                 except Exception as e:
                     entry = self.run_util.log_exc(self.prefix_id, f"{guid} encountered a bug while determining status after multiple erda sync validation timeouts.", e, self.ERROR)
-                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR) 
+                    self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value) 
                     self.update_throttle_count()
 
                 if info is False or info is None:
                     entry = self.run_util.log_msg(self.prefix_id, "The asset has timed out more than once while attempting to sync with ERDA. It likely gets stuck with the ASSET_RECEIVED status set by ARS.", self.ERROR)
                     self.health_caller.error(self.service_name, entry, guid, self.ERDA_SYNC, self.ERROR)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     self.update_throttle_count()
                     
                 # asset was synced despite the timeout status - note asset does not have and will not get the asset COMPLETED status in ARS
@@ -330,6 +335,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         # logs and sends a warning message to the health api
         entry = self.run_util.log_msg(self.prefix_id, f"The asset {guid} was synced but the fileshare was not closed. erda_sync status set to ERROR. Aesh will handle further.")
         self.health_caller.warning(self.service_name, entry, guid)
+        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
         
 
     def update_throttle_size(self, asset, guid):
@@ -373,7 +379,6 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
             return False
         else:
             return True
-
 
 if __name__ == '__main__':
     SyncErda()

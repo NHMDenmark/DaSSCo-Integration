@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum, erda_status
+from Enums import validate_enum, status_enum, flag_enum, erda_status, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -35,6 +35,7 @@ class SyncErda():
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.erda_status_enum = erda_status.ErdaStatusEnum
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
@@ -135,6 +136,7 @@ class SyncErda():
                     else:
                         entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status {status_code} failed for {guid}. {note}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         time.sleep(1)
 
                 time.sleep(1)
@@ -182,6 +184,7 @@ class SyncErda():
         if response_get_asset_status is False:
             entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call to get asset status, after receiving status 400 for sync call, failed for {guid}. Erda sync status set to ERROR. {note}", self.status_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
             return False
 
         status_from_ARS = response_get_asset_status["data"].status
@@ -195,6 +198,7 @@ class SyncErda():
         if status_from_ARS is False or status_from_ARS in [self.erda_status_enum.METADATA_RECEIVED.value, self.erda_status_enum.ERDA_ERROR.value]:
             entry = self.run_util.log_msg(self.prefix_id, f"Sync with erda api call with status 400 failed for {guid}. {note}", self.status_enum.ERROR.value)
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.ERDA_SYNC.value, self.status_enum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
             return False
 
         if status_from_ARS in [self.erda_status_enum.ASSET_RECEIVED.value, self.erda_status_enum.COMPLETED.value]:
@@ -225,6 +229,7 @@ class SyncErda():
         except Exception as e:
             message = self.run_util.log_exc(self.prefix_id, f"While handling status 504 from sync asset for {guid} another error occurred. {note}", e, self.run_util.log_enum.ERROR.value)                            
             self.health_caller.error(self.service_name, message, guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
             return False
 
         return False

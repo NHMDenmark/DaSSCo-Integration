@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from MongoDB import track_repository, service_repository, throttle_repository, metadata_repository
 from StorageApi import storage_client
-from Enums import validate_enum, status_enum, flag_enum, erda_status
+from Enums import validate_enum, status_enum, flag_enum, erda_status, asset_status_nt
 from HealthUtility import health_caller, run_utility
 import utility
 
@@ -35,6 +35,7 @@ class ValidateSpecifySync():
         self.validate_enum = validate_enum.ValidateEnum
         self.flag_enum = flag_enum.FlagEnum
         self.erda_enum = erda_status.ErdaStatusEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.track_mongo = track_repository.TrackRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.throttle_mongo = throttle_repository.ThrottleRepository()
@@ -171,12 +172,14 @@ class ValidateSpecifySync():
                         # logs and sends a error message to the health api, subtracts from throttle count and moves on
                         entry = self.run_util.log_msg(self.prefix_id, f"Something unexpected happened while attempting to get the asset status from ARS for {guid}. Status code: {status_code}. Will set specify_sync to ERROR. {note}")
                         self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         continue
 
                 if asset_share_size <= 0 or None:
                     # logs and sends a error message to the health api, subtracts from throttle count and moves on
                     entry = self.run_util.log_msg(self.prefix_id, f"Asset was attempting to sync with specify but had no file share in ARS. {guid}. Status code: {status_code}. Will set specify_sync to ERROR. {note}")
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     self.update_throttle_count()
                     self.update_throttle_size(asset, guid)
                     continue
@@ -197,13 +200,14 @@ class ValidateSpecifySync():
                         print(f"Waiting on specify sync for asset: {guid}")
                     
                 if asset_status == self.erda_enum.SPECIFY_SYNC_FAILED.value:
-                    
-                    self.update_throttle_count() 
+                     
                     self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
 
                     entry = self.run_util.log_msg(self.prefix_id, f"Asset failed to sync with specify in ARS. {guid}. Will set specify_sync to ERROR. {note}")
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
 
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+                    
                 # wait time between calling ARS for asset status
                 time.sleep(1)
 
@@ -233,8 +237,9 @@ class ValidateSpecifySync():
 
         self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.YES.value)
         self.update_throttle_count()        
-        print(f"Validated specify sync for asset: {guid}")
-
+        
+        self.run_util.update_metadata_status(guid, self.asset_status_enum.PUBLISHED_TO_SPECIFY.value)
+        
     def check_timeout(self, guid):
 
         time_received = self.track_mongo.get_value_for_key(guid, "temporary_specify_sync_time")
