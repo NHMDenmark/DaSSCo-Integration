@@ -204,7 +204,6 @@ class AssetHandler:
                     import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
                     
 
-
                     self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.BEING_PROCESSED.value)
 
                     # fail to find import directory

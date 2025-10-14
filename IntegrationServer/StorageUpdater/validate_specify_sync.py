@@ -158,7 +158,7 @@ class ValidateSpecifySync():
                 time.sleep(20)
                 continue
             
-            print(f"checking {len(assets)} assets:")
+            # print(f"checking {len(assets)} assets:")
             for asset in assets:
                 guid = asset["_id"]
 

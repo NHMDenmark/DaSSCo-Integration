@@ -188,6 +188,7 @@ class AssetErrorStatusHandler():
             print(f"unable to handle {guid} - set to critical error")
             message = self.run_util.log_msg(self.prefix_id, f"Tried handling erda_sync error for {guid}. Could not determine the issue. Will need manual handling. erda_sync set to {self.status_enum.CRITICAL_ERROR.value}")
             self.health_caller.error(self.service_name, message, guid, "erda_sync", self.status_enum.CRITICAL_ERROR.value)
+            self.remove_asset_from_in_flight_count()
             self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
 
     def handle_has_open_share_error(self, asset, guid):
@@ -201,6 +202,7 @@ class AssetErrorStatusHandler():
             self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
             message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Could not determine the issue. Failed to get information about asset from ARS. has_open_share set to {self.status_enum.CRITICAL_ERROR.value}")
             self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+            self.remove_asset_from_in_flight_count()
             self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
             return
         
@@ -256,12 +258,14 @@ class AssetErrorStatusHandler():
                     elif proxy_path is False:                        
                         message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", self.status_enum.CRITICAL_ERROR.value)
                         self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+                        self.remove_asset_from_in_flight_count()
                         self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                         return
                 except Exception as e:
                     print(e)
                     message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", e, self.status_enum.CRITICAL_ERROR.value)
                     self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+                    self.remove_asset_from_in_flight_count()
                     self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                     return
 
@@ -293,12 +297,14 @@ class AssetErrorStatusHandler():
                     elif proxy_path is False:                        
                         message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS got status {status_code}.", self.status_enum.CRITICAL_ERROR.value)
                         self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
+                        self.remove_asset_from_in_flight_count()
                         self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                         return
                 except Exception as e:
                     print(e)
                     message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Something else failed.", e, self.status_enum.CRITICAL_ERROR.value)
-                    self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)            
+                    self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
+                    self.remove_asset_from_in_flight_count()            
                     self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                     return
 
@@ -333,6 +339,7 @@ class AssetErrorStatusHandler():
                 self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
+                self.remove_asset_from_in_flight_count()
                 self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                 return
 
@@ -344,6 +351,7 @@ class AssetErrorStatusHandler():
                 self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
                 self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
+                self.remove_asset_from_in_flight_count()
                 return
 
             self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
@@ -352,6 +360,7 @@ class AssetErrorStatusHandler():
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} failed to sync with specify in ARS. One or more of the specimen(s) {specimens} not found in Specify. Fileproxy share has been deleted and the asset removed throttle procedures. Asset file is still in ERDA and metadata in ARS. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO.")
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.CRITICAL_ERROR.value)
             self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
+            self.remove_asset_from_in_flight_count()
             return
         """
         # TODO add a temp variable to track data and have validate sync specify remove this - implement checks for it here to avoid looping the same errored asset
@@ -382,6 +391,9 @@ class AssetErrorStatusHandler():
         self.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
         # TODO decide if this belongs here. But seems natural enough to include it. 
         self.track_mongo.update_entry(asset["_id"], "temporary_reopened_share_status", True)
+
+    def remove_asset_from_in_flight_count(self):
+        self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
 
 if __name__ == '__main__':
     AssetErrorStatusHandler()
