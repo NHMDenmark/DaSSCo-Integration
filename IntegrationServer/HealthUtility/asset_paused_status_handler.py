@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import track_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 
 """
 Service that checks assets for having available_for_services set to PAUSED and sets their status to yes once the pause period is over. 
@@ -31,6 +31,7 @@ class AssetPausedStatusHandler():
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.validate_enum = validate_enum.ValidateEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 
@@ -72,6 +73,7 @@ class AssetPausedStatusHandler():
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.status_enum.ERROR.value)
                     entry = self.run_util.log_msg(self.prefix_id, f"Missing timestamp or wait time so set AVAILABLE_FOR_SERVICE to ERROR for {guid}", self.validate_enum.ERROR.value)
                     self.health_caller.error(self.service_name, entry, guid)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     print(f"Missing data for timestamp or wait time for {guid}")
                     continue
 
@@ -82,6 +84,7 @@ class AssetPausedStatusHandler():
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value, None)
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value, None)
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.YES.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
                     print(f"{guid} had available_for_service set to YES")
 
             self.end_of_loop_checks()

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import track_repository, health_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 
 """
 Service that checks assets for having flag status set to PAUSED.
@@ -35,6 +35,7 @@ class FlagPausedStatusHandler():
         self.health_mongo = health_repository.HealthRepository()
         self.health_caller = health_caller.HealthCaller()
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -91,6 +92,8 @@ class FlagPausedStatusHandler():
 
                         # Get rid of temp fields
                         self.remove_temp_fields(guid)
+
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
 
                         # Reset the flag value form paused to its previous value
                         self.track_mongo.update_entry(guid, key, value)

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import track_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum
+from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 
 """
 Service that handles assets which have jobs that have been updated with the retry status.
@@ -31,6 +31,7 @@ class HPCJobRetryHandler():
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
         
@@ -78,6 +79,7 @@ class HPCJobRetryHandler():
                 self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
                 entry = self.run_util.log_msg(self.prefix_id, f"{guid} had jobs_status set to critical error.", self.status_enum.CRITICAL_ERROR.value)
                 self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                 self.end_of_loop_checks()
                 continue
 
@@ -98,6 +100,7 @@ class HPCJobRetryHandler():
                 self.health_caller.error(self.service_name, entry, guid)
                 # asset back as available
                 self.track_mongo.update_entry(guid, "available_for_services", self.validate_enum.YES.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                 self.end_of_loop_checks()
                 continue            
 

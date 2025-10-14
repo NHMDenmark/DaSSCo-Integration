@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import service_repository, track_repository, metadata_repository, mos_repository, health_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum, erda_status
+from Enums import status_enum, validate_enum, flag_enum, erda_status, asset_status_nt
 from StorageApi import storage_client
 
 """
@@ -37,6 +37,7 @@ class AssetJobErrorHandler():
         self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.erda_enum = erda_status.ErdaStatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -83,6 +84,7 @@ class AssetJobErrorHandler():
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
                     self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                     continue
                 # TODO close shares and handle throttle counts if critical error
                 third_job_fail = self.track_mongo.get_job_from_key_value(guid, "name", f"attempt_2_{error_job["name"]}")
@@ -91,6 +93,7 @@ class AssetJobErrorHandler():
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
                     self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
                     self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                     continue
 
                 if error_job["name"] == "assetLoader":
@@ -163,10 +166,12 @@ class AssetJobErrorHandler():
                         # TODO maybe dont leave asset in hpc?
                         entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job 'barcode' in error state due to 'No barcode' issue. Asset jobs_status and barcode job status set to CRITICAL_ERROR, available_for_services set to NO. Asset is removed from throttle count and fileproxy share is closed. Asset is still on HPC server.", self.status_enum.CRITICAL_ERROR.value)
                         self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                         return
                     except Exception as e:
                         entry = self.run_util.log_exc(self.prefix_id, f"Asset {guid} had job 'barcode' in error state due to 'No barcode' issue. However, an exception was raised when trying to set the asset to CRITICAL_ERROR. Asset needs manual intervention. Exception: {e}", e, self.status_enum.CRITICAL_ERROR.value)
-                        self.health_caller.unexpected_error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                        self.health_caller.unexpected_error(self.service_name, entry)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                         return
         return
 
@@ -201,6 +206,7 @@ class AssetJobErrorHandler():
         if ars_status["data"].status == self.erda_enum.METADATA_RECEIVED.value and len(ars_file_list) == 1 and ars_status["data"].share_allocation_mb == asset["asset_size"] and ars_status["data"].error_message is None:
             self.track_mongo.update_entry(guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
             self.track_mongo.update_track_job_status(guid, error_job["name"], self.status_enum.RETRY.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
             return
         
         # return asset to normal flow if fully uploaded to ARS
@@ -225,6 +231,7 @@ class AssetJobErrorHandler():
 
             entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job {error_job['name']} in error state. However the asset is fully uploaded to ARS. Setting jobs_status to {new_status} and has_new_file to {self.validate_enum.AWAIT.value}.")
             self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, new_status)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
             self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.YES.value)
             return
 

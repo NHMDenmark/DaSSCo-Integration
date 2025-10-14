@@ -9,11 +9,11 @@ from datetime import datetime, timedelta
 import utility
 from MongoDB import service_repository, track_repository, metadata_repository, mos_repository, health_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum, flag_enum, erda_status
+from Enums import status_enum, validate_enum, flag_enum, erda_status, asset_status_nt
 from StorageApi import storage_client
 
 """
-# TODO Description
+# TODO Description Add in flight throttle count
 """
 class AssetErrorStatusHandler():
 
@@ -37,6 +37,7 @@ class AssetErrorStatusHandler():
         self.throttle_mongo = throttle_repository.ThrottleRepository()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.erda_enum = erda_status.ErdaStatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -181,11 +182,13 @@ class AssetErrorStatusHandler():
             self.throttle_mongo.add_one_to_count("await_sync_asset_count", "value")
             self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)
             print(f"found {guid} to have been successfully synced to erda - sent asset back to normal flow")
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
 
         else:
             print(f"unable to handle {guid} - set to critical error")
             message = self.run_util.log_msg(self.prefix_id, f"Tried handling erda_sync error for {guid}. Could not determine the issue. Will need manual handling. erda_sync set to {self.status_enum.CRITICAL_ERROR.value}")
             self.health_caller.error(self.service_name, message, guid, "erda_sync", self.status_enum.CRITICAL_ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
 
     def handle_has_open_share_error(self, asset, guid):
         
@@ -197,7 +200,8 @@ class AssetErrorStatusHandler():
             print(f"unable to handle {guid} - set to critical error")
             self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
             message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Could not determine the issue. Failed to get information about asset from ARS. has_open_share set to {self.status_enum.CRITICAL_ERROR.value}")
-            self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+            self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
             return
         
         status = ars_status["data"].status
@@ -219,6 +223,7 @@ class AssetErrorStatusHandler():
                         self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
                         message = self.run_util.log_msg(self.prefix_id, f"Successfully handled has_open_share error for {guid}. Asset had share allocation match asset size. Asset files were found to be available in ARS. has_open_share set to {self.validate_enum.YES.value}")
                         self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.validate_enum.YES.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
                         return
 
         if status == self.erda_enum.ERDA_SYNCHRONISED.value:
@@ -246,15 +251,18 @@ class AssetErrorStatusHandler():
                         self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.YES.value)
                         message = self.run_util.log_msg(self.prefix_id, f"Successfully handled has_open_share error for {guid}. has_open_share set to {self.validate_enum.YES.value}")
                         self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.validate_enum.YES.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
 
                     elif proxy_path is False:                        
                         message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", self.status_enum.CRITICAL_ERROR.value)
-                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                        self.health_caller.warning(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                         return
                 except Exception as e:
                     print(e)
                     message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS.", e, self.status_enum.CRITICAL_ERROR.value)
-                    self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)            
+                    self.health_caller.error(self.service_name, message, guid, "has_open_share", self.status_enum.CRITICAL_ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                     return
 
             # failed to reopen share for transferring to hpc slurm
@@ -280,15 +288,18 @@ class AssetErrorStatusHandler():
                         self.track_mongo.update_entry(guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
                         message = self.run_util.log_msg(self.prefix_id, f"Successfully handled has_open_share error for {guid}. has_open_share set to {self.validate_enum.YES.value}")
                         self.health_caller.warning(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.validate_enum.YES.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.BEING_PROCESSED.value)
 
                     elif proxy_path is False:                        
                         message = self.run_util.log_msg(self.prefix_id, f"Tried handling has_open_share error for {guid}. Failed to open share in ARS got status {status_code}.", self.status_enum.CRITICAL_ERROR.value)
-                        self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)            
+                        self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
                         return
                 except Exception as e:
                     print(e)
                     message = self.run_util.log_exc(self.prefix_id, f"Tried handling has_open_share error for {guid}. Something else failed.", e, self.status_enum.CRITICAL_ERROR.value)
                     self.health_caller.error(self.service_name, message, guid, self.flag_enum.HAS_OPEN_SHARE.value, self.status_enum.CRITICAL_ERROR.value)            
+                    self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                     return
 
 
@@ -322,6 +333,7 @@ class AssetErrorStatusHandler():
                 self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                 return
 
             if closed is True:
@@ -331,6 +343,7 @@ class AssetErrorStatusHandler():
                 self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
                 self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.CRITICAL_ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
                 return
 
             self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
@@ -338,7 +351,7 @@ class AssetErrorStatusHandler():
             
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} failed to sync with specify in ARS. One or more of the specimen(s) {specimens} not found in Specify. Fileproxy share has been deleted and the asset removed throttle procedures. Asset file is still in ERDA and metadata in ARS. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO.")
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.CRITICAL_ERROR.value)
-            
+            self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)
             return
         """
         # TODO add a temp variable to track data and have validate sync specify remove this - implement checks for it here to avoid looping the same errored asset
@@ -360,7 +373,8 @@ class AssetErrorStatusHandler():
         self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
         self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
         entry = self.run_util.log_msg(self.prefix_id, f"Tried handling specify_sync error for {guid}. Could not determine the issue. Will need manual handling. specify_sync set to {self.status_enum.CRITICAL_ERROR.value}")
-        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)            
+        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
+        self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
         return
 
     def update_throttle_plus_size(self, asset):
