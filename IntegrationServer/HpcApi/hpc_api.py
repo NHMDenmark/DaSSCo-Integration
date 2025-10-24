@@ -38,7 +38,7 @@ fail_derivative_creation_model = FailDerivativeCreationModel
 # TODO update unit tests
 @app.get("/dev/yo")
 def index():
-    return "keep out all devils!"
+    return "keep out all devils!!"
 
 """
 Deprecated since we use the derivative endpoint instead.
@@ -61,7 +61,7 @@ async def update_asset(update_data: update_model):
     updated = service.update_from_hpc(update_data)
 
     if updated is False:
-        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+        return JSONResponse(content={"error": "asset not found."}, status_code=422)
 
 @app.post("/dev/api/v1/barcode")
 async def insert_barcode(barcode_data: barcode_model):
@@ -83,7 +83,7 @@ async def start_job(start_data: job_model):
     started = service.job_started(start_data)
 
     if started is False:
-        return JSONResponse(content={"error": "asset not found"}, status_code=422)
+        return JSONResponse(content={"error": "asset not found."}, status_code=422)
 
 @app.post("/dev/api/v1/failed_job")
 async def failed_job(fail_data: fail_job_model):

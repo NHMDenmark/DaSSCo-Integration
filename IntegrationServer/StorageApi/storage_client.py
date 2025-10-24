@@ -113,7 +113,7 @@ class StorageClient():
           
           data_dict["date_asset_taken"] = self.service.restore_copenhagen_time(data_dict["date_asset_taken"])
           data_dict["date_metadata_ingested"] = self.service.restore_copenhagen_time(data_dict["date_metadata_ingested"])
-          # print(data_dict)
+          print(data_dict)
           try:
                response = self.client.assets.update(guid, data_dict)
 
@@ -122,6 +122,7 @@ class StorageClient():
 
                     return True
                else:
+                    print(status_code)
                     return False
 
           except Exception as e:
@@ -346,7 +347,7 @@ class StorageClient():
           try:
                response = self.client.assets.sync_specify(guid)
 
-               status_code = response.status_code
+               status_code = response["status_code"]
 
                if status_code == 200:
                     return True, status_code, None 
@@ -362,7 +363,7 @@ class StorageClient():
           try:
                response = self.client.specimens.get_specimen(specimen_pid)
 
-               status_code = response.status_code
+               status_code = response["status_code"]
 
                if status_code == 200:
                     return True, response, None 
@@ -373,13 +374,33 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False, status_code, note
 
-     def create_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
-          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
-          
-          try:
-               response = self.client.specimens.create_or_update(specimen_pid, specimen_model)
+     def delete_specimen(self, specimen_pid):
 
-               status_code = response.status_code
+          try:
+               response = self.client.specimens.delete_specimen(specimen_pid)
+
+               status_code = response["status_code"]
+
+               if status_code == 200:
+                    return True, response, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note
+     
+
+     def create_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+
+          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+          specimen_model = specimen_model.model_dump_json()
+          specimen_json_model = json.loads(specimen_model)
+
+          try:
+               response = self.client.specimens.create_or_update(specimen_pid, specimen_json_model)
+
+               status_code = response["status_code"]
 
                if status_code == 200:
                     return True, response, None 
@@ -392,12 +413,13 @@ class StorageClient():
 
 
      def update_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+
           specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
 
           try:
                response = self.client.specimens.create_or_update(specimen_pid, specimen_model)
 
-               status_code = response.status_code
+               status_code = response["status_code"]
 
                if status_code == 200:
                     return True, response, None 

@@ -72,7 +72,7 @@ async def set_all_run_status(status: str):
         print(f"set all run status fail: {e}")
         return JSONResponse(content={"status": "Something went wrong."}, status_code=500)
 
-@control.post("/control/start_service")
+@control.get("/control/start_service")
 async def service_start(service_name: str):
 
     started, msg = service.start_service(service_name)
@@ -170,23 +170,23 @@ async def search_in_track(search_model: search_model):
         return JSONResponse(content={"status": msg}, status_code=500)
     
     if data_list == []:
-        return JSONResponse(content={"message": "failed to find any assets with these criteria"}, status_code=200)
+        return JSONResponse(content={"message": "failed to find any assets with these criteria."}, status_code=200)
     
     if data_list is None:
         return JSONResponse(content={"message": msg}, status_code=422)
 
     return data_list
 
-@control.get("/control/get_process_time_stat")
+@control.post("/control/get_process_time")
 async def get_process_time_stat(process_time_model: process_time_model):
-
+    
     found, average_time, msg = service.get_process_time_stat(process_time_model)
 
     if found is False:
         return JSONResponse(content={"status": msg}, status_code=500)
     
     if average_time == None:
-        return JSONResponse(content={"message": "failed to find any assets with these criteria"}, status_code=200)
+        return JSONResponse(content={"message": "failed to find any assets with these criteria."}, status_code=200)
 
     return average_time
 

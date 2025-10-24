@@ -6,7 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, metadata_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
 from HealthUtility import health_caller, run_utility
@@ -29,6 +29,7 @@ class UpdateMetadata():
         self.prefix_id = "UmA"
         self.auth_timestamp = None
         self.track_mongo = track_repository.TrackRepository()
+        self.metadata_mongo = metadata_repository.MetadataRepository()
         self.service_mongo = service_repository.ServiceRepository()
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
@@ -139,21 +140,42 @@ class UpdateMetadata():
 
                     guid = asset["_id"]
                     
-                    try:
-                        updated = self.storage_api.update_metadata(guid)
+                    metadata = self.metadata_mongo.get_entry("asset_guid", guid)
+                    
+                    update = True
 
-                        if updated is True:
-                            # print(f"{guid} was updated by Starfish")
-                            self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
-                        else:
-                            entry = self.run_util.log_msg(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", self.run_util.log_enum.ERROR.value)
+                    if len(metadata["barcode"]) > 0:
+                        try:
+                            for barcode in metadata["barcode"]:
+                                found, msg, note = self.storage_api.get_specimen(f"SPID_{barcode}")
+                                if found is False:
+                                    entry = self.run_util.log_msg(self.prefix_id, f"Specimen with barcode {barcode} for asset {guid} not found in ARS. Metadata update for {guid} aborted.", self.run_util.log_enum.ERROR.value)
+                                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+                                    self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+                                    update = False
+                                    break
+                        except Exception as e:
+                            entry = self.run_util.log_exc(self.prefix_id, f"Failed to verify specimen barcode for asset {guid} in ARS.", e, self.run_util.log_enum.ERROR.value)
                             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
                             self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+                            update = False
+                    
+                    if update is True:
+                        try:
+                            updated = self.storage_api.update_metadata(guid)
 
-                    except Exception as e:
-                        entry = self.run_util.log_exc(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", e, self.run_util.log_enum.ERROR.value)
-                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
-                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+                            if updated is True:
+                                # print(f"{guid} was updated by Starfish")
+                                self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
+                            else:
+                                entry = self.run_util.log_msg(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", self.run_util.log_enum.ERROR.value)
+                                self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+                                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+
+                        except Exception as e:
+                            entry = self.run_util.log_exc(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", e, self.run_util.log_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+                            self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     time.sleep(1)
 

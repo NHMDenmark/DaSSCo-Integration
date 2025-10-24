@@ -180,8 +180,8 @@ def test_exception():
     except:
         raise Exception("fun")
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':   
+
     md = metadata_repository.MetadataRepository()
     ser = storage_service.StorageService()
     sclient = storage_client.StorageClient()
@@ -194,20 +194,20 @@ if __name__ == '__main__':
     service_username = "STARFISH"
 
           
-    client = DaSSCoStorageClient(client_id, client_secret)
+    # client = DaSSCoStorageClient(client_id, client_secret)
 
-    assets = ["040ck2b867e98130e36160cf860ab8", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
+    #assets = ["ucloud-test-37", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
 
     # md.get_entry("_id", assets[0])
 
-    json_data = ser.get_metadata_json_format(assets[0])
-    data_dict = json.loads(json_data)
+    #json_data = ser.get_metadata_json_format(assets[0])
+    #data_dict = json.loads(json_data)
 
-    print(data_dict)
+    #print(data_dict)
 
-    res = client.assets.create(data_dict, 1)
+    found, res, msg = sclient.get_specimen("SPID_001028158")
     
-    print("hi", res.get("data"))
+    print("hi", found, res, msg)
 
     md.close_connection()
     

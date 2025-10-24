@@ -143,7 +143,10 @@ class HPCService():
             
             if data_dict is not None or data_dict != {}:
                 self.update_mongo_metadata(guid, data_dict)
-                self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+                if job != "barcode":
+                    self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+                else:
+                    self.mongo_track.update_entry(guid, "update_metadata", self.validate.PREPARE.value)
 
             try:
                 self.update_metadata_json(guid, data_dict)
@@ -156,7 +159,7 @@ class HPCService():
         
         return True
     
-    # updates the jobs_status field of the asset in the track database
+    # updates the jobs_status field of the assets in the track database
     def jobs_status_update(self, guid, job, status):
         
         # check if the job has already received an update about the job that changed its status to DONE, ERROR, CRITICAL_ERROR or RETRY already
@@ -300,6 +303,7 @@ class HPCService():
             return True
 
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
+        print(metadata_update)
 
         # Checks the job finished correctly. Gets the asset type from the enum list (returns false if still unknown) and updates it.
         # Handles asset types that dont need further processing by removing "waiting" jobs

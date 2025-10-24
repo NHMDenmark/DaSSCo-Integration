@@ -164,7 +164,17 @@ class StorageService():
     
     def create_specimen_model(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id = None, role_restrictions = []):
 
-        specimen_model = api_specimen_model.SpecimenModel(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+        specimen_model = api_specimen_model.SpecimenModel()
+
+        specimen_model.institution = institution
+        specimen_model.collection = collection
+        specimen_model.barcode = barcode
+        specimen_model.specimen_pid = specimen_pid
+        specimen_model.preparation_types = preparation_types
+        specimen_model.specimen_id = specimen_id
+        specimen_model.role_restrictions = role_restrictions
+
+        print(specimen_model)
 
         return specimen_model
     

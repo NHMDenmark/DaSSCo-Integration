@@ -68,7 +68,7 @@ class SpecimenCreator():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs({self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.PREPARE.value})           
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.PREPARE.value}])           
             
             if asset is None:
                 time.sleep(5)
@@ -86,9 +86,12 @@ class SpecimenCreator():
 
                     specimen_pid = f"SPID_{barcode}"
 
-                    specimen = self.storage_api.get_specimen(specimen_pid)
+                    found, specimen, msg = self.storage_api.get_specimen(specimen_pid)
 
-                    if specimen is not None:
+                    if msg is not None:
+                        print(msg)
+
+                    if found is True:
 
                         if specimen.data["preparation_types"] != metadata["preparation_type"]:
                             new_preparation_types = metadata["preparation_type"]

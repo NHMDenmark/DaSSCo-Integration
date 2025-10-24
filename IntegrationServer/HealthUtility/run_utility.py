@@ -303,6 +303,12 @@ class RunUtility(LogClass, Status):
 
         current_update_flag = asset[self.flag_enum.UPDATE_METADATA.value]
 
+        if current_update_flag == self.validate_enum.ERROR.value or current_update_flag == self.validate_enum.CRITICAL_ERROR.value: 
+            msg = f"Asset had {current_update_flag} for {self.flag_enum.UPDATE_METADATA.value} when requesting status update."
+            entry = self.log_msg(self.prefix_id, f"Did not update metadata status in ARS. {msg}")
+            self.health_caller.warning(self.service_name, entry, guid)
+            return False
+
         if current_update_flag != self.validate_enum.NO.value: 
             msg = f"Asset had {current_update_flag} for {self.flag_enum.UPDATE_METADATA.value} when requesting status update."
             check = False
