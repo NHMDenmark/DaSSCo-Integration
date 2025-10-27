@@ -224,7 +224,10 @@ class OpenShare(Status, Validate):
         try:
             full_status = self.storage_api.get_full_asset_status(guid)
 
-            if full_status["data"].status == "COMPLETED" and full_status["data"].share_allocation_mb != 0:
+            if full_status is False:
+                return False
+
+            elif full_status["data"].status == "COMPLETED" and full_status["data"].share_allocation_mb != 0:
                 entry = self.run_util.log_msg(self.prefix_id, f"Received status {status_code} for {guid}. Checked and the share was opened anyway.", self.run_util.log_enum.WARNING.value)
                 self.health_caller.warning(self.service_name, entry, guid)
                 return True
