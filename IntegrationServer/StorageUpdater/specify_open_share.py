@@ -187,7 +187,7 @@ class SpecifyOpenShare(Status, Validate):
                         if check is True:
                             self.update_throttle(asset)
                             self.mongo_track.update_entry(guid, "has_open_share", self.YES)
-                            self.mongo_track.update_entry(guid, "specify_sync", self.AWAIT)
+                            self.mongo_track.update_entry(guid, "specify_sync", self.PREPARE)
                         else:
                             self.handle_failures(guid, status_code)
 
