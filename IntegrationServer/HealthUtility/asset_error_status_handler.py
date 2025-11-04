@@ -323,6 +323,11 @@ class AssetErrorStatusHandler():
 
         ars_status = self.storage_api.get_full_asset_status(guid)
 
+        if ars_status is False:
+            entry = self.run_util.log_msg(self.prefix_id, f"Failed getting ARS status for {guid} while handling specify_sync error.")
+            self.health_caller.warning(self.service_name, entry)
+            return
+
         error_message = ars_status["data"].error_message
         
         if "SPECIMEN_NOT_FOUND_ERROR" in error_message:
