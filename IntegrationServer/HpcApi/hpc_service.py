@@ -286,6 +286,7 @@ class HPCService():
         MOS = barcode_data.MOS
         label = barcode_data.label
         disposable = barcode_data.disposable
+        issues = barcode_data.issues
 
         print("from barcode:", guid, job_name, status, asset_subject)
 
@@ -298,8 +299,8 @@ class HPCService():
             return False
         
         # set jobs status to error and barcode job status to error if no barcode found but job has finished as expected.
-        if len(barcode_list) == 0 and asset_subject != "device target":
-            self.handle_no_barcode(guid)            
+        if len(barcode_list) == 0:
+            self.handle_no_barcode(guid, asset_subject, issues)            
             return True
 
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
@@ -376,11 +377,18 @@ class HPCService():
 
         return True
 
-    def handle_no_barcode(self, guid):
-        self.jobs_status_update(guid, "barcode", StatusEnum.ERROR.value)
-        msg = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had no barcode returned by barcode job. Asset jobs_status and barcode job status set to ERROR.", StatusEnum.ERROR.value)
-        self.health_caller.error(self.service_name, msg, guid, "jobs_status", StatusEnum.ERROR.value)
-        self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
+    def handle_no_barcode(self, guid, asset_subject=None, issues=None):
+
+        if issues is not None:
+            self.mongo_metadata.update_entry(guid, "issues", issues)
+            self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+
+        if asset_subject != "device target":
+            self.jobs_status_update(guid, "barcode", StatusEnum.ERROR.value)
+            msg = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had no barcode returned by barcode job. Asset jobs_status and barcode job status set to ERROR.", StatusEnum.ERROR.value)
+            self.health_caller.error(self.service_name, msg, guid, "jobs_status", StatusEnum.ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
+        
 
     # update track database that a job has queued
     # TODO figure out if this needs to call the jobs_status_update local function 

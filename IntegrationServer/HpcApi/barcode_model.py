@@ -11,3 +11,4 @@ class BarcodeModel(BaseModel):
     MOS: bool
     label: bool
     disposable: str = None
+    issues: List[Dict] = None
