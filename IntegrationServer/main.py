@@ -67,7 +67,6 @@ def test():
     # jobby = job_driver.JobDriver()
     # cons = connections.Connections()
     # api = northtech_rest_api.APIUsage()
-    # smb = smb_connecter.SmbConnecter()
     # mongo = mongo_connection.MongoConnection("track")
     # meta_mongo = mongo_connection.MongoConnection("metadata")
     # ndrive = ndrive_new_files.NdriveNewFilesFinder()
@@ -182,7 +181,7 @@ def test_exception():
 
 if __name__ == '__main__':   
 
-    md = metadata_repository.MetadataRepository()
+    #md = metadata_repository.MetadataRepository()
     ser = storage_service.StorageService()
     sclient = storage_client.StorageClient()
 
@@ -193,24 +192,17 @@ if __name__ == '__main__':
 
     service_username = "STARFISH"
 
-          
-    # client = DaSSCoStorageClient(client_id, client_secret)
+    status = sclient.get_full_asset_status("040ck2b867e98130f173b07c8ba882")
 
-    #assets = ["ucloud-test-37", "040ck2b867e980d0b341f18397ac3f", "040ck2b867e980d0b13211c2af7319"]
+    print(type(status["data"]), status["data"].error_message)
 
-    # md.get_entry("_id", assets[0])
+    if "something" in status["data"].error_message:
+        print("yes")
 
-    #json_data = ser.get_metadata_json_format(assets[0])
-    #data_dict = json.loads(json_data)
+    #u = utility.Utility()
 
-    #print(data_dict)
-
-    found, res, msg = sclient.get_specimen("SPID_001028158")
-    
-    print("hi", found, res, msg)
-
-    md.close_connection()
-    
+    #crc = u.calculate_crc_checksum("/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer/Files/InProcess/PIPEHERB0001/2025-08-11/040ck2b867e98130f173b07c8ba882/040ck2b867e98130f173b07c8ba882.tif")
+    #print(crc)
     """
     load_dotenv()
     user = os.getenv("rabbit_user")
