@@ -203,7 +203,7 @@ class ValidateSpecifySync():
                      
                     self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
 
-                    entry = self.run_util.log_msg(self.prefix_id, f"Asset failed to sync with specify in ARS. {guid}. Will set specify_sync to ERROR. {note}")
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset failed to sync with specify in ARS. Status found in ARS: {asset_status}. {guid}. Will set specify_sync to ERROR. {note}")
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
                     self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                     

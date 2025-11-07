@@ -157,7 +157,18 @@ class SyncSpecify():
                     print(f"Asset {guid} is a device target, skipping specify sync.")
                     self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.YES.value)
                     continue
+                
+                # check if barcode exists in metadata
+                metadata = self.metadata_mongo.get_entry("_id", guid)
 
+                if not metadata["barcode"]:
+                    print(f"Asset {guid} is missing barcode, skipping specify sync.")
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} is missing barcode, cannot sync to Specify. specify_sync set to ERROR.")
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
+                    continue
+                
+                # update local metadata to prepare for specify sync
                 try:
                     self.metadata_mongo.update_entry(guid, "push_to_specify", True)
                     self.metadata_mongo.update_entry(guid, "asset_locked", True)

@@ -192,12 +192,9 @@ if __name__ == '__main__':
 
     service_username = "STARFISH"
 
-    status = sclient.get_full_asset_status("040ck2b867e98130f173b07c8ba882")
-
-    print(type(status["data"]), status["data"].error_message)
-
-    if "something" in status["data"].error_message:
-        print("yes")
+    status = sclient.update_metadata("040ck2b867e981206382f0f479d0c0_400", "LD")
+    
+    print(status)
 
     #u = utility.Utility()
 

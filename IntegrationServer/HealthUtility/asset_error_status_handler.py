@@ -388,7 +388,7 @@ class AssetErrorStatusHandler():
         # others
         self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
         self.track_mongo.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
-        entry = self.run_util.log_msg(self.prefix_id, f"Tried handling specify_sync error for {guid}. Could not determine the issue. Will need manual handling. specify_sync set to {self.status_enum.CRITICAL_ERROR.value}")
+        entry = self.run_util.log_msg(self.prefix_id, f"Tried handling specify_sync error for {guid}. Could not determine the issue. Will need manual handling. specify_sync set to {self.status_enum.CRITICAL_ERROR.value}. If any ARS error message: {error_message}")
         self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value, self.status_enum.CRITICAL_ERROR.value)
         self.run_util.update_metadata_status(guid, self.asset_status_enum.ERROR.value)            
         return
