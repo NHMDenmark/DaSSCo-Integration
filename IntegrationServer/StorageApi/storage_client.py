@@ -56,7 +56,7 @@ class StorageClient():
           if data_dict["asset_pid"] == "":
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
           
-          # TODO fix mismatch between pydantic model and dassco-storage-client model
+          # TODO fix mismatch between pydantic model and dassco-storage-client model -- this should be removable, check that asset_pid in metadata in db is not a list for a derivative
           if isinstance(data_dict["asset_pid"], list):
                data_dict["asset_pid"] = data_dict["asset_pid"][0]
 
