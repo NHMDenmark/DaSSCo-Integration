@@ -39,7 +39,6 @@ from DashboardAPIs import micro_service_paths
 import traceback
 #from pymongo.errors import InvalidOperation
 #import field_validation
-#from validator_collection import checkers, validators
 """"
 Test area for the different processes. May contain deprecated information.
 """
