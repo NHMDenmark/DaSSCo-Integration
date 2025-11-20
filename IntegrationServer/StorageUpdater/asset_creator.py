@@ -263,6 +263,24 @@ class AssetCreator():
                 print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]                
                 print(guid)
+
+                # check if barcodes has been addded before processing for new assets - if so specimens needs to be created first in ARS
+                if derivative_asset is False and new_asset is True:
+                    metadata = self.metadata_mongo.get_entry("_id", guid)
+
+                    if metadata["barcode"]:
+
+                        barcodes = self.check_barcode_length(guid, metadata["barcode"])
+
+                        for barcode in barcodes:
+                            check, msg, note = self.storage_api.get_specimen("SPID_" + barcode)
+                            
+                            if check is False and msg == 404:
+
+                                self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.PREPARE.value)
+                                self.end_of_loop_checks()
+                                continue
+
                 # Receives created: bool, response: str, exc: exception, status_code: int
                 if asset["asset_size"] != -1:
                     created, response, exc, status_code = self.storage_api.create_asset(guid, asset["asset_size"])
@@ -498,6 +516,21 @@ class AssetCreator():
                 self.service_mongo.update_entry(self.service_name, "heartbeat", self.beat)                
             except:
                 pass
+
+    def check_barcode_length(self, guid, barcodes):
+
+        count = 0
+        update = False
+        for barcode in barcodes:                    
+            if len(barcode) != 9:
+                barcode = barcode.zfill(9) # Pad with leading zeros to ensure length of 9
+                barcodes[count] = barcode
+                update = True
+            count = count + 1
+        if update:
+            self.metadata_mongo.update_entry(guid, "barcode", barcodes)
+
+        return barcodes
 
     """
     Creates the storage client.

@@ -68,7 +68,10 @@ class SpecimenCreator():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.PREPARE.value}])           
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.PREPARE.value, self.flag_enum.IS_IN_ARS.value: self.validate_enum.YES.value}])
+
+            if asset is None:
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.IS_IN_ARS.value: self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.UPDATE_METADATA.value: self.validate_enum.PREPARE.value}])           
             
             if asset is None:
                 time.sleep(5)
@@ -109,7 +112,10 @@ class SpecimenCreator():
                     # TODO check create response
 
                 # update track entry
-                self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
+                if asset[self.flag_enum.IS_IN_ARS.value] == self.validate_enum.NO.value:
+                    self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.NO.value)
+                else:
+                    self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.YES.value)
 
             self.end_of_loop_checks()
 

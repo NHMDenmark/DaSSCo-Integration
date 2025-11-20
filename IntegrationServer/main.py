@@ -192,9 +192,11 @@ if __name__ == '__main__':
 
     service_username = "STARFISH"
 
-    status = sclient.update_metadata("040ck2b867e981206382f0f479d0c0_400", "LD")
+    #status = sclient.update_metadata("040ck2b867e981206382f0f479d0c0_400", "LD")
     
-    print(status)
+    status, msg, note = sclient.get_specimen("SPID_001028184")
+
+    print(f"status: {status} --- msg: {msg} --- note: {note}")
 
     #u = utility.Utility()
 
