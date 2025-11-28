@@ -11,6 +11,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(script_dir)
 
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import service_repository, throttle_repository, ssh_connection_repository
 import utility
 
@@ -20,7 +21,8 @@ class SetupServices:
     Prints changes in terminal.
     """
     def __init__(self):
-        self.service_repo = service_repository.ServiceRepository()
+        self.mongo_client = MongoSharedClient()
+        self.service_repo = service_repository.ServiceRepository(self.mongo_client)
         self.util = utility.Utility()
         self.service_config_path = f"{project_root}/IntegrationServer/ConfigFiles/micro_service_config.json"
         self.service_config = self.util.read_json(self.service_config_path)
@@ -50,7 +52,8 @@ class SetupThrottleService:
     Prints updates in terminal. 
     """
     def __init__(self):
-        self.throttle_repo = throttle_repository.ThrottleRepository()
+        self.mongo_client = MongoSharedClient()
+        self.throttle_repo = throttle_repository.ThrottleRepository(self.mongo_client)
         self.util = utility.Utility()
         self.throttle_config_path = f"{project_root}/IntegrationServer/ConfigFiles/throttle_config.json"
         self.throttle_config = self.util.read_json(self.throttle_config_path)
@@ -72,8 +75,8 @@ class SetupSshConnectionDB:
     Prints updates in terminal.
     """
     def __init__(self):
-
-        self.ssh_repo = ssh_connection_repository.SshConnectionRepository()
+        self.mongo_client = MongoSharedClient()
+        self.ssh_repo = ssh_connection_repository.SshConnectionRepository(self.mongo_client)
         self.util = utility.Utility()
         self.ssh_config_path = f"{project_root}/IntegrationServer/ConfigFiles/ssh_connections_config.json"
         self.ssh_config = self.util.read_json(self.ssh_config_path)

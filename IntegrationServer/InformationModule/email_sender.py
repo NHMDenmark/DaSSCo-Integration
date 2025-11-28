@@ -36,11 +36,8 @@ class EmailSender:
         self.mail_server_user = os.getenv(f"mail_server_user_{mail}")
         self.mail_server_pass = os.getenv(f"mail_server_pass_{mail}")
 
-    """
-    
     #This requires sendmail to be installed on the system. Also requires the system to be linux.
     #Returns true.
-    
         
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
         
@@ -61,10 +58,8 @@ class EmailSender:
         
         return True
     
-    
     #This requires sendmail to be installed on the system. Also requires the system to be linux.
     #Returns true.
-    
     
     def send_status_change_mail(self, health_id, service_name, run_status, timestamp):
         
@@ -86,8 +81,8 @@ class EmailSender:
         return True
     
 
-    """
     
+    """
     #This requires a mailserver to be setup and configured.
     #Returns true.
     
@@ -134,7 +129,7 @@ class EmailSender:
         server.quit()
         
         return True
-    
+    """
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
         

@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import time
 import utility
 from MongoDB import track_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
 
@@ -25,7 +26,9 @@ class DeleteLocalFiles():
 
         self.util = utility.Utility()
         
-        self.track_mongo = track_repository.TrackRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum

@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import time
 from datetime import datetime, timedelta
 import utility
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import service_repository, throttle_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
@@ -30,8 +31,9 @@ class ThrottleService():
         self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
 
         self.util = utility.Utility()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
+        self.mongo_client = MongoSharedClient()
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.Validate

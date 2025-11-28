@@ -10,9 +10,9 @@ from pymongo.errors import InvalidOperation
 
 class BatchRepository:
 
-    def __init__(self):
+    def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_batch = mongo_connection.MongoConnection("batch")
+        self.mongo_batch = mongo_connection.MongoConnection("batch", client)
 
         self.collection = self.mongo_batch.get_collection()
         self.all = all_repository.AllRepository(self.collection)

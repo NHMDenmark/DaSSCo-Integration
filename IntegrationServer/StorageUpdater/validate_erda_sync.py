@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, service_repository, throttle_repository, metadata_repository
 from StorageApi import storage_client
 from Enums.status_enum import Status
@@ -43,10 +44,11 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         self.validate_enum = validate_enum.ValidateEnum
         self.flag_enum = flag_enum.FlagEnum
         self.asset_status_enum = asset_status_nt.AssetStatusNT
-        self.track_mongo = track_repository.TrackRepository()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
-        self.metadata_mongo = metadata_repository.MetadataRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 

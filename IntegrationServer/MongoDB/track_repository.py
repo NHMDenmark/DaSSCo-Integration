@@ -17,10 +17,10 @@ class TrackRepository:
     Contains the track database functionalities.
     Includes the functions from the all repository.
     """
-    def __init__(self):
+    def __init__(self, client):
         """Creates the connection object for track and all databases."""
         self.util = utility.Utility()
-        self.mongo_track = mongo_connection.MongoConnection("track")
+        self.mongo_track = mongo_connection.MongoConnection("track", client)
 
         self.collection = self.mongo_track.get_collection()
         self.all = all_repository.AllRepository(self.collection)

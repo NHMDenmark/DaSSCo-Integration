@@ -1,6 +1,6 @@
 #!/bin/bash
 
-root="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
+root="/home/dassco/integration/DaSSCo-Integration/IntegrationServer"
 
 path="$1"
 base_path="${path%.*}"  # removes the file extension

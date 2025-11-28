@@ -8,6 +8,7 @@ import json
 from dotenv import load_dotenv
 import utility
 from dassco_utils.messaging.rabbitmq_client import RabbitMqClient
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import metadata_repository, track_repository, service_repository, file_model
 from Enums import status_enum, flag_enum, validate_enum, metadata_origin
 from HealthUtility import health_caller, run_utility
@@ -35,9 +36,10 @@ class ReceiveMetadata():
         # RabbitMQ channel name
         self.queue_channel = "metadata_and_file_info"
 
-        self.metadata_mongo = metadata_repository.MetadataRepository()
-        self.mongo_track = track_repository.TrackRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+        self.mongo_client = MongoSharedClient()
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum

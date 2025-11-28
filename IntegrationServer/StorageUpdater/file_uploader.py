@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, metadata_repository, service_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum, metadata_origin, asset_status_nt
@@ -28,9 +29,10 @@ class FileUploader():
         self.service_name = "File uploader ARS"
         self.prefix_id = "FuA"
         self.auth_timestamp = None
-        self.track_mongo = track_repository.TrackRepository()
-        self.metadata_mongo = metadata_repository.MetadataRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.metadata_origin_enum = metadata_origin.MetadataOriginEnum

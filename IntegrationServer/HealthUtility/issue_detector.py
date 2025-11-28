@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import utility
 import time
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import service_repository, health_repository
 from HealthUtility import run_utility
 
@@ -21,9 +22,10 @@ class IssueDetector():
         self.service_config_path = f"{project_root}/ConfigFiles/"
 
         self.util = utility.Utility()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.health_mongo = health_repository.HealthRepository()
-        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name )
+        self.mongo_client = MongoSharedClient()
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.health_mongo = health_repository.HealthRepository(self.mongo_client)
+        self.run_util = run_utility.RunUtility(self.service_name, self.log_filename, self.logger_name)
 
         
         self.service_mongo.update_entry("all_run", "run_status", "RUNNING")

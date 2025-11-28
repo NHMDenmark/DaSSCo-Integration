@@ -177,10 +177,73 @@ def test_exception():
         a = 1/0
     except:
         raise Exception("fun")
+    
+def add_d_clean_up_job(guid):
+        
+        track = track_repository.TrackRepository()
+        job = {
+                "name": "clean_up",
+                "status": "WAITING",
+                "priority": 2,
+                "job_queued_time": None,
+                "job_start_time": None,
+                "hpc_job_id": -9,
+                }
+                    
+        track.append_existing_list(guid, "job_list", job)
+        track.close_connection()
+
+def add_clean_up_job(guid):
+        
+        track = track_repository.TrackRepository()
+        job = {
+                "name": "clean_up",
+                "status": "WAITING",
+                "priority": 5,
+                "job_queued_time": None,
+                "job_start_time": None,
+                "hpc_job_id": -9,
+                }
+                    
+        track.append_existing_list(guid, "job_list", job)
+        track.close_connection()
+
+def add_upload_job(guid):
+        track = track_repository.TrackRepository()
+        job = {
+            "name": "uploader",
+            "status": "WAITING",
+            "priority": 1,
+            "job_queued_time": None,
+            "job_start_time": None,
+            "hpc_job_id": -9,
+            }
+
+        track.append_existing_list(guid, "job_list", job)
+        track.close_connection()
 
 if __name__ == '__main__':   
 
-    #md = metadata_repository.MetadataRepository()
+    m = metadata_repository.MetadataRepository()
+
+    t = m.get_entry("_id", "lumi-test-21")
+
+    print(t)
+
+    m.close_connection()
+    """
+    d_guid_list = ["lumi-test-2_400", "lumi-test-2_72"]
+
+    for a in d_guid_list:
+        add_upload_job(a)
+        add_d_clean_up_job(a)
+
+    guid_list = "lumi-test-2"
+    
+    for b in guid_list:
+        add_clean_up_job(b)
+    """
+    """
     ser = storage_service.StorageService()
     sclient = storage_client.StorageClient()
 
@@ -196,7 +259,7 @@ if __name__ == '__main__':
     status, msg, note = sclient.get_specimen("SPID_001028184")
 
     print(f"status: {status} --- msg: {msg} --- note: {note}")
-
+    """
     #u = utility.Utility()
 
     #crc = u.calculate_crc_checksum("/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer/Files/InProcess/PIPEHERB0001/2025-08-11/040ck2b867e98130f173b07c8ba882/040ck2b867e98130f173b07c8ba882.tif")

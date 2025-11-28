@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, service_repository
 from Connections import connections
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
@@ -30,9 +31,10 @@ class HPCCleanUp():
 
         self.ssh_config_name = "ucloud"
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
-    
-        self.mongo_track = track_repository.TrackRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+
+        self.mongo_client = MongoSharedClient()
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()

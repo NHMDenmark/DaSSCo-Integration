@@ -12,12 +12,40 @@ import utility
 from MongoDB import track_model
 from pymongo.errors import ConnectionFailure
 
+class MongoSharedClient:
+    
+    def __init__(self):
+        self.host = "localhost"
+        self.port = 27017
+        self.client = None
+        self.connect()
+
+    def connect(self):
+        try:
+            self.client = MongoClient(self.host, self.port)
+            # Test the connection
+            self.client.admin.command('ping')
+            print("Connected to MongoDB server.")
+        except ConnectionFailure as e:
+            print(f"Could not connect to MongoDB server: {e}")
+            self.client = None
+
+    def get_client(self):
+        if self.client is None:
+            self.connect()
+        return self.client
+
+    def close(self):
+        if self.client:
+            self.client.close()
+            print("MongoDB connection closed.")
+
 class MongoConnection:
     """
     Class for connecting to and interacting with a MongoDB. Takes the name of the database as argument in constructor.
     """
     
-    def __init__(self, name):
+    def __init__(self, name, mongo_client: MongoSharedClient):
         self.util = utility.Utility()
         self.name = name
 
@@ -27,13 +55,11 @@ class MongoConnection:
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
         self.config_values = self.util.get_value(self.mongo_config_path, self.name)
 
-        self.host = self.config_values.get("host")
-        self.port = self.config_values.get("port")
         self.data_base = self.config_values.get("data_base")
         self.collection_name = self.config_values.get("collection_name")
 
-        # Connect to the MongoDB server
-        self.client = MongoClient(self.host, self.port)  # Default MongoDB server address and port
+        # Use shared MongoDB client
+        self.client = mongo_client.get_client()
 
         # Access a specific database (create it if it doesn't exist)
         self.mdb = self.client[self.data_base]

@@ -8,6 +8,7 @@ import paramiko
 import stat
 from utility import Utility
 from MongoDB import ssh_connection_repository
+from MongoDB.mongo_connection import MongoSharedClient
 
 """
 Class that creates a ssh connection. Includes function to make use of the connection. 
@@ -19,7 +20,8 @@ Needs ssh keys to avoid password prompts.
 class SSHConnection:
     def __init__(self, name, host, port, username, password):
         self.util = Utility()
-        self.mongo_connection = ssh_connection_repository.SshConnectionRepository()
+        self.mongo_client = MongoSharedClient()
+        self.mongo_connection = ssh_connection_repository.SshConnectionRepository(self.mongo_client)
         self.sftp = None
         self.name = name
         self.host = host

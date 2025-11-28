@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import utility
 import time
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import service_repository, metadata_repository, track_repository
 from Enums.status_enum import Status
 from Enums import flag_enum, asset_status_nt, validate_enum, status_enum
@@ -28,9 +29,11 @@ class RunUtility(LogClass, Status):
 
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         self.util = utility.Utility()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.mongo_track = track_repository.TrackRepository()
+
+        self.mongo_client = MongoSharedClient()
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum
         self.asset_status_enum = asset_status_nt.AssetStatusNT

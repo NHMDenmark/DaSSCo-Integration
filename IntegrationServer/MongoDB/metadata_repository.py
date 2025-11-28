@@ -10,9 +10,9 @@ from pymongo.errors import InvalidOperation
 
 class MetadataRepository:
 
-    def __init__(self):
+    def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_metadata = mongo_connection.MongoConnection("metadata")
+        self.mongo_metadata = mongo_connection.MongoConnection("metadata", client)
 
         self.collection = self.mongo_metadata.get_collection()
         self.all = all_repository.AllRepository(self.collection)

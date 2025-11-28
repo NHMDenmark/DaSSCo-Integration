@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, metadata_repository, mos_repository, service_repository
 from StorageApi import storage_client
 
@@ -31,10 +32,12 @@ class SpecimenCreator():
         self.flag_enum = flag_enum.FlagEnum
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
-        self.track_mongo = track_repository.TrackRepository()
-        self.metadata_mongo = metadata_repository.MetadataRepository()
-        self.mos_mongo = mos_repository.MOSRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mos_mongo = mos_repository.MOSRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
 

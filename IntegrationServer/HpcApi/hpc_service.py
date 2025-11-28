@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 import json
 from MongoDB import track_repository, metadata_repository, mos_repository, throttle_repository, file_model
+from MongoDB.mongo_connection import MongoSharedClient
 from Enums.status_enum import StatusEnum
 from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
@@ -36,10 +37,13 @@ class HPCService():
         self.asset_status_nt = AssetStatusNT
         self.origin = MetadataOriginEnum
 
-        self.mongo_track = track_repository.TrackRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.mongo_mos = mos_repository.MOSRepository()
-        self.mongo_throttle = throttle_repository.ThrottleRepository()
+        # MongoDB connection
+        self.mongo_client = MongoSharedClient()
+
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mongo_mos = mos_repository.MOSRepository(self.mongo_client)
+        self.mongo_throttle = throttle_repository.ThrottleRepository(self.mongo_client)
         
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)

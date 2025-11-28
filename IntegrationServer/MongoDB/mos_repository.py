@@ -10,9 +10,9 @@ from pymongo.errors import InvalidOperation
 
 class MOSRepository:
 
-    def __init__(self):
+    def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_MOS = mongo_connection.MongoConnection("MOS")
+        self.mongo_MOS = mongo_connection.MongoConnection("MOS", client)
 
         self.collection = self.mongo_MOS.get_collection()
         self.all = all_repository.AllRepository(self.collection)

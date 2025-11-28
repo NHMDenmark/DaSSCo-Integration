@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import throttle_repository
 import utility
 
@@ -12,7 +13,8 @@ class ResetThrottleService:
     Resets all throttle values to 0 in the throttle database.
     """
     def __init__(self):
-        self.throttle_repo = throttle_repository.ThrottleRepository()
+        self.mongo_client = MongoSharedClient()
+        self.throttle_repo = throttle_repository.ThrottleRepository(self.mongo_client)
         self.util = utility.Utility()
         self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.throttle_config = self.util.read_json(self.throttle_config_path)

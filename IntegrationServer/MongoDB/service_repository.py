@@ -12,10 +12,10 @@ from pymongo.errors import InvalidOperation
 
 class ServiceRepository(Status):
 
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
         self.util = utility.Utility()
-        self.mongo_micro_service = mongo_connection.MongoConnection("micro_service")
+        self.mongo_micro_service = mongo_connection.MongoConnection("micro_service", client)
 
         self.collection = self.mongo_micro_service.get_collection()
         self.all = all_repository.AllRepository(self.collection)

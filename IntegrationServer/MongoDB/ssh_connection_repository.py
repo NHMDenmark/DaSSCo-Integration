@@ -11,9 +11,9 @@ from Enums.asset_type_enum import AssetTypeEnum
 
 class SshConnectionRepository:
 
-    def __init__(self):
+    def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_ssh = mongo_connection.MongoConnection("ssh")
+        self.mongo_ssh = mongo_connection.MongoConnection("ssh", client)
 
         self.collection = self.mongo_ssh.get_collection()
         self.all = all_repository.AllRepository(self.collection)

@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import time
 from datetime import datetime, timedelta
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, service_repository, throttle_repository, metadata_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum, erda_status, asset_status_nt
@@ -36,10 +37,11 @@ class ValidateSpecifySync():
         self.flag_enum = flag_enum.FlagEnum
         self.erda_enum = erda_status.ErdaStatusEnum
         self.asset_status_enum = asset_status_nt.AssetStatusNT
-        self.track_mongo = track_repository.TrackRepository()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
-        self.metadata_mongo = metadata_repository.MetadataRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
 
@@ -175,7 +177,7 @@ class ValidateSpecifySync():
                         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                         continue
 
-                if asset_share_size <= 0 or None:
+                if asset_share_size is None or asset_share_size <= 0:
                     # logs and sends a error message to the health api, subtracts from throttle count and moves on
                     entry = self.run_util.log_msg(self.prefix_id, f"Asset was attempting to sync with specify but had no file share in ARS. {guid}. Status code: {status_code}. Will set specify_sync to ERROR. {note}")
                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)

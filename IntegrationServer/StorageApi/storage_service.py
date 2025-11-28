@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 from datetime import datetime
 from dateutil import tz
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import metadata_repository
 from IntegrationServer.StorageApi import api_metadata_model, api_specimen_model
 from Enums import asset_status_nt
@@ -16,7 +17,8 @@ class StorageService():
 
     def __init__(self):
         self.util = utility.Utility()
-        self.metadata_db = metadata_repository.MetadataRepository()
+        self.mongo_client = MongoSharedClient()
+        self.metadata_db = metadata_repository.MetadataRepository(self.mongo_client)
         self.api_metadata = api_metadata_model.ApiMetadataModel()
         self.asset_status_nt_enum = asset_status_nt.AssetStatusNT
 

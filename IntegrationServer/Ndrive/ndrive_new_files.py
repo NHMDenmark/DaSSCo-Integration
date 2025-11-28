@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import shutil
 import time
 import utility
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import throttle_repository, track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum
@@ -33,8 +34,10 @@ class NdriveNewFilesFinder():
         self.workstations_config_path = f"{project_root}/ConfigFiles/workstations_config.json"
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.new_files_path = f"{project_root}/Files/NewFiles"
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
-        self.track_mongo = track_repository.TrackRepository()
+
+        self.mongo_client = MongoSharedClient()
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
@@ -45,6 +48,8 @@ class NdriveNewFilesFinder():
         
         self.run = self.run_util.get_service_run_status()
         
+        print(project_root)
+
         try:
             self.loop()
         except Exception as e:

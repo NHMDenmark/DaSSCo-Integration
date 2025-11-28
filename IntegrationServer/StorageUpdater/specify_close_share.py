@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import validate_enum, status_enum, flag_enum, asset_status_nt
@@ -31,10 +32,11 @@ class SpecifyCloseShare(LogClass):
         self.prefix_id = "ScsA"
         
         self.auth_timestamp = None
-        self.track_mongo = track_repository.TrackRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
         self.validate_enum = validate_enum.ValidateEnum
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum

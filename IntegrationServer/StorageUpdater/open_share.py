@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, metadata_repository, service_repository, throttle_repository
 from StorageApi import storage_client
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
@@ -33,10 +34,11 @@ class OpenShare(Status, Validate):
         self.prefix_id = "OfsA"
         self.throttle_config_path = f"{project_root}/ConfigFiles/throttle_config.json"
         self.auth_timestamp = None
-        self.mongo_track = track_repository.TrackRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.service_mongo = service_repository.ServiceRepository()
-        self.throttle_mongo = throttle_repository.ThrottleRepository()
+        self.mongo_client = MongoSharedClient()
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.throttle_mongo = throttle_repository.ThrottleRepository(self.mongo_client)
         self.util = utility.Utility()
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum

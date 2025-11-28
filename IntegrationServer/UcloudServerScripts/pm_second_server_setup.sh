@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# TODO fix for pm setup
+
+# chmod +x path/to/script
+# must use explicit paths in script,
+# do not run with sudo, further steps that doesnt need root user should be added to this part of the setup scripts
+# only run after running first part and sourcing bash for new paths
+
+# Exit on error
+set -e
+
+# Log output to a file
+LOGFILE="/var/log/second_part_server_setup.log"
+exec > >(tee -i $LOGFILE)
+exec 2>&1
+
+HOSTNAME=$(hostname)
+IP_ADDRESS=$(hostname -I)
+HOMEPATH="/home/dassco"
+INT_PATH="/home/dassco/integration/DaSSCo-Integration/IntegrationServer"
+DB_PATH="/home/dassco"
+DB_NAME="dev-db-1-11-2024"
+
+
+echo "Starting second part of the server setup ---"
+
+# Step 4:
+echo "Running the database"
+nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
+sudo chown -R ucloud:ucloud $DB_PATH/$HOSTNAME.log
+chmod 755 $DB_PATH/$HOSTNAME.log
+
+
+# Step 5: Generate ssh key for slurm usage (add for specific filename: -f "$HOMEPATH/.ssh/slurm")
+echo "Generating ssh key for slurm in ~/.ssh"
+ssh-keygen -t ed25519 -N "" -f $HOMEPATH/.ssh/slurm
+
+# Step 6: Update venv
+echo "Activate and update python venv"
+source /work/data/integration/venv_integration/bin/activate
+pip install -r $INT_PATH/requirements.txt
+echo "Venv good to go"
+
+# Step 7: Run the integration setup script for the database
+
+echo "Running setup script for database"
+python $INT_PATH/setup_service_script.py
+echo "Database set up"
+
+# Step 8: Run the api endpoints
+echo "Starting Hpc api service, Control api service and local Health api service."
+export PYTHONPATH=$INT_PATH
+nohup uvicorn HpcApi.hpc_api:app --reload --host 127.0.0.1 --port 8000 > $INT_PATH/HpcApi/$HOSTNAME.log 2>&1 &
+nohup uvicorn DashboardAPIs.control_api:control --reload --host 127.0.0.1 --port 8005 > $INT_PATH/DashboardAPIs/$HOSTNAME.log 2>&1 &
+nohup uvicorn HealthApi.health_api:health --reload --host 127.0.0.1 --port 8555 > $INT_PATH/HealthApi/$HOSTNAME.log 2>&1 &
+echo "Endpoint services started"
+
+# End of script messages
+deactivate
+echo "Exited the venv"
+
+echo "Server setup complete! Check the log files at $LOGFILE for details."
+echo "Change the ip address in the nginx proxy to this servers ip (ifconfig)"
+echo "Add the ssh key to hpc(slurm) authorised keys:"
+cat $HOMEPATH/.ssh/slurm.pub
+echo "Start the integration server services"

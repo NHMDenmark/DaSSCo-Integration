@@ -9,6 +9,7 @@ import utility
 from Enums import status_enum, validate_enum, flag_enum
 from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository, batch_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from DashboardAPIs import micro_service_paths
 import json
 from datetime import datetime, timedelta
@@ -27,12 +28,13 @@ class ControlService():
 
         self.control_service_config_path = f"{project_root}/ConfigFiles/control_api_scripts_config.json"
 
-        self.mongo_service = service_repository.ServiceRepository()
-        self.mongo_track = track_repository.TrackRepository()
-        self.mongo_health = health_repository.HealthRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.mongo_throttle = throttle_repository.ThrottleRepository()
-        self.mongo_batch = batch_repository.BatchRepository()
+        self.mongo_client = MongoSharedClient()
+        self.mongo_service = service_repository.ServiceRepository(self.mongo_client)
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.mongo_health = health_repository.HealthRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mongo_throttle = throttle_repository.ThrottleRepository(self.mongo_client)
+        self.mongo_batch = batch_repository.BatchRepository(self.mongo_client)
 
         self.micro_paths = micro_service_paths.MicroServicePaths()
         self.validate_enum = validate_enum.ValidateEnum

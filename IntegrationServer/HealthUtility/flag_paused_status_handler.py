@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timedelta
 import utility
 from MongoDB import track_repository, health_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 
@@ -31,8 +32,9 @@ class FlagPausedStatusHandler():
 
         self.util = utility.Utility()
         
-        self.track_mongo = track_repository.TrackRepository()
-        self.health_mongo = health_repository.HealthRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.health_mongo = health_repository.HealthRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.flag_enum = flag_enum.FlagEnum
         self.asset_status_enum = asset_status_nt.AssetStatusNT

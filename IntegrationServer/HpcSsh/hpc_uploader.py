@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository, metadata_repository, service_repository
 from Connections import connections
 from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_status_nt
@@ -27,9 +28,11 @@ class HPCUploader():
         self.slurm_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
         
         self.util = utility.Utility()
-        self.mongo_track = track_repository.TrackRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+
+        self.mongo_client = MongoSharedClient()
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.flag_enum = flag_enum.FlagEnum

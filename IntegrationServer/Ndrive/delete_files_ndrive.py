@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import time
 import utility
+from MongoDB import mongo_connection
 from MongoDB import track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum
@@ -24,7 +25,9 @@ class DeleteFilesNdrive():
         self.util = utility.Utility()
         
         self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
-        self.track_mongo = track_repository.TrackRepository()
+
+        self.mongo_client = mongo_connection.MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum

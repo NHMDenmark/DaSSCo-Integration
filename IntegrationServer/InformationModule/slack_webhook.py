@@ -8,6 +8,7 @@ import requests
 import json
 import utility
 from MongoDB import service_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from Enums import status_enum
 from Enums import log_enum
 from dotenv import load_dotenv
@@ -17,7 +18,8 @@ class SlackWebhook:
     def __init__(self):
         load_dotenv()
 
-        self.service_mongo = service_repository.ServiceRepository()
+        self.mongo_client = MongoSharedClient()
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
         self.log_enum = log_enum.LogEnum

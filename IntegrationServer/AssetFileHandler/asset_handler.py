@@ -9,6 +9,7 @@ import utility
 from AssetFileHandler import job_assigner
 from HealthUtility import health_caller
 from MongoDB import file_model, track_repository, metadata_repository, batch_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt
 import json
 from datetime import datetime
@@ -35,9 +36,10 @@ class AssetHandler:
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"
 
-        self.mongo_track = track_repository.TrackRepository()
-        self.mongo_metadata = metadata_repository.MetadataRepository()
-        self.mongo_batchlist = batch_repository.BatchRepository()
+        self.mongo_client = MongoSharedClient()
+        self.mongo_track = track_repository.TrackRepository(self.mongo_client)
+        self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
+        self.mongo_batchlist = batch_repository.BatchRepository(self.mongo_client)
 
         self.health_caller = health_caller.HealthCaller()
         self.run_util = run_util

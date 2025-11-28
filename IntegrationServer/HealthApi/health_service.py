@@ -8,13 +8,14 @@ import json
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
 from MongoDB import track_repository, health_repository, health_model, service_repository
+from MongoDB.mongo_connection import MongoSharedClient
 from Enums import status_enum, validate_enum, log_enum
 import utility
 
 """
 Service class for the health api received calls. 
 Handles updating health entries in the health db. 
-Figures out if mails should be sent or pause mode initiated. 
+Figures out if mails should be sent or pause mode initiated. - 
 """
 class HealthService():
 
@@ -23,11 +24,15 @@ class HealthService():
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         
         self.util = utility.Utility()
+
+        self.mongo_client = MongoSharedClient()
+        self.track = track_repository.TrackRepository(self.mongo_client)
+        self.health = health_repository.HealthRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        
         self.mail = email_sender.EmailSender("gmail")
         self.slack = slack_webhook.SlackWebhook()
-        self.track = track_repository.TrackRepository()
-        self.health = health_repository.HealthRepository()
-        self.service_mongo = service_repository.ServiceRepository()
+
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.log_enum = log_enum.LogEnum

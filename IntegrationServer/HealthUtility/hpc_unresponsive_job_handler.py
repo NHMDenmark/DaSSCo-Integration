@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import time
 from datetime import datetime, timedelta
 import utility
+from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import track_repository
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum
@@ -26,7 +27,8 @@ class HPCUnresponsiveJobHandler():
         self.prefix_id= "Hujh"
 
         self.util = utility.Utility()
-        self.track_mongo = track_repository.TrackRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum

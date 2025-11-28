@@ -13,9 +13,9 @@ from Enums.asset_type_enum import AssetTypeEnum
 
 class ThrottleRepository:
 
-    def __init__(self):
+    def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_throttle = mongo_connection.MongoConnection("throttle")
+        self.mongo_throttle = mongo_connection.MongoConnection("throttle", client)
 
         self.collection = self.mongo_throttle.get_collection()
         self.all = all_repository.AllRepository(self.collection)

@@ -1,7 +1,11 @@
 #!/bin/bash
 
 ip=$(hostname -I)
+hostname=$(hostname)
+HOMEPATH="/home/dassco"
 
-echo $ip
+echo $ip $hostname
 
-sudo bash -c "source /home/ucloud/.bashrc && echo 'Changes applied'"
+ssh-keygen -t ed25519 -N "" -f $HOMEPATH/.ssh/slurm
+
+cat $HOMEPATH/.ssh/slurm.pub
