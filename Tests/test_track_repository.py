@@ -8,13 +8,15 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
 from IntegrationServer.MongoDB.track_repository import TrackRepository
+from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient
 
 class TestTrackRepository(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
         # Mock the MongoDB collection
-        self.track = TrackRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track = TrackRepository(self.mongo_client)
         self.track.collection = MagicMock()
         self.guid = "test_guid"
         self.pipeline = "TEST_PIPELINE"
@@ -43,7 +45,7 @@ class TestTrackRepository(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         self.track.delete_entry(self.guidTwo)
-        self.track.close_connection()
+        self.mongo_client.close()
 
     def test_error_get_entry(self):
         # Mock find_one to return an entry with an error

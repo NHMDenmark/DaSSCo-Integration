@@ -6,14 +6,16 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
 from IntegrationServer.StorageApi.storage_client import StorageClient
-from IntegrationServer.MongoDB.metadata_repository import MetadataRepository   
+from IntegrationServer.MongoDB.metadata_repository import MetadataRepository
+from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient   
 
 class TestStorageService(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
-        self.client = StorageClient()
-        self.metadata = MetadataRepository()
+        self.mongo_client = MongoSharedClient()
+        self.client = StorageClient(self.mongo_client)
+        self.metadata = MetadataRepository(self.mongo_client)
 
         self.guid = "test_mongo"
 
@@ -24,7 +26,7 @@ class TestStorageService(unittest.TestCase):
         
         self.metadata.delete_entry(self.guid)
 
-        self.metadata.close_connection()
+        self.mongo_client.close()
 
     def setUp(self):
         pass

@@ -22,7 +22,7 @@ class MongoSharedClient:
 
     def connect(self):
         try:
-            self.client = MongoClient(self.host, self.port)
+            self.client = MongoClient(self.host, self.port, maxPoolSize=8, minPoolSize=1)
             # Test the connection
             self.client.admin.command('ping')
             print("Connected to MongoDB server.")

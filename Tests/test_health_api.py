@@ -9,14 +9,16 @@ from fastapi.testclient import TestClient
 from IntegrationServer.HealthApi.health_api import health
 from IntegrationServer.MongoDB.health_repository import HealthRepository
 from IntegrationServer.MongoDB.track_repository import TrackRepository
+from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient
 from IntegrationServer.utility import Utility
 
 # Testing this will create emails and slack messages also.
 class TestHealthApi(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.health_repo = HealthRepository()
-        self.track_repo = TrackRepository()
+        self.mongo_client = MongoSharedClient()
+        self.health_repo = HealthRepository(self.mongo_client)
+        self.track_repo = TrackRepository(self.mongo_client)
         self.util = Utility()
 
         test_track_entry = self.util.read_json(f"{project_root}/Tests/TestConfigFiles/test_track_entry.json")
@@ -80,8 +82,8 @@ class TestHealthApi(unittest.TestCase):
         self.health_repo.delete_entry("Tha_20240928105157066")
         self.health_repo.delete_entry("Tha_20241028105157066")
         self.track_repo.delete_entry("test_0001")
-        self.track_repo.close_connection()
-        self.health_repo.close_connection()
+        
+        self.mongo_client.close()
     
     def test_receive_warning(self):
         

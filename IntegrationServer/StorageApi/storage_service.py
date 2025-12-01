@@ -15,9 +15,12 @@ from pydantic import BaseModel, Field, Json
 
 class StorageService():
 
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient = None):
         self.util = utility.Utility()
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
         self.metadata_db = metadata_repository.MetadataRepository(self.mongo_client)
         self.api_metadata = api_metadata_model.ApiMetadataModel()
         self.asset_status_nt_enum = asset_status_nt.AssetStatusNT

@@ -8,6 +8,7 @@ from datetime import datetime
 import pytz
 
 from IntegrationServer.MongoDB import track_repository, metadata_repository, batch_repository
+from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient
 from IntegrationServer.Enums.status_enum import StatusEnum
 
 class TestMongoConnection(unittest.TestCase):
@@ -15,9 +16,10 @@ class TestMongoConnection(unittest.TestCase):
     # Maybe change to different test dbs(?)
     @classmethod
     def setUpClass(self):
-        self.track = track_repository.TrackRepository()
-        self.metadata = metadata_repository.MetadataRepository()
-        self.batch = batch_repository.BatchRepository()
+        self.mongo_connection = MongoSharedClient()
+        self.track = track_repository.TrackRepository(self.mongo_connection)
+        self.metadata = metadata_repository.MetadataRepository(self.mongo_connection)
+        self.batch = batch_repository.BatchRepository(self.mongo_connection)
 
         self.bogus = "bogus"
         self.guid = "test_mongo"
@@ -42,9 +44,7 @@ class TestMongoConnection(unittest.TestCase):
         self.metadata.delete_entry(self.guid)
         self.batch.delete_entry(self.batch_list)
 
-        self.batch.close_connection()
-        self.track.close_connection()
-        self.metadata.close_connection()
+        self.mongo_connection.close()
 
     def test_create_track_entry(self):
         

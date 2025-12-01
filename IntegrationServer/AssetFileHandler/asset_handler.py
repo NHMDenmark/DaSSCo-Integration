@@ -20,7 +20,7 @@ Responsible for the processing/creation of assets coming from the Ndrive.
 
 class AssetHandler:
 
-    def __init__(self, run_util):
+    def __init__(self, run_util, mongo_client: MongoSharedClient = None):
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
@@ -36,7 +36,10 @@ class AssetHandler:
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"
 
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
         self.mongo_batchlist = batch_repository.BatchRepository(self.mongo_client)

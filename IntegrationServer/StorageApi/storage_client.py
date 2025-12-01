@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 from dasscostorageclient import DaSSCoStorageClient
+from MongoDB.mongo_connection import MongoSharedClient
 from StorageApi import storage_service
 import json
 from dotenv import load_dotenv
@@ -14,10 +15,10 @@ Uses the Dassco storage api repository as library to create the storage client a
 Please note that the ARS and the fileproxy calls returns slightly different types of responses. See the github repo for details on what the responses look like.
 """
 class StorageClient():
-     def __init__(self):
+     def __init__(self, mongo_client: MongoSharedClient = None):
           
           load_dotenv()
-          self.service = storage_service.StorageService()
+          self.service = storage_service.StorageService(mongo_client)
           client_id = os.getenv("client_id")
           client_secret = os.getenv("client_secret")
 

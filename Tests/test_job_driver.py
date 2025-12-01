@@ -8,21 +8,22 @@ sys.path.append(project_root)
 
 from IntegrationServer.AssetFileHandler.asset_handler import AssetHandler
 from IntegrationServer.MongoDB import track_repository, metadata_repository
+from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient
 from IntegrationServer.HealthUtility import run_utility
 
 class TestJobDriver(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
-        
-        self.track = track_repository.TrackRepository()
-        self.metadata = metadata_repository.MetadataRepository()
+        self.mongo_client = MongoSharedClient()
+        self.track = track_repository.TrackRepository(self.mongo_client)
+        self.metadata = metadata_repository.MetadataRepository(self.mongo_client)
 
         self.log_filename = project_root + "/Tests/tjd.log"
         logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         run_util = run_utility.RunUtility("Tjd", "Test job driver", self.log_filename, logger_name, os.getpid())
 
-        self.driver = AssetHandler(run_util)
+        self.driver = AssetHandler(run_util, self.mongo_client)
 
         self.guid = "test_metadata_entry3"
 
@@ -37,8 +38,8 @@ class TestJobDriver(unittest.TestCase):
         self.track.delete_entry(self.guid)
         self.metadata.delete_entry(self.guid)
 
-        self.track.close_connection()
-        self.metadata.close_connection()
+        self.mongo_client.close()
+
         os.remove(self.log_filename)
         try:
             shutil.move(self.destination_path, self.driver.input_dir)            
