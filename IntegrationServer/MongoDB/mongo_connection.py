@@ -14,9 +14,9 @@ from pymongo.errors import ConnectionFailure
 
 class MongoSharedClient:
     
-    def __init__(self):
-        self.host = "localhost"
-        self.port = 27017
+    def __init__(self, host: str = "localhost", port: int = 27017):
+        self.host = host
+        self.port = port
         self.client = None
         self.connect()
 

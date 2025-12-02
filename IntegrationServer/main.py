@@ -17,6 +17,8 @@ from dassco_utils.metadata import MetadataModel, MetadataHandler
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
 from dasscostorageclient import DaSSCoStorageClient
+from KeycloakInterface.auth import verify_token, get_new_token
+from MongoDB.mongo_connection import MongoSharedClient
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -76,33 +78,7 @@ def test():
     # cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
     
     relPath = "Tests/TestConfigFiles/test_track_entry.json"
-    #name = os.path.basename(relPath)
-    #print(name)
     
-    #mb = util.calculate_file_size_round_to_next_mb("C:/Users/tvs157/Desktop/CP0002637_L_selago_Fuji_ICC.tif")
-    #print(mb)
-    #entry = mongo.get_entry("_id", "sixth0006")
-    #entry_dict = json.loads(dumps(entry))
-
-    #email = email_sender.EmailSender("test")
-    #email.send_error_mail("abc", service_name="Test health api")
-    #sl = slack_webhook.SlackWebhook()
-    #sl.message_from_integration("Lars", "MIGHTY WARRIOR", "GET WELL")
-    #util.write_full_json(relPath, entry)
-    track = track_repository.TrackRepository()
-    #track.update_entry("7e8-4-09-0a-00-34-0-001-00-000-0b8ab2-00000", "has_new_file", "POSSIBLE")
-    print(track.get_entry("_id", "dev-ucloud-865"))
-    
-    #c = health_caller.HealthCaller()
-    #c.warning(service="main", message="ERROR#2024-05-30 14:26:25,053#xd.py#yolo#trouble shoot message")
-    #h = health_repository.HealthRepository()
-    #p = h.get_recent_errors("some service", 2000000)
-    #print(p[0:7])
-    #h.close_connection()
-    #a = util.check_value_in_enum(None, FeedbackEnum)
-    
-    #a = field.is_acceptable_string("asset-guid-53268-æææ")
-    #print(a)
 
 class x(Feedback, LogClass):
     def __init__(self):
@@ -224,13 +200,20 @@ def add_upload_job(guid):
 
 if __name__ == '__main__':   
 
-    m = metadata_repository.MetadataRepository()
+    x = get_new_token()
+    print(x)
+    c = verify_token(x)
+    print(c)
+    """
+    client = mongo_connection.MongoSharedClient()
+    m = metadata_repository.MetadataRepository(client)
 
     t = m.get_entry("_id", "lumi-test-21")
 
     print(t)
 
-    m.close_connection()
+    client.close()
+    """
     """
     d_guid_list = ["lumi-test-2_400", "lumi-test-2_72"]
 
@@ -243,27 +226,6 @@ if __name__ == '__main__':
     for b in guid_list:
         add_clean_up_job(b)
     """
-    """
-    ser = storage_service.StorageService()
-    sclient = storage_client.StorageClient()
-
-    load_dotenv()
-    
-    client_id = os.getenv("client_id")
-    client_secret = os.getenv("client_secret")
-
-    service_username = "STARFISH"
-
-    #status = sclient.update_metadata("040ck2b867e981206382f0f479d0c0_400", "LD")
-    
-    status, msg, note = sclient.get_specimen("SPID_001028184")
-
-    print(f"status: {status} --- msg: {msg} --- note: {note}")
-    """
-    #u = utility.Utility()
-
-    #crc = u.calculate_crc_checksum("/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer/Files/InProcess/PIPEHERB0001/2025-08-11/040ck2b867e98130f173b07c8ba882/040ck2b867e98130f173b07c8ba882.tif")
-    #print(crc)
     """
     load_dotenv()
     user = os.getenv("rabbit_user")
