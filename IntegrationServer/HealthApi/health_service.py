@@ -19,13 +19,17 @@ Figures out if mails should be sent or pause mode initiated. -
 """
 class HealthService():
 
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient = None):
         
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         
         self.util = utility.Utility()
 
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
+        
         self.track = track_repository.TrackRepository(self.mongo_client)
         self.health = health_repository.HealthRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)

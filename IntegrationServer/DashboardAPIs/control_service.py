@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 
 class ControlService():
 
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient = None):
         self.util = utility.Utility()
     
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
@@ -28,7 +28,11 @@ class ControlService():
 
         self.control_service_config_path = f"{project_root}/ConfigFiles/control_api_scripts_config.json"
 
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is not None:
+            self.mongo_client = mongo_client
+        else:
+            self.mongo_client = MongoSharedClient()
+
         self.mongo_service = service_repository.ServiceRepository(self.mongo_client)
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.mongo_health = health_repository.HealthRepository(self.mongo_client)

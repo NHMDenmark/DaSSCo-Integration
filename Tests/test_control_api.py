@@ -23,7 +23,9 @@ class TestControlApi(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         
-        self.client = TestClient(control)
+        self.client_context = TestClient(control)
+        self.client_context.__enter__() 
+        self.client = self.client_context
 
         self.mongo_client = MongoSharedClient()
         self.track_db = TrackRepository(self.mongo_client)
@@ -60,6 +62,8 @@ class TestControlApi(unittest.TestCase):
         self.health_db.delete_entry(self.entry_id)
         self.metadata_db.delete_entry(self.entry_id)
         self.service_db.delete_entry(self.entry_id)
+
+        self.client_context.__exit__(None, None, None)
 
         # close db connections        
         self.mongo_client.close()    

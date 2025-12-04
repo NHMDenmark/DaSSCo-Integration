@@ -49,7 +49,7 @@ class SpecifyOpenShare(Status, Validate):
         
         self.max_total_asset_size = self.util.get_value(self.throttle_config_path, "total_asset_size_mb")
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
 
         self.run_util.service_starting_updates()
         # special status change, logging and contact health api

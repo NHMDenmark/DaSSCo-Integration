@@ -40,7 +40,7 @@ class NdriveNewFilesFinder():
         self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
         
         self.run_util.service_starting_updates()        
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")

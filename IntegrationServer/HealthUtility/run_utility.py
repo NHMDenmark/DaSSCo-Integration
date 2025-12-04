@@ -22,7 +22,7 @@ Example: "AcA", "Asset creator ARS", "asset_creator.py.log", "asset_creator"
 """
 class RunUtility(LogClass, Status):
 
-    def __init__(self, prefix_id, service_name, log_filename, logger_name, pid = None):
+    def __init__(self, prefix_id, service_name, log_filename, logger_name, pid = None, mongo_client: MongoSharedClient = None):
 
         LogClass.__init__(self, log_filename, logger_name)
         Status.__init__(self)
@@ -30,7 +30,11 @@ class RunUtility(LogClass, Status):
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         self.util = utility.Utility()
 
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
+            
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)

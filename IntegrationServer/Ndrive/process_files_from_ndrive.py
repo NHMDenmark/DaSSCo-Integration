@@ -9,6 +9,7 @@ import time
 import utility
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum
+from MongoDB.mongo_connection import MongoSharedClient
 
 """
 Class responsible for initiating the processing of new files from the ndrive. Specifically this means we have
@@ -31,12 +32,14 @@ class ProcessNewFiles():
 
         self.new_files_path = f"{project_root}/Files/NewFiles"
         self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
+
+        self.mongo_client = MongoSharedClient()
         self.health_caller = health_caller.HealthCaller()
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
         
-        self.asset_handler = asset_handler.AssetHandler(self.run_util)
+        self.asset_handler = asset_handler.AssetHandler(self.run_util, self.mongo_client)
 
         self.run_util.service_starting_updates()        
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
@@ -78,7 +81,7 @@ class ProcessNewFiles():
 
     def close_db_connections(self):
         try:
-            pass
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 

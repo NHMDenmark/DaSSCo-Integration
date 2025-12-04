@@ -43,7 +43,7 @@ class SpecifyCloseShare(LogClass):
         self.asset_status_enum = asset_status_nt.AssetStatusNT
         self.util = utility.Utility()
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
 
         # updates db with the service start information
         self.run_util.service_starting_updates()

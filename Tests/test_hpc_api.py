@@ -13,11 +13,13 @@ from IntegrationServer.MongoDB.mongo_connection import MongoSharedClient
 from IntegrationServer.utility import Utility
 
 class TestHPCApi(unittest.TestCase):
-    def setUp(self):
-        self.client = TestClient(app)
 
     @classmethod
     def setUpClass(self):
+        self.client_context = TestClient(app)
+        self.client_context.__enter__() 
+        self.client = self.client_context
+
         self.mongo_client = MongoSharedClient()
         self.track_repo = TrackRepository(self.mongo_client)
         self.metadata_repo = MetadataRepository(self.mongo_client)
@@ -31,15 +33,15 @@ class TestHPCApi(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
+
+        self.client_context.__exit__(None, None, None)
+
         self.track_repo.delete_entry("test_0001")
                 
         self.metadata_repo.delete_entry("test_0001")
         
         self.mongo_client.close()
 
-        if hasattr(app.state, "mongo_client"):
-            print("no mongo client to close")
-            app.state.mongo_client.close()
 
     def test_metadata_asset(self):
         test_guid = "test_0001"

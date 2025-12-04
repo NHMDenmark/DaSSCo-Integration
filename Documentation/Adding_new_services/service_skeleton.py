@@ -7,6 +7,7 @@ sys.path.append(project_root)
 import utility
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
+from MongoDB.mongo_connection import MongoSharedClient
 ## other imports
 
 """
@@ -28,9 +29,10 @@ class ServiceSkeleton():
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.asset_status_enum = asset_status_nt.AssetStatusNT
-        # other initialisations, db connections, enums etc
+        # other initialisations, db connections (add mongo_client as arg), enums etc
+        self.mongo_client = MongoSharedClient()
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
         
         self.run_util.service_starting_updates()
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")

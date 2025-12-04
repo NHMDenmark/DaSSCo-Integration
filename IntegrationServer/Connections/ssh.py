@@ -18,9 +18,14 @@ Needs ssh keys to avoid password prompts.
 """
 
 class SSHConnection:
-    def __init__(self, name, host, port, username, password):
+    def __init__(self, name, host, port, username, password, mongo_client: MongoSharedClient = None):
         self.util = Utility()
-        self.mongo_client = MongoSharedClient()
+        
+        if mongo_client is not None:
+            self.mongo_client = mongo_client
+        else:
+            self.mongo_client = MongoSharedClient()
+        
         self.mongo_connection = ssh_connection_repository.SshConnectionRepository(self.mongo_client)
         self.sftp = None
         self.name = name

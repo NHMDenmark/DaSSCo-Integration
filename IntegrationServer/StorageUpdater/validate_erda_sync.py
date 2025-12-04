@@ -54,7 +54,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
         self.max_sync_erda_attempt_wait_time = self.util.get_nested_value(self.service_config_path, self.service_name, "max_sync_erda_attempt_wait_time")
 
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
 
         self.run_util.service_starting_updates()
         # special status change, logging and contact health api

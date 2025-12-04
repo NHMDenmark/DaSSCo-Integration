@@ -43,7 +43,7 @@ class SetupServices:
             else:
                 print(f"{name} is not a micro service and will not be added to the mongo db.")
 
-        self.service_repo.close_connection()
+        self.mongo_client.close()
 
 class SetupThrottleService:
     """
@@ -66,8 +66,8 @@ class SetupThrottleService:
                     print(f"Inserted document: _id: {config}, value: 0 - in throttle database")
         except Exception as e:
             print("Failed to insert throttle documents to throttle database.", e)
-
-        self.throttle_repo.close_connection()
+        
+        self.mongo_client.close()
 
 class SetupSshConnectionDB:
     """
@@ -90,7 +90,7 @@ class SetupSshConnectionDB:
         except Exception as e:
             print("Failed to insert ssh connection documents to ssh connection database.", e)
 
-        self.ssh_repo.close_connection()
+        self.mongo_client.close()
 
 if __name__ == "__main__":
         

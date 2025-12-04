@@ -27,7 +27,7 @@ def get_token_header(token: str):
 
 def verify_token(token: str = Depends(oauth2_scheme)):
 
-    client_ids = os.getenv("keycloak_client_ids")
+    client_ids = os.getenv("keycloak_authorized_client_ids")
 
     key = get_token_header(token)
     

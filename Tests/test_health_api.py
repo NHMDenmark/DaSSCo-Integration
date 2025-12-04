@@ -25,7 +25,10 @@ class TestHealthApi(unittest.TestCase):
         
         self.track_repo.collection.insert_one(test_track_entry)
 
-        self.client = TestClient(health)
+        self.client_context = TestClient(health)
+        self.client_context.__enter__() 
+        self.client = self.client_context
+
         self.service_name = "Test health api"
         self.test_message_model = {
             "guid": "test_0001",
@@ -83,6 +86,8 @@ class TestHealthApi(unittest.TestCase):
         self.health_repo.delete_entry("Tha_20241028105157066")
         self.track_repo.delete_entry("test_0001")
         
+        self.client_context.__exit__(None, None, None)
+
         self.mongo_client.close()
     
     def test_receive_warning(self):

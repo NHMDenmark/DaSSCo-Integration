@@ -17,7 +17,7 @@ from HealthUtility import run_utility, health_caller
 
 class HPCService():
 
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient=None):
 
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
@@ -38,7 +38,10 @@ class HPCService():
         self.origin = MetadataOriginEnum
 
         # MongoDB connection
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
 
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
@@ -46,7 +49,7 @@ class HPCService():
         self.mongo_throttle = throttle_repository.ThrottleRepository(self.mongo_client)
         
         self.health_caller = health_caller.HealthCaller()
-        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name)
+        self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, mongo_client=self.mongo_client)
 
     # This is not in use. Writing directly to the db is easier/better. 
     def persist_new_metadata(self, new_metadata):

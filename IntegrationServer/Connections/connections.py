@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 from Connections.ssh import SSHConnection
+from MongoDB.mongo_connection import MongoSharedClient
 from utility import Utility
 from dotenv import load_dotenv
 
@@ -15,13 +16,18 @@ variables. Where NAME is the connection name set in the config file.
 Includes functions for creating, getting and shutting down connection(s).  
 """
 class Connections:
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient = None):
         load_dotenv()
         self.util = Utility()
         self.ssh_config_path = f"{project_root}/ConfigFiles/ssh_connections_config.json" 
         self.connection = None
         self.msg = None
         self.exc = None
+        if mongo_client is not None:
+            self.mongo_client = mongo_client
+        else:
+            self.mongo_client = MongoSharedClient()
+        self.mongo_client
     """
     Creates a ssh connection. Retrieves the information for the
     connection from a ssh_connections_config.json file.
@@ -47,7 +53,8 @@ class Connections:
                 config['host'],
                 config['port'],
                 username,
-                password
+                password,
+                mongo_client=self.mongo_client
                 )
                 
             test_connection = True
@@ -81,7 +88,8 @@ class Connections:
                     connection_details["host"],
                     connection_details["port"],
                     username,
-                    password
+                    password,
+                    mongo_client=self.mongo_client
                 )
         except Exception as e:
             print(e)

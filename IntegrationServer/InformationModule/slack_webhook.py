@@ -15,10 +15,14 @@ from dotenv import load_dotenv
 
 class SlackWebhook:
 
-    def __init__(self):
+    def __init__(self, mongo_client: MongoSharedClient = None):
         load_dotenv()
 
-        self.mongo_client = MongoSharedClient()
+        if mongo_client is None:
+            self.mongo_client = MongoSharedClient()
+        else:
+            self.mongo_client = mongo_client
+        
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.util = utility.Utility()
         self.status_enum = status_enum.StatusEnum
