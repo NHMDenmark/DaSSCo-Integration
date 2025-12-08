@@ -253,12 +253,14 @@ class AssetCreator():
             asset = None
 
             if new_asset is False:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.UCLOUD_HPC.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.UCLOUD_HPC.value,
+                                                                              self.flag_enum.HAS_NEW_SPECIMEN.value: self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             if derivative_asset is False and asset is None:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.NDRIVE.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, "metadata_origin" : self.metadata_origin.NDRIVE.value,
+                                                                             self.flag_enum.HAS_NEW_SPECIMEN.value: self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if new_asset and derivative_asset and asset is None:
-                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])                
+                asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"is_in_ars" : self.validate_enum.NO.value, self.flag_enum.HAS_NEW_SPECIMEN.value: self.validate_enum.NO.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])                
 
             # if an asset is found create it in ARS
             if asset is not None:
@@ -279,7 +281,7 @@ class AssetCreator():
                             
                             if check is False and msg == 404:
 
-                                self.track_mongo.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate_enum.PREPARE.value)
+                                self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate_enum.YES.value)
                                 self.end_of_loop_checks()
                                 continue
 

@@ -149,7 +149,7 @@ class SyncSpecify():
                 continue
 
             asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.HAS_OPEN_SHARE.value: self.validate_enum.YES.value, self.flag_enum.SPECIFY_SYNC.value: self.validate_enum.PREPARE.value, 
-                                                                         self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+                                                                         self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value, self.flag_enum.HAS_NEW_SPECIMEN.value: self.validate_enum.NO.value}])
 
             if asset is not None:
                 
