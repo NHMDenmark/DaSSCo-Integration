@@ -1,6 +1,6 @@
 | Process | "jobs_status" | "files_status" | "asset_size" | "hpc_ready" | "is_in_ars" | "has_new_file" | "has_open_share" | "erda_sync" | "specify_sync" | "update_metadata" | "has_new_specimen" | "asset_type" | "temporary_files_ndrive" | "temporary_files_local" | "available_for_services" | "metadata_origin" | "temporary_tusd_id" |
 |-------|------|--------|------|------|------|------|------|------|-----|------|------|------|------|-----|-----|------|------|
-| Ndrive\process_new_files_from_ndrive | -> WAITING | -> NONE | -> file size | -> NO | -> AWAIT -> NO | -> YES | -> NO | -> NO | -> NO | -> NO | -> NO/YES | -> UNKNOWN | -> YES | -> YES | -> YES | - | - |
+| Ndrive\process_new_files_from_ndrive | -> WAITING | -> NONE | -> file size | -> NO | -> AWAIT -> NO | -> YES | -> NO | -> NO | -> NO | -> NO | -> NO | -> UNKNOWN | -> YES | -> YES | -> YES | - | - |
 | Ndrive\delete_files_ndrive | DONE | - | - | NO | YES | NO | - | YES | - | - | - | - | YES -> remove field | - | YES | - | - |
 | AssetFileHandler\delete_local_files | DONE | - | - | - | YES | NO | - | YES | - | - | - | - | - | YES -> remove field | - | - | - |
 | StorageUpdater\asset_creator | - | - | not -1 | - | NO -> YES | -> YES | -> YES | - | - | - | NO | - | - | - | YES | - | - |

@@ -13,6 +13,7 @@ from Enums.validate_enum import ValidateEnum
 from Enums.asset_type_enum import AssetTypeEnum
 from Enums.asset_status_nt import AssetStatusNT
 from Enums.metadata_origin import MetadataOriginEnum
+from Enums.flag_enum import FlagEnum
 from HealthUtility import run_utility, health_caller
 
 class HPCService():
@@ -36,6 +37,7 @@ class HPCService():
         self.asset_type = AssetTypeEnum
         self.asset_status_nt = AssetStatusNT
         self.origin = MetadataOriginEnum
+        self.flag_enum = FlagEnum
 
         # MongoDB connection
         if mongo_client is None:
@@ -211,7 +213,6 @@ class HPCService():
             # TODO -1 to throttle count of assets in flight
             return
 
-
         if any_error:
             # TODO handle error
             self.mongo_track.update_entry(guid, "jobs_status", StatusEnum.ERROR.value)
@@ -260,8 +261,9 @@ class HPCService():
         for key, value in dictionary.items():
             self.mongo_metadata.update_entry(guid, key, value)
         
-        # set track update metadata to PREPARE to trigger specimen creation before updating the metadata in ARS with the specimen
-        self.mongo_track.update_entry(guid, "update_metadata", self.validate.PREPARE.value)
+        # set track has new specimen to YES to trigger specimen creation before updating the metadata in ARS with the specimen
+        self.mongo_track.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.YES.value)
+        self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate.YES.value)
 
     def update_metadata_json(self, guid, dictionary):
         # Extract pipeline name and batch date from MongoDB metadata
@@ -279,7 +281,7 @@ class HPCService():
 
     """ 
     Updates barcode fields, MOS database if necessary and check if its a device target(which removes all further jobs).
-    Every asset will have this job performed (barcode reading and mos)
+    Every asset will have this job performed (barcode reading and mos) unless its been done manually.
     """ 
     #TODO tests 
     def insert_barcode(self, barcode_data):

@@ -240,6 +240,7 @@ class TrackRepository:
                 {"has_new_file": {"$eq": "ERROR"}},
                 {"hpc_ready": {"$eq": "ERROR"}},
                 {"update_metadata": {"$eq": "ERROR"}},
+                {"has_new_specimen": {"$eq": "ERROR"}},
                 {"available_for_services": {"$eq": "ERROR"}}
             ]
         }
@@ -266,6 +267,7 @@ class TrackRepository:
                 {"has_new_file": {"$eq": "ERROR"}},
                 {"hpc_ready": {"$eq": "ERROR"}},
                 {"update_metadata": {"$eq": "ERROR"}},
+                {"has_new_specimen": {"$eq": "ERROR"}},
                 {"available_for_services": {"$eq": "ERROR"}}
             ]
         }
@@ -293,6 +295,7 @@ class TrackRepository:
                 {"has_new_file": {"$eq": "CRITICAL_ERROR"}},
                 {"hpc_ready": {"$eq": "CRITICAL_ERROR"}},
                 {"update_metadata": {"$eq": "CRITICAL_ERROR"}},
+                {"has_new_specimen": {"$eq": "CRITICAL_ERROR"}},
                 {"available_for_services": {"$eq": "CRITICAL_ERROR"}}
             ]
         }
@@ -318,7 +321,8 @@ class TrackRepository:
                     {"specify_sync": {"$eq": "PAUSED"}},
                     {"has_new_file": {"$eq": "PAUSED"}},
                     {"hpc_ready": {"$eq": "PAUSED"}},
-                    {"update_metadata": {"$eq": "PAUSED"}}
+                    {"update_metadata": {"$eq": "PAUSED"}},
+                    {"has_new_specimen": {"$eq": "PAUSED"}},
                     ]
                 }
     
@@ -336,7 +340,7 @@ class TrackRepository:
         """
         model = track_model.TrackModel(guid, pipeline, metadata_origin, asset_type, derivative=True)
         entry_data = model.get_entry_data()
-        print(pipeline)
+        
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
             print(guid)

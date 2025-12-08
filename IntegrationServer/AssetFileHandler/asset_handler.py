@@ -10,7 +10,7 @@ from AssetFileHandler import job_assigner
 from HealthUtility import health_caller
 from MongoDB import file_model, track_repository, metadata_repository, batch_repository
 from MongoDB.mongo_connection import MongoSharedClient
-from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt
+from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt, flag_enum
 import json
 from datetime import datetime
 
@@ -26,6 +26,7 @@ class AssetHandler:
         self.status = status_enum.StatusEnum
         self.validate = validate_enum.ValidateEnum
         self.log_enum = log_enum.LogEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.origin = metadata_origin.MetadataOriginEnum
         self.asset_status_nt = asset_status_nt.AssetStatusNT
         self.file_model = file_model.FileModel()
@@ -89,11 +90,13 @@ class AssetHandler:
                     json_file_name = json_files[0]
                     json_file_path = os.path.join(subdirectory_path, json_file_name)
 
-                    # Read the JSON file to get the 'pipeline_name', 'guid', image extension and batch name
+                    # Read the JSON file to get the 'pipeline_name', 'guid', image extension, batch name, issues and barcodes
                     pipeline_name = self.util.get_value(json_file_path, "pipeline_name")
                     guid = self.util.get_value(json_file_path, "asset_guid")
                     parent = self.util.get_value(json_file_path, "parent_guids")
                     collection = self.util.get_value(json_file_path, "collection")
+                    issues = self.util.get_value(json_file_path, "issues")
+                    barcodes = self.util.get_value(json_file_path, "barcode")
 
                     # TODO have this resolved
                     # hacking with the institution check since NHMA is using the PIPEPIOF0001 pipeline which belongs to NHMD
@@ -236,6 +239,17 @@ class AssetHandler:
                     
                     self.mongo_track.update_entry(guid, "temporary_files_local", self.validate.YES.value)
                     self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)
+
+                    # check for issues that barcodes have been added manually, if so update barcode reading job status to SKIPPED
+                    issue_names = []
+
+                    for issue in issues:
+                        if issue["name"] in issue_names:
+                            self.mongo_track.update_track_job_status(guid, "barcode", self.status.SKIPPED.value)
+                    
+                    # Check for barcodes in metadata if they exist set has_new_specimen to YES
+                    if  barcodes:
+                        self.mongo_track.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.YES.value)
 
                     self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
 

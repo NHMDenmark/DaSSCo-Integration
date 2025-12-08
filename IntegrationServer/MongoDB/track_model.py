@@ -44,6 +44,7 @@ class TrackModel:
         self.erda_sync = validate_enum.ValidateEnum.NO.value
         self.specify_sync = validate_enum.ValidateEnum.NO.value
         self.update_metadata = validate_enum.ValidateEnum.NO.value
+        self.has_new_specimen = validate_enum.ValidateEnum.NO.value
         self.available_for_services = validate_enum.ValidateEnum.YES.value
         self.available_for_services_timestamp = None
         self.available_for_services_wait_time = None
@@ -88,6 +89,7 @@ class TrackModel:
             "erda_sync": self.erda_sync,
             "specify_sync": self.specify_sync,
             "update_metadata": self.update_metadata,
+            "has_new_specimen": self.has_new_specimen,
             "available_for_services": self.available_for_services,
             "available_for_services_timestamp": self.available_for_services_timestamp,
             "available_for_services_wait_time": self.available_for_services_wait_time
