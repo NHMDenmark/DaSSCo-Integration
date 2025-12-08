@@ -14,6 +14,7 @@ class StatusEnum(Enum):
     CRITICAL_ERROR = "CRITICAL_ERROR"
     RETRY = "RETRY"
     FAILED = "FAILED"
+    SKIPPED = "SKIPPED"
 
 class Status:
     def __init__(self):
@@ -30,3 +31,4 @@ class Status:
         self.CRITICAL_ERROR = StatusEnum.CRITICAL_ERROR.value
         self.RETRY = StatusEnum.RETRY.value
         self.FAILED = StatusEnum.FAILED.value
+        self.SKIPPED = StatusEnum.SKIPPED.value

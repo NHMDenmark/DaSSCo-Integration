@@ -21,6 +21,7 @@ class TrackFieldsEnum(Enum):
     ERDA_SYNC = "erda_sync"
     SPECIFY_SYNC = "specify_sync"
     UPDATE_METADATA = "update_metadata"
+    HAS_NEW_SPECIMEN = "has_new_specimen"
     TEMPORARY_FILES_NDRIVE = "temporary_files_ndrive"
     TEMPORARY_PATH_NDRIVE = "temporary_path_ndrive"
     TEMPORARY_FILES_LOCAL = "temporary_files_local"

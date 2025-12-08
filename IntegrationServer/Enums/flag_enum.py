@@ -15,6 +15,7 @@ class FlagEnum(Enum):
     JOBS_STATUS = "jobs_status"
     FILES_STATUS = "files_status"
     METADATA_ORIGIN = "metadata_origin"
+    HAS_NEW_SPECIMEN = "has_new_specimen"
     AVAILABLE_FOR_SERVICES = "available_for_services"
     AVAILABLE_FOR_SERVICES_TIMESTAMP = "available_for_services_timestamp"
     AVAILABLE_FOR_SERVICES_WAIT_TIME = "available_for_services_wait_time"
@@ -31,6 +32,7 @@ class Flag:
         self.JOBS_STATUS = FlagEnum.JOBS_STATUS.value
         self.FILES_STATUS = FlagEnum.FILES_STATUS.value
         self.METADATA_ORIGIN = FlagEnum.METADATA_ORIGIN.value
+        self.HAS_NEW_SPECIMEN = FlagEnum.HAS_NEW_SPECIMEN.value
         self.AVAILABLE_FOR_SERVICES = FlagEnum.AVAILABLE_FOR_SERVICES.value
         self.AVAILABLE_FOR_SERVICES_TIMESTAMP = FlagEnum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value
         self.AVAILABLE_FOR_SERVICES_WAIT_TIME = FlagEnum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value
