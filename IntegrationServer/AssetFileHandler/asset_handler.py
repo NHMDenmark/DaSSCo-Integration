@@ -97,6 +97,7 @@ class AssetHandler:
                     collection = self.util.get_value(json_file_path, "collection")
                     issues = self.util.get_value(json_file_path, "issues")
                     barcodes = self.util.get_value(json_file_path, "barcode")
+                    asset_subject = self.util.get_value(json_file_path, "asset_subject")    
 
                     # TODO have this resolved
                     # hacking with the institution check since NHMA is using the PIPEPIOF0001 pipeline which belongs to NHMD
@@ -134,6 +135,10 @@ class AssetHandler:
                         
                     # Add new track entry to mongoDB
                     self.mongo_track.create_track_entry(subdirectory, pipeline_name, self.origin.NDRIVE.value )
+
+                    # safety lock - set available for services to NO
+                    safety_flag = True # set this to false if something is wrong later on
+                    self.mongo_track.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate.NO.value)
 
                     # default asset size
                     asset_size = -1
@@ -240,18 +245,30 @@ class AssetHandler:
                     self.mongo_track.update_entry(guid, "temporary_files_local", self.validate.YES.value)
                     self.mongo_track.update_entry(guid, "temporary_path_local", new_directory_path)
 
-                    # check for issues that barcodes have been added manually, if so update barcode reading job status to SKIPPED
-                    issue_names = []
+                    self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
 
-                    for issue in issues:
-                        if issue["name"] in issue_names:
-                            self.mongo_track.update_track_job_status(guid, "barcode", self.status.SKIPPED.value)
-                    
                     # Check for barcodes in metadata if they exist set has_new_specimen to YES
                     if  barcodes:
                         self.mongo_track.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.YES.value)
 
-                    self.mongo_track.update_entry(guid, "is_in_ars", self.validate.NO.value)
+                    # check for issues that barcodes have been added manually, if so update barcode reading job status to SKIPPED
+                    issue_names = ["barcode inserted"]
+                    
+                    for issue in issues:
+                        if issue["name"].lower() in issue_names:
+
+                            if barcodes and asset_subject:
+                                self.mongo_track.update_track_job_status(guid, "barcode", self.status.SKIPPED.value)
+                            else:
+                                entry = self.run_util.log_msg(self.run_util.prefix_id, f"Barcode 'issue' found in metadata for {guid} without sufficient data present in the metadata (barcode, mso, mos_id, preparation_type, asset_subject). has_new_specimen set to CRITICAL_ERROR and available_for_services to NO.", self.log_enum.CRITICAL_ERROR.value)
+                                self.health_caller.error(self.run_util.service_name, entry, guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.status.CRITICAL_ERROR.value)
+                                self.mongo_track.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.CRITICAL_ERROR.value)
+                                self.mongo_track.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate.NO.value)
+                                safety_flag = False
+
+                    # remove safety lock - set available for services to YES
+                    if safety_flag:
+                        self.mongo_track.update_entry(guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate.YES.value)
 
     def find_directory_name_with_file(self, parent_directory, filename):
         """

@@ -197,7 +197,7 @@ class HPCService():
         jobs = entry["job_list"]
 
         # flags for settign jobs_status
-        all_done = all(job["status"] in [StatusEnum.DONE.value, StatusEnum.FAILED.value] for job in jobs)
+        all_done = all(job["status"] in [StatusEnum.DONE.value, StatusEnum.FAILED.value, StatusEnum.SKIPPED.value] for job in jobs)
         any_queueing = any(job["status"] == StatusEnum.QUEUED.value for job in jobs)
         any_starting = any(job["status"] == StatusEnum.STARTING.value for job in jobs)
         any_running = any(job["status"] == StatusEnum.RUNNING.value for job in jobs)
