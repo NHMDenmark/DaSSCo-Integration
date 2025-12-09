@@ -83,11 +83,12 @@ class HPCJobCaller():
                                                                          self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             
             if asset is None:
-                time.sleep(1)        
+                time.sleep(5)        
             else:    
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
                 if guid is None or jobs is None:
+                    print("no asset or job")
                     continue
 
                 for job in jobs:

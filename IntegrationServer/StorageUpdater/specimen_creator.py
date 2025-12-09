@@ -95,19 +95,18 @@ class SpecimenCreator():
                         print(msg)
 
                     if found is True:
-
-                        if specimen.data["preparation_types"] != metadata["preparation_type"]:
+                        if specimen["data"].preparation_types != metadata["preparation_type"]:
                             new_preparation_types = metadata["preparation_type"]
                             
-                            for item in specimen.data["preparation_types"]:
+                            for item in specimen["data"].preparation_types:
                                 if item not in new_preparation_types:
                                     new_preparation_types.append(item)
                             
-                            updated, response, msg = self.storage_api.update_specimen(institution, collection, barcode, specimen_pid, new_preparation_types, None, specimen.data["role_restrictions"])
+                            updated, response, msg = self.storage_api.update_specimen(institution, collection, barcode, specimen_pid, new_preparation_types, None, specimen["data"].role_restrictions)
                             # TODO check update response
 
                         continue
-                    # TODO make sure all relevant preparation types are added to each specimen - current flow does not add older types to new barcodes
+                    
                     created, response, msg = self.storage_api.create_specimen(institution, collection, barcode, specimen_pid, metadata["preparation_type"], None, [])
                     # TODO check create response
 
