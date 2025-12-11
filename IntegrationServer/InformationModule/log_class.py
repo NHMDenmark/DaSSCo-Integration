@@ -25,7 +25,13 @@ class LogClass:
     def __init__(self, filename = f"{os.path.basename(os.path.abspath(__file__))}.log", name = os.path.basename(os.path.abspath(__file__))):
         
         self.log_enum = log_enum.LogEnum
-        self.filepath = filename
+
+        # Ensure log directory exists inside project root
+        log_dir = os.path.join(project_root, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+
+        self.filepath = os.path.join(log_dir, filename)
+
         # create logger
         self.logger = logging.getLogger(name)
     
