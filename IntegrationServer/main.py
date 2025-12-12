@@ -200,10 +200,12 @@ def add_upload_job(guid):
 
 if __name__ == '__main__':   
 
-    x = get_new_token()
-    print(x)
-    c = verify_token(x)
-    print(c)
+    util = utility.Utility()
+    micro_service_config_path = f"{project_root}/IntegrationServer/ConfigFiles/micro_service_config.json" 
+
+    names = util.get_value(micro_service_config_path, "check")
+    print(names)
+    
     """
     client = mongo_connection.MongoSharedClient()
     m = metadata_repository.MetadataRepository(client)

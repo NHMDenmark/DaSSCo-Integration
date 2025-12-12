@@ -9,10 +9,10 @@ import utility
 from MongoDB import track_repository
 from MongoDB.mongo_connection import MongoSharedClient
 from HealthUtility import health_caller, run_utility
-from Enums import status_enum, validate_enum
+from Enums import status_enum, validate_enum, flag_enum
 
 """
-Service for deleting files that have been moved to the integration server as part of the pipeline. Files are first deleted when everything else has happened succesfully. 
+Service for deleting files that have been moved to the integration server as part of the pipeline. Files are first deleted after success for sync erda and job proccessing has happened. 
 """
 class DeleteLocalFiles():
 
@@ -32,6 +32,7 @@ class DeleteLocalFiles():
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
+        self.flag_enum = flag_enum.FlagEnum
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
         
         self.run_util.service_starting_updates()
@@ -56,9 +57,9 @@ class DeleteLocalFiles():
 
         while self.run == self.status_enum.RUNNING.value:
             
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"jobs_status": self.status_enum.DONE.value, "is_in_ars": self.validate_enum.YES.value,
-                                                                            "has_new_file": self.validate_enum.NO.value, "erda_sync": self.validate_enum.YES.value,
-                                                                              "temporary_files_local":self.validate_enum.YES.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.JOBS_STATUS.value: self.status_enum.DONE.value, self.flag_enum.IS_IN_ARS.value: self.validate_enum.YES.value,
+                                                                            self.flag_enum.HAS_NEW_FILE.value: self.validate_enum.NO.value, self.flag_enum.ERDA_SYNC.value: self.validate_enum.YES.value,
+                                                                              self.flag_enum.TEMPORARY_FILES_LOCAL.value:self.validate_enum.YES.value}])
 
             if asset is None:
                 #print(f"No asset found")
@@ -70,6 +71,9 @@ class DeleteLocalFiles():
                     local_path = asset["temporary_path_local"]
                 except Exception as e:
                     print(f"no path found {guid}: {e}")
+                    entry = self.run_util.log_msg(self.prefix_id, f"No temporary_path_local found for asset {guid}.", self.status_enum.ERROR.value)
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
                     continue
                 
                 try:
@@ -86,10 +90,12 @@ class DeleteLocalFiles():
                             print(f"Deleted files: {guid}")
                             # update track
                             self.track_mongo.delete_field(guid, "temporary_path_local")
-                            self.track_mongo.delete_field(guid, "temporary_files_local")                        
+                            self.track_mongo.delete_field(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value)                        
                         else:
                             print(f"No matching files found for {guid}. Temporary_files_local set to ERROR")
-                            self.track_mongo.update_entry(guid, "temporary_files_local", self.validate_enum.ERROR.value)
+                            entry = self.run_util.log_msg(self.prefix_id, f"No matching files found for {guid}. Temporary_files_local set to ERROR.", self.status_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
+                            self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
 
                         # delete empty directories
                         if not os.listdir(local_path):
@@ -98,9 +104,15 @@ class DeleteLocalFiles():
 
                     else:
                         print(f"{local_path} is not a directory.")
+                        entry = self.run_util.log_msg(self.prefix_id, f"{local_path} is not a directory. {guid}", self.status_enum.ERROR.value)
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
+                        self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
 
                 except Exception as e:
                     print(f"An error occurred for {guid}: {e}")
+                    entry = self.run_util.log_msg(self.prefix_id, f"An error occurred for {guid}: {e}", self.status_enum.ERROR.value)
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
+                    self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value, self.status_enum.ERROR.value)
                         
             
             # checks if service should keep running           
@@ -116,7 +128,7 @@ class DeleteLocalFiles():
         print("Service closed down")
 
     def close_all_connections(self):
-        self.track_mongo.close_connection()
+        self.mongo_client.close()
 
 if __name__ == '__main__':
     DeleteLocalFiles()

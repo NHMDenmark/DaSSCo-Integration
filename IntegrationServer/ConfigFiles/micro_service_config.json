@@ -175,8 +175,8 @@
     "pause_time": 3,
     "pause_check_list": [2, 5, 7],
     "pause_loop_count": 99,
-    "error_tolerance": 2,
-    "error_time_span": 3,
+    "error_tolerance": 10,
+    "error_time_span": 10,
     "mail_wait_time": 30
   },
   "Open file share ARS": {
@@ -207,7 +207,8 @@
     "pause_loop_count": 99,
     "error_tolerance": 2,
     "error_time_span": 3,
-    "mail_wait_time": 30
+    "mail_wait_time": 30,
+    "barcode_issue_names": ["barcode inserted"]
   },
   "Update metadata ARS": {
     "module": "storage updater",
