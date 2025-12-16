@@ -20,7 +20,7 @@ class TrackRepository:
     def __init__(self, client):
         """Creates the connection object for track and all databases."""
         self.util = utility.Utility()
-        self.mongo_track = mongo_connection.MongoConnection("track", client)
+        self.mongo_track = mongo_connection.MongoConnection("track", client, silent=client.silent)
 
         self.collection = self.mongo_track.get_collection()
         self.all = all_repository.AllRepository(self.collection)

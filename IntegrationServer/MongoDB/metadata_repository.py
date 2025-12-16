@@ -12,7 +12,7 @@ class MetadataRepository:
 
     def __init__(self, client):
         self.util = utility.Utility()
-        self.mongo_metadata = mongo_connection.MongoConnection("metadata", client)
+        self.mongo_metadata = mongo_connection.MongoConnection("metadata", client, client.silent)
 
         self.collection = self.mongo_metadata.get_collection()
         self.all = all_repository.AllRepository(self.collection)

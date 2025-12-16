@@ -18,7 +18,7 @@ class StorageService():
     def __init__(self, mongo_client: MongoSharedClient = None):
         self.util = utility.Utility()
         if mongo_client is None:
-            self.mongo_client = MongoSharedClient()
+            self.mongo_client = MongoSharedClient(silent=True)
         else:
             self.mongo_client = mongo_client
         self.metadata_db = metadata_repository.MetadataRepository(self.mongo_client)

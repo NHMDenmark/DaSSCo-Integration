@@ -15,7 +15,7 @@ class HealthRepository(Status):
     def __init__(self, client):
         Status.__init__(self)
         self.util = utility.Utility()
-        self.mongo_health = mongo_connection.MongoConnection("health", client)
+        self.mongo_health = mongo_connection.MongoConnection("health", client, silent=client.silent)
 
         self.collection = self.mongo_health.get_collection()
         self.all = all_repository.AllRepository(self.collection)

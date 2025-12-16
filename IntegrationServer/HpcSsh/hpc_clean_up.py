@@ -130,8 +130,7 @@ class HPCCleanUp():
 
     def close_db_connections(self):
         try:
-            self.mongo_track.close_connection()
-            self.service_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 

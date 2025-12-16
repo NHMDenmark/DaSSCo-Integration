@@ -157,7 +157,7 @@ class SpecifyCloseShare(LogClass):
             
         if time_difference > timedelta(minutes=4):
             self.storage_api.service.metadata_db.close_connection()
-            print(f"creating new storage client, after {time_difference}")
+            # print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
         if self.storage_api.client is None:
             time.sleep(60)

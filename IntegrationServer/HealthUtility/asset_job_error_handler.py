@@ -280,8 +280,8 @@ class AssetJobErrorHandler():
         time_difference = current_time - self.auth_timestamp
             
         if time_difference > timedelta(minutes=4):
-            self.storage_api.service.metadata_db.close_connection()
-            print(f"creating new storage client, after {time_difference}")
+            self.storage_api.service.mongo_client.close()
+            # print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
         if self.storage_api.client is None:
             time.sleep(60)
@@ -309,12 +309,7 @@ class AssetJobErrorHandler():
         
     def close_connections(self):
         try:
-            self.service_mongo.close_connection()
-            self.track_mongo.close_connection()
-            self.metadata_mongo.close_connection()
-            self.mos_mongo.close_connection()
-            self.health_mongo.close_connection()
-            self.throttle_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(e)
 

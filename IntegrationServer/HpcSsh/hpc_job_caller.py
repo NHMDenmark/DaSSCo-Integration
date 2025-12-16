@@ -88,7 +88,7 @@ class HPCJobCaller():
                 guid, jobs = self.get_guid_and_jobs(asset)
                 
                 if guid is None or jobs is None:
-                    print("no asset or job")
+                    # print("no asset or job")
                     continue
 
                 for job in jobs:
@@ -134,8 +134,7 @@ class HPCJobCaller():
 
     def close_db_connections(self):
         try:
-            self.mongo_track.close_connection()
-            self.service_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close connections: {e}")
 

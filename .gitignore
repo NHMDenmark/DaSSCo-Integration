@@ -2,12 +2,16 @@ __pycache__
 .DS_Store
 .vscode
 *.log
+*.log.*
+*.log.*.gz
 *.json
 *.tif
 *.jpg
 *.txt
 *.env
 *.out
+*.out.*
+*.out.*.gz
 .idea/
 logs/
 !requirements.txt
