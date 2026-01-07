@@ -391,8 +391,17 @@ class HPCService():
 
     def handle_no_barcode(self, guid, asset_subject=None, issues=None):
 
+        update_metadata = False
+
         if issues is not None:
             self.mongo_metadata.update_entry(guid, "issues", issues)
+            update_metadata = True
+            
+        if asset_subject is not None:
+            self.mongo_metadata.update_entry(guid, "asset_subject", asset_subject)
+            update_metadata = True
+
+        if update_metadata:
             self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
 
         if asset_subject != "device target":

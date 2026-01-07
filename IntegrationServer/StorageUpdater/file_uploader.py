@@ -137,8 +137,8 @@ class FileUploader():
             if self.storage_api is None:
                 continue
 
-            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{"metadata_origin" : self.metadata_origin_enum.NDRIVE.value, "has_open_share" : self.validate_enum.YES.value, "has_new_file" : self.validate_enum.YES.value,
-                                                                          "jobs_status" : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
+            asset = self.track_mongo.get_entry_from_multiple_key_pairs([{self.flag_enum.METADATA_ORIGIN.value : self.metadata_origin_enum.NDRIVE.value, self.flag_enum.HAS_OPEN_SHARE.value : self.validate_enum.YES.value, self.flag_enum.HAS_NEW_FILE.value : self.validate_enum.YES.value,
+                                                                          self.flag_enum.JOBS_STATUS.value : self.status_enum.WAITING.value, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
 
             if asset is not None:
                 guid = asset["_id"]
@@ -169,8 +169,8 @@ class FileUploader():
                             uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
-                                self.track_mongo.update_entry(guid, "erda_sync", self.validate_enum.NO.value)
-                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
+                                self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.NO.value)
+                                self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.AWAIT.value)
 
                             #handle fails 
                             if uploaded is False:

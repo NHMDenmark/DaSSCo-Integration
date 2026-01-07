@@ -1,0 +1,20 @@
+{
+  "test":[{
+    "category": "test",
+    "name": "example",
+    "timestamp": null,
+    "status": "BEING_PROCESSED",
+    "description": "Example issue for testing purposes.",
+    "notes": "No additional notes.",
+    "solved": true
+    },
+    {
+    "category": "test",
+    "name": "Ndrive workstation mismatch",
+    "timestamp": null,
+    "status": null,
+    "description": "A mismatch between the workstation name in the metadata and the workstation name in the ndrive path.",
+    "notes":"This means the automatic deletion of the asset files on the ndrive will not work.",
+    "solved": false
+    }]
+}

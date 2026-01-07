@@ -13,6 +13,7 @@ from MongoDB.mongo_connection import MongoSharedClient
 from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt, flag_enum
 import json
 from datetime import datetime
+from InformationModule import issue_writer
 
 """
 Responsible for the processing/creation of assets coming from the Ndrive. 
@@ -30,6 +31,8 @@ class AssetHandler:
         self.origin = metadata_origin.MetadataOriginEnum
         self.asset_status_nt = asset_status_nt.AssetStatusNT
         self.file_model = file_model.FileModel()
+        self.issue_writer = issue_writer.IssueWriter()
+
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
@@ -224,16 +227,7 @@ class AssetHandler:
                         if import_directory is None:
                             print(f"Import directory for {guid} not found probably cause is a mismatch between the workstation name in the metadata and the actual workstation name in the ndrive path.")
                             
-                            # TODO change category to "processing_pipeline"
-                            issue = {
-                                "category": "test",
-                                "name": f"Ndrive workstation mismatch",
-                                "timestamp": self.util.get_current_timestamp(),
-                                "status": self.mongo_metadata.get_value_for_key(guid, "status"),
-                                "description": f"A mismatch between the workstation name in the metadata and the workstation name in the ndrive path.",
-                                "notes":"This means the automatic deletion of the asset files on the ndrive will not work.",
-                                "solved": False
-                            }
+                            issue = self.issue_writer.get_issue_from_configuration("test", "Ndrive workstation mismatch", status = self.mongo_metadata.get_value_for_key(guid, "status"))
 
                             self.mongo_metadata.append_existing_list(guid, "issues", issue)
                             entry = self.run_util.log_msg(self.run_util.prefix_id, f"Import directory for {guid} not found. Cause is a mismatch between the workstation name in the metadata and the actual workstation name in the ndrive path. Issue added to metadata.", self.log_enum.WARNING.value)

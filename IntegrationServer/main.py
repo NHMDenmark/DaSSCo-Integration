@@ -28,6 +28,7 @@ import datetime
 from dotenv import load_dotenv
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
+from InformationModule import issue_writer
 import subprocess
 import logging
 from Connections import connections
@@ -200,22 +201,19 @@ def add_upload_job(guid):
 
 if __name__ == '__main__':   
 
-    util = utility.Utility()
-    micro_service_config_path = f"{project_root}/IntegrationServer/ConfigFiles/micro_service_config.json" 
+    issue_writer = issue_writer.IssueWriter()
 
-    names = util.get_value(micro_service_config_path, "check")
-    print(names)
+    issue = issue_writer.get_issue_from_configuration(category="test", name="example")
     
-    """
+    print(issue)
+    
     client = mongo_connection.MongoSharedClient()
     m = metadata_repository.MetadataRepository(client)
 
-    t = m.get_entry("_id", "lumi-test-21")
-
-    print(t)
-
+    m.append_existing_list("040ck2b867e980e0e1a022bc577123", "issues", issue)
+    
     client.close()
-    """
+    
     """
     d_guid_list = ["lumi-test-2_400", "lumi-test-2_72"]
 
