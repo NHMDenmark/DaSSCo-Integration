@@ -1,13 +1,14 @@
 # Table of Contents
 1. [job_detail_config.json](#job_detail_configjson)
 2. [mail_config.json](#mail_configjson)
-3. [micro_service_config.json](#micro_service_configjson)
-4. [mongo_connection_config.json](#mongo_connection_configjson)
-5. [ndrive_path_config.json](#ndrive_path_configjson)
-6. [pipeline_job_config.json](#pipeline_job_configjson)
-7. [slurm_config.json](#slurm_configjson)
-8. [workstations_config.json](#workstations_configjson)
-9. [throttle_config.json](#throttle_configjson)
+3. [metadata_issues_config.json](#metadata_issues_configjson)
+4. [micro_service_config.json](#micro_service_configjson)
+5. [mongo_connection_config.json](#mongo_connection_configjson)
+6. [ndrive_path_config.json](#ndrive_path_configjson)
+7. [pipeline_job_config.json](#pipeline_job_configjson)
+8. [slurm_config.json](#slurm_configjson)
+9. [workstations_config.json](#workstations_configjson)
+10. [throttle_config.json](#throttle_configjson)
 
 ## job_detail_config.json
 Job names followed by a time estimate of running them on HPC cluster and the path to the script that needs to be called to run the job on the HPC cluster.
@@ -52,6 +53,30 @@ Mail configuration file. Test is setup using gmail as a host here. If we are usi
           "receiver_address": ""
       }
     }
+```
+
+## metadata_issues_config.json
+Issues configuration file. This is where issues issued by the integration should be written. Each issue category has its own list of issues. New issue categories should also be created in ARS via the api, before they can be used by the integration server.  
+"test" is the category. The issue writer will use this to find the issue.  
+Category is the same as the overall category.   
+Name is issue name. Issue writer will use this to find the issue.  
+Timestamp will be automatically set by the issue writer when an issue is created.   
+Status can be added by the integration server or if not then the value set here will be used.  
+Description can be added by the integration server or if not then the value set here will be used.  
+Notes can be added by the integration server or if not then the value set here will be used.  
+Solved should be set to false in the config file and the integration server can change that to true if needed.  
+```bash
+{
+  "test":[{
+    "category": "test",
+    "name": "example",
+    "timestamp": null,
+    "status": "BEING_PROCESSED",
+    "description": "Example issue for testing purposes.",
+    "notes": "No additional notes.",
+    "solved": false
+    }]
+}
 ```
 
 ## micro_service_config.json
