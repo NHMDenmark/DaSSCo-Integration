@@ -210,7 +210,7 @@ if __name__ == '__main__':
     client = mongo_connection.MongoSharedClient()
     m = metadata_repository.MetadataRepository(client)
 
-    m.append_existing_list("040ck2b867e980e0e1a022bc577123", "issues", issue)
+    m.append_existing_list("040ck2b867e98130d3a392e4d5830d_72", "issues", issue)
     
     client.close()
     

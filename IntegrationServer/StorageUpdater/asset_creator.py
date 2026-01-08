@@ -414,7 +414,7 @@ class AssetCreator():
 
                 message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without creating {guid}. Asset will wait at least 10 minutes before trying to create again. Status: {status_code}. {response}")
                 self.health_caller.warning(self.service_name, message, guid)
-                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTING.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
             if exists == self.erda_status_enum.METADATA_RECEIVED.value:
                 # success anyway

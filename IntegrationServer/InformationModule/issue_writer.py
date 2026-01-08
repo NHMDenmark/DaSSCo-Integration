@@ -23,7 +23,9 @@ class IssueModel(BaseModel):
 
 class IssueWriter:
     """
-    Class for creating issues for metadata entries.
+    Class for creating issues for metadata entries. Issues can be created either from configuration file or by providing parameters directly. 
+    Normal flow is to create issues from configuration file (add new issues to the config file) and override parameters as needed. 
+    Issue writer does not write issues to database, only returns dictionaries.
     """
 
     def __init__(self):
@@ -67,8 +69,9 @@ class IssueWriter:
     def get_issue_from_configuration(self, category: str, name: str, timestamp: datetime = None, status: str = None, description: str = None, notes: str = None, solved: bool = False) -> IssueModel:
         """
         Create an issue model instance from configuration file.
-        :param category: The category of the issue.
-        :param name: The name of the issue.
+        :param category: The category of the issue. Required.
+        :param name: The name of the issue. Required.
+        :param timestamp: The timestamp of the issue.
         :param status: The status of the issue.
         :param description: The description of the issue.
         :param notes: Additional notes for the issue.

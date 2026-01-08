@@ -332,3 +332,13 @@ async def get_batch_names(user: dict = Depends(verify_token), service = Depends(
         return JSONResponse(content={"status": msg}, status_code=500)
     
     return msg
+
+@control.post("/integration/control/update_ars_metadata")
+async def update_ars_metadata(guid: str, user: dict = Depends(verify_token), service = Depends(get_service)):
+
+    updated, msg = service.update_ars_metadata(guid, user['preferred_username'])
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)

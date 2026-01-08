@@ -11,6 +11,7 @@ from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository, batch_repository
 from MongoDB.mongo_connection import MongoSharedClient
 from DashboardAPIs import micro_service_paths
+from StorageApi import storage_client
 import json
 from datetime import datetime, timedelta
 
@@ -707,6 +708,22 @@ class ControlService():
             
         except Exception as e:
             print(f"get batch info: {e}")
+            return False, "Things went wrong"
+
+    def update_ars_metadata(self, guid, username):
+        try:
+            
+            ars_client = storage_client.StorageClient(self.mongo_client)
+
+            updated = ars_client.update_metadata(guid, username)
+
+            if updated is False:
+                return False, f"Failed ARS metadata update. Check ARS."
+
+            return True, f"ARS metadata update triggered for {guid} by {username}."
+
+        except Exception as e:
+            print(f"update ars metadata: {e}")
             return False, "Things went wrong"
 
     def is_process_running(self, pid):
