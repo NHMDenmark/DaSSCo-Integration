@@ -430,3 +430,19 @@ class StorageClient():
                status_code, note = self.get_status_code_from_exc(e)
                print(f"Api or wrapper fail: {e}")
                return False, status_code, note
+          
+     def change_share_allocation(self, guid, new_allocation_size):
+
+          try:
+               response = self.client.file_proxy.change_allocation(guid, new_allocation_size)
+
+               status_code = response["status_code"]
+
+               if status_code == 200:
+                    return True, status_code, None 
+               else:
+                    return False, status_code, None
+          except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
+               print(f"Api or wrapper fail: {e}")
+               return False, status_code, note
