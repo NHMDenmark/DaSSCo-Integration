@@ -4,8 +4,8 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_service_context import ServiceContext
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_util_error_handler import UtilErrorHandler
+from HealthUtility.AssetErrorHandlers.a_service_context import ServiceContext
+from HealthUtility.AssetErrorHandlers.a_util_error_handler import UtilErrorHandler
 
 class BaseErrorHandler:
     def __init__(self, context: ServiceContext):

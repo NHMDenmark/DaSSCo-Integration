@@ -4,15 +4,17 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_base_error_handler import BaseErrorHandler
+from HealthUtility.AssetErrorHandlers.a_base_error_handler import BaseErrorHandler
 
 class SpecifySyncErrorHandler(BaseErrorHandler):
 
         def __init__(self, context):
             super().__init__(context)
 
-        def handle_specify_sync_error(self, asset, guid):
+        def handle_specify_sync_error(self, asset):
 
+            guid = asset["_id"]
+            
             self.ctx.authorization_check()
 
             ars_status = self.ctx.storage_api.get_full_asset_status(guid)

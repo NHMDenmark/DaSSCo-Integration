@@ -4,15 +4,17 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_base_error_handler import BaseErrorHandler
+from HealthUtility.AssetErrorHandlers.a_base_error_handler import BaseErrorHandler
 
 class HasOpenShareErrorHandler(BaseErrorHandler):
 
         def __init__(self, context):
             super().__init__(context)
 
-        def handle_has_open_share_error(self, asset, guid):
-        
+        def handle_has_open_share_error(self, asset):
+            
+            guid = asset["_id"]
+
             self.ctx.authorization_check()
 
             ars_status = self.ctx.storage_api.get_full_asset_status(guid)
@@ -69,7 +71,7 @@ class HasOpenShareErrorHandler(BaseErrorHandler):
                                     link = proxy_path + name
                                     self.ctx.track_mongo.update_track_file_list(guid, name, "ars_link", link)
 
-                            self.ctx.update_throttle_plus_size(asset)
+                            self.util.update_throttle_reopen_plus_size(asset)
                             self.ctx.track_mongo.update_entry(guid, "has_open_share", self.ctx.validate_enum.YES.value)
                             message = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Successfully handled has_open_share error for {guid}. has_open_share set to {self.ctx.validate_enum.YES.value}")
                             self.ctx.health_caller.warning(self.ctx.service_name, message, guid, "has_open_share", self.ctx.validate_enum.YES.value)
@@ -107,7 +109,7 @@ class HasOpenShareErrorHandler(BaseErrorHandler):
                                     link = proxy_path + name
                                     self.ctx.track_mongo.update_track_file_list(guid, name, "ars_link", link)
 
-                            self.util.update_throttle_plus_size(asset)
+                            self.util.update_throttle_reopen_plus_size(asset)
                             self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.HAS_OPEN_SHARE.value, self.ctx.validate_enum.YES.value)
                             message = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Successfully handled has_open_share error for {guid}. has_open_share set to {self.ctx.validate_enum.YES.value}")
                             self.ctx.health_caller.warning(self.ctx.service_name, message, guid, self.ctx.flag_enum.HAS_OPEN_SHARE.value, self.ctx.validate_enum.YES.value)

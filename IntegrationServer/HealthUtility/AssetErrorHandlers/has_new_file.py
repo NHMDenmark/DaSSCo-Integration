@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_base_error_handler import BaseErrorHandler
+from HealthUtility.AssetErrorHandlers.a_base_error_handler import BaseErrorHandler
 
 class HasNewFileErrorHandler(BaseErrorHandler):
 
@@ -12,6 +12,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
             super().__init__(context)
 
         def handle_has_new_file_error(self, asset):
+
             guid = asset["_id"]
 
             self.ctx.authorization_check()
@@ -52,7 +53,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                                 name = file["name"]
                                 link = proxy_path + name
                                 self.ctx.track_mongo.update_track_file_list(guid, name, "ars_link", link)
-                        self.util.update_throttle_plus_size(asset)
+                        self.util.update_throttle_new_plus_size(asset)
                         self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.HAS_NEW_FILE.value, self.ctx.validate_enum.YES.value)
                         entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Found file proxy share to not exist for {guid}. Opened a new file share in ARS. has_new_file set to {self.ctx.validate_enum.YES.value}")
                         self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.HAS_NEW_FILE.value, self.ctx.validate_enum.YES.value)

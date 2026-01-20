@@ -4,18 +4,26 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from IntegrationServer.HealthUtility.TrackFlagErrorHandlers.a_service_context import ServiceContext
+from HealthUtility.AssetErrorHandlers.a_service_context import ServiceContext
 
 class UtilErrorHandler:
 
     def __init__(self, context: ServiceContext):
         self.ctx = context
 
-    def update_throttle_plus_size(self, asset):
+    def update_throttle_reopen_plus_size(self, asset):
         self.ctx.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.ctx.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
         # TODO decide if this belongs here. But seems natural enough to include it. 
         self.ctx.track_mongo.update_entry(asset["_id"], "temporary_reopened_share_status", True)
+
+    def update_throttle_new_plus_size(self, asset):
+        self.ctx.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
+        self.ctx.throttle_mongo.add_to_amount("total_new_asset_size_mb", "value", asset["asset_size"])
+
+    def update_throttle_derivative_plus_size(self, asset):
+        self.ctx.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
+        self.ctx.throttle_mongo.add_to_amount("total_derivative_size_mb", "value", asset["asset_size"])
 
     def remove_asset_from_in_flight_count(self):
         self.ctx.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
