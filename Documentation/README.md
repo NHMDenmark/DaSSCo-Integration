@@ -59,8 +59,9 @@ Contains pipeline component detailed documents.
 [Components folder](/Documentation/Component_write_up/) 
 
 ## metadata_example.json
-This is an example of metadata json file as it looks when the integration server receives it.  
-[Example v2_1_0](/Documentation/Metadata_examples/metadata_example_v2_1_0.json)
+These are examples of metadata json files as they look when the integration server picks them up from the Ndrive. Versions should be converted to the newest before this point by the metadata conversion script from the Dassco-Image-Metadata-Conversion repository. 
+[Example v2_1_0](/Documentation/Metadata_examples/metadata_example_v2_1_0.json)  
+[Example v3.0.4](/Documentation/Metadata_examples/metadata_example_v3.0.4.json)  
 
 ## Python Scripts  
 Contains python scripts that are not part of the main functionalities of the integration server. They are meant to supplement, update and help maintain the documentation found in this area. There are scripts for converting changes for fields across multiple documents. They are not meant to be run often and each requires a bit of configuration before being run.
