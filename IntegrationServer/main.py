@@ -1,3 +1,4 @@
+import asyncio
 import logging.handlers
 import os
 import utility
@@ -14,10 +15,11 @@ import json
 import time
 from dassco_utils.guid import main
 from dassco_utils.metadata import MetadataModel, MetadataHandler
+from dassco_utils.messaging import orchestration_client, async_rabbitmq_client, OrchestrationEvent
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
 from dasscostorageclient import DaSSCoStorageClient
-from KeycloakInterface.auth import verify_token, get_new_token
+#from KeycloakInterface.auth import verify_token, get_new_token
 from MongoDB.mongo_connection import MongoSharedClient
 
 #from PIL import Image, TiffImagePlugin, TiffTags
@@ -199,8 +201,36 @@ def add_upload_job(guid):
         track.append_existing_list(guid, "job_list", job)
         track.close_connection()
 
+
+async def test_oc():
+     
+    connection_options = async_rabbitmq_client.ConnectionOptions()
+    connection_options.host_name = "hostname"
+    connection_options.username = "user"
+    connection_options.password = "password"
+    connection_options.enable_tls = False
+
+    retry_config = async_rabbitmq_client.RetryConfig()
+    retry_config.retry_delays = [60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 300000]  # 11 retries, each after 60 seconds last after 5 minutes
+
+    armq = async_rabbitmq_client.AsyncRabbitMqClient(options=connection_options, retry_config=retry_config)
+    
+    oc = orchestration_client.OrchestrationClient(mq_client=armq, service_name="Starfish")
+
+    @oc.handler("check_something")
+    async def print_something(event: OrchestrationEvent):
+        print("Hello from async rabbitmq client!", event)
+        return {"status": "done"}
+
+    await oc.register_handlers()
+
+    await armq.loop()
+
 if __name__ == '__main__':   
 
+    asyncio.run(test_oc())
+
+    """
     issue_writer = issue_writer.IssueWriter()
 
     issue = issue_writer.get_issue_from_configuration(category="test", name="example")
@@ -213,7 +243,7 @@ if __name__ == '__main__':
     m.append_existing_list("040ck2b867e98130d3a392e4d5830d_72", "issues", issue)
     
     client.close()
-    
+    """
     """
     d_guid_list = ["lumi-test-2_400", "lumi-test-2_72"]
 
@@ -252,5 +282,3 @@ if __name__ == '__main__':
     #    m = json.loads(m)
     #print(type(m))
     #print(m["asset"])
-
-    
