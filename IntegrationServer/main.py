@@ -50,7 +50,7 @@ Test area for the different processes. May contain deprecated information.
 
 class IntegrationServer(object):
     """
-    Test text
+    Test text.
     """
     def __init__(self):
         self.util = utility.Utility()
