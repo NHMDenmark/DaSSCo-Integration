@@ -16,15 +16,23 @@ exec 2>&1
 HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
-INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
-DB_PATH="/work/data/lars"
-DB_NAME="dev-db-1-11-2024"
-
+BASE_INT_PATH="/work/integration"
+INT_PATH="/work/integration/DaSSCo-Integration/IntegrationServer"
+DB_PATH="/work/mongodb/data"
+DB_NAME="test-nt-server"
 
 echo "Starting second part of the server setup ---"
 
 # Step 4:
 echo "Running the database"
+if [ ! -d $DB_PATH ]; then
+    echo "Creating db directory..."
+    mkdir -p $DB_PATH
+fi
+if [ ! -d $DB_PATH/$DB_NAME ]; then
+    echo "Creating db directory..."
+    mkdir -p $DB_PATH/$DB_NAME
+fi
 nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
 sudo chown -R ucloud:ucloud $DB_PATH/$HOSTNAME.log
 chmod 755 $DB_PATH/$HOSTNAME.log
@@ -34,11 +42,17 @@ chmod 755 $DB_PATH/$HOSTNAME.log
 echo "Generating ssh key for slurm in ~/.ssh"
 ssh-keygen -t ed25519 -N ""
 
-# Step 6: Update venv
+# Step 6: Create/update venv
+if [ ! -d "$BASE_INT_PATH/venv" ]; then
+    echo "Creating virtual environment..."
+    python -m venv "$BASE_INT_PATH/venv"
+else
+    echo "Virtual environment already exists."
+fi
 echo "Activate and update python venv"
-source /work/data/integration/venv_integration/bin/activate
+source $BASE_INT_PATH/venv/bin/activate
 pip install -r $INT_PATH/requirements.txt
-echo "Venv good to go"
+echo "Venv good to go in $BASE_INT_PATH/venv"
 
 # Step 7: Run the integration setup script for the database
 

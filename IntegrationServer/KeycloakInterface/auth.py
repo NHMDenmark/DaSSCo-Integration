@@ -7,15 +7,16 @@ import os
 
 dotenv.load_dotenv()
 
-KEYCLOAK_URL = os.getenv("keycloak_realm")
+KEYCLOAK_URL = os.getenv("keycloak_url")
 ALGORITHMS = [os.getenv("keycloak_algorithm")]
+KEYCLOAK_REALM = os.getenv("keycloak_realm")
 
 # Public key for signature validation
-jwks = requests.get(f"{KEYCLOAK_URL}/protocol/openid-connect/certs").json()
+jwks = requests.get(f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs").json()
 
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl=f"{KEYCLOAK_URL}/protocol/openid-connect/auth",
-    tokenUrl=f"{KEYCLOAK_URL}/protocol/openid-connect/token",
+    authorizationUrl=f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth",
+    tokenUrl=f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token",
 )
 
 def get_token_header(token: str):
@@ -36,7 +37,7 @@ def verify_token(token: str = Depends(oauth2_scheme)):
             token,
             key,
             algorithms=ALGORITHMS,
-            issuer=f"{KEYCLOAK_URL}",
+            issuer=f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}",
             options={"verify_aud": False}
         )
 
@@ -59,16 +60,18 @@ def get_new_token():
     if not client_id or not client_secret:
         raise RuntimeError("Missing keycloak_client_id or keycloak_client_secret")
 
-    token_url = f"{KEYCLOAK_URL}/protocol/openid-connect/token"
+    token_url = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
 
     try:
         response = requests.post(
             token_url,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
                 "grant_type": "client_credentials",
                 "client_id": client_id,
                 "client_secret": client_secret,
             },
+            allow_redirects=False,
             timeout=10
         )
 

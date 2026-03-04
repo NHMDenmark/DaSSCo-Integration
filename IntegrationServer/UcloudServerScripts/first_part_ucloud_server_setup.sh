@@ -4,6 +4,11 @@
 # must use explicit paths in script
 # run with sudo
 # must have a .env file available with all necessary fields set
+# assumes mongodb and mongosh is downloaded and unpacked in the mongodb directory for ucloud this should only be done once:
+   # dl: wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.6.tgz
+   # unpack: tar -xvzf mongodb-linux-x86_64-ubuntu2204-7.0.6.tgz
+   # wget https://downloads.mongodb.com/compass/mongosh-2.1.5-linux-x64.tgz
+   # tar -xvzf mongosh-2.1.5-linux-x64.tgz
 # future steps that require root user should be in this script and not in part two
 
 # Exit on error
@@ -17,7 +22,8 @@ exec 2>&1
 HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
-INT_PATH="/work/data/Dev-Integration/DaSSCo-Integration/IntegrationServer"
+INT_PATH="/work/integration/DaSSCo-Integration/IntegrationServer"
+MONOGODB_PATH="/work/mongodb"
 
 source $INT_PATH/.env
 
@@ -36,8 +42,8 @@ service sendmail start
 # Step 3: Update .bashrc with paths to mongo db
 echo "Updating .bashrc with MongoDB paths"
 
-echo "export PATH=/work/data/lars/mongodb-linux-x86_64-ubuntu2204-7.0.6/bin:\$PATH" >> $HOMEPATH/.bashrc
-echo "export PATH=/work/data/lars/mongosh-2.1.5-linux-x64/bin:\$PATH" >> $HOMEPATH/.bashrc
+echo "export PATH=$MONOGODB_PATH/mongodb-linux-x86_64-ubuntu2204-7.0.6/bin:\$PATH" >> $HOMEPATH/.bashrc
+echo "export PATH=$MONOGODB_PATH/mongosh-2.1.5-linux-x64/bin:\$PATH" >> $HOMEPATH/.bashrc
 echo "MongoDB paths added to .bashrc"
 
 # Step 4: Install nginx and setup nginx
@@ -81,16 +87,16 @@ service nginx start
 echo "Nginx installed and running"
 
 # Step 5: Install, setup user and run rabbitmq. Makes use of the .env file.
-echo "Installing erlang and rabbitmq"
-sudo apt install -y erlang
-sudo apt install -y rabbitmq-server
-echo "Run rabbitmq, enable UI and create user"
-sudo service rabbitmq-server start
-sudo rabbitmq-plugins enable rabbitmq_management
-sudo rabbitmqctl add_user $rabbit_user $rabbit_pw
-sudo rabbitmqctl set_user_tags $rabbit_user administrator
-sudo rabbitmqctl set_permissions -p / $rabbit_user ".*" ".*" ".*"
-echo "Created user $rabbit_user as administrator for rabbitmq. Rabbitmq is running on port 15672."
+#echo "Installing erlang and rabbitmq"
+#sudo apt install -y erlang
+#sudo apt install -y rabbitmq-server
+#echo "Run rabbitmq, enable UI and create user"
+#sudo service rabbitmq-server start
+#sudo rabbitmq-plugins enable rabbitmq_management
+#sudo rabbitmqctl add_user $rabbit_user $rabbit_pw
+#sudo rabbitmqctl set_user_tags $rabbit_user administrator
+#sudo rabbitmqctl set_permissions -p / $rabbit_user ".*" ".*" ".*"
+#echo "Created user $rabbit_user as administrator for rabbitmq. Rabbitmq is running on port 15672."
 
 echo "Part one has finished."
 echo "Before running the second part of the setup run the command: source $HOMEPATH/.bashrc"

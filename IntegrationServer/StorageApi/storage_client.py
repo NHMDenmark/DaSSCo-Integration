@@ -19,8 +19,8 @@ class StorageClient():
           
           load_dotenv()
           self.service = storage_service.StorageService(mongo_client)
-          client_id = os.getenv("client_id")
-          client_secret = os.getenv("client_secret")
+          client_id = os.getenv("keycloak_id")
+          client_secret = os.getenv("keycloak_secret")
 
           self.service_username = "STARFISH"
 

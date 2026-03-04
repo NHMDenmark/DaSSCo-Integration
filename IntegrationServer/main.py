@@ -19,7 +19,7 @@ from dassco_utils.messaging import orchestration_client, async_rabbitmq_client, 
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
 from dasscostorageclient import DaSSCoStorageClient
-#from KeycloakInterface.auth import verify_token, get_new_token
+from KeycloakInterface import auth
 from MongoDB.mongo_connection import MongoSharedClient
 
 #from PIL import Image, TiffImagePlugin, TiffTags
@@ -228,7 +228,15 @@ async def test_oc():
 
 if __name__ == '__main__':   
 
-    asyncio.run(test_oc())
+    #asyncio.run(test_oc())
+    load_dotenv()
+    url = os.getenv("keycloak_url")
+    print(url)
+    
+    token = auth.get_new_token()
+    
+    p = auth.verify_token(token)
+    print(p)
 
     """
     issue_writer = issue_writer.IssueWriter()
