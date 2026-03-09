@@ -18,22 +18,19 @@ IP_ADDRESS=$(hostname -I)
 HOMEPATH="/home/ucloud"
 BASE_INT_PATH="/work/integration"
 INT_PATH="/work/integration/DaSSCo-Integration/IntegrationServer"
-DB_PATH="/work/mongodb/data"
-DB_NAME="test-nt-server"
+MONGO_PATH="/work/mongodb"
+DB_DIR="/data"
 
 echo "Starting second part of the server setup ---"
 
 # Step 4:
 echo "Running the database"
-if [ ! -d $DB_PATH ]; then
+if [ ! -d $DB_PATH/$DB_DIR ]; then
     echo "Creating db directory..."
-    mkdir -p $DB_PATH
+    mkdir -p $DB_PATH/$DB_DIR
 fi
-if [ ! -d $DB_PATH/$DB_NAME ]; then
-    echo "Creating db directory..."
-    mkdir -p $DB_PATH/$DB_NAME
-fi
-nohup mongod --dbpath $DB_PATH/$DB_NAME > $DB_PATH/$HOSTNAME.log 2>&1 &
+
+nohup mongod --dbpath $DB_PATH/$DB_DIR > $DB_PATH/$HOSTNAME.log 2>&1 &
 sudo chown -R ucloud:ucloud $DB_PATH/$HOSTNAME.log
 chmod 755 $DB_PATH/$HOSTNAME.log
 

@@ -9,6 +9,11 @@
 8. [slurm_config.json](#slurm_configjson)
 9. [workstations_config.json](#workstations_configjson)
 10. [throttle_config.json](#throttle_configjson)
+11. [control_api_scripts_config.json](#control_api_scripts_configjson)
+
+## Configurations
+This document holds guides for necessary configuration and settings for the integration server.
+
 
 ## job_detail_config.json
 Job names followed by a time estimate of running them on HPC cluster and the path to the script that needs to be called to run the job on the HPC cluster.
@@ -195,5 +200,14 @@ Note: assets_in_flight is not implemented in the code to limit the applications,
     "total_new_asset_size_mb": 20000,
     "total_derivative_size_mb": 30000,
     "total_reopened_share_size_mb": 1000000
+  }
+```
+
+## control_api_scripts_config.json
+Paths to the callable run scripts for services from the control/dashboard api.
+```bash
+  {
+    "all_run": "path/path/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/all_run.sh",
+    "start_service": "/path/path/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/start_service.sh"
   }
 ```

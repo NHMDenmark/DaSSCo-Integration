@@ -87,7 +87,7 @@ async def set_all_run_status(status: str, user: dict = Depends(verify_token), se
 
     except Exception as e:
         print(f"set all run status fail: {e}")
-        return JSONResponse(content={"status": "Something went wrong."}, status_code=500)
+        return JSONResponse(content={"status": "Something went wrong"}, status_code=500)
 
 @control.get("/integration/control/start_service")
 async def service_start(service_name: str, user: dict = Depends(verify_token), service = Depends(get_service)):
