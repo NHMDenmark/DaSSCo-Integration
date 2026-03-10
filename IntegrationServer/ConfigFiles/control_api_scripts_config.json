@@ -1,5 +1,5 @@
 {
-    "all_run": "/work/integration/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/all_run.sh",
-    "start_service": "/work/integration/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/start_service.sh"
+    "all_run": "/work/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/all_run.sh",
+    "start_service": "/work/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh"
 
 }

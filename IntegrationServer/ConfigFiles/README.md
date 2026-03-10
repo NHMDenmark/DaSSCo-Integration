@@ -207,7 +207,7 @@ Note: assets_in_flight is not implemented in the code to limit the applications,
 Paths to the callable run scripts for services from the control/dashboard api.
 ```bash
   {
-    "all_run": "path/path/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/all_run.sh",
-    "start_service": "/path/path/DaSSCo-Integration/IntegrationServer/UcloudServerScripts/start_service.sh"
+    "all_run": "path/path/DaSSCo-Integration/IntegrationServer/ServerScripts/all_run.sh",
+    "start_service": "/path/path/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh"
   }
 ```

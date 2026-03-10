@@ -46,9 +46,9 @@ class ServiceContext:
             self.mongo_client
         )
 
-        self.storage_api = self.create_storage_api()
-
         self.run = self.run_util.get_service_run_status()
+
+        self.storage_api = self.create_storage_api()
     
     """
     Creates the storage client.

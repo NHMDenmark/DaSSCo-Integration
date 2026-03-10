@@ -290,9 +290,9 @@ class RunUtility(LogClass, Status):
         return True
 
     def service_starting_updates(self):
+        self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
         self.service_mongo.update_entry(self.service_name, "pid", self.pid)
         self.service_mongo.update_entry(self.service_name, "start_time", datetime.now())
-        self.service_mongo.update_entry(self.service_name, "run_status", self.RUNNING)
 
     def service_stopping_updates(self):
         self.service_mongo.update_entry(self.service_name, "stop_time", datetime.now())

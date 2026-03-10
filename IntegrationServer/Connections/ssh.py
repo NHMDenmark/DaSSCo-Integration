@@ -137,7 +137,6 @@ class SSHConnection:
     """
     Function for importing a directory and sorting files into correct new/{guid}/* folders from ndrive.
     """
-
     def import_and_sort_files(self, remote_folder, local_destination):
 
         # Finds an unimported batch directory
@@ -185,7 +184,6 @@ class SSHConnection:
     """
     Renames the batch directory on the server the import was done from. Adds the prefix imported_ to the directory.
     """
-
     def rename_batch_directory_after_import(self, remote_path):
 
         batch_name = os.path.basename(remote_path)
@@ -217,7 +215,6 @@ class SSHConnection:
     Copies files from the integration server onto another server through ssh/sftp. Usually this would be used for
     sending files to the slurm server. 
     """
-
     def sftp_export_directory_to_server(self, path_to_copy_from, path_to_copy_to):
 
         try:
@@ -247,7 +244,6 @@ class SSHConnection:
     """
     Copies files from a remote server onto integration server. Main use is getting new files from Ndrive currently.     
     """
-
     def sftp_import_directory_from_server(self, path_to_copy_from_server, path_to_copy_to_local):
 
         try:
@@ -281,7 +277,6 @@ class SSHConnection:
     """
     Checks that transferred files matches files from where they came from. 
     """
-
     def sftp_check_files_are_transferred(self, local_path, remote_path):
         try:
             # List files in the remote directory
@@ -336,13 +331,10 @@ class SSHConnection:
     """
     Function that allows remote commands to be used through connection. Gives option of writing output somewhere if needed. Returns output. 
     """
-
     def ssh_command(self, command, write_to_path=None):
         try:
             stdin, stdout, stderr = self.ssh_client.exec_command(command)
 
-            # Print the output
-            # print("Command Output:")
             output = stdout.read().decode('utf-8')
             # print(output)
 

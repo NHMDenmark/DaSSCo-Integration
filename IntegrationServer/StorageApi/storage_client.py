@@ -30,6 +30,7 @@ class StorageClient():
                self.client = None
                self.status_code, self.note = self.get_status_code_from_exc(exc)
                self.exc = exc
+               print(exc)
 
      def test(self):
           

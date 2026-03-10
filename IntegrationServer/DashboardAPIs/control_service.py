@@ -91,6 +91,7 @@ class ControlService():
 
         return stopped
     
+    # TODO move service path to config
     def start_service(self, service_name):
 
         all_run = self.mongo_service.get_value_for_key("all_run", "run_status")
