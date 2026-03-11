@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
+from dotenv import load_dotenv
 
 """
 Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
@@ -20,6 +21,8 @@ class HPCJobCaller():
 
     def __init__(self):
 
+        load_dotenv()
+
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()
@@ -27,7 +30,7 @@ class HPCJobCaller():
         self.service_name = "HPC job caller"
         self.prefix_id = "Hjc"
 
-        self.ssh_config_name = "ucloud"
+        self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
         
         self.mongo_client = MongoSharedClient()

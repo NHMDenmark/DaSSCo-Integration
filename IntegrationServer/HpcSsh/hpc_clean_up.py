@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
+from dotenv import load_dotenv
 
 """
 Looks for assets that have been persisted with ARS, exists on hpc server and had all their jobs done.
@@ -22,6 +23,9 @@ Updates the status of the asset in the track db.
 class HPCCleanUp():
 
     def __init__(self):
+
+        load_dotenv()
+        
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()
@@ -29,7 +33,7 @@ class HPCCleanUp():
         self.service_name = "HPC clean up service"
         self.prefix_id = "Hcus"
 
-        self.ssh_config_name = "ucloud"
+        self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
 
         self.mongo_client = MongoSharedClient()
