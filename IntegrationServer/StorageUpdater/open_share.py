@@ -151,9 +151,10 @@ class OpenShare(Status, Validate):
                 self.end_of_loop_checks()
                 continue
 
-            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": self.NO, "has_open_share": self.NO,
-                                                                          "jobs_status": self.WAITING, "is_in_ars": self.YES,
-                                                                            "has_new_file": self.NO, "erda_sync": self.YES, self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.YES}])
+            asset = self.mongo_track.get_entry_from_multiple_key_pairs([{self.flag_enum.HPC_READY.value: self.NO, self.flag_enum.HAS_OPEN_SHARE.value: self.NO,
+                                                                          self.flag_enum.JOBS_STATUS.value: self.WAITING, self.flag_enum.HAS_NEW_FILE.value: self.NO,
+                                                                            self.flag_enum.ERDA_SYNC.value: self.YES, self.flag_enum.IS_IN_ARS.value: self.YES,
+                                                                              self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.YES}])
             if asset is None:
                 time.sleep(5)        
             else: 

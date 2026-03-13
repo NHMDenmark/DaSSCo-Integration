@@ -31,7 +31,6 @@ class ProcessNewFiles():
         self.prefix_id = "Pnf(N)"
 
         self.new_files_path = f"{project_root}/Files/NewFiles"
-        self.updated_files_path = f"{project_root}/Files/UpdatedFiles"
 
         self.mongo_client = MongoSharedClient()
         self.health_caller = health_caller.HealthCaller()
