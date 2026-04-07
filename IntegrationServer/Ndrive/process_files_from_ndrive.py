@@ -1,5 +1,7 @@
 import sys
 import os
+
+from dotenv import load_dotenv
 script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
@@ -22,7 +24,7 @@ Logs warnings and errors from this process, and directs them to the health servi
 class ProcessNewFiles():
 
     def __init__(self):
-        
+
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()

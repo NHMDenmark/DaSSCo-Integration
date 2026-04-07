@@ -6,6 +6,7 @@ sys.path.append(project_root)
 
 import shutil
 import time
+from dotenv import load_dotenv
 import utility
 from MongoDB.mongo_connection import MongoSharedClient
 from MongoDB import throttle_repository, track_repository
@@ -21,6 +22,8 @@ class NdriveNewFilesFinder():
 
     def __init__(self):
 
+        load_dotenv()
+
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()
@@ -32,7 +35,7 @@ class NdriveNewFilesFinder():
         self.util = utility.Utility()
         
         self.workstations_config_path = f"{project_root}/ConfigFiles/workstations_config.json"
-        self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
+        self.ndrive_import_path = os.getenv("NDRIVE_PATH")
         self.new_files_path = f"{project_root}/Files/NewFiles"
 
         self.mongo_client = MongoSharedClient()

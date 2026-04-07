@@ -4,12 +4,11 @@
 3. [metadata_issues_config.json](#metadata_issues_configjson)
 4. [micro_service_config.json](#micro_service_configjson)
 5. [mongo_connection_config.json](#mongo_connection_configjson)
-6. [ndrive_path_config.json](#ndrive_path_configjson)
-7. [pipeline_job_config.json](#pipeline_job_configjson)
-8. [slurm_config.json](#slurm_configjson)
-9. [workstations_config.json](#workstations_configjson)
-10. [throttle_config.json](#throttle_configjson)
-11. [control_api_scripts_config.json](#control_api_scripts_configjson)
+6. [pipeline_job_config.json](#pipeline_job_configjson)
+7. [slurm_config.json](#slurm_configjson)
+8. [workstations_config.json](#workstations_configjson)
+9. [throttle_config.json](#throttle_configjson)
+10. [control_api_scripts_config.json](#control_api_scripts_configjson)
 
 ## Configurations
 This document holds guides for necessary configuration and settings for the integration server.
@@ -123,12 +122,6 @@ Overall connection structure for a mongodb instance. Port can be changed but 270
     "data_base": "dev_db",
     "collection": "CollectionTestName"
     }
-```
-
-## ndrive_path_config.json
-Path to the folder on the ndrive where we keep the workstation name folders. Or any other folder from which the integration server should find new assets. 
-```bash
-  "ndrive_path": "N:/something/that/leads/to/the/path/with/the/workstation/names"
 ```
 
 ## pipeline_job_config.json

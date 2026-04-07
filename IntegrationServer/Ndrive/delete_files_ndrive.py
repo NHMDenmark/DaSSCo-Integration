@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
 import time
+from dotenv import load_dotenv
 import utility
 from MongoDB import mongo_connection
 from MongoDB import track_repository
@@ -15,6 +16,9 @@ from Enums import status_enum, validate_enum
 class DeleteFilesNdrive():
 
     def __init__(self):
+
+        load_dotenv()
+
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()
@@ -24,7 +28,7 @@ class DeleteFilesNdrive():
 
         self.util = utility.Utility()
         
-        self.ndrive_import_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
+        self.ndrive_import_path = os.getenv("NDRIVE_PATH")
 
         self.mongo_client = mongo_connection.MongoSharedClient()
         self.track_mongo = track_repository.TrackRepository(self.mongo_client)

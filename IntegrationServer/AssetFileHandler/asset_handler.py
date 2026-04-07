@@ -13,6 +13,7 @@ from MongoDB.mongo_connection import MongoSharedClient
 from Enums import status_enum, validate_enum, metadata_origin, log_enum, asset_status_nt, flag_enum
 import json
 from datetime import datetime
+from dotenv import load_dotenv
 from InformationModule import issue_writer
 
 """
@@ -22,6 +23,9 @@ Responsible for the processing/creation of assets coming from the Ndrive.
 class AssetHandler:
 
     def __init__(self, run_util, mongo_client: MongoSharedClient = None):
+
+        load_dotenv()
+
         self.util = utility.Utility()
         self.jobby = job_assigner.JobAssigner()
         self.status = status_enum.StatusEnum
@@ -33,10 +37,10 @@ class AssetHandler:
         self.file_model = file_model.FileModel()
         self.issue_writer = issue_writer.IssueWriter()
 
+        self.ndrive_path = os.getenv("NDRIVE_PATH")
 
         self.mongo_config_path = f"{project_root}/ConfigFiles/mongo_connection_config.json"
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
-        self.ndrive_path = self.util.get_value(f"{project_root}/ConfigFiles/ndrive_path_config.json", "ndrive_path")
         self.input_dir = f"{project_root}/Files/NewFiles"
         self.in_process_dir = f"{project_root}/Files/InProcess"
         self.error_path = f"{project_root}/Files/Error"
