@@ -2,7 +2,7 @@ import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
-
+from dotenv import load_dotenv
 import json
 import unittest
 from fastapi.testclient import TestClient
@@ -16,6 +16,8 @@ class TestHPCApi(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        load_dotenv()
+        self.front_url = os.getenv("HPC_FRONT_URL")
         self.client_context = TestClient(app)
         self.client_context.__enter__() 
         self.client = self.client_context
@@ -45,13 +47,13 @@ class TestHPCApi(unittest.TestCase):
 
     def test_metadata_asset(self):
         test_guid = "test_0001"
-        response = self.client.get("/integration/dev/api/v1/metadata_asset", params = {"asset_guid": test_guid})
+        response = self.client.get(f"{self.front_url}/api/v1/metadata_asset", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
         response_data = response.json()
         self.assertEqual(response_data["institution"], "test-institution", f"Failed finding test-institution as institution, found: {response_data["institution"]}")
         
         test_guid = "bogus"
-        response = self.client.get("/integration/dev/api/v1/metadata_asset", params = {"asset_guid": test_guid})
+        response = self.client.get(f"{self.front_url}/api/v1/metadata_asset", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code} instead of 422")
     
     """
@@ -73,7 +75,7 @@ class TestHPCApi(unittest.TestCase):
         }
 
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/failed_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/failed_job", data= model_json)
         self.assertEqual(response.status_code, 200, f"Expected 200 failed with a status {response.status_code}")
 
         job = self.track_repo.get_job_info("test_0001", "label")
@@ -81,12 +83,12 @@ class TestHPCApi(unittest.TestCase):
 
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/failed_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/failed_job", data= model_json)
         self.assertEqual(response.status_code, 422, f"Expected 422 failed with a status {response.status_code}")
 
     def test_get_httplink(self):
         test_guid = "test_0001"
-        response = self.client.get("/integration/dev/api/v1/httplink", params = {"asset_guid": test_guid})
+        response = self.client.get(f"{self.front_url}/api/v1/httplink", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
         data = response.json()
         links = ["test/link/", ""]
@@ -94,16 +96,16 @@ class TestHPCApi(unittest.TestCase):
         
 
         test_guid = "bogus"
-        response = self.client.get("/integration/dev/api/v1/httplink", params = {"asset_guid": test_guid})
+        response = self.client.get(f"{self.front_url}/api/v1/httplink", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code} instead of 422")
     
     def test_asset_ready(self):
         test_guid = "test_0001"
-        response = self.client.post("/integration/dev/api/v1/asset_ready", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/asset_ready", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
 
         test_guid = "bogus"
-        response = self.client.post("/integration/dev/api/v1/asset_ready", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/asset_ready", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
     
     def test_queue_job(self):
@@ -114,12 +116,12 @@ class TestHPCApi(unittest.TestCase):
             "timestamp": "1999-09-09T08:32:23.548+00:00" 
             }
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/queue_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/queue_job", data= model_json)
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
 
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/queue_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/queue_job", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
     def test_start_job(self):
@@ -130,30 +132,30 @@ class TestHPCApi(unittest.TestCase):
             "timestamp": "1999-09-09T08:32:23.548+00:00" 
             }
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/start_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/start_job", data= model_json)
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
 
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/start_job", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/start_job", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
     def test_derivative_uploaded(self):
         test_guid = "bogus"
-        response = self.client.post("/integration/dev/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Expected status 422, got {response.status_code}")
 
         test_guid = "test_0001"
-        response = self.client.post("/integration/dev/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/derivative_uploaded", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Expected status 200, got {response.status_code}")
 
     def test_asset_clean_up(self):
         test_guid = "bogus"
-        response = self.client.post("/integration/dev/api/v1/asset_clean_up", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/asset_clean_up", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 422, f"Expected status 422, got {response.status_code}")
 
         test_guid = "test_0001"
-        response = self.client.post("/integration/dev/api/v1/asset_clean_up", params = {"asset_guid": test_guid})
+        response = self.client.post(f"{self.front_url}/api/v1/asset_clean_up", params = {"asset_guid": test_guid})
         self.assertEqual(response.status_code, 200, f"Expected status 200, got {response.status_code}")
 
     def test_update_asset(self):
@@ -166,13 +168,13 @@ class TestHPCApi(unittest.TestCase):
             }
         }
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/update_asset", data = model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/update_asset", data = model_json)
         self.assertEqual(response.status_code, 200, f"Failed with a status {response.status_code}")
 
         
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/update_asset", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/update_asset", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
     def test_derivative_file_info(self):
@@ -185,7 +187,7 @@ class TestHPCApi(unittest.TestCase):
         }
         model_json = json.dumps(test_model)
 
-        response = self.client.post("/integration/dev/api/v1/derivative_file_info", data = model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/derivative_file_info", data = model_json)
         self.assertEqual(response.status_code, 200, f"Expected status 200 got {response.status_code}")
 
         file_list = self.track_repo.get_value_for_key("test_0001", "file_list")
@@ -197,7 +199,7 @@ class TestHPCApi(unittest.TestCase):
 
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/derivative_file_info", data = model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/derivative_file_info", data = model_json)
         self.assertEqual(response.status_code, 422, f"Expected status 422 got {response.status_code}")
 
     def test_barcode(self):
@@ -214,12 +216,12 @@ class TestHPCApi(unittest.TestCase):
         }
         model_json = json.dumps(test_model)
         
-        response = self.client.post("/integration/dev/api/v1/barcode", data = model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/barcode", data = model_json)
         self.assertEqual(response.status_code, 200, f"Failed to update asset with guid: {test_model["guid"]} Got status code: {response.status_code}")
         
         test_model["guid"] = "bogus"
         model_json = json.dumps(test_model)
-        response = self.client.post("/integration/dev/api/v1/update_asset", data= model_json)
+        response = self.client.post(f"{self.front_url}/api/v1/update_asset", data= model_json)
         self.assertEqual(response.status_code, 422, f"Failed with a status {response.status_code}")
 
 if __name__ == "__main__":

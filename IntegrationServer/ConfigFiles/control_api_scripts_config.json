@@ -1,5 +1,5 @@
 {
-    "all_run": "/work/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/all_run.sh",
-    "start_service": "/work/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh"
+    "all_run": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/all_run.sh",
+    "start_service": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh"
 
 }

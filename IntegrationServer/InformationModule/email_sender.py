@@ -18,25 +18,17 @@ class EmailSender:
     def __init__(self, mail):
         load_dotenv()
         self.util = utility.Utility()
-        self.mail_config_path = f"{project_root}/ConfigFiles/mail_config.json"
-        self.mail_configs = self.util.get_value(self.mail_config_path, mail)
-        self.server_host = self.mail_configs.get("server_host") 
-        self.server_port = self.mail_configs.get("server_port")  
-        self.address_from = self.mail_configs.get("sender_address")
-        self.address_to = self.mail_configs.get("receiver_address")
-        # choose the name of the sender OCTOPUS, STARFISH
-        self.sender_name = "STARFISH"
-        
-        # avoids putting emails used for testing into github, just leave config fields blank and configure fields in dotenv file
-        if self.address_from == "":
-            self.address_from = os.getenv("temp_address_from")
-        if self.address_to == "":
-            self.address_to = os.getenv("temp_address_to")
+        try:
+            self.server_host = os.getenv(f"mail_server_host_{mail}")
+            self.server_port = os.getenv(f"mail_server_port_{mail}")  
+            self.address_from = os.getenv("address_from")
+            self.address_to = os.getenv("address_to")
+            self.sender_name = os.getenv("sender_name")
+            self.mail_server_user = os.getenv(f"mail_server_user_{mail}")
+            self.mail_server_pass = os.getenv(f"mail_server_pass_{mail}")
+        except Exception as e:
+            raise ValueError(f"Failed to load mail configuration for {mail} from environment variables. Check if the .env file is properly configured. Error: {e}")
 
-        self.mail_server_user = os.getenv(f"mail_server_user_{mail}")
-        self.mail_server_pass = os.getenv(f"mail_server_pass_{mail}")
-
-    """
     #This requires sendmail to be installed on the system. Also requires the system to be linux.
     #Returns true.        
     def send_error_mail(self, health_id, guid = "No guid", service_name = "No name", service = "No service", status = "No status", error_msg = "No message", timestamp = None, exception = "None"):
@@ -79,8 +71,6 @@ class EmailSender:
         process.communicate(input=email_content)
 
         return True
-    
-
     
     """
     #This requires a mailserver to be setup and configured.
@@ -129,7 +119,7 @@ class EmailSender:
         server.quit()
         
         return True
-    
+    """
     # Creates the email content that is being send.     
     def create_error_mail_content(self, health_id, guid = "No guid", service_name = "No name", service = None, status = None, error_msg = None, timestamp = None, exception = "None"):
         

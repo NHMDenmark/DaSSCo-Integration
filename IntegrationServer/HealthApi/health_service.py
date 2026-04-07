@@ -4,6 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
+from dotenv import load_dotenv
 import json
 import InformationModule.email_sender as email_sender
 import InformationModule.slack_webhook as slack_webhook
@@ -20,7 +21,7 @@ Figures out if mails should be sent or pause mode initiated. -
 class HealthService():
 
     def __init__(self, mongo_client: MongoSharedClient = None):
-        
+        load_dotenv()
         self.micro_service_config_path = f"{project_root}/ConfigFiles/micro_service_config.json"
         
         self.util = utility.Utility()
@@ -34,7 +35,7 @@ class HealthService():
         self.health = health_repository.HealthRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         
-        self.mail = email_sender.EmailSender("gmail")
+        self.mail = email_sender.EmailSender(os.getenv("MAIL_SERVER"))
         self.slack = slack_webhook.SlackWebhook()
 
         self.status_enum = status_enum.StatusEnum
@@ -246,6 +247,8 @@ class HealthService():
 
         mail_wait_time = self.util.get_nested_value(self.micro_service_config_path, service_name, "mail_wait_time")
         
+        print(f"checking mail requirements for {service_name} with severity level {severity_level}. Mail wait time is set to {mail_wait_time} seconds. Checking if there have been any logs of severity level {severity_level} in the last {mail_wait_time} seconds.")
+
         # get list of entries in the given timeframe 
         log_list = self.health.get_recent_errors(service_name, mail_wait_time, severity_level)
         

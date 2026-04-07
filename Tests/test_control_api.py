@@ -7,6 +7,7 @@ sys.path.append(project_root)
 
 from fastapi.testclient import TestClient
 from datetime import datetime
+from dotenv import load_dotenv
 import json
 
 from IntegrationServer.DashboardAPIs.control_api import control 
@@ -22,7 +23,9 @@ class TestControlApi(unittest.TestCase):
     # unittest library runs tests in alphabetical order (test_01_something, test_02_another_thing, etc)
     @classmethod
     def setUpClass(self):
-        
+        load_dotenv()
+        self.front_url = os.getenv("CONTROL_FRONT_URL")
+
         self.client_context = TestClient(control)
         self.client_context.__enter__() 
         self.client = self.client_context
@@ -70,25 +73,25 @@ class TestControlApi(unittest.TestCase):
 
     def test_01_set_all_run_status(self):
 
-        response = self.client.put("/integration/control/set_all_run_status", params={"status":"RUNNING"}, headers=self.auth_headers)
+        response = self.client.put("/set_all_run_status", params={"status":"RUNNING"}, headers=self.auth_headers)
 
         self.assertEqual(response.status_code, 200, f"Did not get status 200, instead got status {response.status_code}")
 
     def test_start_service(self):
 
-        response = self.client.get("/integration/control/start_service", params={"service_name": "testy"}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/start_service", params={"service_name": "testy"}, headers=self.auth_headers)
 
         self.assertEqual(response.status_code, 500, f"Did not get status 500, instead got status {response.status_code}")
 
     def test_stop_service(self):
 
-        response = self.client.post("/integration/control/stop_service", params={"service_name": "testy"}, headers=self.auth_headers)
+        response = self.client.post(f"{self.front_url}/stop_service", params={"service_name": "testy"}, headers=self.auth_headers)
 
         self.assertEqual(response.status_code, 500, f"Did not get status 500, instead got status {response.status_code}")
 
     def test_get_track_data(self):
 
-        response = self.client.get("/integration/control/get_track_data", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_track_data", params={"guid":self.entry_id}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -96,7 +99,7 @@ class TestControlApi(unittest.TestCase):
 
         self.assertEqual(response_data["files_status"], "ERROR", f"failed getting ERROR for files_status, got {response_data["files_status"]} instead")
 
-        response = self.client.get("/integration/control/get_track_data", params={"guid":"humbug bogus"}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_track_data", params={"guid":"humbug bogus"}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -105,7 +108,7 @@ class TestControlApi(unittest.TestCase):
 
     def test_get_metadata_data(self):
 
-        response = self.client.get("/integration/control/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -113,7 +116,7 @@ class TestControlApi(unittest.TestCase):
 
         self.assertEqual(response_data["funding"][0], "Easter bunny", f"failed getting 'Easter bunny' for funding, got {response_data["funding"][0]} instead")
 
-        response = self.client.get("/integration/control/get_metadata", params={"guid":"humbug bogus"}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_metadata", params={"guid":"humbug bogus"}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -122,7 +125,7 @@ class TestControlApi(unittest.TestCase):
         
     def test_get_health_data(self):
         
-        response = self.client.get("/integration/control/get_health_data", params={"key":"guid", "value":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_health_data", params={"key":"guid", "value":self.entry_id}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -130,7 +133,7 @@ class TestControlApi(unittest.TestCase):
 
         self.assertEqual(response_data[0]["message"], "Yo this is a test health entry", f"failed getting 'Yo this is a test health entry' for funding, got {response_data[0]["message"]} instead")
 
-        response = self.client.get("/integration/control/get_health_data", params={"key":"guid", "value":"humbug bogus"}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_health_data", params={"key":"guid", "value":"humbug bogus"}, headers=self.auth_headers)
 
         response_data = response.json()
 
@@ -138,15 +141,15 @@ class TestControlApi(unittest.TestCase):
         self.assertEqual(response_data["status"], "No entries was found for search criterias key and value.", f"Found something instead of nothing.")
 
     def test_get_throttle_data(self):
-        response = self.client.get("/integration/control/get_throttle_data", headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_throttle_data", headers=self.auth_headers)
         self.assertEqual(response.status_code, 200, f"Unexpected status code {response.status_code}")
 
     def test_get_error_lists(self):
-        response = self.client.get("/integration/control/get_error_lists", headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_error_lists", headers=self.auth_headers)
         self.assertEqual(response.status_code, 200, f"Unexpected status code {response.status_code}")
 
     def test_get_critical_error_lists(self):
-        response = self.client.get("/integration/control/get_critical_error_lists", headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_critical_error_lists", headers=self.auth_headers)
         response_data = response.json()
         
         self.assertEqual(response.status_code, 200, f"Unexpected status code {response.status_code}")
@@ -154,7 +157,7 @@ class TestControlApi(unittest.TestCase):
 
     def test_search_in_metadata(self):
         payload = {"key_values":[{"status": "CHAOS", "institution":"Mars"}], "time_key": None, "after": None, "before":None}
-        response = self.client.post("/integration/control/search_in_metadata", json=payload, headers=self.auth_headers)
+        response = self.client.post(f"{self.front_url}/search_in_metadata", json=payload, headers=self.auth_headers)
         response_data = response.json()
         
         self.assertEqual(response.status_code, 200)
@@ -163,7 +166,7 @@ class TestControlApi(unittest.TestCase):
     
     def test_search_in_track(self):
         search_payload = {"key_values":[], "time_key": "created_timestamp", "after": None, "before": "2002-1-1" }
-        response = self.client.post("/integration/control/search_in_track", json=search_payload, headers=self.auth_headers)
+        response = self.client.post(f"{self.front_url}/search_in_track", json=search_payload, headers=self.auth_headers)
         response_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data["count"], 1)
@@ -172,7 +175,7 @@ class TestControlApi(unittest.TestCase):
     
     def test_search_in_health(self):
         search_payload = {"key_values":[{"guid":self.entry_id, "message": "Yo this is a test health entry"}], "time_key": None, "after": None, "before": None }
-        response = self.client.post("/integration/control/search_in_health", json=search_payload, headers=self.auth_headers)
+        response = self.client.post(f"{self.front_url}/search_in_health", json=search_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
@@ -186,14 +189,14 @@ class TestControlApi(unittest.TestCase):
                         "job_key_values": {"priority":1000},
                         "asset_guids":[self.entry_id]
                     }
-        response = self.client.put("/integration/control/update_track_data", json=update_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/update_track_data", json=update_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data["update_status"], True)
         self.assertEqual(response_data["message"], "Update success")
 
-        response = self.client.get("/integration/control/get_track_data", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_track_data", params={"guid":self.entry_id}, headers=self.auth_headers)
         m_response_data = response.json()
 
         self.assertEqual(m_response_data["erda_sync"], "PERHAPS")
@@ -205,14 +208,14 @@ class TestControlApi(unittest.TestCase):
                         "update_ars": False,
                         "asset_guids":[self.entry_id]
                     }
-        response = self.client.put("/integration/control/update_metadata", json=update_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/update_metadata", json=update_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data["update_status"], True)
         self.assertEqual(response_data["message"], "Update success")
 
-        response = self.client.get("/integration/control/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
         m_response_data = response.json()
 
         self.assertEqual(m_response_data["legality"]["license"], "Blue men")
@@ -223,7 +226,7 @@ class TestControlApi(unittest.TestCase):
                         "update_ars": False,
                         "asset_guids":[self.entry_id, "aber_nicht", "und_doch"]
                     }
-        response = self.client.put("/integration/control/update_metadata", json=update_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/update_metadata", json=update_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 500)
@@ -244,14 +247,14 @@ class TestControlApi(unittest.TestCase):
             "update_ars": False,
             "asset_guids":[self.entry_id]
         }
-        response = self.client.put("/integration/control/append_issue", json=append_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/append_issue", json=append_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data["update_status"], True)
         self.assertEqual(response_data["message"], "Update success")
 
-        response = self.client.get("/integration/control/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
         m_response_data = response.json()
         
         self.assertEqual(m_response_data["issues"][1]["timestamp"], "2010-10-10T10:10:10")
@@ -264,14 +267,14 @@ class TestControlApi(unittest.TestCase):
             "update_ars": False,
             "asset_guids":[self.entry_id]
         }
-        response = self.client.put("/integration/control/update_issue", json=update_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/update_issue", json=update_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data["update_status"], True)
         self.assertEqual(response_data["message"], "Update success")
 
-        response = self.client.get("/integration/control/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_metadata", params={"guid":self.entry_id}, headers=self.auth_headers)
         m_response_data = response.json()
         
         self.assertEqual(m_response_data["issues"][0]["notes"], "green cheese")
@@ -284,7 +287,7 @@ class TestControlApi(unittest.TestCase):
             "update_ars": False,
             "asset_guids":[self.entry_id]
         }
-        response = self.client.put("/integration/control/update_issue", json=update_payload, headers=self.auth_headers)
+        response = self.client.put(f"{self.front_url}/update_issue", json=update_payload, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 500)
@@ -292,7 +295,7 @@ class TestControlApi(unittest.TestCase):
         self.assertEqual(response_data["message"], f"Could not find issue matching {self.entry_id}.")
 
     def test_get_service_data(self):
-        response = self.client.get("/integration/control/get_service_data", params={"service_name": self.entry_id}, headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_service_data", params={"service_name": self.entry_id}, headers=self.auth_headers)
         response_data = response.json()
     
         self.assertEqual(response.status_code, 200)
@@ -300,7 +303,7 @@ class TestControlApi(unittest.TestCase):
         self.assertEqual(response_data["pid"], None)
 
     def test_get_all_service_data(self):
-        response = self.client.get("/integration/control/get_all_service_data", headers=self.auth_headers)
+        response = self.client.get(f"{self.front_url}/get_all_service_data", headers=self.auth_headers)
         
         self.assertEqual(response.status_code, 200)   
 
