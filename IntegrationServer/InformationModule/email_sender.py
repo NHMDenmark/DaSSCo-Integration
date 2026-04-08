@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 class EmailSender:
     """
-    Note only one version of send_error_mail should be available at a time. Which one depends on which OS we are on. 
+    Note only one version of send_error_mail definition should be available at a time. Which one depends on which OS/environment is being used.  
     """
     def __init__(self, mail):
         load_dotenv()

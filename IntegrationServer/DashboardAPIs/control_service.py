@@ -726,6 +726,34 @@ class ControlService():
         except Exception as e:
             print(f"update ars metadata: {e}")
             return False, "Things went wrong"
+        
+    def update_ars_metadata_list(self, update_model, username: str):
+        try:
+            
+            ars_client = storage_client.StorageClient(self.mongo_client)
+            updated_guids = []
+            failed_guids = []
+            count = 0
+
+            for guid in update_model.asset_guids:
+                
+                if count%500 == 0:
+                    ars_client = storage_client.StorageClient(self.mongo_client)
+
+                if ars_client.update_metadata(guid, username):
+                    updated_guids.append(guid)
+                else:
+                    failed_guids.append(guid)
+                count += 1
+
+            if failed_guids:
+                return False, f"Failed to update ARS metadata for GUIDs: \n{failed_guids} \nUpdated GUIDs by {username}: \n{updated_guids}"
+
+            return True, f"ARS metadata update triggered for GUIDs by {username}: \n{updated_guids}"
+
+        except Exception as e:
+            print(f"update ars metadata list: {e}")
+            return False, "Things went wrong"
 
     def is_process_running(self, pid):
         """Check if a process with given PID is still running."""

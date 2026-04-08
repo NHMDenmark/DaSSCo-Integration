@@ -229,6 +229,10 @@ async def test_oc():
 if __name__ == '__main__':   
 
     #asyncio.run(test_oc())
+    a = 1500%500
+    print(a)
+    
+    """
     load_dotenv()
     url = os.getenv("keycloak_url")
     print(url)
@@ -238,7 +242,7 @@ if __name__ == '__main__':
     p = auth.verify_token(token)
     print(p)
 
-    """
+    
     issue_writer = issue_writer.IssueWriter()
 
     issue = issue_writer.get_issue_from_configuration(category="test", name="example")

@@ -1,14 +1,13 @@
 # Table of Contents
 1. [job_detail_config.json](#job_detail_configjson)
-2. [mail_config.json](#mail_configjson)
-3. [metadata_issues_config.json](#metadata_issues_configjson)
-4. [micro_service_config.json](#micro_service_configjson)
-5. [mongo_connection_config.json](#mongo_connection_configjson)
-6. [pipeline_job_config.json](#pipeline_job_configjson)
-7. [slurm_config.json](#slurm_configjson)
-8. [workstations_config.json](#workstations_configjson)
-9. [throttle_config.json](#throttle_configjson)
-10. [control_api_scripts_config.json](#control_api_scripts_configjson)
+2. [metadata_issues_config.json](#metadata_issues_configjson)
+3. [micro_service_config.json](#micro_service_configjson)
+4. [mongo_connection_config.json](#mongo_connection_configjson)
+5. [pipeline_job_config.json](#pipeline_job_configjson)
+6. [slurm_config.json](#slurm_configjson)
+7. [workstations_config.json](#workstations_configjson)
+8. [throttle_config.json](#throttle_configjson)
+9. [control_api_scripts_config.json](#control_api_scripts_configjson)
 
 ## Configurations
 This document holds guides for necessary configuration and settings for the integration server.
@@ -38,25 +37,6 @@ Note: the time_est has not been implemented with slurm scripts.
   "script": "path/to/script"
   }
 }
-```
-
-## mail_config.json
-Mail configuration file. Test is setup using gmail as a host here. If we are using a linux setup for runnign the integration server then there is no need to configure this.
-```bash
-  {
-    "{name}":{
-          "server_host": "localhost",
-          "server_port": 587,
-          "sender_address": "example@dassco.dk",
-          "receiver_address": "maintenance@dassco.dk"
-      },
-      "test":{
-          "server_host": "smtp.gmail.com",
-          "server_port": 587,
-          "sender_address": "",
-          "receiver_address": ""
-      }
-    }
 ```
 
 ## metadata_issues_config.json

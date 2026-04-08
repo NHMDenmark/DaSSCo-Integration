@@ -19,6 +19,7 @@ from DashboardAPIs.append_issue_model import AppendIssueModel
 from DashboardAPIs.update_issue_model import UpdateIssueModel
 from DashboardAPIs.process_time_model import ProcessTimeModel
 from DashboardAPIs.update_throttle_model import UpdateThrottleModel
+from IntegrationServer.DashboardAPIs.update_ARS_metadata_list_model import UpdateARSMetadataListModel
 from KeycloakInterface.auth import verify_token
 
 util = utility.Utility()
@@ -29,6 +30,7 @@ append_issue_model = AppendIssueModel
 update_issue_model = UpdateIssueModel
 process_time_model = ProcessTimeModel
 update_throttle_model = UpdateThrottleModel
+update_ars_metadata_list_model = UpdateARSMetadataListModel
 
 load_dotenv()
 front_url = os.getenv("CONTROL_FRONT_URL")
@@ -345,6 +347,17 @@ async def get_batch_names(user: dict = Depends(verify_token), service = Depends(
 async def update_ars_metadata(guid: str, user: dict = Depends(verify_token), service = Depends(get_service)):
 
     updated, msg = service.update_ars_metadata(guid, user['preferred_username'])
+
+    if updated is False:
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+    
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+
+# untested
+@control.post(f"{front_url}/update_ars_metadata_list")
+async def update_ars_metadata_list(update_model: UpdateARSMetadataListModel, user: dict = Depends(verify_token), service = Depends(get_service)):
+
+    updated, msg = service.update_ars_metadata_list(update_model, user['preferred_username'])
 
     if updated is False:
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
