@@ -163,8 +163,10 @@ class StorageService():
         
         data = self.get_metadata_creation_body(guid)
         
-        data = data.model_dump_json()
+        if data is None:
+            return None
 
+        data = data.model_dump_json()
         return data
     
     def create_specimen_model(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id = None, role_restrictions = []):

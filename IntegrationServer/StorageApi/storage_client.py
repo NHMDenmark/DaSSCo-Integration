@@ -96,6 +96,9 @@ class StorageClient():
      def update_metadata(self, guid, update_user = None):
 
           json_data = self.service.get_metadata_json_format(guid)
+          if json_data is None:
+               print(f"No metadata found for guid {guid} in the database.")
+               return False
           data_dict = json.loads(json_data)
           
           if update_user is None:

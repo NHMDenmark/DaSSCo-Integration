@@ -747,9 +747,9 @@ class ControlService():
                 count += 1
 
             if failed_guids:
-                return False, f"Failed to update ARS metadata for GUIDs: \n{failed_guids} \nUpdated GUIDs by {username}: \n{updated_guids}"
+                return False, f"Failed to update ARS metadata for GUIDs: {failed_guids} Updated GUIDs by {username}: {updated_guids}"
 
-            return True, f"ARS metadata update triggered for GUIDs by {username}: \n{updated_guids}"
+            return True, f"ARS metadata update triggered for GUIDs by {username}: {updated_guids}"
 
         except Exception as e:
             print(f"update ars metadata list: {e}")
