@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 from typing import List, Optional
+from field_validation import SafeModel
 
-class ProcessTimeModel(BaseModel):
+class ProcessTimeModel(SafeModel):
     
     metadata_origin: List[str] = []
     before_date: Optional[str] = None

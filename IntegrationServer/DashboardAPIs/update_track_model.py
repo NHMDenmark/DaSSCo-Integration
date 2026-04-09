@@ -1,8 +1,11 @@
 from typing import Dict, List, Optional
-from pydantic import BaseModel
+from field_validation import SafeModel
+from pydantic import ConfigDict
 
-class UpdateTrackhModel(BaseModel):
+class UpdateTrackModel(SafeModel):
     key_values: Optional[Dict] = None
     job_name: Optional[str] = None
     job_key_values: Optional[Dict] = None
     asset_guids: List[str]
+
+    model_config = ConfigDict(extra='forbid')

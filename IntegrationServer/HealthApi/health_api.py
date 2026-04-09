@@ -43,7 +43,7 @@ def get_service(request: Request):
 
 @health.get("/")
 def index():
-    return "sickening"
+    return "sickening!"
 
 @health.post("/api/warning")
 async def receive_warning(warning: message_model, service = Depends(get_service)):
@@ -69,6 +69,8 @@ async def receive_error(error: message_model, service = Depends(get_service)):
 
 @health.post("/api/run_change_status")
 async def run_status_change(info: run_model, service = Depends(get_service)):
+
+    print(info)
 
     informed = service.run_status_change(info)
     

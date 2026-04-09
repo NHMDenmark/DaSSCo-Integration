@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 from typing import List, Dict
+from field_validation import SafeModel
 
-class UpdateIssueModel(BaseModel):
+class UpdateIssueModel(SafeModel):
     
     issue_category: str
     issue_name: str

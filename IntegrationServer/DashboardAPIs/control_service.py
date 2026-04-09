@@ -14,11 +14,13 @@ from DashboardAPIs import micro_service_paths
 from StorageApi import storage_client
 import json
 from datetime import datetime, timedelta
+from field_validation import FieldValidation
 
 class ControlService():
 
     def __init__(self, mongo_client: MongoSharedClient = None):
         self.util = utility.Utility()
+        self.field_validation = FieldValidation()
     
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
@@ -69,6 +71,11 @@ class ControlService():
     
     def set_all_run_status(self, status_name):
 
+        validated = self.field_validation.is_acceptable_value_string(status_name)
+
+        if not validated:
+            return False, "Input contains illegal characters or is the wrong utf type."
+
         if status_name not in [self.status_enum.RUNNING.value, self.status_enum.PAUSED.value, self.status_enum.STOPPED.value]:
             return False, "Wrong status input (RUNNING, PAUSED, STOPPED)."
 
@@ -87,9 +94,17 @@ class ControlService():
     
     def stop_service(self, service_name):
 
+        validated = self.field_validation.is_acceptable_value_string(service_name)
+
+        if not validated:
+            return "Input contains illegal characters or is the wrong utf type.", 422
+
         stopped = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.STOPPED.value)
 
-        return stopped
+        if stopped is False:
+            return f"Failed to stop service {service_name}", 202
+
+        return f"Stopping {service_name}", 200
     
     # TODO move service path to config
     def start_service(self, service_name):
@@ -747,13 +762,13 @@ class ControlService():
                 count += 1
 
             if failed_guids:
-                return False, f"Failed to update ARS metadata for GUIDs: {failed_guids} Updated GUIDs by {username}: {updated_guids}"
+                return False, f"Failed to update ARS metadata for GUIDs: {failed_guids} Updated ARS metadata for GUIDs by {username}: {updated_guids}", 202
 
-            return True, f"ARS metadata update triggered for GUIDs by {username}: {updated_guids}"
+            return True, f"ARS metadata update triggered for GUIDs by {username}: {updated_guids}", 200
 
         except Exception as e:
             print(f"update ars metadata list: {e}")
-            return False, "Things went wrong"
+            return False, "Things went wrong", 500
 
     def is_process_running(self, pid):
         """Check if a process with given PID is still running."""

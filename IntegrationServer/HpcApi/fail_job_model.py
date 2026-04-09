@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from pydantic import ConfigDict
+from typing import Optional
 from datetime import datetime
+from field_validation import SafeModel
 
-class FailJobModel(BaseModel):
+class FailJobModel(SafeModel):
     guid: str
     job_name: str
     job_id: str
@@ -10,3 +11,5 @@ class FailJobModel(BaseModel):
     fail_status: str
     hpc_message: Optional[str] = "No message"
     hpc_exception: Optional[str] = None
+
+    model_config = ConfigDict(extra='forbid')

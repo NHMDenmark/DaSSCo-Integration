@@ -21,6 +21,7 @@ from rabbitmq_client import RabbitMqClient as rmq
 from dasscostorageclient import DaSSCoStorageClient
 from KeycloakInterface import auth
 from MongoDB.mongo_connection import MongoSharedClient
+from field_validation import FieldValidation
 
 #from PIL import Image, TiffImagePlugin, TiffTags
 #from PIL.TiffImagePlugin import ImageFileDirectory_v2
@@ -229,8 +230,9 @@ async def test_oc():
 if __name__ == '__main__':   
 
     #asyncio.run(test_oc())
-    a = 1500%500
-    print(a)
+    f = FieldValidation()
+    
+    print(f.is_acceptable_key_string("hello-worl2!"))
     
     """
     load_dotenv()

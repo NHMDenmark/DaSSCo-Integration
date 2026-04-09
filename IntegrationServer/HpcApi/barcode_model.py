@@ -1,7 +1,8 @@
 from typing import Dict, List
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+from field_validation import SafeModel
 
-class BarcodeModel(BaseModel):
+class BarcodeModel(SafeModel):
     guid: str
     job: str
     status: str
@@ -12,3 +13,5 @@ class BarcodeModel(BaseModel):
     label: bool
     disposable: str = None
     issues: List[Dict] = None
+
+    model_config = ConfigDict(extra='forbid')

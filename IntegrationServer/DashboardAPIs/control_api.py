@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import utility
 from DashboardAPIs.search_model import SearchModel
-from DashboardAPIs.update_track_model import UpdateTrackhModel
+from DashboardAPIs.update_track_model import UpdateTrackModel
 from DashboardAPIs.update_metadata_model import UpdateMetadataModel
 from DashboardAPIs.append_issue_model import AppendIssueModel
 from DashboardAPIs.update_issue_model import UpdateIssueModel
@@ -24,7 +24,7 @@ from KeycloakInterface.auth import verify_token
 
 util = utility.Utility()
 search_model = SearchModel
-update_track_model = UpdateTrackhModel
+update_track_model = UpdateTrackModel
 update_metadata_model = UpdateMetadataModel
 append_issue_model = AppendIssueModel
 update_issue_model = UpdateIssueModel
@@ -115,12 +115,10 @@ async def service_start(service_name: str, user: dict = Depends(verify_token), s
 @control.post(f"{front_url}/stop_service")
 async def service_stop(service_name: str, user: dict = Depends(verify_token), service = Depends(get_service)):
 
-    stopped = service.stop_service(service_name)
+    msg, status = service.stop_service(service_name)
 
-    if stopped is False:
-        return JSONResponse(content={"status": f"Failed to stop {service_name}"}, status_code=500)
+    return JSONResponse(content={"status": msg}, status_code=status)
 
-    return JSONResponse(content={"status": f"Stopping {service_name}"}, status_code=200)
 
 @control.get(f"{front_url}/get_track_data")
 async def get_track_data(guid: str, user: dict = Depends(verify_token), service = Depends(get_service)):
@@ -353,13 +351,12 @@ async def update_ars_metadata(guid: str, user: dict = Depends(verify_token), ser
     
     return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
 
-# untested
 @control.post(f"{front_url}/update_ars_metadata_list")
 async def update_ars_metadata_list(update_model: UpdateARSMetadataListModel, user: dict = Depends(verify_token), service = Depends(get_service)):
 
-    updated, msg = service.update_ars_metadata_list(update_model, user['preferred_username'])
+    updated, msg, status = service.update_ars_metadata_list(update_model, user['preferred_username'])
 
     if updated is False:
-        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=500)
+        return JSONResponse(content={"update_status": updated, "message": msg}, status_code=status)
     
-    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
+    return JSONResponse(content={"update_status": updated, "message": msg}, status_code=status)

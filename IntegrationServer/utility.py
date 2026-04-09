@@ -310,3 +310,4 @@ class Utility:
         timestamp = datetime.now(timezone).isoformat()
 
         return timestamp
+    

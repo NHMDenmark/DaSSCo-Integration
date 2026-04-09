@@ -7,37 +7,87 @@ sys.path.append(project_root)
 import utility
 import re
 from datetime import datetime
-from validator_collection import validators, checkers
-from typing import Union
+from typing import Union, Any, ClassVar, List
+from pydantic import BaseModel, field_validator
 
-# TODO needs updating to 3.0.3
+class SafeModel(BaseModel):
+
+    FORBIDDEN: ClassVar[List[str]] = ["$", ";"]
+
+    @field_validator('*', mode='before')
+    @classmethod
+    def validate_no_forbidden(cls, v):
+
+        if not cls.contains_forbidden(v):
+            raise ValueError("Forbidden characters detected")
+
+        return v
+
+    @classmethod
+    def contains_forbidden(cls, obj: Any) -> bool:
+
+        # Check nested Pydantic models
+        if isinstance(obj, BaseModel):
+            return cls.contains_forbidden(obj.model_dump())
+
+        elif isinstance(obj, dict):
+
+            for k, v in obj.items():
+
+                # Mongo operator injection
+                if isinstance(k, str) and k.startswith("$"):
+                    return False
+
+                # Mongo dot notation injection
+                if isinstance(k, str) and "." in k:
+                    return False
+
+                if cls.contains_forbidden(v):
+                    return False
+
+            return True
+
+        # Lists
+        elif isinstance(obj, (list, tuple, set)):
+            if any(cls.contains_forbidden(i) for i in obj):
+                return False
+            return True
+        
+        # Strings
+        elif isinstance(obj, str):
+            if any(c in obj for c in cls.FORBIDDEN):
+                return False
+        
+        return True
+
+# TODO needs updating to 3.0.4
 class FieldValidation:
     def __init__(self):
         self.util = utility.Utility()
 
     def asset_created_by_validation(self, value: str):
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def asset_deleted_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def asset_guid_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def asset_locked_validation(self, value: bool):  
         check = False 
         return check
     def asset_pid_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def asset_subject_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def date_asset_taken_validation(self, value: datetime):  
         check = False 
         return check
     def asset_updated_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def date_metadata_uploaded_validation(self, value: datetime):  
         check = False 
@@ -49,19 +99,19 @@ class FieldValidation:
         check = False 
         return check
     def audited_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def audited_date_validation(self, value: datetime):  
         check = False 
         return check
     def barcode_validation(self, value: list[str]):  
         for barcode in value:
-            check = self.is_acceptable_string(value)
+            check = self.is_acceptable_value_string(value)
             if check is False:
                 return check
         return check
     def collection_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def date_asset_created_validation(self, value: datetime):  
         check = False 
@@ -79,7 +129,7 @@ class FieldValidation:
         check = False 
         return check
     def digitiser_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def external_publishers_validation(self, value: list[str]):  
         check = False 
@@ -88,31 +138,31 @@ class FieldValidation:
         check = False 
         return check
     def funding_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def institution_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def metadata_created_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def metadata_updated_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def metadata_uploaded_by_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def multispecimen_validation(self, value: bool):  
         check = False 
         return check
     def parent_guids_validation(self, value: list[str]):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def payload_type_validation(self, value: list[str]):  
         check = False 
         return check
     def pipeline_name_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def preparation_type_validation(self, value: list[str]):  
         check = False 
@@ -124,36 +174,36 @@ class FieldValidation:
         check = False 
         return check
     def specify_attachment_remarks_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def specify_attachment_title_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
     def specimen_pid_validation(self, value: list[dict]):  
         check = False 
         return check
     def status_validation(self, value: str):  
-        check = self.is_acceptable_string(value)
+        check = self.is_acceptable_value_string(value)
         return check
     def tags_validation(self, value: dict[str, Union[str, bool, int, datetime, None]]):
         for key in value.keys():
-            if not self.is_acceptable_string(key):
+            if not self.is_acceptable_value_string(key):
                 return False
         for val in value.values():
             if not isinstance(val, (str, bool, int, datetime, None)):
                 return False
             if isinstance(val, str):
-                    if not self.is_acceptable_string(val):
+                    if not self.is_acceptable_value_string(val):
                         return False       
         return True
     def workstation_name_validation(self, value: str):  
-        check = self.is_acceptable_string(value) 
+        check = self.is_acceptable_value_string(value) 
         return check
 
     """
-    generic check that a string input conforms to what we will allow, returns true/false
+    check that a string input(value) conforms to what we will allow, returns true/false
     """
-    def is_acceptable_string(self, input: str):
+    def is_acceptable_value_string(self, input: str):
         try:
             # Check if the string is valid UTF-8
             input.encode('utf-8')
@@ -162,8 +212,27 @@ class FieldValidation:
             # If encoding fails, it's not a valid UTF-8 string 
             return False
 
-        # Regular expression to match alphanumerical characters and - _ : / \ # ! . ( ) % & $ including space
-        pattern = r'^[\w\-_:\/\\#!.\(\)%&$ ]*$'
+        # Regular expression to match alphanumerical characters and - _ : / \ # ! . ( ) % & including space
+        pattern = r'^[\w\-_:\/\\#!.\(\)%& ]*$'
+            
+        # Check if the input matches the pattern
+        if re.fullmatch(pattern, input):
+            return True
+        else:
+            return False
+        
+    def is_acceptable_key_string(self, input: str):
+
+        try:
+            # Check if the string is valid UTF-8
+            input.encode('utf-8')
+
+        except UnicodeEncodeError:
+            # If encoding fails, it's not a valid UTF-8 string 
+            return False
+
+        # Regular expression to match alphanumerical characters and - _ : / \ # ( ) & including space
+        pattern = r'^[\w\-_:\/\\#\(\)& ]*$'
             
         # Check if the input matches the pattern
         if re.fullmatch(pattern, input):

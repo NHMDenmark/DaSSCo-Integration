@@ -20,8 +20,10 @@ from HpcApi.file_info_model import FileInfoModel
 from HpcApi.fail_job_model import FailJobModel
 from HpcApi.fail_derivative_creation_model import FailDerivativeCreationModel
 from KeycloakInterface.auth import verify_token
+from field_validation import FieldValidation
 
 util = utility.Utility()
+field_validation = FieldValidation()
 metadata_model = MetadataModel
 update_model = UpdateAssetModel
 barcode_model = BarcodeModel
@@ -53,7 +55,7 @@ def get_service(request: Request):
 
 @app.get(f"{front_url}/yo")
 def index(user: dict = Depends(verify_token)):
-    return {"message":"keep out all devils!", "user": user["preferred_username"]}
+    return {"message":"keep out all devils", "user": user["preferred_username"]}
 
 @app.get(f"{front_url}/pub")
 def index():
@@ -106,6 +108,11 @@ async def failed_job(fail_data: fail_job_model, service = Depends(get_service)):
 
 @app.post(f"{front_url}/api/v1/asset_ready")
 async def asset_ready(asset_guid: str, service = Depends(get_service)):
+    validated = field_validation.asset_guid_validation(asset_guid)
+
+    if not validated:
+        return JSONResponse(content={"error": "Invalid asset GUID"}, status_code=422)
+
     updated = service.asset_ready(asset_guid)
 
     if updated is False:
@@ -113,6 +120,11 @@ async def asset_ready(asset_guid: str, service = Depends(get_service)):
 
 @app.get(f"{front_url}/api/v1/httplink")
 def get_httplink(asset_guid: str, service = Depends(get_service)):
+    validated = field_validation.asset_guid_validation(asset_guid)
+
+    if not validated:
+        return JSONResponse(content={"error": "Invalid asset GUID"}, status_code=422)
+    
     link = service.get_httplink(asset_guid)
 
     if link is None:
@@ -122,6 +134,11 @@ def get_httplink(asset_guid: str, service = Depends(get_service)):
 
 @app.get(f"{front_url}/api/v1/metadata_asset")
 def get_metadata(asset_guid: str, service = Depends(get_service)):
+    validated = field_validation.asset_guid_validation(asset_guid)
+
+    if not validated:
+        return JSONResponse(content={"error": "Invalid asset GUID"}, status_code=422)
+    
     asset = service.get_metadata_asset(asset_guid)
 
     if asset is None:
@@ -132,6 +149,11 @@ def get_metadata(asset_guid: str, service = Depends(get_service)):
 # formerly known as derivative_file_uploaded - slurm calls
 @app.post(f"{front_url}/api/v1/derivative_uploaded")
 async def file_uploaded(asset_guid: str, service = Depends(get_service)):
+    validated = field_validation.asset_guid_validation(asset_guid)
+
+    if not validated:
+        return JSONResponse(content={"error": "Invalid asset GUID"}, status_code=422)
+
     uploaded = service.derivative_files_uploaded(asset_guid)
 
     if uploaded is False:
@@ -147,6 +169,11 @@ async def file_info(file_info: file_info_model, service = Depends(get_service)):
 # confirmation endpoint for asset having been cleaned up on hpc
 @app.post(f"{front_url}/api/v1/asset_clean_up")
 async def asset_clean_up(asset_guid: str, service = Depends(get_service)):
+    validated = field_validation.asset_guid_validation(asset_guid)
+
+    if not validated:
+        return JSONResponse(content={"error": "Invalid asset GUID"}, status_code=422)
+
     cleaned = service.clean_up(asset_guid)
 
     if cleaned is False:
