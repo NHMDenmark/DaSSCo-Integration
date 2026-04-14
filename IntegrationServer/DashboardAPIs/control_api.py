@@ -19,6 +19,7 @@ from DashboardAPIs.append_issue_model import AppendIssueModel
 from DashboardAPIs.update_issue_model import UpdateIssueModel
 from DashboardAPIs.process_time_model import ProcessTimeModel
 from DashboardAPIs.update_throttle_model import UpdateThrottleModel
+from DashboardAPIs.exceptions import InvalidInputError, InvalidStatusError, DatabaseUpdateError, ServiceFailedError
 from IntegrationServer.DashboardAPIs.update_ARS_metadata_list_model import UpdateARSMetadataListModel
 from KeycloakInterface.auth import verify_token
 
@@ -88,24 +89,27 @@ async def stop_all(user: dict = Depends(verify_token), service = Depends(get_ser
 async def set_all_run_status(status: str, user: dict = Depends(verify_token), service = Depends(get_service)):
 
     try:
-        updated, msg = service.set_all_run_status(status)
+        updated = service.set_all_run_status(status)
 
-        if updated is not True:
-            return JSONResponse(content={"status": msg}, status_code=422)
+    except InvalidInputError as e:
+        return JSONResponse(content={"status": str(e)}, status_code=422)
 
-        return JSONResponse(content={"status": f"all run set to {status}"}, status_code=200)
+    except InvalidStatusError as e:
+        return JSONResponse(content={"status": str(e)}, status_code=422)
+    
+    except DatabaseUpdateError as e:
+        return JSONResponse(content={"status": str(e)}, status_code=500)
 
-    except Exception as e:
-        print(f"set all run status fail: {e}")
-        return JSONResponse(content={"status": "Something went wrong"}, status_code=500)
+    return JSONResponse(content={"status": f"all run set to {status}"}, status_code=200)
 
+    
 @control.get(f"{front_url}/start_service")
 async def service_start(service_name: str, user: dict = Depends(verify_token), service = Depends(get_service)):
 
     started, msg = service.start_service(service_name)
 
     if msg is not None:
-        return JSONResponse(content={"status": msg}, status_code=200)
+        return JSONResponse(content={"status": msg}, status_code=202)
 
     if started is False:
         return JSONResponse(content={"status": f"Failed to start: {service_name}"}, status_code=500)

@@ -11,6 +11,7 @@ from HealthUtility import health_caller, run_utility
 from MongoDB import track_repository, service_repository, health_repository, metadata_repository, throttle_repository, batch_repository
 from MongoDB.mongo_connection import MongoSharedClient
 from DashboardAPIs import micro_service_paths
+from DashboardAPIs.exceptions import DatabaseUpdateError, InvalidStatusError, InvalidInputError, ServiceFailedError
 from StorageApi import storage_client
 import json
 from datetime import datetime, timedelta
@@ -74,17 +75,17 @@ class ControlService():
         validated = self.field_validation.is_acceptable_value_string(status_name)
 
         if not validated:
-            return False, "Input contains illegal characters or is the wrong utf type."
+            raise InvalidInputError
 
         if status_name not in [self.status_enum.RUNNING.value, self.status_enum.PAUSED.value, self.status_enum.STOPPED.value]:
-            return False, "Wrong status input (RUNNING, PAUSED, STOPPED)."
+            raise InvalidStatusError
 
         update = self.mongo_service.update_entry("all_run", "run_status", status_name)
 
         if update is False:
-            return update, "Failed to update database"
+            raise DatabaseUpdateError
         
-        return update, None
+        return update
 
     def stop_all(self):
 
@@ -109,6 +110,11 @@ class ControlService():
     # TODO move service path to config
     def start_service(self, service_name):
 
+        validated = self.field_validation.is_acceptable_value_string(service_name)
+
+        if not validated:
+            return "Input contains illegal characters or is the wrong utf type."
+
         all_run = self.mongo_service.get_value_for_key("all_run", "run_status")
         if all_run != "RUNNING":
             return True, f"Failed to start {service_name} because all_run run status is {all_run}"
@@ -118,19 +124,24 @@ class ControlService():
         service_path = self.micro_paths.get_path_from_name(service_name)
 
         if service_path is False:
-            return False, None
+            return False, "Failed to find service path for service name. Check if the service name is correct and if the path config is correct."
     
         # update database status
         updated = self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)
 
         if updated is False:
-            return False, None
+            return False, "Failed to update service status in the database."
 
         started = self.util.run_shell_script(start_service_path, arguments = [service_path])
 
         return started, None
 
     def get_track_asset_data(self, guid):
+
+        validated = self.field_validation.is_acceptable_value_string(guid)
+
+        if not validated:
+            return False, "Input contains illegal characters or is the wrong utf type."
 
         try:
             asset = self.mongo_track.get_entry("_id", guid)
@@ -788,3 +799,12 @@ class ControlService():
     def service_running_updates(self, service_name):
         self.mongo_service.update_entry(service_name, "start_time", datetime.now())
         self.mongo_service.update_entry(service_name, "run_status", self.status_enum.RUNNING.value)
+
+    def is_acceptable_value_string(self, value):
+
+        validated = self.field_validation.is_acceptable_value_string(value)
+
+        if not validated:
+            return False, "Input contains illegal characters or is the wrong utf type."
+        
+        return True, None
