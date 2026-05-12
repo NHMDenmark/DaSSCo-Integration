@@ -229,11 +229,8 @@ async def test_oc():
 
 if __name__ == '__main__':   
 
-    #asyncio.run(test_oc())
-    f = FieldValidation()
-    
-    print(f.is_acceptable_key_string("hello-worl2!"))
-    
+    wh = slack_webhook.SlackWebhook()
+    wh.message_from_integration()
     """
     load_dotenv()
     url = os.getenv("keycloak_url")

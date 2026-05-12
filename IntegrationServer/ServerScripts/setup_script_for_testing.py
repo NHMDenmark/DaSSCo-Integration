@@ -1,11 +1,11 @@
 """"
 Script for creating test assets. Requires a folder with an asset consisting of a metadata json and a tif image file.
-These fiels should be named "ucloud-test-1.json" and "ucloud-test-1.tif". These names can be changed if you bother to
+These fiels should be named "prox-test-1.json" and "prox-test-1.tif". These names can be changed if you bother to
 update the logic in the code. 
 ALso requires a text file with a number. Start the number at 1.
 Change the paths in the script to desired paths.
 Script runs form terminal and takes a number(x) as an argument. It then creates x copies of the asset,
-changes the assets guid, asset pid and specimen pid to the ucloud-test + number in the text file and updates the file with +1. Copies are put in the output folder, 
+changes the assets guid, asset pid and specimen pid to the prox-test + number in the text file and updates the file with +1. Copies are put in the output folder, 
 which should have a workstation name. 
 """
 import os
@@ -30,9 +30,9 @@ def copy_files(folder_path, output_folder, test_number, guid_number, txt_file, b
             #print(file_path)
             # Construct new file name
             if file[-4:] == ".tif":
-                new_file_name = f"{file[:12]}{guid_number}{file[-4:]}"
+                new_file_name = f"{file[:10]}{guid_number}{file[-4:]}"
             else:
-                new_file_name = f"{file[:12]}{guid_number}{file[-5:]}"
+                new_file_name = f"{file[:10]}{guid_number}{file[-5:]}"
                 #print(new_file_name)
                 # change asset guid
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -59,13 +59,13 @@ if __name__ == "__main__":
     test_number = int(sys.argv[1])
 
     # Set the base folder where the assets will be copied to
-    base_folder = "/work/data/Ndrive/nhmd-ws-01"
+    base_folder = "/home/dassco/Ndrive/test-ws-01"
 
     # Can be set to any folder with the asset files to copy - "imported_" prefix is important if using the base folder
     copy_from_folder_path = base_folder + "/imported_test/" 
 
     # Path to txt file with a number starting the count of copies
-    txt_file = "/work/data/Ndrive/test-guid-number.txt"
+    txt_file = "/home/dassco/Ndrive/prox-test-number.txt"
 
     if not os.path.exists(txt_file):
         with open(txt_file, "w") as f:

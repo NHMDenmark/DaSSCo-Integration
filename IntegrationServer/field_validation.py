@@ -17,7 +17,7 @@ class SafeModel(BaseModel):
     @field_validator('*', mode='before')
     @classmethod
     def validate_no_forbidden(cls, v):
-
+        #print("VALIDATING:", repr(v))
         if not cls.contains_forbidden(v):
             raise ValueError("Forbidden characters detected")
 
@@ -28,6 +28,7 @@ class SafeModel(BaseModel):
 
         # Check nested Pydantic models
         if isinstance(obj, BaseModel):
+            #print(f"Validating nested model: {obj.__class__.__name__}")
             return cls.contains_forbidden(obj.model_dump())
 
         elif isinstance(obj, dict):
@@ -36,20 +37,23 @@ class SafeModel(BaseModel):
 
                 # Mongo operator injection
                 if isinstance(k, str) and k.startswith("$"):
+                    #print(f"Forbidden key detected: {k}")
                     return False
 
                 # Mongo dot notation injection
                 if isinstance(k, str) and "." in k:
+                    #print(f"Forbidden key detected (dot notation): {k}")
                     return False
 
-                if cls.contains_forbidden(v):
+                if not cls.contains_forbidden(v):
+                    #print(f"Forbidden value detected: {v}")
                     return False
 
             return True
 
         # Lists
         elif isinstance(obj, (list, tuple, set)):
-            if any(cls.contains_forbidden(i) for i in obj):
+            if any(not cls.contains_forbidden(i) for i in obj):
                 return False
             return True
         

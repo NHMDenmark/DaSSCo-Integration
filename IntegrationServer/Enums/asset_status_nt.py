@@ -17,6 +17,7 @@ class AssetStatusNT(Enum):
     RESERVED = "RESERVED"
     PUBLISHED_TO_SPECIFY = "PUBLISHED_TO_SPECIFY"
     PUBLISHED_ALL = "PUBLISHED_ALL"
+    SPECIFY_CREATED = "SPECIFY_CREATED"
 
 class AssetStatus:
     def __init__(self):
@@ -36,3 +37,4 @@ class AssetStatus:
         self.RESERVED = AssetStatusNT.RESERVED.value
         self.PUBLISHED_TO_SPECIFY = AssetStatusNT.PUBLISHED_TO_SPECIFY.value
         self.PUBLISHED_ALL = AssetStatusNT.PUBLISHED_ALL.value
+        self.SPECIFY_CREATED = AssetStatusNT.SPECIFY_CREATED.value

@@ -85,7 +85,7 @@ class ApiMetadataModel(BaseModel):
     restricted_access: List[str] = []
     specify_attachment_remarks: Optional[str] = None
     specify_attachment_title: Optional[str] = None
-    status: str = asset_status_nt.AssetStatusNT.WORKING_COPY.value # not optional must come from an enum list
+    status: str = asset_status_nt.AssetStatusNT.BEING_PROCESSED.value
     tags: Dict[str, str] = {}
     workstation: str = ""
     asset_specimen: List[AssetSpecimen] = [] # contains preparation_type, barcode, specimen_pid

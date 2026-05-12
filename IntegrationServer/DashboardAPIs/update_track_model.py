@@ -3,9 +3,9 @@ from field_validation import SafeModel
 from pydantic import ConfigDict
 
 class UpdateTrackModel(SafeModel):
-    key_values: Optional[Dict] = None
+    key_values: Optional[Dict[str, str]] = None
     job_name: Optional[str] = None
-    job_key_values: Optional[Dict] = None
+    job_key_values: Optional[Dict[str, str]] = None
     asset_guids: List[str]
 
     model_config = ConfigDict(extra='forbid')

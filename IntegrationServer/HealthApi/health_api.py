@@ -13,7 +13,8 @@ from HealthApi.pause_model import PauseModel
 from HealthApi.unexpected_error_model import UnexpectedErrorModel
 """
 Rest api for receiving warnings/errors and other log worthy incidents. 
-Sends the message to the health service where further handling of the information happens. 
+Sends the message to the health service where further handling of the information happens.
+This is not exposed to the internet and is only for internal use by the integration server and its components. 
 """
 # "health" is the name - to run api in terminal be in folder and: nohup uvicorn health_api:health --reload --host 127.0.0.1 --port 8555 &
 
@@ -43,7 +44,7 @@ def get_service(request: Request):
 
 @health.get("/")
 def index():
-    return "sickening!"
+    return "sickening!!"
 
 @health.post("/api/warning")
 async def receive_warning(warning: message_model, service = Depends(get_service)):

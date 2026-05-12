@@ -1,5 +1,5 @@
 {
     "all_run": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/all_run.sh",
-    "start_service": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh"
-
+    "start_service": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/start_service.sh",
+    "erda_sync_flow": "/home/dassco/integration/DaSSCo-Integration/IntegrationServer/ServerScripts/sync_erda_flow.sh"
 }

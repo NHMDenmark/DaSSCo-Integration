@@ -30,7 +30,6 @@ class RabbitMqClient:
         self._exit_event = threading.Event()
 
 
-
     def _create_connection(self):
         """
         Creates a connection to the RabbitMQ server

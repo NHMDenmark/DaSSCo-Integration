@@ -56,7 +56,7 @@ def get_service(request: Request):
 
 @control.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all wildebeasts!"}
+    return {"message":"keep out all wildebeasts!!"}
 
 @control.get(f"{front_url}/check")
 def index(user: dict = Depends(verify_token)):
@@ -74,6 +74,19 @@ async def start_all(user: dict = Depends(verify_token), service = Depends(get_se
         return JSONResponse(content={"status": "WAS RUNNING ALREADY"}, status_code=200)
 
     return JSONResponse(content={"status": "ALL RUNNING"}, status_code=200)
+
+@control.post(f"{front_url}/erda_sync_flow")
+async def erda_sync_flow(user: dict = Depends(verify_token), service = Depends(get_service)):
+
+    running, already_running = service.erda_sync_flow()
+
+    if running is False:
+        return JSONResponse(content={"error": "something went awry"}, status_code=500)
+    
+    if already_running is True:
+        return JSONResponse(content={"status": "WAS RUNNING ALREADY"}, status_code=200)
+
+    return JSONResponse(content={"status": "ERDA sync flow RUNNING"}, status_code=200)
 
 @control.post(f"{front_url}/stop_all")
 async def stop_all(user: dict = Depends(verify_token), service = Depends(get_service)):
@@ -149,7 +162,7 @@ async def get_track_data(key: str, value: str, user: dict = Depends(verify_token
 
     found, msg = service.get_health_asset_data(key, value)
 
-    if found is False:
+    if found is False:  
         return JSONResponse(content={"status": msg}, status_code=500)
     
     return msg

@@ -70,6 +70,24 @@ class ControlService():
 
         return running, False
     
+    def erda_sync_flow(self):
+
+        all_status = self.mongo_service.get_value_for_key("all_run", "run_status")
+
+        if all_status == self.status_enum.RUNNING.value:
+            return True, True
+
+        erda_sync_flow_path = self.util.get_value(self.control_service_config_path, "erda_sync_flow")
+        
+        update = self.mongo_service.update_entry("all_run", "run_status", self.status_enum.RUNNING.value)
+
+        if update is False:
+            return update, False
+
+        running = self.util.run_shell_script(erda_sync_flow_path)
+
+        return running, False
+    
     def set_all_run_status(self, status_name):
 
         validated = self.field_validation.is_acceptable_value_string(status_name)
