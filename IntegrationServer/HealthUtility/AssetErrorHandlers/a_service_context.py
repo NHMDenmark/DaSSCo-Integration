@@ -4,7 +4,7 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(project_root)
 
-from time import time
+import time
 from datetime import datetime, timedelta
 import utility
 from MongoDB.mongo_connection import MongoSharedClient
