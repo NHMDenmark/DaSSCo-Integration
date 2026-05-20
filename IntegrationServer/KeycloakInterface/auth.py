@@ -48,6 +48,26 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=401, detail="Invalid token")
+
+# checks first if the user is authenticated, then checks if they have any of the required roles
+def require_roles(*required_roles):
+    def checker(user: dict = Depends(verify_token)):
+
+        try:
+            roles = user.get("realm_access", {}).get("roles", [])
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        if not any(role in roles for role in required_roles):
+            raise HTTPException(
+                status_code=403,
+                detail="Insufficient permissions"
+            )
+
+        return user
+
+    return checker
     
 def get_new_token():
     """

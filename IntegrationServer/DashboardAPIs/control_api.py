@@ -12,6 +12,7 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import utility
+from IntegrationServer.Enums.keycloak_roles import KeycloakRoles
 from DashboardAPIs.search_model import SearchModel
 from DashboardAPIs.update_track_model import UpdateTrackModel
 from DashboardAPIs.update_metadata_model import UpdateMetadataModel
@@ -21,9 +22,10 @@ from DashboardAPIs.process_time_model import ProcessTimeModel
 from DashboardAPIs.update_throttle_model import UpdateThrottleModel
 from DashboardAPIs.exceptions import InvalidInputError, InvalidStatusError, DatabaseUpdateError, ServiceFailedError
 from IntegrationServer.DashboardAPIs.update_ARS_metadata_list_model import UpdateARSMetadataListModel
-from KeycloakInterface.auth import verify_token
+from KeycloakInterface.auth import verify_token, require_roles
 
 util = utility.Utility()
+kr = KeycloakRoles()
 search_model = SearchModel
 update_track_model = UpdateTrackModel
 update_metadata_model = UpdateMetadataModel
@@ -56,11 +58,15 @@ def get_service(request: Request):
 
 @control.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all wildebeasts!!"}
+    return {"message":"keep out all wildebeasts!"}
 
 @control.get(f"{front_url}/check")
 def index(user: dict = Depends(verify_token)):
     return f"Used by {user['preferred_username']}"
+
+@control.get(f"{front_url}/check_role")
+def check_role(user: dict = Depends(require_roles(kr.SERVICEUSER,kr.DASSCODEVELOPER))):
+    return f"Role check passed for {user['preferred_username']} with roles {user.get('realm_access', {}).get('roles', [])}"
 
 @control.post(f"{front_url}/start_all")
 async def start_all(user: dict = Depends(verify_token), service = Depends(get_service)):
