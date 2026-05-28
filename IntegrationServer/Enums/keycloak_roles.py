@@ -5,6 +5,7 @@ class KeycloakRolesEnum(Enum):
     SERVICEUSER = "service-user"
     DASSCODEVELOPER = "dassco-developer"
     DASSCOUSER = "dassco-user"
+    INTEGRATIONADMIN = "integration-admin"
 
 class KeycloakRoles():
 
@@ -14,3 +15,4 @@ class KeycloakRoles():
         self.SERVICEUSER = KeycloakRolesEnum.SERVICEUSER.value
         self.DASSCODEVELOPER = KeycloakRolesEnum.DASSCODEVELOPER.value
         self.DASSCOUSER = KeycloakRolesEnum.DASSCOUSER.value
+        self.INTEGRATIONADMIN = KeycloakRolesEnum.INTEGRATIONADMIN.value

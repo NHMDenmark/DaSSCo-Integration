@@ -58,14 +58,14 @@ def get_service(request: Request):
 
 @control.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all wildebeasts!"}
+    return {"message":"keep out all wildebeasts!!"}
 
 @control.get(f"{front_url}/check")
 def index(user: dict = Depends(verify_token)):
     return f"Used by {user['preferred_username']}"
 
 @control.get(f"{front_url}/check_role")
-def check_role(user: dict = Depends(require_roles(kr.SERVICEUSER,kr.DASSCODEVELOPER))):
+def check_role(user: dict = Depends(require_roles(kr.DASSCOADMIN, kr.INTEGRATIONADMIN))):
     return f"Role check passed for {user['preferred_username']} with roles {user.get('realm_access', {}).get('roles', [])}"
 
 @control.post(f"{front_url}/start_all")

@@ -363,10 +363,10 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False, status_code, note
      
-     def get_specimen(self, specimen_pid):
+     def get_specimen(self, institution, collection, barcode):
 
           try:
-               response = self.client.specimens.get_specimen(specimen_pid)
+               response = self.client.specimens.get_specimen(institution, collection, barcode)
 
                status_code = response["status_code"]
 
@@ -379,10 +379,10 @@ class StorageClient():
                print(f"Api or wrapper fail: {e}")
                return False, status_code, note
 
-     def delete_specimen(self, specimen_pid):
+     def delete_specimen(self, institution, collection, barcode):
 
           try:
-               response = self.client.specimens.delete_specimen(specimen_pid)
+               response = self.client.specimens.delete_specimen(institution, collection, barcode)
 
                status_code = response["status_code"]
 
@@ -403,7 +403,7 @@ class StorageClient():
           specimen_json_model = json.loads(specimen_model)
 
           try:
-               response = self.client.specimens.create_or_update(specimen_pid, specimen_json_model)
+               response = self.client.specimens.create_or_update(institution, collection, barcode, specimen_json_model)
 
                status_code = response["status_code"]
 
@@ -422,7 +422,7 @@ class StorageClient():
           specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
 
           try:
-               response = self.client.specimens.create_or_update(specimen_pid, specimen_model)
+               response = self.client.specimens.create_or_update(institution, collection, barcode, specimen_model)
 
                status_code = response["status_code"]
 
