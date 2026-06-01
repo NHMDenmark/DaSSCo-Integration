@@ -169,7 +169,7 @@ class StorageService():
         data = data.model_dump_json()
         return data
     
-    def create_specimen_model(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id = None, role_restrictions = []):
+    def create_specimen_model(self, institution, collection, barcode, specimen_pid, preparation_types, role_restrictions, specimen_id = None):
 
         specimen_model = api_specimen_model.SpecimenModel()
 

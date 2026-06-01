@@ -396,15 +396,15 @@ class StorageClient():
                return False, status_code, note
      
 
-     def create_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+     def create_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, role_restrictions, specimen_id=None):
 
-          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, role_restrictions, specimen_id)
           specimen_model = specimen_model.model_dump_json()
           specimen_json_model = json.loads(specimen_model)
 
           try:
                response = self.client.specimens.create_or_update(institution, collection, barcode, specimen_json_model)
-
+     
                status_code = response["status_code"]
 
                if status_code == 200:
@@ -417,12 +417,15 @@ class StorageClient():
                return False, status_code, note
 
 
-     def update_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions):
+     def update_specimen(self, institution, collection, barcode, specimen_pid, preparation_types, role_restrictions, specimen_id=None):
 
-          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, specimen_id, role_restrictions)
+          specimen_model = self.service.create_specimen_model(institution, collection, barcode, specimen_pid, preparation_types, role_restrictions, specimen_id)
+          specimen_model = specimen_model.model_dump_json()
+          specimen_json_model = json.loads(specimen_model)
+
 
           try:
-               response = self.client.specimens.create_or_update(institution, collection, barcode, specimen_model)
+               response = self.client.specimens.create_or_update(institution, collection, barcode, specimen_json_model)
 
                status_code = response["status_code"]
 

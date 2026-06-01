@@ -229,67 +229,15 @@ async def test_oc():
 
 if __name__ == '__main__':   
 
-    wh = slack_webhook.SlackWebhook()
-    wh.message_from_integration()
-    """
-    load_dotenv()
-    url = os.getenv("keycloak_url")
-    print(url)
-    
-    token = auth.get_new_token()
-    
-    p = auth.verify_token(token)
-    print(p)
+    sc = storage_client.StorageClient()
 
-    
-    issue_writer = issue_writer.IssueWriter()
+    createRes = sc.create_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["sheet"], role_restrictions=[])
 
-    issue = issue_writer.get_issue_from_configuration(category="test", name="example")
-    
-    print(issue)
-    
-    client = mongo_connection.MongoSharedClient()
-    m = metadata_repository.MetadataRepository(client)
+    found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
+    print(found, res, msg)
+    print(res["data"].preparation_types)
+    sc.update_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["pinned"], role_restrictions=[])
 
-    m.append_existing_list("040ck2b867e98130d3a392e4d5830d_72", "issues", issue)
-    
-    client.close()
-    """
-    """
-    d_guid_list = ["lumi-test-2_400", "lumi-test-2_72"]
-
-    for a in d_guid_list:
-        add_upload_job(a)
-        add_d_clean_up_job(a)
-
-    guid_list = "lumi-test-2"
-    
-    for b in guid_list:
-        add_clean_up_job(b)
-    """
-    """
-    load_dotenv()
-    user = os.getenv("rabbit_user")
-    pw = os.getenv("rabbit_pw")
-    
-    rmc = rmq(host_name="biovault.bhsi.xyz", port=5671, credentials={"username":user, "password":pw})
-    
-    rmc.publish("my_queue", "yolo")
-    """
-    #rmc.add_handler("first_test", print_something)
-
-    #rmc.publish("metadata-info-queue", {"metadata":{"guid": "asdih123", "digi":"\u00c5se \u00d8sterb\u00e6k-\u00c6r\u00f8"}, "file":{"name":"sem", "size":34}})
-    """
-    """
-    #rmc.publish("first_test", {"asd":4})
-
-    #rmc.start_consuming()
-
-    #rmc.publish("first_test", {"asd":1})
-    #rmc.publish("first_test", {"asd":4})
-    
-    #m = rmc.consume_one("first_test")
-    #if m is not None:
-    #    m = json.loads(m)
-    #print(type(m))
-    #print(m["asset"])
+    found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
+    print(found, res, msg)
+    sc.delete_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
