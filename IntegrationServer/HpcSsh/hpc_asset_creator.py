@@ -12,6 +12,7 @@ import utility
 import time
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
+from LUMIScripts.lumi_ssh_setup import LumiSshSetup
 
 """
 Looks for assets that have been persisted with ARS and have not yet been created on the HPC cluster.
@@ -55,7 +56,8 @@ class HPCAssetCreator():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
-        
+        self.lumi_setup = LumiSshSetup(self.con)
+        self.lumi_setup.setup()
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
         
@@ -111,18 +113,20 @@ class HPCAssetCreator():
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     print(f"bash {script_path} {guid} {batch_id} {link}")
                     try:
-                        self.con.ssh_command(f"bash {script_path} {guid} {batch_id} {link}")
+                        self.con.ssh_command(f"bash {script_path} {guid} {batch_id}")
                     except Exception as e:
                         print(e)
-                        time.sleep(20)
+                        time.sleep(10)
                         self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
                         self.create_ssh_connection()
+                        self.lumi_setup = LumiSshSetup(self.con)
+                        self.lumi_setup.setup()
 
                     
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
-                time.sleep(1)
+                time.sleep(3)
 
 
             # checks if service should keep running           

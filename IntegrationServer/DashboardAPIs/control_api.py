@@ -144,7 +144,7 @@ async def service_stop(service_name: str, user: dict = Depends(verify_token), se
 
 
 @control.get(f"{front_url}/get_track_data")
-async def get_track_data(guid: str, user: dict = Depends(verify_token), service = Depends(get_service)):
+async def get_track_data(guid: str, service = Depends(get_service)):#, user: dict = Depends(verify_token), service = Depends(get_service)):
 
     found, msg = service.get_track_asset_data(guid)
 

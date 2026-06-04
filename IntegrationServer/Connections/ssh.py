@@ -33,6 +33,7 @@ class SSHConnection:
         self.port = port
         self.username = username
         self.password = password
+        self.private_key = paramiko.RSAKey.from_private_key_file(os.getenv("SSH_KEY_PATH"))
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.exc = None
@@ -49,7 +50,7 @@ class SSHConnection:
         self.msg = None
 
         try:
-            self.ssh_client.connect(self.host, self.port, self.username, self.password)
+            self.ssh_client.connect(self.host, self.port, self.username, self.password, pkey=self.private_key)
             print(f"connected to {self.name}")
                         
             self.sftp = self.get_sftp()

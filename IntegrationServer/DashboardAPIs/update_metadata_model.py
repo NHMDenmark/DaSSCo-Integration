@@ -4,7 +4,7 @@ from pydantic import ConfigDict
 
 class UpdateMetadataModel(SafeModel):
     update_ars: bool = False
-    key_values: Optional[Dict[str, int]] = None
+    key_values: Optional[Dict] = None
     asset_guids: List[str]
 
     model_config = ConfigDict(extra='forbid')
