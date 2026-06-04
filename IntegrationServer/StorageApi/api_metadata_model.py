@@ -36,6 +36,7 @@ class AssetSpecimen(BaseModel):
     asset_guid: str = None
     specimen_pid: str = None
     asset_preparation_type: str = None
+    specimen_id: int = None
 
 class ExternalPublisherModel(BaseModel):
     name: str
@@ -88,4 +89,4 @@ class ApiMetadataModel(BaseModel):
     status: str = asset_status_nt.AssetStatusNT.BEING_PROCESSED.value
     tags: Dict[str, str] = {}
     workstation: str = ""
-    asset_specimen: List[AssetSpecimen] = [] # contains preparation_type, barcode, specimen_pid
+    asset_specimen: List[AssetSpecimen] = [] # contains preparation_type, barcode, specimen_pid, specimen_id

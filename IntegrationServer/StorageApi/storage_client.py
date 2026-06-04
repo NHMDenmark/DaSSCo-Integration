@@ -55,7 +55,7 @@ class StorageClient():
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
           if data_dict["payload_type"] == "":
                data_dict["payload_type"] = "INSERT_FOR_TESTING_PURPOSES"
-          if data_dict["asset_pid"] == "":
+          if data_dict["asset_pid"] == "" or data_dict["asset_pid"] is None:
                data_dict["asset_pid"] = "INSERT_FOR_TESTING_PURPOSES"
           
           # TODO fix mismatch between pydantic model and dassco-storage-client model -- this should be removable, check that asset_pid in metadata in db is not a list for a derivative
@@ -109,7 +109,7 @@ class StorageClient():
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
           if data_dict["payload_type"] == "":
                data_dict["payload_type"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
-          if data_dict["asset_pid"] == "":
+          if data_dict["asset_pid"] == "" or data_dict["asset_pid"] is None:
                data_dict["asset_pid"] = "INSERT_FROM_UPDATE_FROM_METADATA_TEST"
 
           # TODO fix mismatch between pydantic model and dassco-storage-client model

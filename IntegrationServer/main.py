@@ -228,16 +228,22 @@ async def test_oc():
     await armq.loop()
 
 if __name__ == '__main__':   
+    client = MongoSharedClient()
 
-    sc = storage_client.StorageClient()
+    #sc = storage_client.StorageClient()
+    track = track_repository.TrackRepository(client)
 
-    createRes = sc.create_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["sheet"], role_restrictions=[])
+    b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
 
-    found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
-    print(found, res, msg)
+    print(b)
+    #createRes = sc.create_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["sheet"], role_restrictions=[])
+
+    #found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu566")
+    #print(found, res, msg)
+    """
     print(res["data"].preparation_types)
     sc.update_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["pinned"], role_restrictions=[])
 
     found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
     print(found, res, msg)
-    sc.delete_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
+    sc.delete_specimen("NHMD", "NHMD Vascular Plants", "hubu5")"""

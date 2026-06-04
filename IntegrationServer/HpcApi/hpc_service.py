@@ -153,10 +153,10 @@ class HPCService():
             if data_dict is not None or data_dict != {}:
                 self.update_mongo_metadata(guid, data_dict)
                 if job != "barcode":
-                    self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+                    self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate.YES.value)
                 else:
                     self.mongo_track.update_entry(guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.YES.value)
-                    self.mongo_track.update_entry(guid, "update_metadata", self.validate.YES.value)
+                    self.mongo_track.update_entry(guid, self.flag_enum.UPDATE_METADATA.value, self.validate.YES.value)
 
             try:
                 self.update_metadata_json(guid, data_dict)
@@ -370,7 +370,7 @@ class HPCService():
                             self.mongo_metadata.append_existing_list(mos_entry_guid, "barcode", barcode)
                         
                         self.mongo_track.update_entry(mos_entry_guid, self.flag_enum.HAS_NEW_SPECIMEN.value, self.validate.YES.value)
-                        self.mongo_track.update_entry(mos_entry_guid, "update_metadata", self.validate.YES.value)
+                        self.mongo_track.update_entry(mos_entry_guid, self.flag_enum.UPDATE_METADATA.value, self.validate.YES.value)
 
                     # check if asset is a label, if find use all unique label id guid, get barcodes and add to metadata asset. 
                     if label is True:

@@ -485,8 +485,22 @@ class ControlService():
                 for key, value in job_key_values.items():
 
                     self.mongo_track.update_track_job_data_point(guid, "name", job_name, key, value)
-
+        
         key_values = update_model.key_values
+
+        barcode_specimen_dict = update_model.barcode_specimen_dict
+
+        if barcode_specimen_dict is not None and barcode_specimen_dict != {}:
+
+            for guid in asset_list:
+
+                update_list = self.mongo_track.get_value_for_key(guid, "barcode_asset_specimen_id_list") or []
+
+                for key, value in barcode_specimen_dict.items():
+                    item = {key: value}
+                    update_list.append(item)
+
+                self.mongo_track.update_entry(guid, "barcode_asset_specimen_id_list", update_list)
 
         if key_values is not None and key_values != {}:
             

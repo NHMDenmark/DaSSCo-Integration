@@ -110,14 +110,16 @@ class TestStorageService(unittest.TestCase):
 
         self.assertFalse(found, f"Should not have found a specimen after deletion, but got: {res}, message: {msg}")
 
-    # Cannot truly be tested since we cant delete assets later on
     """
-    def test_create_asset(self):
+    def test_06_create_asset(self):
 
-        created = self.client.create_asset(self.guid, 9)
+        created, msg, exc, status = self.client.create_asset(self.guid, 9)
+        print(created, msg, exc, status)
 
         self.assertTrue(created, f"Failed to create asset with guid: {self.guid}")
+        self.assertEqual(status, 200, f"Expected status code 200, got {status}, message: {msg}, exception: {exc}")
     """
+    
 
 if __name__ == "__main__":
     unittest.main()

@@ -55,7 +55,7 @@ def get_service(request: Request):
 
 @app.get(f"{front_url}/yo")
 def index(user: dict = Depends(verify_token)):
-    return {"message":"keep out all devils!", "user": user["preferred_username"]}
+    return {"message":"keep out all devils!!", "user": user["preferred_username"]}
 
 @app.get(f"{front_url}/pub")
 def index():

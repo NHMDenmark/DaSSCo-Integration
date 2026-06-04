@@ -8,7 +8,7 @@ import utility
 from datetime import datetime
 from dateutil import tz
 from MongoDB.mongo_connection import MongoSharedClient
-from MongoDB import metadata_repository
+from MongoDB import metadata_repository, track_repository
 from IntegrationServer.StorageApi import api_metadata_model, api_specimen_model
 from Enums import asset_status_nt
 from pydantic import BaseModel, Field, Json
@@ -22,6 +22,7 @@ class StorageService():
         else:
             self.mongo_client = mongo_client
         self.metadata_db = metadata_repository.MetadataRepository(self.mongo_client)
+        self.track_db = track_repository.TrackRepository(self.mongo_client)
         self.api_metadata = api_metadata_model.ApiMetadataModel()
         self.asset_status_nt_enum = asset_status_nt.AssetStatusNT
 
@@ -101,55 +102,33 @@ class StorageService():
         self.api_metadata.tags = entry["tags"]
         self.api_metadata.workstation = entry["workstation_name"] 
         
-        barcode = []
-        for b in entry["barcode"]:
-            barcode.append(b)
+        barcodes = []
+        for bc in entry["barcode"]:
+            barcodes.append(bc)
 
-        if len(barcode) != 0:
-            for b in barcode:
+        if len(barcodes) != 0:
+            for bc in barcodes:
 
-                """
-                # Create a new instance of Specimen
-                new_specimen = api_metadata_model.Specimen()
-                if len(b) != 9:
-                    b = b.zfill(9)  # Pad with leading zeros to ensure length of 9  
-                new_specimen.barcode = b
-                new_specimen.collection = self.api_metadata.collection
-                new_specimen.institution = self.api_metadata.institution
-                
-                new_specimen.preparation_types = entry["preparation_type"]
-                if len(new_specimen.preparation_types) == 0 or new_specimen.preparation_types == "" or new_specimen.preparation_types is None:
-                    new_specimen.preparation_types = ["UNKNOWN"]
-                    new_specimen.asset_preparation_type = None
-                else:
-                    new_specimen.asset_preparation_type = new_specimen.preparation_types[0]
+                if len(bc) != 9:
+                    bc = bc.zfill(9)  # Pad with leading zeros to ensure length of 9
 
-                # TODO again issue with something potentially being a list
-                new_specimen.specimen_pid = entry["specimen_pid"]
-                if new_specimen.specimen_pid == []:
-                        new_specimen.specimen_pid = "SPID_" + b
-                # TODO again issue with something potentially being a list - remove when ARS / slurm is synced
-                if isinstance(new_specimen.specimen_pid , list):
-                    new_specimen.specimen_pid = new_specimen.specimen_pid[0]
-
-                if entry["specimen_pid"] is None:
-                    new_specimen.specimen_pid = "SPID_" + b
-                """
-
-                if len(b) != 9:
-                    b = b.zfill(9)  # Pad with leading zeros to ensure length of 9
+                barcode_specimen_id_list = self.track_db.get_value_for_key(guid, "barcode_asset_specimen_id_list")
 
                 preparation_types = entry["preparation_type"]
                 if len(preparation_types) == 0 or preparation_types == "" or preparation_types is None:
                     preparation_types = ["UNKNOWN"]
 
-                specimen_pid = "SPID_" + b
+                specimen_pid = "SPID_" + bc
 
                 asset_specimen = api_metadata_model.AssetSpecimen()
                 
                 asset_specimen.asset_guid = guid
                 asset_specimen.specimen_pid = specimen_pid
                 asset_specimen.asset_preparation_type = preparation_types[0]
+                asset_specimen.specimen_id = next((data[bc] for data in barcode_specimen_id_list if bc in data), None)
+
+                if asset_specimen.specimen_id is None:
+                    return None
 
                 self.api_metadata.asset_specimen.append(asset_specimen)
             

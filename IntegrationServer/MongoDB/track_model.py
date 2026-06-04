@@ -27,6 +27,7 @@ class TrackModel:
         self.asset_type = asset_type
         self.metadata_origin = metadata_origin
         self.batch_list_name = ""
+        self.barcode_asset_specimen_id_list = []
         self.job_list = []
         if derivative is False:
             self.job_list = self.create_joblist()
@@ -76,6 +77,7 @@ class TrackModel:
             "asset_type": self.asset_type,
             "metadata_origin": self.metadata_origin,
             "batch_list_name": self.batch_list_name,
+            "barcode_asset_specimen_id_list": self.barcode_asset_specimen_id_list,
             "job_list": self.job_list,
             "jobs_status": self.jobs_status,
             "file_list": self.file_list,
