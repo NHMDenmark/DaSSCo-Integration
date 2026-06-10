@@ -56,7 +56,8 @@ class HPCAssetCreator():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
-        self.lumi_setup = LumiSshSetup(self.con)
+        self.channel = self.create_ssh_channel()
+        self.lumi_setup = LumiSshSetup(self.con, self.channel)
         self.lumi_setup.setup()
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
@@ -82,6 +83,11 @@ class HPCAssetCreator():
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
         
         return self.cons.get_connection()
+    
+    def create_ssh_channel(self):        
+        self.channel = self.con.create_ssh_channel()
+        return self.channel
+
 
     def loop(self):
 
@@ -100,7 +106,7 @@ class HPCAssetCreator():
                 guid = asset["_id"]
                 batch_id = asset["batch_list_name"]                
                 files = asset["file_list"]
-
+                print(f"Asset found for HPC creation with guid: {guid} and batch id: {batch_id}")
                 link = None
 
                 # TODO handle multiple files belonging to an asset
@@ -113,15 +119,16 @@ class HPCAssetCreator():
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     print(f"bash {script_path} {guid} {batch_id} {link}")
                     try:
-                        self.con.ssh_command(f"bash {script_path} {guid} {batch_id}")
+                        self.con.channel_command(self.channel, f"bash {script_path} {guid} {batch_id}")
                     except Exception as e:
                         print(e)
                         time.sleep(10)
                         self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
-                        self.create_ssh_connection()
-                        self.lumi_setup = LumiSshSetup(self.con)
+                        self.con = self.create_ssh_connection()
+                        self.channel = self.create_ssh_channel()
+                        self.lumi_setup = LumiSshSetup(self.con, self.channel)
                         self.lumi_setup.setup()
 
                     

@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_
 import utility
 import time
 from HealthUtility import health_caller, run_utility
+from LUMIScripts.lumi_ssh_setup import LumiSshSetup
 from dotenv import load_dotenv
 
 class HPCUploader():
@@ -52,6 +53,9 @@ class HPCUploader():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
+        self.channel = self.create_ssh_channel()
+        self.lumi_setup = LumiSshSetup(self.con, self.channel)
+        self.lumi_setup.setup()
         
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
@@ -78,6 +82,9 @@ class HPCUploader():
         
         return self.cons.get_connection()
 
+    def create_ssh_channel(self):
+        self.channel = self.con.create_ssh_channel()
+        return self.channel
 
     def loop(self):
 
@@ -106,7 +113,7 @@ class HPCUploader():
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
                     try:
-                        self.con.ssh_command(f"bash {self.upload_file_script} {guid}")
+                        self.con.channel_command(self.channel, f"bash {self.upload_file_script} {guid}")
                     except Exception as e:
                         print(e)
                         time.sleep(20)
@@ -115,6 +122,9 @@ class HPCUploader():
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
                         self.create_ssh_connection()
+                        self.channel = self.create_ssh_channel()
+                        self.lumi_setup = LumiSshSetup(self.con, self.channel)
+                        self.lumi_setup.setup()
 
                 except Exception as e:
                     

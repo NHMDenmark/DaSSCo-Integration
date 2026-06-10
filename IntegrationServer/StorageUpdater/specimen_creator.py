@@ -86,15 +86,18 @@ class SpecimenCreator():
                 barcodes = self.check_barcode_length(guid, barcodes)
 
                 for barcode in barcodes:
-
+                    print(barcode)
                     specimen_pid = f"SPID_{barcode}"
 
                     found, specimen, msg = self.storage_api.get_specimen(institution, collection, barcode)
 
                     if msg is not None:
                         print(msg)
-
-                    barcode_specimen_id_list = self.track_mongo.get_value(guid, "barcode_asset_specimen_id_list")
+                    
+                    barcode_specimen_id_list = self.track_mongo.get_value_for_key(guid, "barcode_asset_specimen_id_list")
+                    if barcode_specimen_id_list is None:
+                        self.track_mongo.update_entry(guid, "barcode_asset_specimen_id_list", [])
+                        barcode_specimen_id_list = []
 
                     if found is True:
 
@@ -107,18 +110,18 @@ class SpecimenCreator():
                             
                             updated, response, msg = self.storage_api.update_specimen(institution, collection, barcode, specimen_pid, new_preparation_types, specimen["data"].role_restrictions, specimen["data"].specimen_id)
                             
-                            # TODO test
-                            if updated:
-                                exists = any(barcode in data for data in barcode_specimen_id_list)                                
+                            # TODO handle update fails
+                            
+                        exists = any(barcode in data for data in barcode_specimen_id_list)                                
                                 
-                                if exists is False:
-                                    barcode_specimen_id_list.append({barcode:response["data"].specimen_id})
-                                    self.track_mongo.update_entry(guid, "barcode_asset_specimen_id_list", barcode_specimen_id_list)
+                        if exists is False:
+                            barcode_specimen_id_list.append({barcode:specimen["data"].specimen_id})
+                            self.track_mongo.update_entry(guid, "barcode_asset_specimen_id_list", barcode_specimen_id_list)
 
                         continue
                     
                     created, response, msg = self.storage_api.create_specimen(institution, collection, barcode, specimen_pid, metadata["preparation_type"], [], specimen_id=None)
-
+                    print(created, response, msg)
                     if created:
                         barcode_specimen_id_list.append({barcode:response["data"].specimen_id})
                         self.track_mongo.update_entry(guid, "barcode_asset_specimen_id_list", barcode_specimen_id_list)

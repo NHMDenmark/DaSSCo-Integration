@@ -144,13 +144,15 @@ class UpdateMetadata():
                     guid = asset["_id"]
                     
                     metadata = self.metadata_mongo.get_entry("asset_guid", guid)
-                    
+                    institution = metadata["institution"]
+                    collection = metadata["collection"]
+
                     update = True
 
                     if len(metadata["barcode"]) > 0:
                         try:
                             for barcode in metadata["barcode"]:
-                                found, msg, note = self.storage_api.get_specimen(f"SPID_{barcode}")
+                                found, msg, note = self.storage_api.get_specimen(institution, collection, barcode)
                                 if found is False:
                                     entry = self.run_util.log_msg(self.prefix_id, f"Specimen with barcode {barcode} for asset {guid} not found in ARS. Metadata update for {guid} aborted.", self.run_util.log_enum.ERROR.value)
                                     self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
