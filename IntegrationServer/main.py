@@ -10,6 +10,7 @@ from MongoDB import mongo_connection, track_repository, health_repository, servi
 from Ndrive import ndrive_new_files
 import IntegrationServer.Ndrive.process_files_from_ndrive as process_files_from_ndrive
 from StorageApi import storage_client, ars_health_check, storage_service
+from HpcSsh.LUMIScripts import lumi_ssh_setup
 from HpcSsh import hpc_job_caller, hpc_asset_creator
 import json
 import time
@@ -230,12 +231,19 @@ async def test_oc():
 if __name__ == '__main__':   
     client = MongoSharedClient()
 
-    #sc = storage_client.StorageClient()
-    track = track_repository.TrackRepository(client)
+    sc = storage_client.StorageClient(client)
+    try:
+        p = sc.create_asset("prox-test-35_72")
+        print(p)
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
-    b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
+    client.close()
+    #track = track_repository.TrackRepository(client)
 
-    print(b)
+    #b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
+
+    #print(b)
     #createRes = sc.create_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["sheet"], role_restrictions=[])
 
     #found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu566")

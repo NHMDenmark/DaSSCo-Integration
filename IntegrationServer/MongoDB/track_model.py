@@ -15,7 +15,7 @@ Model used when creating a new entry in the track collection.
 """
 class TrackModel:
 
-    def __init__(self, guid, pipeline, metadata_origin, asset_type=asset_type_enum.AssetTypeEnum.UNKNOWN.value, derivative=False):
+    def __init__(self, guid, pipeline, metadata_origin, barcode_specimen_id_list=[], asset_type=asset_type_enum.AssetTypeEnum.UNKNOWN.value, derivative=False):
         self.util = utility.Utility()
         self.status = status_enum.StatusEnum
 
@@ -27,7 +27,7 @@ class TrackModel:
         self.asset_type = asset_type
         self.metadata_origin = metadata_origin
         self.batch_list_name = ""
-        self.barcode_asset_specimen_id_list = []
+        self.barcode_asset_specimen_id_list = barcode_specimen_id_list
         self.job_list = []
         if derivative is False:
             self.job_list = self.create_joblist()

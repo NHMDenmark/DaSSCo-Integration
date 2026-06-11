@@ -50,7 +50,12 @@ class StorageClient():
      def create_asset(self, asset_guid, allocation_size = 1):
 
           json_data = self.service.get_metadata_json_format(asset_guid)
+
+          if json_data is None:
+               print(f"Failed to get metadata for guid {asset_guid}, cannot create asset without metadata.")
+               return False, f"Failed to get metadata for guid {asset_guid}, cannot create asset without metadata.", None, None
           data_dict = json.loads(json_data)
+          
 
           # TODO WARNING THIS TAMPERING IS FOR TESTING PURPOSE
           if data_dict["payload_type"] == "":

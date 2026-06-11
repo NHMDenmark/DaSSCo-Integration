@@ -6,7 +6,6 @@ sys.path.append(project_root)
 
 from time import sleep
 
-
 class LumiSshSetup:
 
     def __init__(self, connection, channel):

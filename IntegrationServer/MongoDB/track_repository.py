@@ -330,7 +330,7 @@ class TrackRepository:
 
         return entries
 
-    def create_derivative_track_entry(self, guid, pipeline, metadata_origin, asset_type=AssetTypeEnum.UNKNOWN.value):
+    def create_derivative_track_entry(self, guid, pipeline, metadata_origin, barcode_specimen_id_list=[], asset_type=AssetTypeEnum.UNKNOWN.value):
         """
         Create a new track entry in the MongoDB collection for a derivative.
 
@@ -338,7 +338,7 @@ class TrackRepository:
         :param pipeline: The value for the 'pipeline' field.
         :return: A boolean denoting success or failure.
         """
-        model = track_model.TrackModel(guid, pipeline, metadata_origin, asset_type, derivative=True)
+        model = track_model.TrackModel(guid, pipeline, metadata_origin, barcode_specimen_id_list, asset_type, derivative=True)
         entry_data = model.get_entry_data()
         
         if self.get_entry("_id", guid) is None:

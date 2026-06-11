@@ -35,6 +35,7 @@ class StorageService():
         entry = self.metadata_db.get_entry("_id", guid)
 
         if entry is None:
+            print(f"No metadata entry found for guid {guid}")
             return None
 
         self.api_metadata.asset_guid = guid
@@ -139,12 +140,13 @@ class StorageService():
         return self.api_metadata
 
     def get_metadata_json_format(self, guid):
-        
+
         data = self.get_metadata_creation_body(guid)
         
         if data is None:
             return None
 
+        print(data)
         data = data.model_dump_json()
         return data
     
