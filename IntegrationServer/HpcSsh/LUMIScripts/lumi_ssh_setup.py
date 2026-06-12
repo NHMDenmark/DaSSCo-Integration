@@ -16,6 +16,7 @@ class LumiSshSetup:
 
         try:
             print("Starting LUMI SSH setup...")
+            sleep(3)
             self.con.channel_command(self.channel, "module load LUMI", write_to_path="/home/dassco/lumi_setup.log")
             #print("LUMI module loaded.")
             sleep(1)

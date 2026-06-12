@@ -93,7 +93,7 @@ class HPCUploader():
             asset = self.mongo_track.get_entry_from_multiple_key_pairs([{"hpc_ready": validate_enum.ValidateEnum.YES.value, "has_open_share": validate_enum.ValidateEnum.YES.value,
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.NO.value,
-                                                                            self.flag_enum.AVAILABLE_FOR_SERVICES.value : self.validate_enum.YES.value, self.flag_enum.METADATA_ORIGIN.value : self.metadata_origin_enum.UCLOUD_HPC.value}])
+                                                                            self.flag_enum.AVAILABLE_FOR_SERVICES.value : self.validate_enum.YES.value, self.flag_enum.METADATA_ORIGIN.value : self.metadata_origin_enum.LUMI_HPC.value}])
             if asset is None:
                 #print("No asset found")
                 time.sleep(10)        

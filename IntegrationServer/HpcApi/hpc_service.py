@@ -70,7 +70,7 @@ class HPCService():
             total_parent_size = 0
             asset_type = ""
             metadata_flag = True
-            parent_barcode_specimen_id_set = set()
+            parent_barcode_specimen_id = []
 
             # Calculate total parent size and find out what asset type should be. 
             # Logic for asset type is that if there is a specimen among the parents then the derivative will also be a specimen.
@@ -86,7 +86,8 @@ class HPCService():
                 total_parent_size = total_parent_size + t_parent["asset_size"]
 
                 for entry in t_parent["barcode_asset_specimen_id_list"]:
-                    parent_barcode_specimen_id_set.add(entry)
+                    if entry not in parent_barcode_specimen_id:
+                        parent_barcode_specimen_id.append(entry)
 
                 if t_parent["asset_type"] in asset_type:
                     continue
@@ -106,7 +107,7 @@ class HPCService():
             
             if metadata_flag is True:
                 print(f"created metadata for derivative: {metadata.asset_guid} {metadata.pipeline_name}")
-                metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, self.origin.LUMI_HPC.value, list(parent_barcode_specimen_id_set.values()), asset_type)
+                metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, self.origin.LUMI_HPC.value, parent_barcode_specimen_id, asset_type)
                 print(f"track data for derivative {metadata_flag}")
                 if metadata_flag is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        

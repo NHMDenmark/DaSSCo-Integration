@@ -59,7 +59,7 @@ def index(user: dict = Depends(verify_token)):
 
 @app.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all devils!!"}
+    return {"message":"keep out all devils!"}
     
 @app.post(f"{front_url}/api/v1/derivative")
 async def receive_derivative_metadata(metadata: metadata_model, service = Depends(get_service)):
