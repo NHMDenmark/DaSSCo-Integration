@@ -113,7 +113,9 @@ class HPCUploader():
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
                     try:
+                        self.temp_initialise_lumi_setup()
                         self.con.channel_command(self.channel, f"bash {self.upload_file_script} {guid}")
+                        self.con.close()
                     except Exception as e:
                         print(e)
                         time.sleep(20)
@@ -174,6 +176,11 @@ class HPCUploader():
                     
         self.mongo_track.append_existing_list(guid, "job_list", job)
 
+    def temp_initialise_lumi_setup(self):
+        self.con = self.create_ssh_connection()
+        self.channel = self.create_ssh_channel()
+        self.lumi_setup = LumiSshSetup(self.con, self.channel)
+        self.lumi_setup.setup()
 
 if __name__ == '__main__':
     HPCUploader()

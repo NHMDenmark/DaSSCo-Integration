@@ -119,7 +119,9 @@ class HPCAssetCreator():
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     print(f"bash {script_path} {guid} {batch_id} {link}")
                     try:
+                        self.temp_initialise_lumi_setup()
                         self.con.channel_command(self.channel, f"bash {script_path} {guid} {batch_id}")
+                        self.con.close()
                     except Exception as e:
                         print(e)
                         time.sleep(10)
@@ -154,6 +156,12 @@ class HPCAssetCreator():
             self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
+
+    def temp_initialise_lumi_setup(self):
+        self.con = self.create_ssh_connection()
+        self.channel = self.create_ssh_channel()
+        self.lumi_setup = LumiSshSetup(self.con, self.channel)
+        self.lumi_setup.setup()
 
 if __name__ == '__main__':
     HPCAssetCreator()

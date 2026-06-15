@@ -114,7 +114,9 @@ class HPCJobCaller():
 
                         print(script_path, name)
                         try:
+                            self.temp_initialise_lumi_setup()
                             self.con.channel_command(self.channel, f"bash {script_path} {guid}")
+                            self.con.close()
                             time.sleep(1)
                         except Exception as e:
                             print(e)
@@ -186,6 +188,12 @@ class HPCJobCaller():
             return None, None
 
         return guid, jobs
+
+    def temp_initialise_lumi_setup(self):
+        self.con = self.create_ssh_connection()
+        self.channel = self.create_ssh_channel()
+        self.lumi_setup = LumiSshSetup(self.con, self.channel)
+        self.lumi_setup.setup()
 
 if __name__ == '__main__':
     HPCJobCaller()
