@@ -11,7 +11,6 @@ from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
-from LUMIScripts.lumi_ssh_setup import LumiSshSetup
 from dotenv import load_dotenv
 
 """
@@ -56,9 +55,6 @@ class HPCCleanUp():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
         
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
@@ -76,6 +72,7 @@ class HPCCleanUp():
             self.close_db_connections()
 
     def create_ssh_connection(self):
+        
         self.cons.create_ssh_connection(self.ssh_config_name)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
@@ -84,11 +81,7 @@ class HPCCleanUp():
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
         
         return self.cons.get_connection()
-
-    def create_ssh_channel(self):
-        self.channel = self.con.create_ssh_channel()
-        return self.channel
-
+    
     def loop(self):
 
         while self.run == status_enum.StatusEnum.RUNNING.value:
@@ -114,10 +107,9 @@ class HPCCleanUp():
                 self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
                 self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
-                try:
-                    self.temp_initialise_lumi_setup()
-                    self.con.channel_command(self.channel, f"bash {script_path} {guid}")
-                    self.con.close()
+                try:                    
+                    self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid}")
+                    
                 except Exception as e:
                         print(e)
                         time.sleep(20)
@@ -126,10 +118,6 @@ class HPCCleanUp():
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
                         self.create_ssh_connection()
-                        self.channel = self.create_ssh_channel()
-                        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-                        self.lumi_setup.setup()
-
                 time.sleep(1)
 
             # checks if service should keep running           
@@ -165,6 +153,12 @@ class HPCCleanUp():
         else:
             priority = len(asset["job_list"])
         
+        if clean_up_job["priority"] >= 12:
+            self.mongo_track.update_entry(guid, "jobs_status", self.validate_enum.ERROR.value)
+            entry = self.run_util.log_msg(self.prefix_id, f"{guid} has reached the maximum number of retries for clean up job. Stopping retries for clean up.", self.status_enum.ERROR.value)
+            self.health_caller.error(self.service_name, entry, guid, "jobs_status", self.validate_enum.ERROR.value)
+            return
+
         job = {
             "name": "clean_up",
             "status": status_enum.StatusEnum.STARTING.value,
@@ -175,12 +169,6 @@ class HPCCleanUp():
             }
                     
         self.mongo_track.append_existing_list(guid, "job_list", job)
-
-    def temp_initialise_lumi_setup(self):
-        self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
-
+       
 if __name__ == '__main__':
     HPCCleanUp()

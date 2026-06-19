@@ -82,7 +82,7 @@ class AssetErrorStatusHandler():
                         self.has_new_file_handler.handle_has_new_file_error(asset)
 
                 print(f"Assets with errors found: {errors_found}")
-                time.sleep(60)
+                time.sleep(300)
 
             #checks if service should keep running           
             self.ctx.run = self.ctx.run_util.check_run_changes()

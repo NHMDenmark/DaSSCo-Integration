@@ -189,7 +189,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
                 # check the case of a ERDA_SYNCHRONISED sync happens without the fileshare being closed
                 # TODO handle what happens if this triggers, for now retry once and if still getting the same result -> error status
-                if asset_status == self.ERDA_SYNCHRONISED and asset_share_size is not None:
+                if asset_status in [self.ERDA_SYNCHRONISED, self.COMPLETED] and asset_share_size is not None:
                     print(f"guid: {guid} asset status: {asset_status} asset size: {asset_share_size}, sleeping for 5 secs before asking again, asset size should be null")
                     time.sleep(5)
                     second_attempted, second_status_code, second_asset_status, second_asset_share_size, second_note = self.storage_api.get_asset_sharesize_and_status(guid)
@@ -209,7 +209,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                         self.completed_sync_share_still_open(guid, asset)
 
                 # success scenario for an asset
-                if asset_status == self.ERDA_SYNCHRONISED and asset_share_size is None:
+                if asset_status in [self.ERDA_SYNCHRONISED, self.COMPLETED] and asset_share_size is None:
                     self.asset_validated(guid, asset)
 
                 # asset is still waiting to be synced

@@ -11,7 +11,6 @@ from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_
 import utility
 import time
 from HealthUtility import health_caller, run_utility
-from LUMIScripts.lumi_ssh_setup import LumiSshSetup
 from dotenv import load_dotenv
 
 class HPCUploader():
@@ -53,10 +52,7 @@ class HPCUploader():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
-        
+
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
         
@@ -73,6 +69,7 @@ class HPCUploader():
             self.close_db_connections()
     
     def create_ssh_connection(self):
+        
         self.cons.create_ssh_connection(self.ssh_config_name)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
@@ -81,10 +78,6 @@ class HPCUploader():
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
         
         return self.cons.get_connection()
-
-    def create_ssh_channel(self):
-        self.channel = self.con.create_ssh_channel()
-        return self.channel
 
     def loop(self):
 
@@ -100,12 +93,7 @@ class HPCUploader():
             else: 
                  
                 guid = asset["_id"]
-                """
-                These were used in earlier version as arguments for the script called on slurm specifically.
-                proxy_path = asset["proxy_path"]
-                pipeline = self.mongo_metadata.get_value_for_key(guid, "pipeline_name")
-                collection = self.mongo_metadata.get_value_for_key(guid, "collection")
-                """
+                
                 try:
                     # adds a uploader job to the jobs list
                     self.create_track_job(guid, asset)
@@ -113,9 +101,7 @@ class HPCUploader():
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
                     self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.UPLOADING.value)
                     try:
-                        self.temp_initialise_lumi_setup()
-                        self.con.channel_command(self.channel, f"bash {self.upload_file_script} {guid}")
-                        self.con.close()
+                        self.con.ssh_command(f"bash lumi_setup.sh bash {self.upload_file_script} {guid}")
                     except Exception as e:
                         print(e)
                         time.sleep(20)
@@ -123,11 +109,7 @@ class HPCUploader():
                         self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.YES.value)
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
-                        self.create_ssh_connection()
-                        self.channel = self.create_ssh_channel()
-                        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-                        self.lumi_setup.setup()
-
+                        self.create_ssh_connection()                        
                 except Exception as e:
                     
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.ERROR.value)
@@ -175,12 +157,6 @@ class HPCUploader():
             }
                     
         self.mongo_track.append_existing_list(guid, "job_list", job)
-
-    def temp_initialise_lumi_setup(self):
-        self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
 
 if __name__ == '__main__':
     HPCUploader()

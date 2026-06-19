@@ -370,12 +370,12 @@ class SSHConnection:
     def channel_command(self, channel, command, write_to_path=None):
         try:
             channel.send(command + "\n")
-
+            
             output = ""
             while channel.recv_ready():
                 output += channel.recv(1024).decode()
             print(output)
-
+            
             if write_to_path is not None:
                 with open(write_to_path, 'w', encoding='utf-8') as f:
                     f.write(output)

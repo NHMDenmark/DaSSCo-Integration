@@ -12,7 +12,6 @@ import utility
 import time
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
-from LUMIScripts.lumi_ssh_setup import LumiSshSetup
 
 """
 Looks for assets that have been persisted with ARS and have not yet been created on the HPC cluster.
@@ -56,9 +55,7 @@ class HPCAssetCreator():
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
 
         self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
+
         self.run = self.run_util.get_service_run_status()
         self.run_util.service_run = self.run
         
@@ -75,6 +72,7 @@ class HPCAssetCreator():
             self.close_db_connections()
 
     def create_ssh_connection(self):
+        
         self.cons.create_ssh_connection(self.ssh_config_name)
         # handle when connection wasnt established - calls health service and sets run config to STOPPED
         if self.cons.exc is not None:
@@ -83,10 +81,6 @@ class HPCAssetCreator():
             self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
         
         return self.cons.get_connection()
-    
-    def create_ssh_channel(self):        
-        self.channel = self.con.create_ssh_channel()
-        return self.channel
 
 
     def loop(self):
@@ -119,9 +113,8 @@ class HPCAssetCreator():
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     print(f"bash {script_path} {guid} {batch_id} {link}")
                     try:
-                        self.temp_initialise_lumi_setup()
-                        self.con.channel_command(self.channel, f"bash {script_path} {guid} {batch_id}")
-                        self.con.close()
+                        self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid} {batch_id}")
+                        
                     except Exception as e:
                         print(e)
                         time.sleep(10)
@@ -129,10 +122,6 @@ class HPCAssetCreator():
                         entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
                         self.health_caller.error(self.service_name, entry)
                         self.con = self.create_ssh_connection()
-                        self.channel = self.create_ssh_channel()
-                        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-                        self.lumi_setup.setup()
-
                     
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset
                 time.sleep(3)
@@ -157,11 +146,6 @@ class HPCAssetCreator():
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 
-    def temp_initialise_lumi_setup(self):
-        self.con = self.create_ssh_connection()
-        self.channel = self.create_ssh_channel()
-        self.lumi_setup = LumiSshSetup(self.con, self.channel)
-        self.lumi_setup.setup()
 
 if __name__ == '__main__':
     HPCAssetCreator()
