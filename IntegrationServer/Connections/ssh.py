@@ -1,3 +1,4 @@
+from socket import socket
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
@@ -346,11 +347,10 @@ class SSHConnection:
     """
     def ssh_command(self, command, write_to_path=None):
         try:
-            stdin, stdout, stderr = self.ssh_client.exec_command(command)
+            stdin, stdout, stderr = self.ssh_client.exec_command(command, timeout=60)
 
             output = stdout.read().decode('utf-8')
-            # print(output)
-
+            
             if write_to_path is not None:
                 with open(write_to_path, 'w', encoding='utf-8') as f:
                     f.write(output)
@@ -358,10 +358,16 @@ class SSHConnection:
             # print("Command Errors:")
             # print(stderr.read().decode('utf-8'))
             return output
+        
+        except socket.timeout:
+            error_message = f"SSH command timed out: {command}"
+            print(error_message)
+            
+            raise Exception(error_message)
         except Exception as e:
             error_message = f"An error occurred while executing ssh command: {command} : {e}"
             print(error_message)
-            # Raising a new exception while preserving the original exception context:
+            
             raise Exception(error_message) from e
         
     """

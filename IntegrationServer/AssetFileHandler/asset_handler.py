@@ -105,7 +105,8 @@ class AssetHandler:
                     collection = self.util.get_value(json_file_path, "collection")
                     issues = self.util.get_value(json_file_path, "issues")
                     barcodes = self.util.get_value(json_file_path, "barcode")
-                    asset_subject = self.util.get_value(json_file_path, "asset_subject")    
+                    asset_subject = self.util.get_value(json_file_path, "asset_subject")
+                    workstation_name = self.util.get_value(json_file_path, "workstation_name")    
 
                     try:
                         # TODO have this resolved
@@ -194,7 +195,6 @@ class AssetHandler:
                             self.mongo_track.update_entry(guid, "has_new_file", self.validate.YES.value)
 
                         # Add batchlist name to the track entry
-                        workstation_name = self.util.get_value(json_file_path, "workstation_name")
                         batchlist_name = workstation_name + "_" + batch_name
                         self.mongo_track.update_entry(guid, "batch_list_name", batchlist_name)
 
@@ -222,7 +222,7 @@ class AssetHandler:
                             shutil.move(subdirectory_path, error_dir)
                         else:
                             shutil.move(subdirectory_path, new_directory_path)
-                        print(guid)
+                        print(guid, f"{self.ndrive_path}/{workstation_name}")
                         import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
                         
                         self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.BEING_PROCESSED.value)

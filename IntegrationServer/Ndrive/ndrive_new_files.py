@@ -195,7 +195,7 @@ class NdriveNewFilesFinder():
     def get_batch_directory_path(self, remote_folder):
         # Read workstation configuration data from JSON file
         workstations_config_data = self.util.read_json(self.workstations_config_path)
-
+        
         # Get a list of keys from the workstation configuration data
         workstation_list = list(workstations_config_data.keys())
 

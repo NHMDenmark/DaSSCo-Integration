@@ -228,17 +228,31 @@ async def test_oc():
 
     await armq.loop()
 
-if __name__ == '__main__':   
-    client = MongoSharedClient()
+def find_directory_name_with_file(parent_directory, filename):
+        """
+        Search for the directory name containing the specified filename within the parent directory.
 
-    sc = storage_client.StorageClient(client)
-    try:
-        p = sc.create_asset("prox-test-35_72")
-        print(p)
-    except Exception as e:
-        print(f"Error occurred: {e}")
+        Args:
+            parent_directory (str): The root directory to start the search.
+            filename (str): The name of the file to look for.
 
-    client.close()
+        Returns:
+            str: The name of the directory containing the file, or None if not found.
+        """
+        for dirpath, _, filenames in os.walk(parent_directory):
+            if filename in filenames:
+                return os.path.basename(dirpath) 
+        return None
+
+if __name__ == '__main__':
+    load_dotenv()
+    p = os.getenv("NDRIVE_PATH")
+    print(p)
+    
+    a =  find_directory_name_with_file(f"{p}/WORKHERB0001", "040ck2b867e9c010b011e22a21e781.json")
+
+    print(a)
+
     #track = track_repository.TrackRepository(client)
 
     #b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")

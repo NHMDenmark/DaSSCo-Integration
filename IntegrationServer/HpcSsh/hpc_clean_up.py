@@ -150,14 +150,16 @@ class HPCCleanUp():
             self.mongo_track.update_track_job_list(guid, "clean_up", "status", self.status_enum.FAILED.value)
             self.mongo_track.update_track_job_list(guid, "clean_up", "name", "attempted_clean_up")
             priority = clean_up_job["priority"]
+
+            # TODO move to health service and handle >= 12 attemtps there instead of here.
+            if priority >= 12:
+                self.mongo_track.update_entry(guid, "jobs_status", self.validate_enum.CRITICAL_ERROR.value)
+                entry = self.run_util.log_msg(self.prefix_id, f"{guid} has reached the maximum number of retries for clean up job. Stopping retries for clean up.", self.status_enum.ERROR.value)
+                self.health_caller.error(self.service_name, entry, guid, "jobs_status", self.validate_enum.CRITICAL_ERROR.value)
+                return
+
         else:
             priority = len(asset["job_list"])
-        
-        if clean_up_job["priority"] >= 12:
-            self.mongo_track.update_entry(guid, "jobs_status", self.validate_enum.ERROR.value)
-            entry = self.run_util.log_msg(self.prefix_id, f"{guid} has reached the maximum number of retries for clean up job. Stopping retries for clean up.", self.status_enum.ERROR.value)
-            self.health_caller.error(self.service_name, entry, guid, "jobs_status", self.validate_enum.ERROR.value)
-            return
 
         job = {
             "name": "clean_up",
