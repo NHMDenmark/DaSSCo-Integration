@@ -128,10 +128,11 @@ class DeleteFilesNdrive():
             for file in files_to_delete:
                 file_path = os.path.join(ndrive_path, file)
                 os.remove(file_path)
-                print(f"Deleted files: {guid}")
-                # update track
-                self.track_mongo.delete_field(guid, "temporary_path_ndrive")
-                self.track_mongo.delete_field(guid, "temporary_files_ndrive")      
+
+            print(f"Deleted files: {guid}")
+            # update track
+            self.track_mongo.delete_field(guid, "temporary_path_ndrive")
+            self.track_mongo.delete_field(guid, "temporary_files_ndrive")      
         else:
             print(f"No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}")
             self.track_mongo.update_entry(guid, "temporary_files_ndrive", self.validate_enum.ERROR.value)
