@@ -19,6 +19,7 @@ class ServiceContext:
         self.pid = os.getpid()
         self.service_name = "Asset error status handler"
         self.prefix_id = "Aesh"
+        self.log_path = "asset_error_status_handler.py.log"
 
         self.mongo_client = MongoSharedClient()
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
@@ -40,7 +41,7 @@ class ServiceContext:
         self.run_util = run_utility.RunUtility(
             self.prefix_id,
             self.service_name,
-            f"asset_error_status_handler.py.log",
+            self.log_path,
             __file__,
             self.pid,
             self.mongo_client

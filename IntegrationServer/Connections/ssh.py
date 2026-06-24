@@ -1,4 +1,4 @@
-from socket import socket
+from socket import timeout
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
@@ -359,11 +359,11 @@ class SSHConnection:
             # print(stderr.read().decode('utf-8'))
             return output
         
-        except socket.timeout:
+        except timeout as e:
             error_message = f"SSH command timed out: {command}"
             print(error_message)
             
-            raise Exception(error_message)
+            raise Exception(error_message) from e
         except Exception as e:
             error_message = f"An error occurred while executing ssh command: {command} : {e}"
             print(error_message)

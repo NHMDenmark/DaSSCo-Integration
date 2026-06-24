@@ -145,6 +145,12 @@ class HPCUploader():
             self.mongo_track.update_track_job_list(guid, "uploader", "status", self.status_enum.FAILED.value)
             self.mongo_track.update_track_job_list(guid, "uploader", "name", "attempted_uploader")
 
+            # TODO move to health service and handle >= 12 attemtps there instead of here.
+            if priority >= 12:
+                self.mongo_track.update_entry(guid, "jobs_status", self.validate_enum.CRITICAL_ERROR.value)
+                entry = self.run_util.log_msg(self.prefix_id, f"{guid} has reached the maximum number of retries for uploader job. Stopping retries for uploader.", self.status_enum.ERROR.value)
+                self.health_caller.error(self.service_name, entry, guid, "jobs_status", self.validate_enum.CRITICAL_ERROR.value)
+                return
 
         priority = len(asset["job_list"])
         job = {
