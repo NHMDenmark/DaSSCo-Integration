@@ -10,6 +10,7 @@ from Connections import connections
 from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_status_nt
 import utility
 import time
+from socket import timeout
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
 
@@ -107,9 +108,16 @@ class HPCUploader():
                         time.sleep(20)
                         self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.DONE.value)
                         self.mongo_track.update_entry(guid, "has_new_file", validate_enum.ValidateEnum.YES.value)
-                        entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
-                        self.health_caller.error(self.service_name, entry)
-                        self.create_ssh_connection()                        
+                        if isinstance(e, timeout):
+                                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                                self.health_caller.warning(self.service_name, entry)                                
+                        else:
+                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry)                        
+                        self.con.close()
+                        self.cons.close_connection()
+                        self.cons = connections.Connections(self.mongo_client)
+                        self.con = self.create_ssh_connection()                        
                 except Exception as e:
                     
                     self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.ERROR.value)
@@ -140,7 +148,8 @@ class HPCUploader():
         Adds the uploader job to the job list. 
         """
         uploader_job = self.mongo_track.get_job_info(guid, "uploader")
-
+        priority = len(asset["job_list"])
+        
         if uploader_job is not None:
             self.mongo_track.update_track_job_list(guid, "uploader", "status", self.status_enum.FAILED.value)
             self.mongo_track.update_track_job_list(guid, "uploader", "name", "attempted_uploader")
@@ -152,7 +161,6 @@ class HPCUploader():
                 self.health_caller.error(self.service_name, entry, guid, "jobs_status", self.validate_enum.CRITICAL_ERROR.value)
                 return
 
-        priority = len(asset["job_list"])
         job = {
             "name": "uploader",
             "status": status_enum.StatusEnum.STARTING.value,

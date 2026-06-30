@@ -14,12 +14,12 @@ class ArsHealthCheck():
 
     def __init__(self):
         load_dotenv()
-        self.client_id = os.getenv("client_id")
-        self.client_secret = os.getenv("client_secret")
-        self.auth_token_url = os.getenv("auth_token_keycloak_url")
-        self.asset_service_health_url = os.getenv("ars_url")
-        self.keycloak_health_url = os.getenv("cloak_url")
-        self.fileproxy_health_url = os.getenv("fileproxy_url")
+        self.client_id = os.getenv("keycloak_id")
+        self.client_secret = os.getenv("keycloak_secret")
+        self.auth_token_url = os.getenv("DASSCO_TOKEN_PATH")
+        self.asset_service_health_url = os.getenv("ars_health_url")
+        self.keycloak_health_url = os.getenv("keycloak_health_url")
+        self.fileproxy_health_url = os.getenv("fileproxy_health_url")
 
     def check_asset_service_health(self):
         

@@ -1,4 +1,3 @@
-from socket import timeout
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
@@ -7,6 +6,7 @@ sys.path.append(project_root)
 
 import paramiko
 import stat
+from socket import timeout
 from utility import Utility
 from MongoDB import ssh_connection_repository
 from MongoDB.mongo_connection import MongoSharedClient
@@ -68,12 +68,14 @@ class SSHConnection:
 
     def close(self):
         try:
-            self.sftp.close()
             self.ssh_client.close()
-            
-            print(f"closed {self.name}")
         except Exception as e:
-            print(f"There was no connection: {e}")
+            print(f"There was no ssh connection: {e}")
+        try:
+            self.sftp.close()
+        except Exception as e:
+            print(f"There was no sftp connection: {e}")
+        print(f"closed {self.name}")
 
     """
     Set up a session for multiple commands to be sent through.
@@ -363,7 +365,7 @@ class SSHConnection:
             error_message = f"SSH command timed out: {command}"
             print(error_message)
             
-            raise Exception(error_message) from e
+            raise e
         except Exception as e:
             error_message = f"An error occurred while executing ssh command: {command} : {e}"
             print(error_message)

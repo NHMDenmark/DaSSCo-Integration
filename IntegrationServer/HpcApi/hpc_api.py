@@ -102,7 +102,7 @@ async def start_job(start_data: job_model, service = Depends(get_service)):
 @app.post(f"{front_url}/api/v1/failed_job")
 async def failed_job(fail_data: fail_job_model, service = Depends(get_service)):
     failed = service.job_failed(fail_data)
-
+    
     if failed is False:
         return JSONResponse(content={"error": "asset not found."}, status_code=422)
 

@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from HealthUtility import health_caller, run_utility
+from socket import timeout
 from dotenv import load_dotenv
 
 """
@@ -115,9 +116,18 @@ class HPCCleanUp():
                         time.sleep(20)
                         self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.YES.value)
                         self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.DONE.value)
-                        entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
-                        self.health_caller.error(self.service_name, entry)
-                        self.create_ssh_connection()
+                        
+                        if isinstance(e, timeout):
+                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                            self.health_caller.warning(self.service_name, entry)
+                            
+                        else:
+                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry)
+                        self.con.close()
+                        self.cons.close_connection()
+                        self.cons = connections.Connections(self.mongo_client)
+                        self.con = self.create_ssh_connection()
                 time.sleep(1)
 
             # checks if service should keep running           

@@ -10,6 +10,7 @@ from Connections import connections
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
+from socket import timeout
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
 
@@ -119,8 +120,15 @@ class HPCAssetCreator():
                         print(e)
                         time.sleep(10)
                         self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.NO.value)
-                        entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
-                        self.health_caller.error(self.service_name, entry)
+                        if isinstance(e, timeout):
+                                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                                self.health_caller.warning(self.service_name, entry)                                
+                        else:
+                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                            self.health_caller.error(self.service_name, entry)
+                        self.con.close()
+                        self.cons.close_connection()
+                        self.cons = connections.Connections(self.mongo_client)
                         self.con = self.create_ssh_connection()
                     
                 # TODO handle if link is none - needs some kind of status update that there is a missing link or no files belonging to the asset

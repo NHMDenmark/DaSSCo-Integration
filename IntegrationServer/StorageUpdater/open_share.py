@@ -14,7 +14,6 @@ import utility
 import time
 from datetime import datetime, timedelta
 from HealthUtility import health_caller, run_utility
-from StorageApi import storage_client
 
 """
 TODO Description

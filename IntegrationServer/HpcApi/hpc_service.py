@@ -485,6 +485,7 @@ class HPCService():
             hpc_message = failed_data.hpc_message
             hpc_exception = failed_data.hpc_exception
         except:
+            print(f"Failed to parse data in job_failed: {failed_data} ")
             return False
         print(f"Fail: {guid} {job_name} {fail_status} {hpc_message} {hpc_exception}")
         try:

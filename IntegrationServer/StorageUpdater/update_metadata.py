@@ -137,6 +137,7 @@ class UpdateMetadata():
                                                                           self.flag_enum.AVAILABLE_FOR_SERVICES.value: self.validate_enum.YES.value}])
             
             if asset is not None:
+
                 if asset[self.flag_enum.IS_IN_ARS.value] == self.validate_enum.YES.value:
 
                     # TODO handle if is in ars == NO
@@ -183,6 +184,12 @@ class UpdateMetadata():
                             self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     time.sleep(1)
+
+                elif asset[self.flag_enum.IS_IN_ARS.value] == self.validate_enum.ERROR.value:
+                    guid = asset["_id"]
+                    entry = self.run_util.log_msg(self.prefix_id, f"Failed to update metadata for {guid} in ARS.", self.run_util.log_enum.ERROR.value)
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.UPDATE_METADATA.value, self.run_util.log_enum.ERROR.value)
+
 
             if asset is None:
                 time.sleep(1)

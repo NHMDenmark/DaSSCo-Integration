@@ -245,13 +245,16 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
-    load_dotenv()
-    p = os.getenv("NDRIVE_PATH")
-    print(p)
-    
-    a =  find_directory_name_with_file(f"{p}/WORKHERB0001", "040ck2b867e9c010b011e22a21e781.json")
 
-    print(a)
+    sc = storage_client.StorageClient()
+
+    status = sc.get_full_asset_status("040ck2b867e9b1b0a00000cabe8e1a")
+
+    cstatus = status["data"].status
+    ars_share_allocation = status["data"].share_allocation_mb
+    error_message = status["data"].error_message
+
+    print(cstatus, ars_share_allocation, error_message)
 
     #track = track_repository.TrackRepository(client)
 

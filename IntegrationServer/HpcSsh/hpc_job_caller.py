@@ -12,6 +12,7 @@ import utility
 import time
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
+from socket import timeout
 
 """
 Responsible for checking availability on slurm. Will have to wait for later to be made. For now assuming there always is capacity. 
@@ -115,8 +116,18 @@ class HPCJobCaller():
                             time.sleep(20)
                             self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.WAITING.value)
                             self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.WAITING.value)
-                            entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
-                            self.health_caller.error(self.service_name, entry)
+
+                            if isinstance(e, timeout):
+                                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                                self.health_caller.warning(self.service_name, entry)
+                                
+                            else:
+                                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                                self.health_caller.error(self.service_name, entry)
+
+                            self.con.close()
+                            self.cons.close_connection()
+                            self.cons = connections.Connections(self.mongo_client)
                             self.con = self.create_ssh_connection()
                     except Exception as e:
                         # TODO handle better this will potentially loop the same issue over and over
