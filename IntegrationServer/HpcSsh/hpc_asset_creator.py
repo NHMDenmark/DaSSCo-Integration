@@ -101,7 +101,7 @@ class HPCAssetCreator():
                 guid = asset["_id"]
                 batch_id = asset["batch_list_name"]                
                 files = asset["file_list"]
-                print(f"Asset found for HPC creation with guid: {guid} and batch id: {batch_id}")
+                #print(f"Asset found for HPC creation with guid: {guid} and batch id: {batch_id}")
                 link = None
 
                 # TODO handle multiple files belonging to an asset
@@ -112,7 +112,7 @@ class HPCAssetCreator():
                     script_path = self.util.get_value(self.hpc_config_path, "initiate_script")
 
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
-                    print(f"bash {script_path} {guid} {batch_id} {link}")
+                    #print(f"bash {script_path} {guid} {batch_id} {link}")
                     try:
                         self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid} {batch_id}")
                         

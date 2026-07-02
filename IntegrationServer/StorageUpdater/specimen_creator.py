@@ -121,7 +121,7 @@ class SpecimenCreator():
                         continue
                     
                     created, response, msg = self.storage_api.create_specimen(institution, collection, barcode, specimen_pid, metadata["preparation_type"], [], specimen_id=None)
-                    print(created, response, msg)
+                    #print(created, response, msg)
                     if created:
                         barcode_specimen_id_list.append({barcode:response["data"].specimen_id})
                         self.track_mongo.update_entry(guid, "barcode_asset_specimen_id_list", barcode_specimen_id_list)

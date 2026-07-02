@@ -166,7 +166,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
                 time.sleep(20)
                 continue
             
-            print(f"checking {len(assets)} assets:")
+            #print(f"checking {len(assets)} assets:")
             for asset in assets:
                 guid = asset["_id"]
 
@@ -219,9 +219,9 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
 
                     if timed_out is True:                            
                             self.timeout_handling(guid, asset)
-                    else:
+                    #else:
                         # no action needed here since asset is queued to be synced and just waiting for that to happen
-                        print(f"Waiting on erda sync for asset: {guid}")
+                        #print(f"Waiting on erda sync for asset: {guid}")
                     
                 if asset_status == self.ERDA_ERROR:
                     # TODO figure out how to handle this situation further. maybe set a counter that at a certain number triggers a long delay and clears if there are no ERDA_ERRORs
@@ -270,7 +270,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         for file in asset["file_list"]:
             self.track_mongo.update_track_file_list(guid, file["name"], self.ERDA_SYNC, self.YES)        
         
-        print(f"Validated erda sync for asset: {guid} Size: {asset["asset_size"]}")
+        #print(f"Validated erda sync for asset: {guid} Size: {asset["asset_size"]}")
 
     def check_timeout(self, guid):
 

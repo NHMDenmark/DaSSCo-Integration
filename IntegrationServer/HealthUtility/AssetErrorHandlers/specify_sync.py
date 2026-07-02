@@ -38,33 +38,56 @@ class SpecifySyncErrorHandler(BaseErrorHandler):
                     try:
                         closed = self.ctx.storage_api.close_share(guid)
                     except Exception as e:
+                        self.failure_to_handle_updates(guid)
                         entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for SPECIMEN_NOT_FOUND_ERROR. One or more of the specimen(s) {specimens} not found in Specify. specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
-                        self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value, self.ctx.validate_enum.NO.value)
-                        self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.validate_enum.CRITICAL_ERROR.value)
-                        self.util.remove_asset_from_in_flight_count()
-                        self.ctx.run_util.update_metadata_status(guid, self.ctx.asset_status_enum.ERROR.value)
                         return
 
                     if closed is True:
                         self.ctx.track_mongo.update_entry(guid, "has_open_share", self.ctx.validate_enum.NO.value)
                     else:
+                        self.failure_to_handle_updates(guid)
                         entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for SPECIMEN_NOT_FOUND_ERROR. One or more of the specimen(s) {specimens} not found in Specify. specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
-                        self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value, self.ctx.validate_enum.NO.value)
-                        self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.validate_enum.CRITICAL_ERROR.value)
-                        self.ctx.run_util.update_metadata_status(guid, self.ctx.asset_status_enum.ERROR.value)
-                        self.util.remove_asset_from_in_flight_count()
                         return
 
-                    self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
-                    self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value, self.ctx.validate_enum.NO.value)
-
+                    self.failure_to_handle_updates(guid)
                     entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"{guid} failed to sync with specify in ARS. One or more of the specimen(s) {specimens} not found in Specify. Fileproxy share has been deleted and the asset removed throttle procedures. Asset file is still in ERDA and metadata in ARS. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO.")
                     self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value , self.ctx.status_enum.CRITICAL_ERROR.value)
-                    self.ctx.run_util.update_metadata_status(guid, self.ctx.asset_status_enum.ERROR.value)
-                    self.util.remove_asset_from_in_flight_count()
                     return
+                
+                if "FILE_DOWNLOAD_ERROR" in error_message:
+
+                    # TODO check if file is in ARS and ERDA
+                    # Try download check crc
+                    # delete download
+                    # reset sync options if everything is ok or retry sync?
+
+                    # fail to handle try close share   
+                    try:
+                        closed = self.ctx.storage_api.close_share(guid)
+                    except Exception as e:
+                        self.failure_to_handle_updates(guid)
+                        entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for FILE_DOWNLOAD_ERROR. Specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
+                        self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
+                        return
+
+                    if closed is True:
+                        self.ctx.track_mongo.update_entry(guid, "has_open_share", self.ctx.validate_enum.NO.value)
+                    else:
+                        self.failure_to_handle_updates(guid)
+                        entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for FILE_DOWNLOAD_ERROR. Specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", self.ctx.status_enum.CRITICAL_ERROR.value)
+                        self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
+                        return
+
+                    # end fail to handle
+                    self.failure_to_handle_updates(guid)
+                    entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"{guid} failed to sync with specify from ARS. Due to FILE_DOWNLOAD_ERROR. Fileproxy share has been deleted and the asset removed throttle procedures. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO.")
+                    self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value , self.ctx.status_enum.CRITICAL_ERROR.value)
+                    return
+
+
+
             """
             # TODO add a temp variable to track data and have validate sync specify remove this - implement checks for it here to avoid looping the same errored asset
             # TODO needs access to the direct sync with specify endpoint, cant resync without getting rid of the error by doing a fake update to the metadata
@@ -82,10 +105,15 @@ class SpecifySyncErrorHandler(BaseErrorHandler):
                         return
             """
             # others
-            self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
-            self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value, self.ctx.validate_enum.NO.value)
+            self.failure_to_handle_updates(guid)
             entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Tried handling specify_sync error for {guid}. Could not determine the issue. Will need manual handling. specify_sync set to {self.ctx.status_enum.CRITICAL_ERROR.value}. If any ARS error message: {error_message}")
-            self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
-            self.ctx.run_util.update_metadata_status(guid, self.ctx.asset_status_enum.ERROR.value)
-            self.util.remove_asset_from_in_flight_count()            
+            self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)                       
             return
+        
+        def failure_to_handle_updates(self, guid):
+            self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value, self.ctx.validate_enum.NO.value)
+            self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.validate_enum.CRITICAL_ERROR.value)
+            self.ctx.run_util.update_metadata_status(guid, self.ctx.asset_status_enum.ERROR.value)
+            self.util.remove_asset_from_in_flight_count()
+            self.util.remove_asset_from_await_specify_sync_count()
+            

@@ -56,3 +56,6 @@ class UtilErrorHandler:
         except Exception as e:
             raise e
         
+    def remove_asset_from_await_specify_sync_count(self):
+        self.ctx.throttle_mongo.subtract_one_from_count("await_specify_sync_count", "value")
+        

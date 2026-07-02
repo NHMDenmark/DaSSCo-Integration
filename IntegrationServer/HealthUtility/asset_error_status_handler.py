@@ -44,7 +44,7 @@ class AssetErrorStatusHandler():
 
 
     def loop(self):
-    
+        loop_counter = 0
         while self.ctx.run == self.ctx.status_enum.RUNNING.value:
             
             self.ctx.authorization_check()
@@ -80,9 +80,13 @@ class AssetErrorStatusHandler():
                     # has_new_file error
                     if asset[self.ctx.flag_enum.HAS_NEW_FILE.value] == self.ctx.status_enum.ERROR.value:
                         self.has_new_file_handler.handle_has_new_file_error(asset)
-
-                print(f"Assets with errors found: {errors_found}")
+                
+                if loop_counter%20 == 0:
+                    print(f"Assets with errors found: {errors_found} at loop number: {loop_counter}")
                 time.sleep(300)
+
+            loop_counter = loop_counter + 1
+
 
             #checks if service should keep running           
             self.ctx.run = self.ctx.run_util.check_run_changes()

@@ -214,7 +214,7 @@ class AssetHandler:
 
                         # Add new metadata entry to mongoDB
                         check = self.mongo_metadata.create_metadata_entry(json_file_path, guid)
-                        print(f"create metadata: {check}")
+                        #print(f"create metadata: {check}")
                         # Move the directory to the 'InProcess' directory or error if it already exists
                         new_directory_path = os.path.join(in_process_dir,
                                                         f"{pipeline_name}/{batch_name}/{subdirectory}")
@@ -222,7 +222,7 @@ class AssetHandler:
                             shutil.move(subdirectory_path, error_dir)
                         else:
                             shutil.move(subdirectory_path, new_directory_path)
-                        print(guid, f"{self.ndrive_path}/{workstation_name}")
+                        #print(guid, f"{self.ndrive_path}/{workstation_name}")
                         import_directory = self.find_directory_name_with_file(f"{self.ndrive_path}/{workstation_name}", f"{guid}.json")
                         
                         self.mongo_metadata.update_entry(guid, "status", self.asset_status_nt.BEING_PROCESSED.value)
@@ -275,6 +275,8 @@ class AssetHandler:
                         print(f"Error processing asset {guid}. This asset has to be manually checked depending on where the failure happened the flags could be messed up and needs to be correctly set. Exception: {e}")
                         entry = self.run_util.log_exc(self.run_util.prefix_id, f"Error processing asset {guid}. This asset has to be manually checked depending on where the failure happened the flags could be messed up and needs to be correctly set.", e, self.log_enum.CRITICAL_ERROR.value)
                         self.health_caller.error(self.run_util.service_name, entry, guid)
+
+                print(f"processed {subdirectory_path}")
 
 
     def find_directory_name_with_file(self, parent_directory, filename):

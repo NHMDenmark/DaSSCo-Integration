@@ -146,7 +146,7 @@ class StorageService():
         if data is None:
             return None
 
-        print(data)
+        #print(data)
         data = data.model_dump_json()
         return data
     
@@ -162,7 +162,7 @@ class StorageService():
         specimen_model.specimen_id = specimen_id
         specimen_model.role_restrictions = role_restrictions
 
-        print(specimen_model)
+        #print(specimen_model)
 
         return specimen_model
     

@@ -87,7 +87,7 @@ class DeleteLocalFiles():
                             for file in files_to_delete:
                                 file_path = os.path.join(local_path, file)
                                 os.remove(file_path)
-                            print(f"Deleted files: {guid}")
+                            #print(f"Deleted files: {guid}")
                             # update track
                             self.track_mongo.delete_field(guid, "temporary_path_local")
                             self.track_mongo.delete_field(guid, self.flag_enum.TEMPORARY_FILES_LOCAL.value)                        
