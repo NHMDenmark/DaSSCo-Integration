@@ -21,7 +21,7 @@ from DashboardAPIs.update_issue_model import UpdateIssueModel
 from DashboardAPIs.process_time_model import ProcessTimeModel
 from DashboardAPIs.update_throttle_model import UpdateThrottleModel
 from DashboardAPIs.exceptions import InvalidInputError, InvalidStatusError, DatabaseUpdateError, ServiceFailedError
-from IntegrationServer.DashboardAPIs.update_ARS_metadata_list_model import UpdateARSMetadataListModel
+from IntegrationServer.DashboardAPIs.guid_list_model import GUIDListModel
 from KeycloakInterface.auth import verify_token, require_roles
 
 util = utility.Utility()
@@ -33,7 +33,7 @@ append_issue_model = AppendIssueModel
 update_issue_model = UpdateIssueModel
 process_time_model = ProcessTimeModel
 update_throttle_model = UpdateThrottleModel
-update_ars_metadata_list_model = UpdateARSMetadataListModel
+guid_list_model = GUIDListModel
 
 load_dotenv()
 front_url = os.getenv("CONTROL_FRONT_URL")
@@ -58,7 +58,7 @@ def get_service(request: Request):
 
 @control.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all wildebeasts!!"}
+    return {"message":"keep out all wildebeasts!"}
 
 @control.get(f"{front_url}/check")
 def index(user: dict = Depends(verify_token)):
@@ -375,7 +375,7 @@ async def update_ars_metadata(guid: str, user: dict = Depends(verify_token), ser
     return JSONResponse(content={"update_status": updated, "message": msg}, status_code=200)
 
 @control.post(f"{front_url}/update_ars_metadata_list")
-async def update_ars_metadata_list(update_model: UpdateARSMetadataListModel, user: dict = Depends(verify_token), service = Depends(get_service)):
+async def update_ars_metadata_list(update_model: guid_list_model, user: dict = Depends(verify_token), service = Depends(get_service)):
 
     updated, msg, status = service.update_ars_metadata_list(update_model, user['preferred_username'])
 
@@ -383,3 +383,14 @@ async def update_ars_metadata_list(update_model: UpdateARSMetadataListModel, use
         return JSONResponse(content={"update_status": updated, "message": msg}, status_code=status)
     
     return JSONResponse(content={"update_status": updated, "message": msg}, status_code=status)
+
+
+@control.post(f"{front_url}/close_fileproxy_shares")
+async def update_ars_metadata_list(update_model: guid_list_model, user: dict = Depends(verify_token), service = Depends(get_service)):
+
+    closed, msg, status = service.close_fileproxy_shares(update_model, user['preferred_username'])
+
+    if closed is False:
+        return JSONResponse(content={"closed_status": closed, "message": msg}, status_code=status)
+    
+    return JSONResponse(content={"closed_status": closed, "message": msg}, status_code=status)

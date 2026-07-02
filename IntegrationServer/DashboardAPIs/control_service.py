@@ -813,6 +813,55 @@ class ControlService():
             print(f"update ars metadata list: {e}")
             return False, "Things went wrong", 500
 
+    def close_fileproxy_shares(self, update_model, username: str):
+        try:
+            
+            ars_client = storage_client.StorageClient(self.mongo_client)
+            closed_shares = []
+            failed_close = []
+            missing_asset = []
+            count = 0
+
+            for guid in update_model.asset_guids:
+                
+                metadata = self.mongo_metadata.get_entry("_id", guid)
+                temp_open = self.mongo_track.get_value_for_key(guid, "temporary_reopened_share_status")
+
+                if metadata is None:
+                    missing_asset.append(guid)
+                    count += 1
+                    continue
+
+                institution = metadata["institution"]
+                collection = metadata["collection"]
+
+                if count%200 == 0:
+                    ars_client = storage_client.StorageClient(self.mongo_client)
+
+                if ars_client.close_share(guid, institution, collection, [username], 1):
+                    closed_shares.append(guid)
+                    self.mongo_track.update_entry(guid, "has_open_share", "NO")
+                    self.mongo_track.delete_field(guid, "temporary_reopened_share_status")
+                else:
+                    failed_close.append(guid)
+                count += 1
+
+            fail_string = ""
+            missing_string = ""
+            if failed_close:
+                fail_string = f"Failed to close shares for assets: {failed_close}. "
+            if missing_asset:
+                missing_string = f"Failed to find: {missing_asset} in database. "
+
+            if failed_close or missing_asset:
+                return False, f"{fail_string}{missing_string}Closed ARS file shares by {username} and set track has_open_share to NO for assets: {closed_shares}", 202 
+
+            return True, f"ARS closed shares and set track has_open_share to NO by {username} for assets: {closed_shares}", 200
+
+        except Exception as e:
+            print(f"Closing shares went wrong: {e}")
+            return False, "Things went wrong", 500
+
     def is_process_running(self, pid):
         """Check if a process with given PID is still running."""
         try:
