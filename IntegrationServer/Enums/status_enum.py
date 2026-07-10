@@ -15,6 +15,7 @@ class StatusEnum(Enum):
     RETRY = "RETRY"
     FAILED = "FAILED"
     SKIPPED = "SKIPPED"
+    REMOVED = "REMOVED"
 
 class Status:
     def __init__(self):
@@ -32,3 +33,4 @@ class Status:
         self.RETRY = StatusEnum.RETRY.value
         self.FAILED = StatusEnum.FAILED.value
         self.SKIPPED = StatusEnum.SKIPPED.value
+        self.REMOVED = StatusEnum.REMOVED.value

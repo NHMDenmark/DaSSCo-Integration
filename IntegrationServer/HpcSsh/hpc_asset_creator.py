@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
 import utility
 import time
 from socket import timeout
+from utility_hpc import UtilityHPC
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
 
@@ -34,11 +35,14 @@ class HPCAssetCreator():
         # service name for logging/info purposes
         self.service_name = "Asset creator HPC"
         self.prefix_id = "AcH"
+        self.max_download_count = int(os.getenv("MAX_HPC_DOWNLOAD_COUNT", 3))
 
         self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
         
         self.mongo_client = MongoSharedClient()
+
+        self.hpc_util = UtilityHPC(self.mongo_client)
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.util = utility.Utility()
@@ -93,9 +97,15 @@ class HPCAssetCreator():
                                                                           "jobs_status": status_enum.StatusEnum.WAITING.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.NO.value, "erda_sync": validate_enum.ValidateEnum.YES.value,
                                                                               self.flag_enum.AVAILABLE_FOR_SERVICES.value: validate_enum.ValidateEnum.YES.value}])
-            if asset is None:
+            
+            download_ok = self.hpc_util.can_start_download_job(self.max_download_count)
+            
+            if not download_ok:
+                print("Maximum number of assets being downloaded at the same time reached.")
+
+            if asset is None or not download_ok:
                 #print("No asset found for creation on HPC")
-                time.sleep(1)        
+                time.sleep(15)        
             else: 
 
                 guid = asset["_id"]

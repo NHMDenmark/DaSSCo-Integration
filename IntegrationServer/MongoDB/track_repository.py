@@ -609,3 +609,61 @@ class TrackRepository:
         except Exception as e:
             print(f"Error querying MongoDB: {e}")
             return False
+        
+    def count_assets_in_hpc_load_state(self):
+        """
+        Counts the number of assets running the assetLoader or the assetUploader jobs.
+
+        :return: The count of assets in the specified states.
+        """
+        try:
+            count = self.collection.count_documents({"$or": [
+            {"hpc_ready": "AWAIT",
+             "available_for_services": "YES",
+            "job_list": {
+                "$elemMatch": {
+                    "name": "assetLoader",
+                    "status": "RUNNING"}
+            }}, 
+        {"has_new_file": "UPLOADING",
+         "available_for_services": "YES"}
+        ]})
+            return count
+        except Exception as e:
+            print(f"Error counting assets in HPC load state: {e}")
+            return False
+        
+    def count_assets_in_download_state(self):
+        """
+        Counts the number of assets running the assetLoader.
+
+        :return: The count of assets in the specified state.
+        """
+        try:
+            count = self.collection.count_documents(
+            {"hpc_ready": "AWAIT",
+             "available_for_services": "YES",
+            "job_list": {
+                "$elemMatch": {
+                    "name": "assetLoader",
+                    "status": "RUNNING"}
+            }})
+            return count
+        except Exception as e:
+            print(f"Error counting assets in download state: {e}")
+            return False
+        
+    def count_assets_in_upload_state(self):
+        """
+        Counts the number of assets running the uploader job.
+
+        :return: The count of assets in the specified state.
+        """
+        try:
+            count = self.collection.count_documents(
+            {"has_new_file": "UPLOADING",
+             "available_for_services": "YES"})
+            return count
+        except Exception as e:
+            print(f"Error counting assets in upload state: {e}")
+            return False

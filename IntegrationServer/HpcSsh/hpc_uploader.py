@@ -11,6 +11,7 @@ from Enums import status_enum, validate_enum, flag_enum, metadata_origin, asset_
 import utility
 import time
 from socket import timeout
+from utility_hpc import UtilityHPC
 from HealthUtility import health_caller, run_utility
 from dotenv import load_dotenv
 
@@ -26,6 +27,7 @@ class HPCUploader():
         # service name for logging/info purposes
         self.service_name = "HPC file uploader"
         self.prefix_id = "Hfu"
+        self.max_upload_count = int(os.getenv("MAX_HPC_UPLOAD_COUNT", 3))
 
         self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.job_detail_path = f"{project_root}/ConfigFiles/job_detail_config.json"
@@ -34,6 +36,8 @@ class HPCUploader():
         self.util = utility.Utility()
 
         self.mongo_client = MongoSharedClient()
+        
+        self.hpc_util = UtilityHPC(self.mongo_client)
         self.mongo_track = track_repository.TrackRepository(self.mongo_client)
         self.mongo_metadata = metadata_repository.MetadataRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
@@ -88,9 +92,15 @@ class HPCUploader():
                                                                           "jobs_status": status_enum.StatusEnum.DONE.value, "is_in_ars": validate_enum.ValidateEnum.YES.value,
                                                                             "has_new_file": validate_enum.ValidateEnum.YES.value, "erda_sync": validate_enum.ValidateEnum.NO.value,
                                                                             self.flag_enum.AVAILABLE_FOR_SERVICES.value : self.validate_enum.YES.value, self.flag_enum.METADATA_ORIGIN.value : self.metadata_origin_enum.LUMI_HPC.value}])
-            if asset is None:
+            
+            upload_ok = self.hpc_util.can_start_upload_job(self.max_upload_count)
+
+            if not upload_ok:
+                print("Maximum number of assets being uploaded or downloaded at the same time reached.")
+
+            if asset is None or not upload_ok:
                 #print("No asset found")
-                time.sleep(10)        
+                time.sleep(15)        
             else: 
                  
                 guid = asset["_id"]

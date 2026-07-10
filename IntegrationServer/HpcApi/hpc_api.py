@@ -21,6 +21,7 @@ from HpcApi.fail_job_model import FailJobModel
 from HpcApi.fail_derivative_creation_model import FailDerivativeCreationModel
 from KeycloakInterface.auth import verify_token
 from field_validation import FieldValidation
+from pydantic import ValidationError
 
 util = utility.Utility()
 field_validation = FieldValidation()
@@ -76,7 +77,7 @@ async def update_asset(update_data: update_model, service = Depends(get_service)
 
     if updated is False:
         return JSONResponse(content={"error": "asset not found."}, status_code=422)
-
+"""
 @app.post(f"{front_url}/api/v1/barcode")
 async def insert_barcode(barcode_data: barcode_model, service = Depends(get_service)):
 
@@ -84,6 +85,31 @@ async def insert_barcode(barcode_data: barcode_model, service = Depends(get_serv
 
     if updated is False:
         return JSONResponse(content={"error": "asset not found."}, status_code=422)
+"""
+@app.post(f"{front_url}/api/v1/barcode")
+async def insert_barcode(request: Request, service=Depends(get_service)):
+    data = await request.json()
+
+    try:
+        barcode_data = barcode_model.model_validate(data)  
+    except ValidationError as e:
+        print("Received payload:", data)
+        return JSONResponse(
+            content={
+                "error": "Invalid payload",
+                "details": e.errors(),
+                "received": data,
+            },
+            status_code=422,
+        )
+
+    updated = service.insert_barcode(barcode_data)
+
+    if not updated:
+        return JSONResponse(
+            content={"error": "asset not found."},
+            status_code=422,
+        )
 
 @app.post(f"{front_url}/api/v1/queue_job")
 async def queue_job(queue_data: job_model, service = Depends(get_service)):

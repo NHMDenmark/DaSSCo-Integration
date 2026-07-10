@@ -13,6 +13,7 @@ class ValidateEnum(Enum):
     FALSE = "FALSE"
     ACTIVATE = "ACTIVATE"
     FORCE = "FORCE"
+    REMOVED = "REMOVED"
 
 class Validate:
     def __init__(self):
@@ -28,3 +29,4 @@ class Validate:
         self.FALSE = ValidateEnum.FALSE.value
         self.ACTIVATE = ValidateEnum.ACTIVATE.value
         self.FORCE = ValidateEnum.FORCE.value
+        self.REMOVED = ValidateEnum.REMOVED.value

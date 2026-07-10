@@ -11,6 +11,7 @@ class BarcodeModel(SafeModel):
     MSO: bool
     MOS: bool
     label: bool
+    multi_specimen: bool = False
     disposable: str = None
     issues: List[Dict] = None
 

@@ -246,17 +246,31 @@ def find_directory_name_with_file(parent_directory, filename):
 
 if __name__ == '__main__':
 
-    sc = storage_client.StorageClient()
+    #sc = storage_client.StorageClient()
 
-    status = sc.get_full_asset_status("040ck2b867e9b1b0a00000cabe8e1a")
+    #status = sc.get_full_asset_status("040ck2b867e9b1b0a00000cabe8e1a")
 
-    cstatus = status["data"].status
-    ars_share_allocation = status["data"].share_allocation_mb
-    error_message = status["data"].error_message
+    #cstatus = status["data"].status
+    #ars_share_allocation = status["data"].share_allocation_mb
+    #error_message = status["data"].error_message
 
-    print(cstatus, ars_share_allocation, error_message)
+    #print(cstatus, ars_share_allocation, error_message)
+
+    client = MongoSharedClient()
     
-    #track = track_repository.TrackRepository(client)
+    track = track_repository.TrackRepository(client)
+
+    c =track.count_assets_in_hpc_load_state()
+
+    b = track.count_assets_in_download_state()
+
+    a = track.count_assets_in_upload_state()
+
+    print(a)
+    print(c)
+    print(b)
+
+    track.close_connection()
 
     #b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
 

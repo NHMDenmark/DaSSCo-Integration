@@ -101,7 +101,7 @@ class CloseShare(LogClass):
                 if closed is True:
                     self.track_mongo.update_entry(guid, "has_open_share", self.validate_enum.NO.value)
                     self.update_throttle(asset)
-                    print(f"closed share: {guid}")
+                    #print(f"closed share: {guid}")
             
             if asset is None:
                 #print(f"failed to find assets")
