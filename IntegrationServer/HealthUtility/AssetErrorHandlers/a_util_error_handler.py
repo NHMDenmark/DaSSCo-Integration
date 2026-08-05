@@ -36,6 +36,7 @@ class UtilErrorHandler:
 
             if share_style == "reopened":
                 self.ctx.throttle_mongo.subtract_from_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
+                self.ctx.throttle_mongo.delete_field(asset["_id"], "temporary_reopened_share_status")
             if share_style == "new":
                 self.ctx.throttle_mongo.subtract_from_amount("total_new_asset_size_mb", "value", asset["asset_size"])
             if share_style == "derivative":

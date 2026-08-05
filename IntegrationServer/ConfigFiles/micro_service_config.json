@@ -35,7 +35,7 @@
     "pause_time": 60,
     "pause_check_list": [5, 10],
     "pause_loop_count": 15,
-    "error_tolerance": 5,
+    "error_tolerance": 8,
     "error_time_span": 10,
     "mail_wait_time": 30
   },
