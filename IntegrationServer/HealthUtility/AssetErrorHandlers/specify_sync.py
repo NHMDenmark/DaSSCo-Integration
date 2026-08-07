@@ -25,6 +25,7 @@ class SpecifySyncErrorHandler(BaseErrorHandler):
                 return
 
             error_message = ars_status["data"].error_message
+            ars_internal_status = ars_status["data"].status
 
             if error_message is not None:        
             
@@ -86,8 +87,34 @@ class SpecifySyncErrorHandler(BaseErrorHandler):
                     self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value , self.ctx.status_enum.CRITICAL_ERROR.value)
                     return
 
+            # Handle timeout error status in cases an asset has timed out syncing twice.
+            if ars_internal_status == "SPECIFY_SYNC_SCHEDULED":
 
+                if self.ctx.track_mongo.get_value_for_key(guid, "temporary_time_out_sync_specify_attempt") == 2:
+                    # TODO can insert handle attempts here -> will always upgrade to critical error as is
+                    try:
+                            closed = self.ctx.storage_api.close_share(guid)
+                    except Exception as e:
+                            self.failure_to_handle_updates(guid)
+                            entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for 2 timeouts. Specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
+                            self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
+                            return
+                    
+                    if closed is True:
+                        self.ctx.track_mongo.update_entry(guid, "has_open_share", self.ctx.validate_enum.NO.value)
+                        self.util.subtract_asset_size_from_throttle(asset, "reopened")
+                    else:
+                        self.failure_to_handle_updates(guid)
+                        entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for 2 timeouts. Specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", self.ctx.status_enum.CRITICAL_ERROR.value)
+                        self.ctx.health_caller.warning(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value, self.ctx.status_enum.CRITICAL_ERROR.value)
+                        return
 
+                    self.failure_to_handle_updates(guid)
+                    entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"{guid} failed to sync with specify from ARS. Asset has timed out syncing twice. Fileproxy share has been deleted and the asset removed throttle procedures. Will set specify_sync to CRITICAL_ERROR, has_open_share to NO and available_for_services to NO. Temporary specify sync field removed from track.")
+                    self.ctx.health_caller.error(self.ctx.service_name, entry, guid, self.ctx.flag_enum.SPECIFY_SYNC.value , self.ctx.status_enum.CRITICAL_ERROR.value)
+                    self.ctx.track_mongo.delete_field(guid, "temporary_time_out_sync_specify_attempt")
+                    return                 
+                
             """
             # TODO add a temp variable to track data and have validate sync specify remove this - implement checks for it here to avoid looping the same errored asset
             # TODO needs access to the direct sync with specify endpoint, cant resync without getting rid of the error by doing a fake update to the metadata

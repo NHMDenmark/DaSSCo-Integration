@@ -254,9 +254,23 @@ class ValidateSpecifySync():
         return False
 
     def timeout_handling(self, guid):
+
             again = self.track_mongo.get_value_for_key(guid, "temporary_time_out_sync_specify_attempt")
-            # TODO
-            pass
+
+            if again is None:
+                self.track_mongo.update_entry(guid, "temporary_time_out_sync_specify_attempt", 1)
+                self.update_throttle_count()
+                self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.PREPARE.value)
+            if again == 1:
+                self.track_mongo.update_entry(guid, "temporary_time_out_sync_specify_attempt", 2)
+                self.update_throttle_count()
+                self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.PREPARE.value)
+            if again == 2:
+                self.track_mongo.update_entry(guid, self.flag_enum.SPECIFY_SYNC.value, self.validate_enum.ERROR.value)
+                entry = self.run_util.log_msg(self.prefix_id, f"Asset timed out syncing with specify twice. {guid}. Will set specify_sync to ERROR.")
+                self.health_caller.error(self.service_name, entry, guid, self.flag_enum.SPECIFY_SYNC.value , self.status_enum.ERROR.value)
+                self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+            
         
     def update_throttle_size(self, asset, guid):
 
