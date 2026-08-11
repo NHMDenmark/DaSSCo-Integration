@@ -1,7 +1,7 @@
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
+project_root = os.path.abspath(os.path.join(script_dir, '../..'))
 sys.path.append(project_root)
 
 from HealthUtility.AssetErrorHandlers.a_service_context import ServiceContext
@@ -30,7 +30,10 @@ class UtilErrorHandler:
 
     def subtract_asset_size_from_throttle(self, asset, share_style):
 
-        if share_style in ["reopened", "new", "derivative"]:
+        if share_style is None:
+            self.ctx.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
+
+        elif share_style in ["reopened", "new", "derivative"]:
 
             self.ctx.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
 
@@ -41,9 +44,16 @@ class UtilErrorHandler:
                 self.ctx.throttle_mongo.subtract_from_amount("total_new_asset_size_mb", "value", asset["asset_size"])
             if share_style == "derivative":
                 self.ctx.throttle_mongo.subtract_from_amount("total_derivative_size_mb", "value", asset["asset_size"])
-
         else:
             self.ctx.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
+
+    def determine_asset_open_share_type(self, asset):
+        if asset["sync_erda"] == self.ctx.validate_enum.YES.value:
+            return "reopened"
+        elif asset["hpc_ready"] == self.ctx.validate_enum.YES.value:
+            return "derivative"
+        else:
+            return "new"
 
     def close_proxy_share(self, guid):
         try:

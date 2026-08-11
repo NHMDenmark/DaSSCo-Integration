@@ -166,7 +166,7 @@ class FileUploader():
                                 self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                                 continue
 
-                            uploaded, status = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
+                            uploaded, status, note = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.NO.value)
@@ -177,16 +177,16 @@ class FileUploader():
                             
                                 # If we receive a message back(507) saying the crc values for the uploaded file doesnt fit our value then we move the asset to the TEMP_ERROR status, send a mail and slack message
                                 if status == 507:
-                                    self.handle_status_507(guid, status)
+                                    self.handle_status_507(guid, status, note)
                                     continue
                                 
                                 # Bad gateway handling - sets has_new_file flag to paused
                                 if status == 502:
-                                    self.handle_status_502(guid, status)
+                                    self.handle_status_502(guid, status, note)
                                     continue
 
                                 # Catch all in case of an unforeseen issue the service will send a mail and slack message about the error
-                                self.handle_other_fails(guid, status)
+                                self.handle_other_fails(guid, status, note)
                                 
                         time.sleep(1)
 
@@ -228,30 +228,30 @@ class FileUploader():
             print("Waited 60 seconds before retrying to create the storage client after failing once")                
             self.storage_api = self.create_storage_api()
 
-    def handle_status_507(self, guid, status):
+    def handle_status_507(self, guid, status, note):
 
         self.track_mongo.update_entry(guid, "temp_timeout_status", True)
         self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
         self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
-        entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status}. Setting has_new_file to PAUSED since this was likely a crc check fail. Asset will wait at least 10 minutes before trying again.")
+        entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status}. Setting has_new_file to PAUSED since this was likely a crc check fail. Asset will wait at least 10 minutes before trying again. Wrapper msg: {note}")
         self.health_caller.warning(self.service_name, entry, guid, self.status_enum.PAUSED.value, "has_new_file")
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
-    def handle_status_502(self, guid, status):
+    def handle_status_502(self, guid, status, note):
 
         self.track_mongo.update_entry(guid, "temp_timeout_status", True)
         self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
         self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
-        entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status} bad gateway. Check ARS internal communication for failures. Setting has_new_file to PAUSED Asset will wait at least 10 minutes before trying again.")
+        entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status} bad gateway. Check ARS internal communication for failures. Setting has_new_file to PAUSED Asset will wait at least 10 minutes before trying again. Wrapper msg: {note}")
         self.health_caller.warning(self.service_name, entry, guid, self.status_enum.PAUSED.value, "has_new_file")
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
-    def handle_other_fails(self, guid, status):
+    def handle_other_fails(self, guid, status, note):
 
         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.ERROR.value)
-        entry = self.run_util.log_exc(self.prefix_id, f"File uploader failed with status: {status}", None, self.status_enum.ERROR.value)
+        entry = self.run_util.log_exc(self.prefix_id, f"File uploader failed with status: {status}", note, self.status_enum.ERROR.value)
         self.health_caller.error(self.service_name, entry, guid, "has_new_file", self.status_enum.ERROR.value)
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                                 

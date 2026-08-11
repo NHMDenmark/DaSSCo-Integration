@@ -245,7 +245,7 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
-
+    
     #sc = storage_client.StorageClient()
 
     #status = sc.get_full_asset_status("040ck2b867e9b1b0a00000cabe8e1a")

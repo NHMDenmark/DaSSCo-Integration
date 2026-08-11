@@ -1,7 +1,7 @@
 import sys
 import os
 script_dir = os.path.abspath(os.path.dirname(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
+project_root = os.path.abspath(os.path.join(script_dir, '../..'))
 sys.path.append(project_root)
 
 from HealthUtility.AssetErrorHandlers.a_base_error_handler import BaseErrorHandler
@@ -27,9 +27,15 @@ class HasNewFileErrorHandler(BaseErrorHandler):
             status = ars_status["data"].status
             ars_share_allocation = ars_status["data"].share_allocation_mb
             error_message = ars_status["data"].error_message
+            
             asset_size = asset["asset_size"]
+
             institution = self.ctx.metadata_mongo.get_value_for_key(guid, "institution")
             collection = self.ctx.metadata_mongo.get_value_for_key(guid, "collection")
+
+            share_type = None
+            if ars_share_allocation is not None:
+                share_type = self.util.determine_asset_open_share_type(asset)
 
             if error_message is not None:
                 pass
@@ -68,6 +74,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                         self.util.remove_asset_from_in_flight_count()
                         try:
                             self.util.close_proxy_share(guid)
+                            self.util.subtract_asset_size_from_throttle(guid, share_type)
                         except Exception as e:
                             entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                             self.ctx.health_caller.error(self.ctx.service_name, entry, guid)
@@ -82,6 +89,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                     self.util.remove_asset_from_in_flight_count()
                     try:
                         self.util.close_proxy_share(guid)
+                        self.util.subtract_asset_size_from_throttle(guid, share_type)
                     except Exception as e:
                         entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.error(self.ctx.service_name, entry, guid)
@@ -107,6 +115,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                         self.util.remove_asset_from_in_flight_count()
                         try:
                             self.util.close_proxy_share(guid)
+                            self.util.subtract_asset_size_from_throttle(guid, share_type)
                         except Exception as e:
                             entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                             self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            
@@ -120,11 +129,11 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                     self.util.remove_asset_from_in_flight_count()
                     try:
                         self.util.close_proxy_share(guid)
+                        self.util.subtract_asset_size_from_throttle(guid, share_type)
                     except Exception as e:
                         entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            
                     return
-
 
             # others
             self.ctx.track_mongo.update_entry(guid, self.ctx.flag_enum.HAS_NEW_FILE.value, self.ctx.status_enum.CRITICAL_ERROR.value)
@@ -134,7 +143,8 @@ class HasNewFileErrorHandler(BaseErrorHandler):
             self.util.remove_asset_from_in_flight_count()
             try:
                 self.util.close_proxy_share(guid)
+                self.util.subtract_asset_size_from_throttle(guid, share_type)
             except Exception as e:
                 entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                 self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            
-            return
+            return            

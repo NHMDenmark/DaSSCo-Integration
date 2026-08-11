@@ -287,16 +287,15 @@ class StorageClient():
                status_code = response.status_code
 
                if status_code == 200:
-                    return True, 200
-               
-               # Reponse indicates a mismatch between received crc and the expected crc
-               if status_code == 507:
-                    return False, 507
+                    return True, 200, None
+               else:
+                    return False, status_code, None
 
           except Exception as e:
+               status_code, note = self.get_status_code_from_exc(e)
                e = f"Api or wrapper fail: {e}"
                print(e)
-               return False, e
+               return False, status_code, note
           
      # returns true if file info sync status is SYNCHRONIZED, otherwise return False
      def check_file_info_for_asset(self, guid):
