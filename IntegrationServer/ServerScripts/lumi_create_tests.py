@@ -59,13 +59,13 @@ if __name__ == "__main__":
     test_number = int(sys.argv[1])
 
     # Set the base folder where the assets will be copied to
-    base_folder = "/work/Ndrive/LUMI-WS-01"
+    base_folder = "/mnt/SCI-SNM-DigitalCollections/DaSSCo/IT_infrastructure/Integration/ARS-TEST-DATA/LUMI-WS-01"
 
     # Can be set to any folder with the asset files to copy - "imported_" prefix is important if using the base folder
-    copy_from_folder_path = base_folder + "/imported-test/" 
+    copy_from_folder_path = "/home/dassco/Ndrive/LUMI-WS-01/imported_test/" 
 
     # Path to txt file with a number starting the count of copies
-    txt_file = "/work/Ndrive/lumi-test-number.txt"
+    txt_file = "/home/dassco/Ndrive/lumi-test-number.txt"
 
     if not os.path.exists(txt_file):
         with open(txt_file, "w") as f:
