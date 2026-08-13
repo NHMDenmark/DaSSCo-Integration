@@ -48,7 +48,7 @@ class UtilErrorHandler:
             self.ctx.throttle_mongo.subtract_from_amount("total_asset_size_mb", "value", asset["asset_size"])
 
     def determine_asset_open_share_type(self, asset):
-        if asset["sync_erda"] == self.ctx.validate_enum.YES.value:
+        if asset["erda_sync"] == self.ctx.validate_enum.YES.value:
             return "reopened"
         elif asset["hpc_ready"] == self.ctx.validate_enum.YES.value:
             return "derivative"

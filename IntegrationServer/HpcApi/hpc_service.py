@@ -559,6 +559,7 @@ class HPCService():
 
         if asset is not None:
             self.mongo_track.update_entry(asset_guid, "hpc_ready", self.validate.YES.value)
+            print(f"{asset_guid} is ready for hpc processing")
             return True
         else:
             return False

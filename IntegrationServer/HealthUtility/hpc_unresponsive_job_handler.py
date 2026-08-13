@@ -104,7 +104,7 @@ class HPCUnresponsiveJobHandler():
             # TODO decide if queued here
             #queued_asset_list = self.track_mongo.get_entries_from_multiple_key_pairs()
             
-            wait_time = 600
+            wait_time = 1800
             time.sleep(wait_time)
 
             for asset_tuple in starting_tuple_list:

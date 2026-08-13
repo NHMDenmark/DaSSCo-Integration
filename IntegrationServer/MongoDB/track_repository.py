@@ -635,12 +635,13 @@ class TrackRepository:
         
     def count_assets_in_download_state(self):
         """
-        Counts the number of assets running the assetLoader.
+        Counts the number of assets running or queued for the assetLoader job.
 
         :return: The count of assets in the specified state.
         """
+        count = 0
         try:
-            count = self.collection.count_documents(
+            running = self.collection.count_documents(
             {"hpc_ready": "AWAIT",
              "available_for_services": "YES",
             "job_list": {
@@ -648,6 +649,26 @@ class TrackRepository:
                     "name": "assetLoader",
                     "status": "RUNNING"}
             }})
+            count = running
+            queued = self.collection.count_documents(
+                        {"hpc_ready": "AWAIT",
+                        "available_for_services": "YES",
+                        "job_list": {
+                            "$elemMatch": {
+                                "name": "assetLoader",
+                                "status": "QUEUED"}
+                        }})
+            count += queued
+            waiting = self.collection.count_documents(
+                        {"hpc_ready": "AWAIT",
+                        "available_for_services": "YES",
+                        "job_list": {
+                            "$elemMatch": {
+                            "name": "assetLoader",
+                            "status": "WAITING"}
+                        }})
+            count += waiting
+
             return count
         except Exception as e:
             print(f"Error counting assets in download state: {e}")

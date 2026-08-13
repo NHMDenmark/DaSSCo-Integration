@@ -74,7 +74,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                         self.util.remove_asset_from_in_flight_count()
                         try:
                             self.util.close_proxy_share(guid)
-                            self.util.subtract_asset_size_from_throttle(guid, share_type)
+                            self.util.subtract_asset_size_from_throttle(asset, share_type)
                         except Exception as e:
                             entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                             self.ctx.health_caller.error(self.ctx.service_name, entry, guid)
@@ -89,7 +89,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                     self.util.remove_asset_from_in_flight_count()
                     try:
                         self.util.close_proxy_share(guid)
-                        self.util.subtract_asset_size_from_throttle(guid, share_type)
+                        self.util.subtract_asset_size_from_throttle(asset, share_type)
                     except Exception as e:
                         entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.error(self.ctx.service_name, entry, guid)
@@ -115,7 +115,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                         self.util.remove_asset_from_in_flight_count()
                         try:
                             self.util.close_proxy_share(guid)
-                            self.util.subtract_asset_size_from_throttle(guid, share_type)
+                            self.util.subtract_asset_size_from_throttle(asset, share_type)
                         except Exception as e:
                             entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                             self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            
@@ -129,7 +129,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
                     self.util.remove_asset_from_in_flight_count()
                     try:
                         self.util.close_proxy_share(guid)
-                        self.util.subtract_asset_size_from_throttle(guid, share_type)
+                        self.util.subtract_asset_size_from_throttle(asset, share_type)
                     except Exception as e:
                         entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                         self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            
@@ -143,7 +143,7 @@ class HasNewFileErrorHandler(BaseErrorHandler):
             self.util.remove_asset_from_in_flight_count()
             try:
                 self.util.close_proxy_share(guid)
-                self.util.subtract_asset_size_from_throttle(guid, share_type)
+                self.util.subtract_asset_size_from_throttle(asset, share_type)
             except Exception as e:
                 entry = self.ctx.run_util.log_exc(self.ctx.prefix_id, f"Also failed to close file proxy share for {guid} while handling has_new_file error.", e, self.ctx.status_enum.CRITICAL_ERROR.value)
                 self.ctx.health_caller.error(self.ctx.service_name, entry, guid)            

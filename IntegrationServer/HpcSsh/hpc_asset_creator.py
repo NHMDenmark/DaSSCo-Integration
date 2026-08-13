@@ -123,8 +123,10 @@ class HPCAssetCreator():
 
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     #print(f"bash {script_path} {guid} {batch_id} {link}")
+                    print({guid})
                     try:
                         self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid} {batch_id}")
+                        print("ssh command sent")
                         
                     except Exception as e:
                         print(e)
