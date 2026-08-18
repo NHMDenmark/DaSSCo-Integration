@@ -264,9 +264,9 @@ class AssetCreator():
 
             # if an asset is found create it in ARS
             if asset is not None:
-                print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
+                #print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]                
-                print(guid)
+                #print(guid)
 
                 # check if barcodes has been addded before processing for new assets - if so specimens needs to be created first in ARS
                 if derivative_asset is False and new_asset is True:
@@ -299,6 +299,7 @@ class AssetCreator():
                 # fail scenarios
                 if created is False:
                     # handles if status code is a negative number - this means we set it during another exception - see storage_client.get_status_code_from_exc()
+                    print(f"{guid} failed to create and got status {status_code}")
                     if status_code < 0: 
                         message = self.run_util.log_exc(self.prefix_id, response, exc, self.run_util.log_enum.ERROR.value)
                         self.health_caller.error(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
@@ -310,9 +311,10 @@ class AssetCreator():
                         # TODO check if asset exists in ARS, add to throttle value
                         
                     # TODO handle 300-399?
-
-                    if status_code > 299 and status_code != 504:
-                        print(f"{guid} failed to create and got status {status_code}")
+                    if status_code > 299 and status_code < 400:
+                        message = self.run_util.log_msg(self.prefix_id, f"Failed to create and got status {status_code}. {response}")
+                        self.health_caller.warning(self.service_name, message, guid, "is_in_ars", self.validate_enum.ERROR.value)
+                        self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
 
                     # handle status 400 - bad request. We can get this when an asset already exist. 
                     if status_code == 400:

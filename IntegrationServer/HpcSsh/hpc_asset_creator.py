@@ -35,7 +35,7 @@ class HPCAssetCreator():
         # service name for logging/info purposes
         self.service_name = "Asset creator HPC"
         self.prefix_id = "AcH"
-        self.max_download_count = int(os.getenv("MAX_HPC_DOWNLOAD_COUNT", 3))
+        self.max_download_count = int(os.getenv("MAX_HPC_DOWNLOAD_COUNT", 8))
 
         self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.hpc_config_path = f"{project_root}/ConfigFiles/slurm_config.json"
@@ -123,10 +123,9 @@ class HPCAssetCreator():
 
                     self.mongo_track.update_entry(guid, "hpc_ready", validate_enum.ValidateEnum.AWAIT.value)
                     #print(f"bash {script_path} {guid} {batch_id} {link}")
-                    print({guid})
                     try:
                         self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid} {batch_id}")
-                        print("ssh command sent")
+                        #print("ssh command sent")
                         
                     except Exception as e:
                         print(e)

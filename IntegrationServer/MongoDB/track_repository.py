@@ -343,7 +343,7 @@ class TrackRepository:
         
         if self.get_entry("_id", guid) is None:
             # Insert the new document into the collection
-            print(guid)
+            #print(guid)
             self.collection.insert_one(entry_data)
             return True
         else:

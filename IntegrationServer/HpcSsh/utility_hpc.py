@@ -24,7 +24,7 @@ class UtilityHPC:
         current_downloading_assets = self.get_downloading_assets()
         
         # If the current downloading assets are less than the max allowed, we can run
-        print(f"Current downloading assets: {current_downloading_assets}, Max allowed: {max_assets}")
+        #print(f"Current downloading assets: {current_downloading_assets}, Max allowed: {max_assets}")
         return current_downloading_assets < max_assets
     
     def can_start_upload_job(self, max_assets: int) -> bool:
@@ -32,7 +32,7 @@ class UtilityHPC:
         current_uploading_assets = self.get_uploading_assets()
         
         # If the current uploading assets are less than the max allowed, we can run
-        print(f"Current uploading assets: {current_uploading_assets}, Max allowed: {max_assets}")
+        #print(f"Current uploading assets: {current_uploading_assets}, Max allowed: {max_assets}")
         return current_uploading_assets < max_assets
 
     def get_all_loading_assets(self):

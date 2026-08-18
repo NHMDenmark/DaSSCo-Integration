@@ -107,7 +107,7 @@ class HPCJobCaller():
                         self.mongo_track.update_track_job_status(guid, name, status_enum.StatusEnum.STARTING.value)
                         self.mongo_track.update_entry(guid, "jobs_status", status_enum.StatusEnum.STARTING.value)
 
-                        print(script_path, name, guid)
+                        #print(script_path, name, guid)
                         try:
                             self.con.ssh_command(f"bash lumi_setup.sh bash {script_path} {guid}")
                             time.sleep(1)

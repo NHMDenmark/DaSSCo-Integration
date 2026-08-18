@@ -64,7 +64,7 @@ class HPCService():
         parents_print = "parents: "
         for p in metadata.parent_guids:
             parents_print = parents_print + " " + p
-        print(parents_print)
+        #print(parents_print)
 
         try:
             total_parent_size = 0
@@ -101,14 +101,14 @@ class HPCService():
                 if asset_type == "":
                     asset_type = t_parent["asset_type"]
                 
-            print(f"asset type: {asset_type}")
+            #print(f"asset type: {asset_type}")
 
             metadata_flag = self.mongo_metadata.create_metadata_entry_from_api(metadata.asset_guid, metadata.dict())
             
             if metadata_flag is True:
-                print(f"created metadata for derivative: {metadata.asset_guid} {metadata.pipeline_name}")
+                #print(f"created metadata for derivative: {metadata.asset_guid} {metadata.pipeline_name}")
                 metadata_flag = self.mongo_track.create_derivative_track_entry(metadata.asset_guid, metadata.pipeline_name, self.origin.LUMI_HPC.value, parent_barcode_specimen_id, asset_type)
-                print(f"track data for derivative {metadata_flag}")
+                #print(f"track data for derivative {metadata_flag}")
                 if metadata_flag is False:
                     self.mongo_metadata.delete_entry(metadata.asset_guid)        
                     return metadata_flag
@@ -303,7 +303,7 @@ class HPCService():
         disposable = barcode_data.disposable
         issues = barcode_data.issues
 
-        print("from barcode:", guid, job_name, status, asset_subject)
+        #print("from barcode:", guid, job_name, status, asset_subject)
 
         if None in [guid, job_name, status, MSO, MOS, label]:
             return False
@@ -319,13 +319,13 @@ class HPCService():
             return True
 
         metadata_update = {"barcode": barcode_list, "multispecimen": MSO, "asset_subject": asset_subject}
-        print(metadata_update)
+        #print(metadata_update)
 
         # Checks the job finished correctly. Gets the asset type from the enum list (returns false if still unknown) and updates it.
         # Handles asset types that dont need further processing by removing "waiting" jobs
         if status == self.status.DONE.value:
             enum_type = self.get_enum_asset_type(asset_subject)
-            print(f"Enum type/asset type: {enum_type}")
+            #print(f"Enum type/asset type: {enum_type}")
             if enum_type == AssetTypeEnum.UNKNOWN.value:
                 return False
             self.mongo_track.update_asset_type(guid, enum_type)
@@ -441,7 +441,7 @@ class HPCService():
         self.mongo_track.update_track_job_list(guid, job_name, "hpc_job_id", job_id)
         self.mongo_track.update_track_job_list(guid, job_name, "job_queued_time", job_queued_time)
 
-        print(f"{job_name} queued for {guid}")
+        #print(f"{job_name} queued for {guid}")
         return True
     
     # update track database that a job has started
@@ -470,7 +470,7 @@ class HPCService():
 
         self.jobs_status_update(guid, job_name, self.status.RUNNING.value)
 
-        print(f"{job_name} started for {guid}")
+        #print(f"{job_name} started for {guid}")
         return True
     
     # handles when hpc jobs return failure status of vairous kinds
@@ -559,7 +559,7 @@ class HPCService():
 
         if asset is not None:
             self.mongo_track.update_entry(asset_guid, "hpc_ready", self.validate.YES.value)
-            print(f"{asset_guid} is ready for hpc processing")
+            #print(f"{asset_guid} is ready for hpc processing")
             return True
         else:
             return False

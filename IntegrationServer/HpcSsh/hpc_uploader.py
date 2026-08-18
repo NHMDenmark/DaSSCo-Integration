@@ -95,16 +95,12 @@ class HPCUploader():
             
             upload_ok = self.hpc_util.can_start_upload_job(self.max_upload_count)
 
-            if not upload_ok:
-                print("Maximum number of assets being uploaded or downloaded at the same time reached.")
-
             if asset is None or not upload_ok:
-                #print("No asset found")
                 time.sleep(15)        
             else: 
                  
                 guid = asset["_id"]
-                
+                print(guid)
                 try:
                     # adds a uploader job to the jobs list
                     self.create_track_job(guid, asset)

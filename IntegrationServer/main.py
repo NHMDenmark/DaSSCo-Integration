@@ -255,7 +255,7 @@ if __name__ == '__main__':
     #error_message = status["data"].error_message
 
     #print(cstatus, ars_share_allocation, error_message)
-
+    """
     client = MongoSharedClient()
     
     track = track_repository.TrackRepository(client)
@@ -271,7 +271,7 @@ if __name__ == '__main__':
     print(b)
 
     track.close_connection()
-
+    """
     #b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
 
     #print(b)
