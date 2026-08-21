@@ -245,16 +245,43 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
+    job_id = 21379691
+    client = MongoSharedClient()
+    cons = connections.Connections(client)
+    cons.create_ssh_connection("lumi")
+    con = cons.get_connection()
     
-    #sc = storage_client.StorageClient()
+    # cases to solve:
+    # fail state: CANCELLED, TIMEOUT, FAIELD, OUT_OF_MEMORY, NODE_FAIL, PREEMPTED
+    # unresolved state: PENDING, RUNNING
+    # check asset status state: COMPLETED
+    # others
+    # nothing
+    response = con.ssh_command(f"sacct -j {job_id} --noheader --format=JobName,State")
+    print(response)
+    lines = response.strip().splitlines()
+    for line in lines:
+        job_name, state = line.split()
+        state = state.rstrip("+")  # Remove the trailing '+' if present
+        job_name = job_name.rstrip("+")  # Remove the trailing '+' if present
+        print(job_name, state)
+    
+    cons.close_connection()
 
-    #status = sc.get_full_asset_status("040ck2b867e9b1b0a00000cabe8e1a")
+    """
+    sc = storage_client.StorageClient()
 
-    #cstatus = status["data"].status
-    #ars_share_allocation = status["data"].share_allocation_mb
-    #error_message = status["data"].error_message
+    status = sc.get_full_asset_status("040ck2b867e9a0707100d3669bc67f")
 
-    #print(cstatus, ars_share_allocation, error_message)
+    cstatus = status["data"].status
+    ars_share_allocation = status["data"].share_allocation_mb
+    error_message = status["data"].error_message
+
+    print(cstatus, ars_share_allocation, error_message)
+
+    if ars_share_allocation is None:
+        print("ars_share_allocation is None")
+    """
     """
     client = MongoSharedClient()
     
@@ -272,18 +299,4 @@ if __name__ == '__main__':
 
     track.close_connection()
     """
-    #b = track.get_value_for_key("040ck2b867e980e0e1a160c930d721_72", "barcode_asset_specimen_id_list")
-
-    #print(b)
-    #createRes = sc.create_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["sheet"], role_restrictions=[])
-
-    #found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu566")
-    #print(found, res, msg)
-    """
-    print(res["data"].preparation_types)
-    sc.update_specimen("NHMD", "NHMD Vascular Plants", "hubu5", "spid_hubu5", ["pinned"], role_restrictions=[])
-
-    found, res, msg = sc.get_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
-    print(found, res, msg)
-    sc.delete_specimen("NHMD", "NHMD Vascular Plants", "hubu5")
-    """
+    

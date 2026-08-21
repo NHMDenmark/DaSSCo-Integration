@@ -8,9 +8,12 @@ import time
 from datetime import datetime, timedelta
 import utility
 from MongoDB.mongo_connection import MongoSharedClient
-from MongoDB import track_repository
+from MongoDB import track_repository, service_repository
+from Connections import connections
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum
+from socket import timeout
+from dotenv import load_dotenv
 
 """
 Service that handles assets which have jobs that never gave an answer after being run. Their jobs_status would then be stuck with the "STARTING" or "RUNNING" status.
@@ -19,26 +22,33 @@ class HPCUnresponsiveJobHandler():
 
     def __init__(self):
 
+        load_dotenv()
+
         self.log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
         self.logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
         self.pid = os.getpid()
         # service name for logging/info purposes
         self.service_name = "HPC unresponsive job handler"
         self.prefix_id= "Hujh"
+        self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
 
         self.util = utility.Utility()
         self.mongo_client = MongoSharedClient()
         self.track_mongo = track_repository.TrackRepository(self.mongo_client)
+        self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
         self.flag_enum = flag_enum.FlagEnum
+        self.cons = connections.Connections(self.mongo_client)
 
         self.run_util = run_utility.RunUtility(self.prefix_id, self.service_name, self.log_filename, self.logger_name, self.pid, self.mongo_client)
         
         self.run_util.service_starting_updates()        
         entry = self.run_util.log_msg(self.prefix_id, f"{self.service_name} status changed at initialisation to {self.status_enum.RUNNING.value}")
         self.health_caller.run_status_change(self.service_name, self.status_enum.RUNNING.value, entry)
+
+        self.con = self.create_ssh_connection()
 
         self.run = self.run_util.get_service_run_status()
         
@@ -145,6 +155,12 @@ class HPCUnresponsiveJobHandler():
                     
                     asset, guid, job_name = asset_tuple
 
+                    # TODO contact slurm and check status there, remove from slurm queue or handle accordingly if job is still running there, if not then set to retry
+                    slurm_job_status = self.get_slurm_job_status(self, job_name)
+
+                    if slurm_job_status is False:
+                        self.end_of_loop_checks()
+
                     self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.RETRY.value)
 
                     entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name} not responding for more than {wait_time} seconds while status was {self.status_enum.STARTING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
@@ -156,6 +172,12 @@ class HPCUnresponsiveJobHandler():
                 for asset_tuple in unresponsive_running_list:
                     
                     asset, guid, job_name, hpc_job_id = asset_tuple
+
+                    # TODO contact slurm and check status there, remove from slurm queue or handle accordingly if job is still running there, if not then set to retry
+                    slurm_job_status = self.get_slurm_job_status(self, job_name)
+                    
+                    if slurm_job_status is False:
+                        self.end_of_loop_checks()
 
                     print(f"Handling {guid} with job {job_name} and hpc job id {hpc_job_id}")
 
@@ -169,6 +191,7 @@ class HPCUnresponsiveJobHandler():
     
         # outside loop
         self.run_util.service_stopping_updates()
+        self.cons.close_connection()
         self.close_db_connections()
         print(f"{self.service_name} shutdown")
 
@@ -187,6 +210,54 @@ class HPCUnresponsiveJobHandler():
             self.run_util.service_mongo.close_connection()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
+
+    def create_ssh_connection(self):
+            
+            self.cons.create_ssh_connection(self.ssh_config_name)
+            # handle when connection wasnt established - calls health service and sets run config to STOPPED
+            if self.cons.exc is not None:
+                entry = self.run_util.log_exc(self.prefix_id, self.cons.msg, self.cons.exc, self.status_enum.ERROR.value)
+                self.health_caller.warning(self.service_name, entry)
+                self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.STOPPED.value)
+            
+            return self.cons.get_connection()
+
+    def get_slurm_job_status(self, job_id, connection_fail=0):
+
+        try:
+            response = self.con.ssh_command(f"sacct -j {job_id} --format=JobID,JobName,State,Elapsed,Timelimit,ExitCode")
+            
+        except Exception as e:
+            print(e)
+            time.sleep(20)
+        
+            if isinstance(e, timeout):
+                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                self.health_caller.warning(self.service_name, entry)
+                                        
+            else:
+                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                self.health_caller.error(self.service_name, entry)
+        
+            self.con.close()
+            self.cons.close_connection()
+
+            if connection_fail == 3:
+                entry = self.run_util.log_msg(self.prefix_id, f"Failed to reconnect to HPC server after 3 attempts. Will try pausing service.")
+                self.health_caller.warning(self.service_name, entry)
+
+                service_status = self.service_mongo.get_value_for_key(self.service_name, "run_status")
+                if service_status != self.status_enum.STOPPED.value:
+                    self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.PAUSED.value)
+                return False
+            else:
+                connection_fail += 1
+                self.cons = connections.Connections(self.mongo_client)
+                self.con = self.create_ssh_connection()
+                self.get_slurm_job_status(job_id, connection_fail)
+            
+        return response
+
 
 if __name__ == "__main__":
     HPCUnresponsiveJobHandler()
