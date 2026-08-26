@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 import utility
 from MongoDB.mongo_connection import MongoSharedClient
-from MongoDB import track_repository, service_repository
+from MongoDB import track_repository, service_repository, metadata_repository
 from Connections import connections
 from StorageApi import storage_client
 from HealthUtility import health_caller, run_utility
@@ -32,11 +32,13 @@ class HPCUnresponsiveJobHandler():
         self.service_name = "HPC unresponsive job handler"
         self.prefix_id= "Hujh"
         self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
+        self.hpc_asset_directory = os.getenv("HPC_ASSET_DIRECTORY")
 
         self.util = utility.Utility()
         self.mongo_client = MongoSharedClient()
         self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
+        self.metadata_mongo = metadata_repository.MetadataRepository(self.mongo_client)
         self.health_caller = health_caller.HealthCaller()
         self.status_enum = status_enum.StatusEnum
         self.validate_enum = validate_enum.ValidateEnum
@@ -291,18 +293,59 @@ class HPCUnresponsiveJobHandler():
         return reply
 
     def get_hpc_file_status(self, guid, connection_fail=0):
-            reply = []
+            
             result = False
+            failure_state = False            
+
             try:
-                response = self.con.ssh_command(f"sacct -j {job_id} --noheader --format=JobName,State")
+                parent_guids = self.metadata_mongo.get_value_for_key(guid, "parent_guids")
+                if parent_guids is not None:
+                    parent_guid = parent_guids[0]
+                    batchlist_name = self.track_mongo.get_value_for_key(parent_guid, "batch_list_name")              
+                else:
+                    batchlist_name = self.track_mongo.get_value_for_key(guid, "batch_list_name")
+
+                if batchlist_name is None:
+                    # TODO handle not finding a batchlist name
+                    print(f"Unable to find batch list name for {guid}") 
+                    return False, True
+                
+                path = os.path.join(self.hpc_asset_directory, batchlist_name)
+                
+                response = self.con.ssh_command(f"ls -ll {path} | grep {guid}")
+                
                 lines = response.strip().splitlines()
-                for line in lines:
-                    job_name, state = line.split()
-                    # Remove the trailing '+' if present
-                    state = state.rstrip("+")  
-                    job_name = job_name.rstrip("+")
-                    reply.append({"job_id": job_id, "job_name": job_name, "state": state})
-                print(reply)
+
+                if len(lines) < 2:
+                    # TODO handle this - note this can be a success for clean up jobs
+                    print(f"Did not find 2 files for {guid} in HPC directory {path}")
+                    return False, False 
+                else:
+                    jpeg_line = next((line for line in lines if f"{guid}.jpeg" in line), None)
+                    tif_line = next((line for line in lines if f"{guid}.tif" in line), None)
+                    json_line = next((line for line in lines if f"{guid}.json" in line), None)
+
+                    if tif_line and json_line:
+                        file_size_bytes = int(tif_line.split()[4])
+                        file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
+
+                        file_info = self.track_mongo.get_file_info(guid, "tif")
+
+                    elif jpeg_line and json_line:
+                        file_size_bytes = int(jpeg_line.split()[4])
+                        file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
+                        file_info = self.track_mongo.get_file_info(guid, "jpeg")
+
+                    else:
+                        # TODO handle this
+                        print(f"Did not find matching files pair for {guid} in HPC directory {path}")
+                        return False, True
+
+                    expected_file_size = file_info["file_size"]
+                    if expected_file_size == file_size_mb:
+                        result = True
+                    else:
+                        print(f"Failed to match file size of {guid} found in track with actual file on HPC.")
                 
             except Exception as e:
                 print(e)
@@ -333,7 +376,7 @@ class HPCUnresponsiveJobHandler():
                     self.con = self.create_ssh_connection()
                     return self.get_hpc_file_status(guid, connection_fail)
                 
-            return result, False
+            return result, failure_state
 
     def handle_completed_state(self, guid, job_name, hpc_job_id):
 
@@ -379,14 +422,52 @@ class HPCUnresponsiveJobHandler():
                 return False
             
             if hpc_file_status is False:
-                # TODO handle - update jobs status to done?
+                # job success
+                self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.DONE.value)
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
+                self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.NO.value)
+                self.track_mongo.update_entry(guid, "specify_sync", self.validate_enum.PREPARE.value)
+                
                 return False
-
             
             return True
 
         elif job_name == "uploader":
-            pass
+
+            storage_api = self.create_storage_api()
+
+            try:
+                uploaded = storage_api.check_file_uploaded(guid)
+
+                if uploaded is True:
+
+                    found, files_info, status_code = storage_api.get_files_info(guid)
+
+                    if found:
+                        file_format = self.metadata_mongo.get_value_for_key(guid, "file_format")
+                        track_file_info = self.track_mongo.get_file_info(guid, file_format)
+                        
+                        if track_file_info is None:
+                            # TODO handle as error
+                            print(f"Unable to find file info in track for {guid}")
+                            return False
+                        
+                        expected_check_sum = track_file_info["check_sum"]
+                        for file in files_info:
+                            if file["crc"] ==  expected_check_sum:
+                                # job success
+                                self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.DONE.value)
+                                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
+                                self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.AWAIT.value)
+
+                                return False
+
+            except Exception as e:
+                entry = self.run_util.log_exc(self.prefix_id, f"Failed call to ARS during unresponsive hpc job handling for asset {guid}, job {job_name} with id {hpc_job_id}.", e)
+                self.health_caller.error(self.service_name, entry)
+                return False
+
+            return True
 
         elif job_name == "barcode":
             return True

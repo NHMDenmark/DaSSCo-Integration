@@ -245,29 +245,71 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
+
+    guid = "040ck2b867e9a0306142212233b675_400"
+    sc = storage_client.StorageClient()
+
+    found, file_list, status_code = sc.get_files_info(guid)
+
+    print(found, file_list, status_code)
+
+    """
+    load_dotenv()
+    home_path = os.getenv("HPC_ASSET_DIRECTORY")
     job_id = 21379691
+    guid= "040ck2b867e9a07073005162f12635_400"
     client = MongoSharedClient()
+    track = track_repository.TrackRepository(client)
+    metadata = metadata_repository.MetadataRepository(client)
     cons = connections.Connections(client)
     cons.create_ssh_connection("lumi")
     con = cons.get_connection()
-    
-    # cases to solve:
-    # fail state: CANCELLED, TIMEOUT, FAIELD, OUT_OF_MEMORY, NODE_FAIL, PREEMPTED
-    # unresolved state: PENDING, RUNNING
-    # check asset status state: COMPLETED
-    # others
-    # nothing
-    response = con.ssh_command(f"sacct -j {job_id} --noheader --format=JobName,State")
-    print(response)
-    lines = response.strip().splitlines()
-    for line in lines:
-        job_name, state = line.split()
-        state = state.rstrip("+")  # Remove the trailing '+' if present
-        job_name = job_name.rstrip("+")  # Remove the trailing '+' if present
-        print(job_name, state)
-    
-    cons.close_connection()
 
+    info = track.get_file_info(guid, "tif")
+    print(info)
+    # cases to solve:
+        # fail state: CANCELLED, TIMEOUT, FAIELD, OUT_OF_MEMORY, NODE_FAIL, PREEMPTED
+        # unresolved state: PENDING, RUNNING
+        # check asset status state: COMPLETED
+        # others
+        # nothing
+    expected_file_size = info["file_size"]
+    pgs = metadata.get_value_for_key(guid, "parent_guids")
+    if pgs is not None:
+        pg = pgs[0]
+        batchlist_name = track.get_value_for_key(pg, "batch_list_name")              
+    else:
+        batchlist_name = track.get_value_for_key(guid, "batch_list_name")
+    path = os.path.join(home_path, batchlist_name)
+    
+    response = con.ssh_command(f"ls -ll {path} | grep {guid}")
+    
+    lines = response.strip().splitlines()
+
+    if len(lines) < 2:
+        print("Expected at least 2 files")
+    else:
+        jpg_line = next((line for line in lines if ".jpeg" in line), None)
+        tif_line = next((line for line in lines if ".tif" in line), None)
+        json_line = next((line for line in lines if ".json" in line), None)
+
+        if tif_line and json_line:
+            file_size_bytes = int(tif_line.split()[4])
+            file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
+
+            print(f"TIF size: {file_size_mb} MB")
+
+        if jpg_line and json_line:
+            file_size_bytes = int(jpg_line.split()[4])
+            file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
+            print(f"JPEG size: {file_size_mb} MB")
+
+    if expected_file_size == file_size_mb:
+         print("success")
+        
+    cons.close_connection()
+    track.close_connection()
+    """
     """
     sc = storage_client.StorageClient()
 

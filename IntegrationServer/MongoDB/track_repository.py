@@ -571,7 +571,21 @@ class TrackRepository:
             return result
         
         return None
-    
+
+    def get_file_info(self, guid, extension):
+        """
+                Finds the file info based on the guid and the filetype.
+                : returns the file info or none
+        """
+        result = self.collection.find_one({"_id": guid, "file_list.name": f"{guid}.{extension}"}, {"file_list.$": 1})
+
+        if result and "file_list" in result:
+            result = result["file_list"][0]
+            return result
+
+        return None
+
+
     def query_process_times(self, process_time_model):
         """
         Query the MongoDB collection based on filters from ProcessTimeModel.

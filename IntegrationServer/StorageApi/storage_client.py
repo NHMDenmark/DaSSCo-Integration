@@ -335,6 +335,24 @@ class StorageClient():
                e = f"Api or wrapper fail: {e}"
                print(e)
                return False
+
+     def get_files_info(self, guid):
+          try: 
+               response = self.client.file_proxy.list_file_info(guid)
+
+               status_code = response.status_code
+
+               if status_code == 200:
+                    data = response.json()
+
+                    return True, data, status_code    
+
+               return False, None, status_code
+
+          except Exception as e:
+               e = f"Api or wrapper fail: {e}"
+               print(e)
+               return False, None, None
           
      def get_files_available(self, guid, institution, collection):
           try:
