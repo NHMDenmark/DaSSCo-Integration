@@ -65,25 +65,7 @@ class IntegrationServer(object):
         cons = connections.Connections()
         cons.create_ssh_connection(self.ssh_config_path)
         cons.close_connection()
-        load_dotenv()
-
-def test():
-    util = utility.Utility()
-    #field = field_validation.FieldValidation()
-    # jobby = job_driver.JobDriver()
-    # cons = connections.Connections()
-    # api = northtech_rest_api.APIUsage()
-    # mongo = mongo_connection.MongoConnection("track")
-    # meta_mongo = mongo_connection.MongoConnection("metadata")
-    # ndrive = ndrive_new_files.NdriveNewFilesFinder()
-    # new_files = process_files_from_ndrive.ProcessNewFiles()
-    # ars = storage_client.StorageClient()
-    # job_caller = hpc_job_caller.HPCJobCaller()
-    # hpc_creator = hpc_asset_creator.HPCAssetCreator()
-    # cons.create_ssh_connections("./ConfigFiles/ssh_connections_config.json")
-    
-    relPath = "Tests/TestConfigFiles/test_track_entry.json"
-    
+        load_dotenv()    
 
 class x(Feedback, LogClass):
     def __init__(self):
@@ -309,20 +291,6 @@ if __name__ == '__main__':
         
     cons.close_connection()
     track.close_connection()
-    """
-    """
-    sc = storage_client.StorageClient()
-
-    status = sc.get_full_asset_status("040ck2b867e9a0707100d3669bc67f")
-
-    cstatus = status["data"].status
-    ars_share_allocation = status["data"].share_allocation_mb
-    error_message = status["data"].error_message
-
-    print(cstatus, ars_share_allocation, error_message)
-
-    if ars_share_allocation is None:
-        print("ars_share_allocation is None")
     """
     """
     client = MongoSharedClient()

@@ -68,7 +68,6 @@ class HPCUnresponsiveJobHandler():
             self.run_util.service_stopping_updates()
             self.close_db_connections()
 
-
     def loop(self):
 
         while self.run == self.status_enum.RUNNING.value:
@@ -172,14 +171,15 @@ class HPCUnresponsiveJobHandler():
                             should_retry = self.handle_completed_state(guid, job_name, hpc_job_id)
 
                         elif "RUNNING" in state or "PENDING" in state:
-                            should_retry = self.handle_running_or_pending_state()
+                            should_retry = self.handle_running_or_pending_state(guid, job_name, hpc_job_id)
 
                         elif "FAILED" in state or "CANCELLED" in state or "TIMEOUT" in state or "OUT_OF_MEMORY" in state or "NODE_FAIL" in state or "PREEMPTED" in state:
-                            should_retry = self.handle_failed_state()
+                            print(f"hpc job state: {guid} {state}")
+                            should_retry = self.handle_failed_state(guid, job_name, hpc_job_id)
 
                         else:
-                            #TODO handle as total failure
-                            should_retry = self.handle_unknown_state()
+                            #TODO handle as total failure?
+                            should_retry = self.handle_unknown_state(guid, job_name, hpc_job_id)
 
                     elif slurm_job_status is False:
                         self.end_of_loop_checks()
@@ -249,6 +249,7 @@ class HPCUnresponsiveJobHandler():
             return self.cons.get_connection()
 
     def get_slurm_job_status(self, job_id, connection_fail=0):
+        # calls self if fail for a set number of times
         reply = []
         try:
             response = self.con.ssh_command(f"sacct -j {job_id} --noheader --format=JobName,State")
@@ -259,7 +260,6 @@ class HPCUnresponsiveJobHandler():
                 state = state.rstrip("+")  
                 job_name = job_name.rstrip("+")
                 reply.append({"job_id": job_id, "job_name": job_name, "state": state})
-            print(reply)
             
         except Exception as e:
             print(e)
@@ -293,7 +293,7 @@ class HPCUnresponsiveJobHandler():
         return reply
 
     def get_hpc_file_status(self, guid, connection_fail=0):
-            
+            # calls self if fail for a set number of times
             result = False
             failure_state = False            
 
@@ -377,6 +377,43 @@ class HPCUnresponsiveJobHandler():
                     return self.get_hpc_file_status(guid, connection_fail)
                 
             return result, failure_state
+
+    def terminate_hpc_job(self, guid, job_name, hpc_job_id, connection_fail = 0):
+        # calls self if fail for a set number of times
+        try:
+            self.con.ssh_command(f"scancel {hpc_job_id}")
+            entry = self.run_util.log_msg(self.prefix_id, f"Terminated hpc job {job_name} with id {hpc_job_id} for {guid} after waiting too long for resolution.")
+            self.health_caller.warning(self.service_name, entry)
+
+        except Exception as e:
+            print(e)
+            time.sleep(20)
+            
+            if isinstance(e, timeout):
+                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after timeout: {e}")
+                self.health_caller.warning(self.service_name, entry)
+                                            
+            else:
+                entry = self.run_util.log_msg(self.prefix_id, f"Attempting to reconnect to HPC server after fail: {e}", self.status_enum.ERROR.value)
+                self.health_caller.error(self.service_name, entry)
+            
+            self.con.close()
+            self.cons.close_connection()
+    
+            if connection_fail == 3:
+                entry = self.run_util.log_msg(self.prefix_id, f"Failed to reconnect to HPC server after 3 attempts. Will try pausing service.")
+                self.health_caller.warning(self.service_name, entry)
+    
+                service_status = self.service_mongo.get_value_for_key(self.service_name, "run_status")
+                if service_status != self.status_enum.STOPPED.value:
+                    self.service_mongo.update_entry(self.service_name, "run_status", self.status_enum.PAUSED.value)
+                
+            else:
+                connection_fail += 1
+                self.cons = connections.Connections(self.mongo_client)
+                self.con = self.create_ssh_connection()
+                self.terminate_hpc_job(guid, hpc_job_id, connection_fail)
+
 
     def handle_completed_state(self, guid, job_name, hpc_job_id):
 
@@ -476,6 +513,7 @@ class HPCUnresponsiveJobHandler():
             return True
 
         elif job_name == "derivative":
+            # TODO
             pass
 
         else:
@@ -486,15 +524,79 @@ class HPCUnresponsiveJobHandler():
             return False
         
 
-    def handle_running_or_pending_state(self, hpc_job_id):
-        # delete job from slurm queue and set to retry 
-        return True
+    def handle_running_or_pending_state(self, guid, job_name, hpc_job_id):
+        # delete job from slurm queue
+        self.terminate_hpc_job(guid, job_name, hpc_job_id)
+        print(f"terminated job for {guid}")
+        # always returns false -> job should be picked up as failed state next time around
+        return False
 
-    def handle_failed_state(self):
-        # check asset is as it should be in LUMI/ARS then set to retry
-        return True
+    def handle_failed_state(self, guid, job_name, hpc_job_id):
+        print(f"failed job state for {guid}")
 
-    def handle_unknown_state(self):
+        if job_name == "assetLoader":
+
+            storage_api = self.create_storage_api()
+
+            try:
+                found, status_code, ars_status, share_size, note = storage_api.get_asset_sharesize_and_status(guid)
+
+                if found is False:
+                    entry = self.run_util.log_msg(self.prefix_id, f"Failed getting status from ARS for asset {guid} while trying to handle unresponsive job {job_name} with job id {hpc_job_id}. Job had some kind of failed state in SLURM queue on hpc server. Will set jobs_status and job status to {self.status_enum.ERROR.value}.")
+                    self.track_mongo.update_track_job_status(guid, hpc_job_id, self.status_enum.ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                    return False
+
+                if share_size is None:
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} did not have the expected open file share. This was found while trying to handle unresponsive job {job_name} with job id {hpc_job_id}. Job had some kind of failed state in SLURM queue on hpc server. Will set jobs_status and job status to {self.status_enum.CRITICAL_ERROR.value}.")
+                    self.track_mongo.update_track_job_status(guid, hpc_job_id, self.status_enum.CRITICAL_ERROR.value)
+                    self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+                    return False
+
+            except Exception as e:
+                entry = self.run_util.log_exc(self.prefix_id, f"Failed call to ARS during unresponsive hpc job handling for asset {guid}, job {job_name} with id {hpc_job_id}.", e)
+                self.health_caller.error(self.service_name, entry)
+                return False
+
+            return True
+
+        elif job_name == "clean_up":
+
+            hpc_file_status, failure_state = self.get_hpc_file_status(guid)
+
+            if failure_state is True:
+                return False
+            
+            if hpc_file_status is False:
+                
+                self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.DONE.value)
+                self.track_mongo.update_entry(guid, "jobs_status", self.status_enum.DONE.value)
+                self.track_mongo.update_entry(guid, "hpc_ready", self.validate_enum.NO.value)
+                self.track_mongo.update_entry(guid, "specify_sync", self.validate_enum.PREPARE.value)
+                
+                return False
+            
+            return True
+        
+        elif job_name == "uploader":
+            pass
+        elif job_name == "barcode":
+            pass
+        elif job_name == "cropping":
+            pass
+        elif job_name == "derivative":
+            pass
+        else:
+            entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had unrecognised {job_name} as job name. Unable to handle this. Will set jobs_status and job status to {self.status_enum.CRITICAL_ERROR.value}.")
+            self.track_mongo.update_track_job_status(guid, hpc_job_id, self.status_enum.CRITICAL_ERROR.value)
+            self.run_util.update_metadata_status(guid, self.asset_status_nt.PROCESSING_ISSUE.value)
+            self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
+            return False
+
+    def handle_unknown_state(self, guid):
+        print(f"unknown job state for {guid}")
         # check asset is as it should be in LUMI/ARS then set to retry or total failure based on what is found
         return False
 
