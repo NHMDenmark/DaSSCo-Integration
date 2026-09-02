@@ -10,6 +10,7 @@ from HealthUtility.AssetErrorHandlers.has_new_file import HasNewFileErrorHandler
 from HealthUtility.AssetErrorHandlers.has_open_share import HasOpenShareErrorHandler
 from HealthUtility.AssetErrorHandlers.erda_sync import ErdaSyncErrorHandler
 from HealthUtility.AssetErrorHandlers.specify_sync import SpecifySyncErrorHandler
+from HealthUtility.AssetErrorHandlers.is_in_ars import IsInArsErrorHandler
 
 """
 # TODO Description. Add in flight throttle count
@@ -24,6 +25,7 @@ class AssetErrorStatusHandler():
         self.has_open_share_handler = HasOpenShareErrorHandler(self.ctx)
         self.erda_sync_handler = ErdaSyncErrorHandler(self.ctx)
         self.specify_sync_handler = SpecifySyncErrorHandler(self.ctx)
+        self.is_in_ars_handler = IsInArsErrorHandler(self.ctx)
 
         self.ctx.run_util.service_starting_updates()
 
@@ -59,8 +61,12 @@ class AssetErrorStatusHandler():
                 errors_found = 0
                 for asset in assets:
 
+                    # skip REMOVED or NO for available for services flag
+                    if asset[self.ctx.flag_enum.AVAILABLE_FOR_SERVICES.value] != self.ctx.validate_enum.YES.value:
+                        continue
+                    
                     # let asset_job_error_handler handle jobs_status errors
-                    if asset["jobs_status"] == self.ctx.status_enum.ERROR.value:
+                    if asset[self.ctx.flag_enum.JOBS_STATUS.value] == self.ctx.status_enum.ERROR.value:
                         continue
 
                     errors_found += 1
@@ -80,10 +86,14 @@ class AssetErrorStatusHandler():
                     # has_new_file error
                     if asset[self.ctx.flag_enum.HAS_NEW_FILE.value] == self.ctx.status_enum.ERROR.value:
                         self.has_new_file_handler.handle_has_new_file_error(asset)
+
+                    # is_in_ars error
+                    if asset[self.ctx.flag_enum.IS_IN_ARS.value] == self.ctx.status_enum.ERROR.value:
+                        self.is_in_ars_handler.handle_is_in_ars_error(asset)
                 
                 if loop_counter%20 == 0:
                     print(f"Assets with errors found: {errors_found} at loop number: {loop_counter}")
-                time.sleep(300)
+                time.sleep(30)
 
             loop_counter = loop_counter + 1
 

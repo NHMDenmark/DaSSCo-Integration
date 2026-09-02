@@ -179,6 +179,7 @@ class HPCUnresponsiveJobHandler():
 
                         else:
                             #TODO handle as total failure?
+                            print(state)
                             should_retry = self.handle_unknown_state(guid, job_name, hpc_job_id)
 
                     elif slurm_job_status is False:
@@ -581,13 +582,58 @@ class HPCUnresponsiveJobHandler():
             return True
         
         elif job_name == "uploader":
-            pass
+
+            hpc_file_status, failure_state = self.get_hpc_file_status(guid)
+            
+            if failure_state is True:
+                # TODO set as error
+                return False
+                        
+            if hpc_file_status is False:
+                # TODO set as error                            
+                return False
+
+            storage_api = self.create_storage_api()
+
+            try:
+                found, status_code, ars_status, share_size, note = storage_api.get_asset_sharesize_and_status(guid)
+
+            except Exception as e:
+                entry = self.run_util.log_exc(self.prefix_id, f"Failed call to ARS during unresponsive hpc job handling for asset {guid}, job {job_name} with id {hpc_job_id}.", e)
+                self.health_caller.error(self.service_name, entry)
+                return False
+
+            return True
+
         elif job_name == "barcode":
-            pass
+            return True
+
         elif job_name == "cropping":
-            pass
+            hpc_file_status, failure_state = self.get_hpc_file_status(guid)
+            
+            if failure_state is True:
+                # TODO set as error
+                return False
+                        
+            if hpc_file_status is False:
+                # TODO set as error                            
+                return False
+                        
+            return True
+        
         elif job_name == "derivative":
-            pass
+            hpc_file_status, failure_state = self.get_hpc_file_status(guid)
+            
+            if failure_state is True:
+                # TODO set as error
+                return False
+                        
+            if hpc_file_status is False:
+                # TODO set as error                            
+                return False
+                        
+            return True
+
         else:
             entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had unrecognised {job_name} as job name. Unable to handle this. Will set jobs_status and job status to {self.status_enum.CRITICAL_ERROR.value}.")
             self.track_mongo.update_track_job_status(guid, hpc_job_id, self.status_enum.CRITICAL_ERROR.value)
@@ -595,8 +641,8 @@ class HPCUnresponsiveJobHandler():
             self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.CRITICAL_ERROR.value)
             return False
 
-    def handle_unknown_state(self, guid):
-        print(f"unknown job state for {guid}")
+    def handle_unknown_state(self, guid, job_name, hpc_job_id):
+        print(f"unknown job state for {guid}, job: {job_name} w. id: {hpc_job_id}")
         # check asset is as it should be in LUMI/ARS then set to retry or total failure based on what is found
         return False
 
