@@ -20,7 +20,7 @@ from dassco_utils.messaging import orchestration_client, async_rabbitmq_client, 
 from bson import ObjectId
 from rabbitmq_client import RabbitMqClient as rmq
 from dasscostorageclient import DaSSCoStorageClient
-from KeycloakInterface import auth
+#from KeycloakInterface import auth
 from MongoDB.mongo_connection import MongoSharedClient
 from field_validation import FieldValidation
 
@@ -228,13 +228,14 @@ def find_directory_name_with_file(parent_directory, filename):
 
 if __name__ == '__main__':
 
+    """
     guid = "040ck2b867e9a0306142212233b675_400"
     sc = storage_client.StorageClient()
 
     found, file_list, status_code = sc.get_files_info(guid)
 
     print(found, file_list, status_code)
-
+    """
     """
     load_dotenv()
     home_path = os.getenv("HPC_ASSET_DIRECTORY")

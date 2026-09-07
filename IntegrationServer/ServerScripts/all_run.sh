@@ -17,7 +17,6 @@ nohup python "$root/HealthUtility/asset_job_error_handler.py" > "$root/HealthUti
 
 nohup python "$root/HpcSsh/hpc_asset_creator.py" > "$root/HpcSsh/hpc_asset_creator.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_job_caller.py" > "$root/HpcSsh/hpc_job_caller.out" 2>&1 &
-#nohup python "$root/HpcSsh/hpc_open_share.py" > "$root/HpcSsh/open_share.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_uploader.py" > "$root/HpcSsh/hpc_uploader.out" 2>&1 &
 nohup python "$root/HpcSsh/hpc_clean_up.py" > "$root/HpcSsh/hpc_clean_up.out" 2>&1 &
 

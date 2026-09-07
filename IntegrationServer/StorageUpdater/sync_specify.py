@@ -184,7 +184,7 @@ class SyncSpecify():
                     updated = self.storage_api.update_metadata(guid)
 
                     if updated is True:
-                        print(f"{guid} was set to sync with Specify.")
+                        #print(f"{guid} was set to sync with Specify.")
 
                         self.track_mongo.update_entry(guid, "temporary_specify_sync_time", datetime.now())
                         self.throttle_mongo.add_one_to_count("await_specify_sync_count", "value")

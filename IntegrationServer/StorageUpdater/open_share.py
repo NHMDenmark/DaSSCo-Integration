@@ -157,7 +157,7 @@ class OpenShare(Status, Validate):
             if asset is None:
                 time.sleep(5)        
             else: 
-                print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
+                #print(f"total amount in system: {total_size}/{self.max_total_asset_size}")
                 guid = asset["_id"]
                 institution = self.mongo_metadata.get_value_for_key(guid, "institution")
                 collection = self.mongo_metadata.get_value_for_key(guid, "collection")

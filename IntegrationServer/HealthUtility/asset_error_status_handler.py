@@ -91,7 +91,7 @@ class AssetErrorStatusHandler():
                     if asset[self.ctx.flag_enum.IS_IN_ARS.value] == self.ctx.status_enum.ERROR.value:
                         self.is_in_ars_handler.handle_is_in_ars_error(asset)
                 
-                if loop_counter%20 == 0:
+                if loop_counter%100 == 0:
                     print(f"Assets with errors found: {errors_found} at loop number: {loop_counter}")
                 time.sleep(30)
 

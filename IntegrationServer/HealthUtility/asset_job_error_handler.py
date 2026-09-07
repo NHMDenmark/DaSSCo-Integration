@@ -102,24 +102,33 @@ class AssetJobErrorHandler():
 
                 if error_job["name"] == "assetLoader":
                     self.handle_asset_loader_error(asset, guid, error_job)
+                    if self.storage_api is None:
+                        break
 
                 if error_job["name"] == "barcode":
                     self.handle_barcode_error(asset, guid, error_job)
+                    if self.storage_api is None:
+                        break
 
                 if error_job["name"] == "cropping":
                     self.handle_cropping_error(asset, guid, error_job)
+                    if self.storage_api is None:
+                        break
 
                 if error_job["name"] == "derivative":
                     self.handle_derivative_error(asset, guid, error_job)
+                    if self.storage_api is None:
+                        break
 
                 if error_job["name"] == "uploader":
                     self.handle_uploader_error(asset, guid, error_job)
+                    if self.storage_api is None:
+                        break
 
                 if error_job["name"] == "clean_up":
                     self.handle_clean_up_error(asset, guid, error_job)
-            
-            # TODO remove or lower for prod
-            time.sleep(200)
+                    if self.storage_api is None:
+                        break
 
             #checks if service should keep running           
             self.run = self.run_util.check_run_changes()
@@ -127,7 +136,10 @@ class AssetJobErrorHandler():
             # Pause loop
             if self.run == self.status_enum.PAUSED.value:
                 self.run = self.run_util.pause_loop()
-        
+
+            # TODO remove or lower for prod
+            time.sleep(200)
+                
         # out of main loop
         self.run_util.service_stopping_updates()
         self.close_connections()
@@ -253,7 +265,12 @@ class AssetJobErrorHandler():
     def create_storage_api(self):
     
         storage_api = storage_client.StorageClient()
-        
+
+        if self.storage_api.client is None:
+            time.sleep(60)
+            print("Waited 60 seconds before retrying to create the storage client after failing once")                
+            self.storage_api = self.create_storage_api()
+
         self.auth_timestamp = datetime.now()
 
         if storage_api.client is None:
@@ -283,11 +300,7 @@ class AssetJobErrorHandler():
             self.storage_api.service.mongo_client.close()
             # print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
-        if self.storage_api.client is None:
-            time.sleep(60)
-            print("Waited 60 seconds before retrying to create the storage client after failing once")                
-            self.storage_api = self.create_storage_api()
-
+            
     def subtract_from_assets_in_flight(self):
         self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
 

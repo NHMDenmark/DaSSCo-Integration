@@ -254,6 +254,10 @@ class FileUploader():
         entry = self.run_util.log_exc(self.prefix_id, f"File uploader failed with status: {status}", note, self.status_enum.ERROR.value)
         self.health_caller.error(self.service_name, entry, guid, "has_new_file", self.status_enum.ERROR.value)
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
+
+        # reset storage client to check if the service should continue running or if Keycloak or ARS is down
+        self.storage_api.service.metadata_db.close_connection()
+        self.storage_api = self.create_storage_api()
                                 
 
 if __name__ == '__main__':

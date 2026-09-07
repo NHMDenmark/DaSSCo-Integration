@@ -86,13 +86,10 @@ class SpecimenCreator():
                 barcodes = self.check_barcode_length(guid, barcodes)
 
                 for barcode in barcodes:
-                    print(barcode)
+                    #print(barcode)
                     specimen_pid = f"SPID_{barcode}"
 
                     found, specimen, msg = self.storage_api.get_specimen(institution, collection, barcode)
-
-                    if msg is not None:
-                        print(msg)
                     
                     barcode_specimen_id_list = self.track_mongo.get_value_for_key(guid, "barcode_asset_specimen_id_list")
                     if barcode_specimen_id_list is None:

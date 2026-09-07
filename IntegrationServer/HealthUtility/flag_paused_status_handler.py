@@ -106,7 +106,8 @@ class FlagPausedStatusHandler():
                         print(f"Unpaused {guid} after {passed_time}")
 
                     else:
-                        print(f"Still paused {guid}")
+                        #print(f"Still paused {guid}")
+                        pass
 
             self.end_of_loop_checks()
         
