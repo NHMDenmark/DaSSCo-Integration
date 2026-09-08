@@ -100,7 +100,7 @@ class HPCUploader():
             else: 
                  
                 guid = asset["_id"]
-                print(guid)
+                #print(guid)
                 try:
                     # adds a uploader job to the jobs list
                     self.create_track_job(guid, asset)

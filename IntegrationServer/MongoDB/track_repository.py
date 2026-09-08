@@ -279,7 +279,7 @@ class TrackRepository:
     def get_critical_error_entries(self):
 
         """
-        Retrieve entries from the MongoDB collection with a flag field value set to error.
+        Retrieve entries from the MongoDB collection with a flag field value set to critical error.
 
         :return: A list of entries, empty if none was found.
         """

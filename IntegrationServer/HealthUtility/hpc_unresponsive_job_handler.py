@@ -159,6 +159,16 @@ class HPCUnresponsiveJobHandler():
                     asset, guid, job_name = asset_tuple
                     should_retry = False
 
+                    asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.STARTING.value)
+                    
+                    if asset_job is not None:
+                        job_name = asset_job["name"]
+                        hpc_job_id = asset_job["hpc_job_id"]
+                    else:
+                    # TODO handle this scenario so asset doesnt loop around here forever
+                        self.end_of_loop_checks()
+                        continue
+
                     # TODO contact slurm and check status there, remove from slurm queue or handle accordingly if job is still running there, if not then set to retry
                     slurm_job_status = self.get_slurm_job_status(self, hpc_job_id)
 

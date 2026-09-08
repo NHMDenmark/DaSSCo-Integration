@@ -100,8 +100,8 @@ class HPCAssetCreator():
             
             download_ok = self.hpc_util.can_start_download_job(self.max_download_count)
             
-            if not download_ok:
-                print("Maximum number of assets being downloaded at the same time reached.")
+            #if not download_ok:
+            #    print("Maximum number of assets being downloaded at the same time reached.")
 
             if asset is None or not download_ok:
                 #print("No asset found for creation on HPC")

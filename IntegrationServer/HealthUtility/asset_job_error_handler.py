@@ -266,10 +266,10 @@ class AssetJobErrorHandler():
     
         storage_api = storage_client.StorageClient()
 
-        if self.storage_api.client is None:
+        if storage_api.client is None:
             time.sleep(60)
             print("Waited 60 seconds before retrying to create the storage client after failing once")                
-            self.storage_api = self.create_storage_api()
+            storage_api = storage_client.StorageClient()
 
         self.auth_timestamp = datetime.now()
 
@@ -300,7 +300,7 @@ class AssetJobErrorHandler():
             self.storage_api.service.mongo_client.close()
             # print(f"creating new storage client, after {time_difference}")
             self.storage_api = self.create_storage_api()
-            
+
     def subtract_from_assets_in_flight(self):
         self.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
 
