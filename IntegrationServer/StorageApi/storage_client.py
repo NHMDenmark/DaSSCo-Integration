@@ -234,6 +234,8 @@ class StorageClient():
      def open_share(self, guid, institution, collection, mb_allocation):
 
           user_list = ["TEST_USERS"]
+          data = None
+          allocation_status = None
 
           try:
                response = self.client.file_proxy.open_share(institution, collection, guid, user_list, mb_allocation)
@@ -242,16 +244,15 @@ class StorageClient():
 
                if status_code == 200:
                     data = response.json()
-
-               allocation_status = data["http_allocation_status"]
+                    allocation_status = data["http_allocation_status"]
 
                if allocation_status == "SUCCESS":
 
                     path = data["path"]
                     hostname = data["hostname"]
-               
-                    link = hostname + path
                     
+                    link = hostname + path
+                         
                     return link, status_code
                else:
                     return False, status_code
