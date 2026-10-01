@@ -177,7 +177,7 @@ class HPCUnresponsiveJobHandler():
                         for job in slurm_job_status:
                             state.append(job["state"])
 
-                        if "CONPLETED" in state:
+                        if "COMPLETED" in state:
                             should_retry = self.handle_completed_state(guid, job_name, hpc_job_id)
 
                         elif "RUNNING" in state or "PENDING" in state:

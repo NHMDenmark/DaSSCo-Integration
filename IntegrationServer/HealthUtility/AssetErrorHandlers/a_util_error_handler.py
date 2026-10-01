@@ -28,6 +28,9 @@ class UtilErrorHandler:
     def remove_asset_from_in_flight_count(self):
         self.ctx.throttle_mongo.subtract_one_from_count("assets_in_flight", "value")
 
+    def remove_asset_from_await_sync_count(self):
+        self.ctx.throttle_mongo.subtract_one_from_count("await_sync_asset_count", "value")
+
     def subtract_asset_size_from_throttle(self, asset, share_style):
 
         if share_style is None:

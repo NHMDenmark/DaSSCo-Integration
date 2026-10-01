@@ -107,6 +107,8 @@ class SyncErda():
                 
                 # api call
                 synced, status_code, note = self.storage_api.sync_erda(guid)
+
+                self.throttle_mongo.add_one_to_count("await_sync_asset_count", "value")
                 
                 # success scenario - update track database
                 if synced is True:
@@ -176,7 +178,6 @@ class SyncErda():
         self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.AWAIT.value)                    
         # add timestamp for when attempted sync, this will be used to check that an asset dont end up stuck with the ASSET_RECEIVED status by ARS forever.
         self.track_mongo.update_entry(guid, "temporary_erda_sync_time", datetime.now())
-        self.throttle_mongo.add_one_to_count("await_sync_asset_count", "value")
 
     # handles status 400, checks if the asset has actually been synced despite the 400 status. Returns True if asset has synced, false otherwise
     def handle_status_400(self, guid, asset, note):
@@ -222,7 +223,7 @@ class SyncErda():
                 message = self.run_util.log_msg(self.prefix_id, f"Timeout detected without syncing {guid}. Status: 504. {note}")
                 self.health_caller.warning(self.service_name, message, guid)
 
-            if status_from_ars in [self.erda_status_enum.COMPLETED.value, self.erda_status_enum.ASSET_RECEIVED.value]:                
+            if status_from_ars in [self.erda_status_enum.ERDA_SYNCHRONISED.value, self.erda_status_enum.ASSET_RECEIVED.value]:                
                 # log the time out
                 message = self.run_util.log_msg(self.prefix_id, f"{guid} sync request was a success despite receiving status 504 from ARS. Asset has {status_from_ars} as status from ARS.")
                 self.health_caller.warning(self.service_name, message, guid)
