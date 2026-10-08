@@ -25,6 +25,7 @@ class DeleteFilesNdrive():
         # service name for logging/info purposes
         self.service_name = "Delete files (Ndrive)"
         self.prefix_id= "Df(N)"
+        self.deleted_assets = 0
 
         self.util = utility.Utility()
         
@@ -47,6 +48,7 @@ class DeleteFilesNdrive():
         try:
             self.loop()
         except Exception as e:
+            print(f"Deleted {self.deleted_assets} assets.")
             print("service crashed", e)
             try:
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e, self.status_enum.CRITICAL_ERROR.value)
@@ -129,7 +131,7 @@ class DeleteFilesNdrive():
                 file_path = os.path.join(ndrive_path, file)
                 os.remove(file_path)
 
-            print(f"Deleted files: {guid}")
+            self.deleted_assets += 1
             # update track
             self.track_mongo.delete_field(guid, "temporary_path_ndrive")
             self.track_mongo.delete_field(guid, "temporary_files_ndrive")      

@@ -227,9 +227,18 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
-    
-    a = Feedback()
-    print(a.FAIL)
+    reply = {}
+    response = "sacct: fatal: Bad job/step specified: -9"
+    lines = response.strip().splitlines()
+    for line in lines:
+        job_name, state = line.split()
+         # Remove the trailing '+' if present
+        state = state.rstrip("+")  
+        job_name = job_name.rstrip("+")
+        reply.append({"job_name": job_name, "state": state})
+
+    print(reply)
+
     """
     guid = "040ck2b867e9a0306142212233b675_400"
     sc = storage_client.StorageClient()

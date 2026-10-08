@@ -653,6 +653,10 @@ class HPCUnresponsiveJobHandler():
 
     def handle_unknown_state(self, guid, job_name, hpc_job_id):
         print(f"unknown job state for {guid}, job: {job_name} w. id: {hpc_job_id}")
+
+        if hpc_job_id == -9:
+            return True            
+            
         # check asset is as it should be in LUMI/ARS then set to retry or total failure based on what is found
         return False
 

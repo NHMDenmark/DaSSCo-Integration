@@ -69,7 +69,6 @@ class HPCJobRetryHandler():
                 continue
             
             guid = asset["_id"]
-            print(f"found {guid}")
             
             # avoid any timing issues
             self.track_mongo.update_entry(guid, "available_for_services", self.validate_enum.NO.value)

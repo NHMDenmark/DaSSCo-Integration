@@ -44,7 +44,7 @@ def get_service(request: Request):
 
 @health.get("/")
 def index():
-    return "sickening!!"
+    return "sickening!"
 
 @health.post("/api/warning")
 async def receive_warning(warning: message_model, service = Depends(get_service)):

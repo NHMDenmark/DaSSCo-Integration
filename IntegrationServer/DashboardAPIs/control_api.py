@@ -58,7 +58,7 @@ def get_service(request: Request):
 
 @control.get(f"{front_url}/pub")
 def index():
-    return {"message":"keep out all wildebeasts!!"}
+    return {"message":"keep out all wildebeasts!"}
 
 @control.get(f"{front_url}/check")
 def index(user: dict = Depends(verify_token)):

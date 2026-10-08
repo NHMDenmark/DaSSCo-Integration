@@ -24,6 +24,9 @@ class DeleteLocalFiles():
         self.service_name = "Delete local files"
         self.prefix_id= "Dlf"
 
+        # counter for deleted directories
+        self.deleted_directories = 0
+
         self.util = utility.Utility()
         
         self.mongo_client = MongoSharedClient()
@@ -44,6 +47,7 @@ class DeleteLocalFiles():
         try:
             self.loop()
         except Exception as e:
+            print(f"Cleaned up {self.deleted_directories} empty directories")
             print("service crashed", e)
             try:
                 entry = self.run_util.log_exc(self.prefix_id, f"{self.service_name} crashed.", e, self.status_enum.CRITICAL_ERROR.value)
@@ -100,7 +104,7 @@ class DeleteLocalFiles():
                         # delete empty directories
                         if not os.listdir(local_path):
                             os.rmdir(local_path)
-                            print(f"Deleted empty directory: {local_path}")
+                            self.deleted_directories += 1
 
                     else:
                         print(f"{local_path} is not a directory.")
@@ -125,6 +129,7 @@ class DeleteLocalFiles():
         # out of main loop
         self.run_util.service_stopping_updates()
         self.close_all_connections()
+        print(f"Cleaned up {self.deleted_directories} empty directories")
         print("Service closed down")
 
     def close_all_connections(self):
