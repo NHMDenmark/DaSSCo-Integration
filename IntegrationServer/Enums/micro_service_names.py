@@ -23,6 +23,7 @@ class MicroServiceNamesEnum(Enum):
         HFU = "HPC file uploader"
         NFFN = "New files finder (Ndrive)"
         PNFN = "Process new files (Ndrive)"
+        PNF = "Process new files"
         DFN = "Delete files (Ndrive)"
         DLF = "Delete local files"
         APSH = "Asset paused status handler"

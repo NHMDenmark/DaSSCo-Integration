@@ -40,8 +40,9 @@ from HealthUtility import health_caller, caller_hpc_api
 from Enums.feedback_enum import Feedback
 from Enums.feedback_enum import FeedbackEnum
 from HealthApi import health_service
-from HealthUtility.run_utility import LogClass
+from HealthUtility.run_utility import LogClass, RunUtility
 from AssetFileHandler import asset_handler
+from AssetFileHandler import asset_handler_two
 from DashboardAPIs import micro_service_paths
 import traceback
 #from pymongo.errors import InvalidOperation
@@ -227,98 +228,36 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
-    reply = {}
-    response = "sacct: fatal: Bad job/step specified: -9"
-    lines = response.strip().splitlines()
-    for line in lines:
-        job_name, state = line.split()
-         # Remove the trailing '+' if present
-        state = state.rstrip("+")  
-        job_name = job_name.rstrip("+")
-        reply.append({"job_name": job_name, "state": state})
 
-    print(reply)
+        t = os.kill(749867, 0)
+        print(t)    
+        """
+        load_dotenv()
 
-    """
-    guid = "040ck2b867e9a0306142212233b675_400"
-    sc = storage_client.StorageClient()
+        ndrive_path = os.getenv("NDRIVE_PATH")
 
-    found, file_list, status_code = sc.get_files_info(guid)
+        log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
+        logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
+        pid = 123
+        # service name for logging/info purposes
+        service_name = "Process new files"
+        prefix_id = "Pnf"
 
-    print(found, file_list, status_code)
-    """
-    """
-    load_dotenv()
-    home_path = os.getenv("HPC_ASSET_DIRECTORY")
-    job_id = 21379691
-    guid= "040ck2b867e9a07073005162f12635_400"
-    client = MongoSharedClient()
-    track = track_repository.TrackRepository(client)
-    metadata = metadata_repository.MetadataRepository(client)
-    cons = connections.Connections(client)
-    cons.create_ssh_connection("lumi")
-    con = cons.get_connection()
+        new_files_path = f"{ndrive_path}/WORKHERB0001/2001-10-12"
 
-    info = track.get_file_info(guid, "tif")
-    print(info)
-    # cases to solve:
-        # fail state: CANCELLED, TIMEOUT, FAIELD, OUT_OF_MEMORY, NODE_FAIL, PREEMPTED
-        # unresolved state: PENDING, RUNNING
-        # check asset status state: COMPLETED
-        # others
-        # nothing
-    expected_file_size = info["file_size"]
-    pgs = metadata.get_value_for_key(guid, "parent_guids")
-    if pgs is not None:
-        pg = pgs[0]
-        batchlist_name = track.get_value_for_key(pg, "batch_list_name")              
-    else:
-        batchlist_name = track.get_value_for_key(guid, "batch_list_name")
-    path = os.path.join(home_path, batchlist_name)
-    
-    response = con.ssh_command(f"ls -ll {path} | grep {guid}")
-    
-    lines = response.strip().splitlines()
-
-    if len(lines) < 2:
-        print("Expected at least 2 files")
-    else:
-        jpg_line = next((line for line in lines if ".jpeg" in line), None)
-        tif_line = next((line for line in lines if ".tif" in line), None)
-        json_line = next((line for line in lines if ".json" in line), None)
-
-        if tif_line and json_line:
-            file_size_bytes = int(tif_line.split()[4])
-            file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
-
-            print(f"TIF size: {file_size_mb} MB")
-
-        if jpg_line and json_line:
-            file_size_bytes = int(jpg_line.split()[4])
-            file_size_mb = round(file_size_bytes / (1000 * 1000), 0)
-            print(f"JPEG size: {file_size_mb} MB")
-
-    if expected_file_size == file_size_mb:
-         print("success")
+        mongo_client = MongoSharedClient()
         
-    cons.close_connection()
-    track.close_connection()
-    """
-    """
-    client = MongoSharedClient()
-    
-    track = track_repository.TrackRepository(client)
+        run_util = RunUtility(prefix_id, service_name, log_filename, logger_name, pid, mongo_client)
+        
+        asset_handler = asset_handler_two.AssetHandlerTwo(run_util, mongo_client)
 
-    c =track.count_assets_in_hpc_load_state()
-
-    b = track.count_assets_in_download_state()
-
-    a = track.count_assets_in_upload_state()
-
-    print(a)
-    print(c)
-    print(b)
-
-    track.close_connection()
-    """
-    
+        asset_handler.process_new_assets(new_files_path)
+        
+        track = track_repository.TrackRepository(mongo_client)
+        metadata = metadata_repository.MetadataRepository(mongo_client)
+        delete_metadata = metadata.delete_entry("040ck2b867e990f0a0a160c6a2edc1")
+        delete_track = track.delete_entry("040ck2b867e990f0a0a160c6a2edc1")
+        print(delete_track, delete_metadata)
+        
+        mongo_client.close()
+        """

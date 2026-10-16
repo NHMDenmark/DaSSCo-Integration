@@ -34,6 +34,7 @@ class MicroServicePaths():
         "HPC file uploader":"HpcSsh/hpc_uploader.py",
         "New files finder (Ndrive)":"Ndrive/ndrive_new_files.py",
         "Process new files (Ndrive)":"Ndrive/process_files_from_ndrive.py",
+        "Process new files": "Ndrive/process_new_files.py",
         "Delete files (Ndrive)":"Ndrive/delete_files_ndrive.py",
         "Delete local files":"AssetFileHandler/delete_local_files.py",
         "Asset paused status handler":"HealthUtility/asset_paused_status_handler.py",

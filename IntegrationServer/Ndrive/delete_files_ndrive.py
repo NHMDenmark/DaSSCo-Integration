@@ -141,10 +141,10 @@ class DeleteFilesNdrive():
             entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {ndrive_path} as directory. No matching files found for {guid}. Temporary_files_ndrive set to {self.validate_enum.ERROR.value}.", self.run_util.log_enum.WARNING.value)
             self.health_caller.error(self.service_name, entry, guid)
                         
-            # delete empty directories
-            if not os.listdir(ndrive_path):
-                os.rmdir(ndrive_path)
-                print(f"Deleted empty directory: {ndrive_path}")
+        # delete empty directories
+        if not os.listdir(ndrive_path):
+            os.rmdir(ndrive_path)
+            print(f"Deleted empty directory: {ndrive_path}")
 
 
 if __name__ == '__main__':

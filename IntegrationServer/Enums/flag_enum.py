@@ -20,6 +20,7 @@ class FlagEnum(Enum):
     AVAILABLE_FOR_SERVICES_TIMESTAMP = "available_for_services_timestamp"
     AVAILABLE_FOR_SERVICES_WAIT_TIME = "available_for_services_wait_time"
     TEMPORARY_FILES_LOCAL = "temporary_files_local"
+    TEMPORARY_PATH_NDRIVE = "temporary_path_ndrive"
 
 class Flag:
     def __init__(self):
@@ -38,3 +39,4 @@ class Flag:
         self.AVAILABLE_FOR_SERVICES_TIMESTAMP = FlagEnum.AVAILABLE_FOR_SERVICES_TIMESTAMP.value
         self.AVAILABLE_FOR_SERVICES_WAIT_TIME = FlagEnum.AVAILABLE_FOR_SERVICES_WAIT_TIME.value
         self.TEMPORARY_FILES_LOCAL = FlagEnum.TEMPORARY_FILES_LOCAL.value
+        self.TEMPORARY_PATH_NDRIVE = FlagEnum.TEMPORARY_PATH_NDRIVE.value

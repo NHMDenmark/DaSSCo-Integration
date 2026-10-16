@@ -156,7 +156,13 @@ class FileUploader():
                             type = file["type"]
                             size = file["file_size"]
                             
-                            file_path = f"{project_root}/Files/InProcess/" + asset["pipeline"] + "/" + asset["batch_list_name"][-10:] + "/" + guid + "/" + guid + "." + type
+                            temporary_path_ndrive = asset["temporary_path_ndrive"]
+                            file_path = None
+                            if os.path.exists(temporary_path_ndrive):
+                                file_path = f"{temporary_path_ndrive}/{guid}.{type}"
+                            else:
+                                temporary_path_ndrive = self.util.add_prefix_to_last_folder(temporary_path_ndrive, "imported_")
+                                file_path = f"{temporary_path_ndrive}/{guid}.{type}"
 
                             # check filepath exist and handle fail
                             if self.util.verify_path(file_path) is False:
@@ -169,6 +175,7 @@ class FileUploader():
                             uploaded, status, note = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
 
                             if uploaded is True:
+                                self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_PATH_NDRIVE.value, temporary_path_ndrive)
                                 self.track_mongo.update_entry(guid, self.flag_enum.ERDA_SYNC.value, self.validate_enum.NO.value)
                                 self.track_mongo.update_entry(guid, self.flag_enum.HAS_NEW_FILE.value, self.validate_enum.AWAIT.value)
 

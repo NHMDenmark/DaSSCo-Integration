@@ -2,11 +2,12 @@
 
 root="/home/dassco/integration/DaSSCo-Integration/IntegrationServer"
 
-nohup python "$root/Ndrive/ndrive_new_files.py" > "$root/Ndrive/ndrive_new_files.out" 2>&1 &
-nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process_files_from_ndrive.out" 2>&1 &
+#nohup python "$root/Ndrive/ndrive_new_files.py" > "$root/Ndrive/ndrive_new_files.out" 2>&1 &
+#nohup python "$root/Ndrive/process_files_from_ndrive.py" > "$root/Ndrive/process_files_from_ndrive.out" 2>&1 &
+nohup python "$root/Ndrive/process_new_files.py" > "$root/Ndrive/process_new_files.out" 2>&1 &
 nohup python "$root/Ndrive/delete_files_ndrive.py" > "$root/Ndrive/delete_files_ndrive.out" 2>&1 &
 
-nohup python "$root/AssetFileHandler/delete_local_files.py" > "$root/AssetFileHandler/delete_local_files.out" 2>&1 &
+#nohup python "$root/AssetFileHandler/delete_local_files.py" > "$root/AssetFileHandler/delete_local_files.out" 2>&1 &
 
 nohup python "$root/HealthUtility/hpc_job_retry_handler.py" > "$root/HealthUtility/hpc_job_retry_handler.out" 2>&1 &
 nohup python "$root/HealthUtility/flag_paused_status_handler.py" > "$root/HealthUtility/flag_paused_status_handler.out" 2>&1 &
@@ -27,10 +28,10 @@ nohup python "$root/StorageUpdater/update_metadata.py" > "$root/StorageUpdater/u
 nohup python "$root/StorageUpdater/validate_erda_sync.py" > "$root/StorageUpdater/validate_erda_sync.out" 2>&1 &
 nohup python "$root/StorageUpdater/open_share.py" > "$root/StorageUpdater/open_share.out" 2>&1 &
 nohup python "$root/StorageUpdater/close_share.py" > "$root/StorageUpdater/close_share.out" 2>&1 &
-nohup python "$root/StorageUpdater/specify_close_share.py" > "$root/StorageUpdater/specify_close_share.out" 2>&1 &
+#nohup python "$root/StorageUpdater/specify_close_share.py" > "$root/StorageUpdater/specify_close_share.out" 2>&1 &
 #nohup python "$root/StorageUpdater/specify_open_share.py" > "$root/StorageUpdater/specify_open_share.out" 2>&1 &
-nohup python "$root/StorageUpdater/sync_specify.py" > "$root/StorageUpdater/sync_specify.out" 2>&1 &
-nohup python "$root/StorageUpdater/validate_specify_sync.py" > "$root/StorageUpdater/validate_specify_sync.out" 2>&1 &
+#nohup python "$root/StorageUpdater/sync_specify.py" > "$root/StorageUpdater/sync_specify.out" 2>&1 &
+#nohup python "$root/StorageUpdater/validate_specify_sync.py" > "$root/StorageUpdater/validate_specify_sync.out" 2>&1 &
 nohup python "$root/StorageUpdater/specimen_creator.py" > "$root/StorageUpdater/specimen_creator.out" 2>&1 &
 
 # starts all the services - make sure they have RUNNING status in the database

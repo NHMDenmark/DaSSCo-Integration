@@ -194,8 +194,13 @@ class StorageClient():
                else:
                     return False
           except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
+               status_code, note = self.get_status_code_from_exc(e)
+
+               if status_code == 404:
+                    return False
+               else:
+                    print(f"Api or wrapper fail: {e}")
+                    return False
      
      def get_full_asset_status(self, guid):
           try:
@@ -208,8 +213,13 @@ class StorageClient():
                else:
                     return False
           except Exception as e:
-               print(f"Api or wrapper fail: {e}")
-               return False
+               status_code, note = self.get_status_code_from_exc(e)
+
+               if status_code == 404:
+                    return False
+               else:
+                    print(f"Api or wrapper fail: {e}")
+                    return False
 
      # validate sync, returns bool, status code, asset status, share size, and a note detailing event
      def get_asset_sharesize_and_status(self, guid):
@@ -399,8 +409,12 @@ class StorageClient():
                     return False, status_code, None
           except Exception as e:
                status_code, note = self.get_status_code_from_exc(e)
-               print(f"Api or wrapper fail: {e}")
-               return False, status_code, note
+
+               if status_code == 404:
+                    return False, status_code, f"Specimen not found. {status_code}"
+               else:
+                    print(f"Api or wrapper fail: {e}")
+                    return False, status_code, note
 
      def delete_specimen(self, institution, collection, barcode):
 
