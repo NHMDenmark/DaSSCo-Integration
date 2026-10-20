@@ -13,6 +13,7 @@ from Connections import connections
 from StorageApi import storage_client
 from HealthUtility import health_caller, run_utility
 from Enums import status_enum, validate_enum, flag_enum, asset_status_nt
+from InformationModule import issue_writer
 from socket import timeout
 from dotenv import load_dotenv
 
@@ -33,8 +34,9 @@ class HPCUnresponsiveJobHandler():
         self.prefix_id= "Hujh"
         self.ssh_config_name = os.getenv("SLURM_CONFIGURATION")
         self.hpc_asset_directory = os.getenv("HPC_ASSET_DIRECTORY")
-
+        
         self.util = utility.Utility()
+        self.issue_writer = issue_writer.IssueWriter()
         self.mongo_client = MongoSharedClient()
         self.track_mongo = track_repository.TrackRepository(self.mongo_client)
         self.service_mongo = service_repository.ServiceRepository(self.mongo_client)
@@ -518,14 +520,46 @@ class HPCUnresponsiveJobHandler():
             return True
 
         elif job_name == "barcode":
+            # rerunning this job is cheap
             return True
 
         elif job_name == "cropping":
+            # rerunning this job is not cheap, but its easier for now to do this
             return True
 
         elif job_name == "derivative":
-            # TODO
-            pass
+            # TODO look up derivatives that may have been created by this job. Then add an issue to them and put them up for deletion. Then set this job to retry.
+
+            # TODO fix this calls values
+            # find derivatives created by this job based on time stamp and parent guid. 
+            derivatives = self.metadata_mongo.get_time_based_multiple_keys_multiple_values_in_list([{self.flag_enum.JOBS_STATUS.value: self.status_enum.DONE.value}], "parent_guids", [guid], time_key="created_at", after=datetime.now() - timedelta(days=1))
+
+            if derivatives is None or len(derivatives) == 0:
+                return True
+
+            storage_api = self.create_storage_api()
+
+            try:
+                for derivative in derivatives:
+                    derivative_guid = derivative["_id"]
+
+                    self.metadata_mongo.update_entry(derivative_guid, "status", self.asset_status_nt.ERROR.value)
+                    self.track_mongo.update_entry(derivative_guid, self.flag_enum.AVAILABLE_FOR_SERVICES.value, self.validate_enum.NO.value)
+
+                    issue =self.issue_writer.get_issue_from_configuration(category="processing_pipeline", name="duplicate derivative", status=self.status_enum.ERROR.value)
+                    self.metadata_mongo.append_existing_list(derivative_guid, "issues", issue)
+
+                    storage_api.update_metadata(derivative_guid)
+
+                    entry = self.run_util.log_msg(self.prefix_id, f"Found derivative {derivative_guid} created by unresponsive job {job_name} for asset {guid}. Setting metadatastatus to {self.asset_status_nt.ERROR.value} and adding issue for deletion. Derivative has available_for_services set to {self.validate_enum.NO.value}.")
+                    self.health_caller.warning(self.service_name, entry, derivative_guid)
+
+            except Exception as e:
+                entry = self.run_util.log_exc(self.prefix_id, f"Failed call to ARS during unresponsive hpc job handling for asset {guid}, job {job_name} with id {hpc_job_id}.", e)
+                self.health_caller.error(self.service_name, entry)
+                return False
+
+            return True
 
         else:
             entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had unrecognised {job_name} as job name. Unable to handle this. Will set jobs_status and job status to {self.status_enum.CRITICAL_ERROR.value}.")
@@ -655,6 +689,7 @@ class HPCUnresponsiveJobHandler():
         print(f"unknown job state for {guid}, job: {job_name} w. id: {hpc_job_id}")
 
         if hpc_job_id == -9:
+            # job never responded back from hpc. We have to retry
             return True            
             
         # check asset is as it should be in LUMI/ARS then set to retry or total failure based on what is found

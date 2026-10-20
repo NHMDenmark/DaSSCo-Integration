@@ -16,5 +16,15 @@
     "description": "A mismatch between the workstation name in the metadata and the workstation name in the ndrive path.",
     "notes":"This means the automatic deletion of the asset files on the ndrive will not work.",
     "solved": false
+    }],
+  "processing_pipeline":[{
+    "category": "processing_pipeline",
+    "name": "duplicate derivative",
+    "timestamp": null,
+    "status": null,
+    "description": "A job on the hpc server became unresponsive, but this derivative was created anyway. The parent should rerun the creation job thus creating another derivative. This derivative should be deleted and files removed from hpc servers, ERDA and ARS if they exist.",
+    "notes":"Requires manual handling since we dont want to automatic deletion.",
+    "solved": false
     }]
+
 }

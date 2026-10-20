@@ -108,6 +108,92 @@ class AllRepository:
         entries = list(self.collection.find(query))
         return entries
 
+    def get_entries_based_on_value_in_list(self, key, value):
+
+        """
+        Retrieve entries from the MongoDB collection where the specified key's value is in a given list.
+
+        :param key: The key (field name in the MongoDB documents)
+        :param value: The value to be checked against the list
+        :return: A list of matching entries, or an empty list if none found.
+        """
+        query = {key: {"$in": [value]}}
+        entries = list(self.collection.find(query))
+        return entries
+
+    def get_entries_based_on_multiple_values_in_list(self, key, values):
+        """
+        Retrieve entries from the MongoDB collection where the specified key's value is in a given list of values.
+
+        :param key: The key (field name in the MongoDB documents)
+        :param values: A list of values to be checked against
+        :return: A list of matching entries, or an empty list if none found.
+        """
+        query = {key: {"$all": values}}
+        entries = list(self.collection.find(query))
+        return entries
+
+    #  TODO test this
+    def get_time_based_multiple_keys_multiple_values_in_list(self, key_value_pairs, list_key, list_values, time_key=None, after=None, before=None):
+
+        """
+        Retrieve entries matching multiple key-value pairs, where a specified
+        list field contains all provided values, with optional time filtering.
+
+        :param key_value_pairs: List of dictionaries representing key-value pairs.
+        :param list_key: The field containing the list to check.
+        :param list_values: Values that must all be present in the list field.
+        :param time_key: Optional datetime or ISO8601 string field for filtering.
+        :param after: Optional lower time boundary (inclusive).
+        :param before: Optional upper time boundary (inclusive).
+        :return: A list of matching entries.
+        """
+        kvp = list(key_value_pairs)  # Don't mutate the caller's list
+
+        # Require the list field to contain all specified values
+        if list_values:
+            kvp.append({list_key: {"$all": list_values}})
+
+        # Optional time filtering
+        if time_key is not None and (after is not None or before is not None):
+
+            sample_doc = self.collection.find_one(
+                {time_key: {"$exists": True}},
+                {time_key: 1}
+            )
+
+            field_is_datetime = (
+                sample_doc is not None
+                and isinstance(sample_doc.get(time_key), datetime.datetime)
+            )
+
+            time_query = {}
+
+            if after is not None:
+                if field_is_datetime:
+                    if not isinstance(after, datetime.datetime):
+                        after = datetime.datetime.fromisoformat(str(after))
+                elif isinstance(after, datetime.datetime):
+                    after = after.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+                time_query["$gte"] = after
+
+            if before is not None:
+                if field_is_datetime:
+                    if not isinstance(before, datetime.datetime):
+                        before = datetime.datetime.fromisoformat(str(before))
+                elif isinstance(before, datetime.datetime):
+                    before = before.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
+                time_query["$lte"] = before
+
+            if time_query:
+                kvp.append({time_key: time_query})
+
+        query = {"$and": kvp}
+        return list(self.collection.find(query))
+        
+
     def get_time_based_multiple_key(self, key_value_pairs, time_key=None, after=None, before=None):
         
         kvp = list(key_value_pairs)  # copy so we don’t mutate caller’s list
