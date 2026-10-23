@@ -222,9 +222,7 @@ class SpecimenCreator():
             self.storage_api = self.create_storage_api()
 
     def close_all_connections(self):
-        self.track_mongo.close_connection()
-        self.metadata_mongo.close_connection()
-        self.mos_mongo.close_connection()
+        self.mongo_client.close()
 
     def end_of_loop_checks(self):
         # checks if service should keep running           

@@ -222,9 +222,7 @@ class ValidateSpecifySync():
         
     def close_db_connections(self):
         try:
-            self.track_mongo.close_connection()
-            self.service_mongo.close_connection()
-            self.throttle_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Faied to close db connections: {e}")
 
@@ -295,7 +293,6 @@ class ValidateSpecifySync():
             time.sleep(60)
             print("Waited 60 seconds before retrying to create the storage client after failing once")                
             self.storage_api = self.create_storage_api()
-
 
 if __name__ == '__main__':
     ValidateSpecifySync()

@@ -118,6 +118,7 @@ class DeleteFilesNdrive():
     def close_db_connections(self):
         try:
             self.track_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 

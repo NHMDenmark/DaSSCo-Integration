@@ -92,7 +92,9 @@ class HPCUnresponsiveJobHandler():
                 if asset_job is not None:
                     job_name = asset_job["name"]
                 else:
-                    # TODO handle this scenario so asset doesnt loop around here forever
+                    self.track_mongo.update_entry(guid, self.flag_enum)
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} did not have {self.status_enum.STARTING.value} or {self.status_enum.QUEUED.value} as status in any job as it should have based on jobs_status {self.status_enum.STARTING.value}. Setting jobs_status to {self.status_enum.ERROR.value}.")
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
                     continue
                 
                 asset_tuple = (asset, guid, job_name)
@@ -109,7 +111,9 @@ class HPCUnresponsiveJobHandler():
                     job_name = asset_job["name"]
                     hpc_job_id = asset_job["hpc_job_id"]
                 else:
-                    # TODO handle this scenario so asset doesnt loop around here forever
+                    self.track_mongo.update_entry(guid, self.flag_enum)
+                    entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} did not have {self.status_enum.RUNNING.value} as status in any job as it should have based on jobs_status {self.status_enum.RUNNING.value}. Setting jobs_status to {self.status_enum.ERROR.value}.")
+                    self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
                     continue
                 
                 asset_tuple = (asset, guid, job_name, hpc_job_id)
@@ -167,11 +171,12 @@ class HPCUnresponsiveJobHandler():
                         job_name = asset_job["name"]
                         hpc_job_id = asset_job["hpc_job_id"]
                     else:
-                    # TODO handle this scenario so asset doesnt loop around here forever
+                        self.track_mongo.update_entry(guid, self.flag_enum)
+                        entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job {job_name} with either status {self.status_enum.STARTING.value} or {self.status_enum.QUEUED.value}, but no matching job found in track db. Setting jobs_status to {self.status_enum.ERROR.value}.")
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
                         self.end_of_loop_checks()
                         continue
 
-                    # TODO contact slurm and check status there, remove from slurm queue or handle accordingly if job is still running there, if not then set to retry
                     slurm_job_status = self.get_slurm_job_status(self, hpc_job_id)
 
                     if slurm_job_status is not False:
@@ -191,7 +196,7 @@ class HPCUnresponsiveJobHandler():
 
                         else:
                             #TODO handle as total failure?
-                            print(state)
+                            print(f"Unknown state for {guid}: {state}")
                             should_retry = self.handle_unknown_state(guid, job_name, hpc_job_id)
 
                     elif slurm_job_status is False:
@@ -211,20 +216,54 @@ class HPCUnresponsiveJobHandler():
                 for asset_tuple in unresponsive_running_list:
                     
                     asset, guid, job_name, hpc_job_id = asset_tuple
+                    should_retry = False
 
-                    # TODO contact slurm and check status there, remove from slurm queue or handle accordingly if job is still running there, if not then set to retry
-                    slurm_job_status = self.get_slurm_job_status(self, hpc_job_id)
+                    asset_job = self.track_mongo.get_job_from_key_value(guid, "status", self.status_enum.RUNNING.value)
                     
-                    if slurm_job_status is False:
+                    if asset_job is not None:
+                        job_name = asset_job["name"]
+                        hpc_job_id = asset_job["hpc_job_id"]
+                    else:
+                        self.track_mongo.update_entry(guid, self.flag_enum)
+                        entry = self.run_util.log_msg(self.prefix_id, f"Asset {guid} had job {job_name} with status {self.status_enum.RUNNING.value} but no matching job found in track db. Setting jobs_status to {self.status_enum.ERROR.value}.")
+                        self.health_caller.error(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.ERROR.value)
+                        self.end_of_loop_checks()
+                        continue
+
+                    slurm_job_status = self.get_slurm_job_status(self, hpc_job_id)
+
+                    if slurm_job_status is not False:
+                        state = []
+                        for job in slurm_job_status:
+                            state.append(job["state"])
+
+                        if "COMPLETED" in state:
+                            should_retry = self.handle_completed_state(guid, job_name, hpc_job_id)
+
+                        elif "RUNNING" in state or "PENDING" in state:
+                            should_retry = self.handle_running_or_pending_state(guid, job_name, hpc_job_id)
+
+                        elif "FAILED" in state or "CANCELLED" in state or "TIMEOUT" in state or "OUT_OF_MEMORY" in state or "NODE_FAIL" in state or "PREEMPTED" in state:
+                            print(f"hpc job state: {guid} {state}")
+                            should_retry = self.handle_failed_state(guid, job_name, hpc_job_id)
+
+                        else:
+                            #TODO handle as total failure?
+                            print(f"Unknown state for {guid}: {state}")
+                            should_retry = self.handle_unknown_state(guid, job_name, hpc_job_id)
+
+                    elif slurm_job_status is False:
                         self.end_of_loop_checks()
 
-                    print(f"Handling {guid} with job {job_name} and hpc job id {hpc_job_id}")
+                    if should_retry is True:
+                        self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.RETRY.value)
+                        entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name} not responding for more than {wait_time} seconds while status was {self.status_enum.RUNNING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
+                        sent = self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
+                        # TODO handle "sent"
 
-                    self.track_mongo.update_track_job_status(guid, job_name, self.status_enum.RETRY.value)
-
-                    entry = self.run_util.log_msg(self.prefix_id, f"{guid} had {job_name}, hpc job id : {hpc_job_id}, not respond for more than {wait_time} seconds while status was {self.status_enum.RUNNING.value}. Setting status for {self.flag_enum.JOBS_STATUS.value} to {self.status_enum.RETRY.value}. Hpc job retry handler will take over.")
-                    sent = self.health_caller.warning(self.service_name, entry, guid, self.flag_enum.JOBS_STATUS.value, self.status_enum.RETRY.value)
-                    # TODO handle "sent"
+                    elif should_retry is False:
+                        #TODO handle
+                        pass  
 
             self.end_of_loop_checks()
     
@@ -245,8 +284,7 @@ class HPCUnresponsiveJobHandler():
     
     def close_db_connections(self):
         try:
-            self.track_mongo.close_connection()
-            self.run_util.service_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 

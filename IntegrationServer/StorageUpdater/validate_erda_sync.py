@@ -242,9 +242,7 @@ class SyncErda(Status, Flag, ErdaStatus, Validate):
         
     def close_db_connections(self):
         try:
-            self.track_mongo.close_connection()
-            self.service_mongo.close_connection()
-            self.throttle_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Faied to close db connections: {e}")
 

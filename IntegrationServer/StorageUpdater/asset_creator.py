@@ -461,12 +461,7 @@ class AssetCreator():
     
     def close_all_connections(self):
         try:
-            self.track_mongo.close_connection()
-            self.metadata_mongo.close_connection()
-            self.service_mongo.close_connection()
-            self.throttle_mongo.close_connection()
-            self.run_util.service_mongo.close_connection()
-            self.storage_api.service.metadata_db.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
             

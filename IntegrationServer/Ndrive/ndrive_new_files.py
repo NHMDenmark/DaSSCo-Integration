@@ -90,6 +90,7 @@ class NdriveNewFilesFinder():
         try:
             self.throttle_mongo.close_connection()
             self.track_mongo.close_connection()
+            self.mongo_client.close()
         except Exception as e:
             print(f"Failed to close db connections: {e}")
 
