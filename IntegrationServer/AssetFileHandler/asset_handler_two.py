@@ -17,7 +17,9 @@ from dotenv import load_dotenv
 from InformationModule import issue_writer
 
 """
-Responsible for the processing/creation of assets coming from the Ndrive. 
+Responsible for the processing/creation of assets coming from the local storage. This cannot handle assets which consists of multiple image files. 
+# TODO remove hacking of the metadata in places where its currently needed.
+# TODO rename script. 
 """
 
 class AssetHandlerTwo:
@@ -123,11 +125,6 @@ class AssetHandlerTwo:
                     asset_pid = "ADDED_" + guid
                     self.util.update_json(json_file_path, "asset_pid", asset_pid)
             
-                # TODO handle if there can only ever be one image added to an asset here... not sure this is true though
-                # image_extension = []
-                # for format in self.util.get_value(json_file_path, "file_format"):
-                # format = "." + format
-                # image_extension.append(format)
                 image_extension = self.util.get_value(json_file_path, "file_format")
                 date_value = self.util.get_value(json_file_path, "date_asset_taken")
                 batch_name = ""
@@ -149,11 +146,6 @@ class AssetHandlerTwo:
                 asset_size = -1
             
                 # Add image file checksums(s) and img file size to track entry, calculates total asset size
-                #for extension in image_extension:                                
-                #extension = image_extension
-                #img_file_name = json_file_name.replace('.json', f".{extension}")
-                #img_file_path = os.path.join(subdirectory_path, img_file_name)
-            
                 img_size = self.util.calculate_file_size_round_to_next_mb(img_file_path)
                 check_sum = self.util.calculate_crc_checksum(img_file_path)
                 file_type = file_extension

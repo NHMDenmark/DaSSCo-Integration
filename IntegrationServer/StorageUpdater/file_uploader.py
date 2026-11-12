@@ -237,20 +237,20 @@ class FileUploader():
 
         self.track_mongo.update_entry(guid, "temp_timeout_status", True)
         self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
-        self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
+        self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.YES.value)
         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
         entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status}. Setting has_new_file to PAUSED since this was likely a crc check fail. Asset will wait at least 10 minutes before trying again. Wrapper msg: {note}")
-        self.health_caller.warning(self.service_name, entry, guid, self.status_enum.PAUSED.value, "has_new_file")
+        self.health_caller.warning(self.service_name, entry, guid, "has_new_file", self.status_enum.PAUSED.value)
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
     def handle_status_502(self, guid, status, note):
 
         self.track_mongo.update_entry(guid, "temp_timeout_status", True)
         self.track_mongo.update_entry(guid, "temp_timeout_timestamp", datetime.now())
-        self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.NO.value)
+        self.track_mongo.update_entry(guid, "temp_timeout_previous_flag_value", self.validate_enum.YES.value)
         self.track_mongo.update_entry(guid, "has_new_file", self.validate_enum.PAUSED.value)
         entry = self.run_util.log_msg(self.prefix_id, f"File uploader failed with status: {status} bad gateway. Check ARS internal communication for failures. Setting has_new_file to PAUSED Asset will wait at least 10 minutes before trying again. Wrapper msg: {note}")
-        self.health_caller.warning(self.service_name, entry, guid, self.status_enum.PAUSED.value, "has_new_file")
+        self.health_caller.warning(self.service_name, entry, guid, "has_new_file", self.status_enum.PAUSED.value,)
         self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_HALTED.value)
 
     def handle_other_fails(self, guid, status, note):

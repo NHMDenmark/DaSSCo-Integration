@@ -14,7 +14,7 @@ class UtilErrorHandler:
     def update_throttle_reopen_plus_size(self, asset):
         self.ctx.throttle_mongo.add_to_amount("total_asset_size_mb", "value", asset["asset_size"])
         self.ctx.throttle_mongo.add_to_amount("total_reopened_share_size_mb", "value", asset["asset_size"])
-        # TODO decide if this belongs here. But seems natural enough to include it. 
+        
         self.ctx.track_mongo.update_entry(asset["_id"], "temporary_reopened_share_status", True)
 
     def update_throttle_new_plus_size(self, asset):

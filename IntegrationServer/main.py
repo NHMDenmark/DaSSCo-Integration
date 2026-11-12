@@ -229,35 +229,13 @@ def find_directory_name_with_file(parent_directory, filename):
 
 if __name__ == '__main__':
 
-        t = os.kill(749867, 0)
-        print(t)    
-        """
-        load_dotenv()
-
-        ndrive_path = os.getenv("NDRIVE_PATH")
-
-        log_filename = f"{os.path.basename(os.path.abspath(__file__))}.log"
-        logger_name = os.path.relpath(os.path.abspath(__file__), start=project_root)
-        pid = 123
-        # service name for logging/info purposes
-        service_name = "Process new files"
-        prefix_id = "Pnf"
-
-        new_files_path = f"{ndrive_path}/WORKHERB0001/2001-10-12"
-
         mongo_client = MongoSharedClient()
-        
-        run_util = RunUtility(prefix_id, service_name, log_filename, logger_name, pid, mongo_client)
-        
-        asset_handler = asset_handler_two.AssetHandlerTwo(run_util, mongo_client)
 
-        asset_handler.process_new_assets(new_files_path)
-        
         track = track_repository.TrackRepository(mongo_client)
-        metadata = metadata_repository.MetadataRepository(mongo_client)
-        delete_metadata = metadata.delete_entry("040ck2b867e990f0a0a160c6a2edc1")
-        delete_track = track.delete_entry("040ck2b867e990f0a0a160c6a2edc1")
-        print(delete_track, delete_metadata)
+
+        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_status")
+        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_timestamp")
+        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_previous_flag_value")
         
         mongo_client.close()
-        """
+        
