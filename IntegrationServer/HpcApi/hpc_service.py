@@ -314,7 +314,7 @@ class HPCService():
             return False
         
         # set jobs status to error and barcode job status to error if no barcode found but job has finished as expected.
-        if len(barcode_list) == 0:
+        if len(barcode_list) == 0 and asset_subject != "device target":
             self.handle_no_barcode(guid, asset_subject, issues)            
             return True
 
@@ -684,7 +684,7 @@ class HPCService():
             return False
 
     def get_enum_asset_type(self, asset_subject):
-
+        #print(f"asset subject: {asset_subject}")
         if asset_subject == "device target":
             return self.asset_type.DEVICE_TARGET.value
         elif asset_subject == "specimen":
