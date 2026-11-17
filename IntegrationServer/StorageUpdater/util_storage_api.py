@@ -97,7 +97,7 @@ class UtilStorageAPI():
         time_difference = current_time - self.auth_timestamp
                     
         if time_difference > timedelta(minutes=4):
-            print(f"Keycloak auth expired for {self.service_name}. Attempting to create new storage client.")
+            #print(f"Keycloak auth expired for {self.service_name}. Attempting to create new storage client.")
             storage_api.service.metadata_db.close_connection()
             storage_api = self.create_storage_api()
             

@@ -14,7 +14,7 @@ from HealthUtility import health_caller, run_utility
 import utility
 
 """
-Responsible syncing assets with erda after their files have been uploaded to their file shares in ARS.
+Requests syncing assets with erda after their files have been uploaded to their file shares in ARS.
 Logs warnings and errors from this process, and directs them to the health service. 
 """
 

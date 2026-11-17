@@ -75,6 +75,7 @@ class SpecifySyncErrorHandler(BaseErrorHandler):
 
                     if closed is True:
                         self.ctx.track_mongo.update_entry(guid, "has_open_share", self.ctx.validate_enum.NO.value)
+                        self.util.subtract_asset_size_from_throttle(asset, "reopened")
                     else:
                         self.failure_to_handle_updates(guid)
                         entry = self.ctx.run_util.log_msg(self.ctx.prefix_id, f"Failed to close file proxy share for {guid} while handling specify_sync error for FILE_DOWNLOAD_ERROR. Specify_sync is upgraded to CRITICAL_ERROR and available_for_services set to NO. The file proxy share will remain open until action is taken.", self.ctx.status_enum.CRITICAL_ERROR.value)
