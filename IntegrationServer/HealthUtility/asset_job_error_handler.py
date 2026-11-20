@@ -196,7 +196,7 @@ class AssetJobErrorHandler():
         pass
 
     def handle_derivative_error(self, asset, guid, error_job):
-
+            
         pass
     
     # TODO handle other cases

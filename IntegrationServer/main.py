@@ -228,14 +228,14 @@ def find_directory_name_with_file(parent_directory, filename):
         return None
 
 if __name__ == '__main__':
-
+        
         mongo_client = MongoSharedClient()
 
         track = track_repository.TrackRepository(mongo_client)
+        metadata = metadata_repository.MetadataRepository(mongo_client)
 
-        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_status")
-        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_timestamp")
-        track.delete_field("040ck2b867e990f0a0a3423379a7b0", "temp_timeout_previous_flag_value")
-        
+        t = track.delete_entry("040ck2b867e990b0e2c101dc68d133")
+        m = metadata.delete_entry("040ck2b867e990b0e2c101dc68d133")
+        print(t, m)
         mongo_client.close()
         

@@ -172,7 +172,9 @@ class FileUploader():
                                 self.run_util.update_metadata_status(guid, self.asset_status_enum.PROCESSING_ISSUE.value)
                                 continue
 
-                            uploaded, status, note = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size)
+                            content_type = self.determine_content_type(type)
+                            
+                            uploaded, status, note = self.storage_api.upload_file(guid, metadata["institution"], metadata["collection"], file_path, size, content_type)
 
                             if uploaded is True:
                                 self.track_mongo.update_entry(guid, self.flag_enum.TEMPORARY_PATH_NDRIVE.value, temporary_path_ndrive)
@@ -263,6 +265,19 @@ class FileUploader():
         # reset storage client to check if the service should continue running or if Keycloak or ARS is down
         self.storage_api.service.metadata_db.close_connection()
         self.storage_api = self.create_storage_api()
+
+    def determine_content_type(self, file_type):
+        # TODO add more content types if needed
+        if file_type == "tif" or file_type == "tiff":
+            return "image/tiff"
+        elif file_type == "jpg" or file_type == "jpeg":
+            return "image/jpeg"
+        elif file_type == "png":
+            return "image/png"
+        elif file_type == "txt":
+            return "text/plain"
+        else:
+            return None
                                 
 
 if __name__ == '__main__':

@@ -46,7 +46,7 @@ class Connections:
 
         if username == None:
             username = os.environ.get(con_user)
-        print("attempt: ", username, ssh_name)
+        #print("attempt: ", username, ssh_name)
         try:
             connection = SSHConnection(
                 ssh_name,
@@ -71,7 +71,7 @@ class Connections:
         connections_config_details = self.util.read_json(self.ssh_config_path)
         
         connection_details = connections_config_details[connection_name]
-        print(connection_details["host"])
+        #print(connection_details["host"])
         con_user = connection_name + "_USER"
         con_user = con_user.upper()
         
